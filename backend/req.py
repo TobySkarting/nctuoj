@@ -118,7 +118,7 @@ def reqenv(func):
         self.account["id"] = id
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
-        err, self.group_power = yield from Service.User.get_user_group_power_info(id)
+        #err, self.group_power = yield from Service.User.get_user_group_power_info(id)
         #self.group = group_data
         #self.account['power'] = power_data
         
