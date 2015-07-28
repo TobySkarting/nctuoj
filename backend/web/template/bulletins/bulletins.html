@@ -1,0 +1,28 @@
+{% extends './../frame.html' %}
+{% block content %}
+
+{{data}}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Setter</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for x in data %}
+            <tr>
+                <td>{{x['title']}}</td>
+                <td>{{x['setter_user']}}</td>
+                <td>{{x['created_at']}}</td>
+                <td>
+                    <button class="btn btn-success">Read</button>
+                    <button class="btn btn-warning">Edit</button>
+                </td>
+            </tr>
+        {% end %}
+    </tbody>
+</table>
+{% end %}

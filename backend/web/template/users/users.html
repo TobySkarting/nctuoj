@@ -1,0 +1,40 @@
+{% extends './../frame.html' %}
+{% block content %}
+
+User Manage
+{{data}}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Account</th>
+            <th>Student ID</th>
+            <th>User</th>
+            <th>Group</th>
+            <th>Created At</th>
+            <th></th>
+        </tr>
+        <tr>
+        </tr>
+    </thead>
+    <tbody>
+        {% for x in data %}
+            <tr>
+                <td>{{x["id"]}}</td>
+                <td>{{x["account"]}}</td>
+                <td>{{x["student_id"]}}</td>
+                <td id="user_manage_{{x["id"]}}">
+                    <input type="checkbox" {{ "checked" if map_power['user_manage'] in x["power"] else ""}}>
+                </td>
+                <td id="group_manage_{{x["id"]}}">
+                    <input type="checkbox" {{ "checked" if map_power['group_manage'] in x["power"] else ""}}>
+                </td>
+                <td>{{x["created_at"]}}</td>
+                <td><button class="btn btn-success">Update</button></td>
+            </tr>
+        {% end %}
+    </tbody>
+</table>
+
+{% end %}
