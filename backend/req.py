@@ -8,7 +8,8 @@ import tornado.template
 import tornado.gen
 import tornado.web
 import tornado.websocket
-from power import map_power, map_group_power class Service:
+from power import map_power, map_group_power
+class Service:
     pass
 
 class RequestHandler(tornado.web.RequestHandler):
