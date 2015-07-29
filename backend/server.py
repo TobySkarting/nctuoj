@@ -31,6 +31,7 @@ from api.user import ApiUserListHandler
 
 
 ### web class
+from web.err import Web404Handler
 from web.index import WebIndexHandler
 from web.bulletin import WebBulletinsHandler
 from web.bulletin import WebBulletinHandler
@@ -104,7 +105,7 @@ if __name__ == '__main__':
         ('/user/(\d+)/(\w*)/?', WebUserHandler),
         ### web handler
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
-        ('/.*', WebUsersHandler)
+        ('/.*', Web404Handler)
         ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape')
     global srv
     srv = tornado.httpserver.HTTPServer(app)

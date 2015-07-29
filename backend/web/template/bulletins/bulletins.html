@@ -7,10 +7,35 @@
 {% end %}
 
 
+<div>
+    {% for x in data %}
+        <div class="row bulletin-header">
+            <div class="col-xs-3 bulletin-title">
+                {{x['title']}}
+            </div>
+            <div class="col-xs-3 bulletin-setter">
+                {{x['setter_user']}}
+            </div>
+            <div class="col-xs-3 bulletin-created">
+                {{x['created_at']}}
+            </div>
+            {% if map_group_power["admin_manage"] in current_group_power %}
+                <div class="col-xs-3">
+                    <a class="btn btn-warning btn-sm">Edit</a>
+                </div>
+            {% end %}
+
+        </div>
+        <div class="divider">
+        <div class="bulletin-content">
+            {% raw x['content'] %}
+        </div>
+    {% end %}
+</div>
 
 
 
-<table class="table table-hover">
+<!--table class="table table-hover">
     <thead>
         <tr>
             <th>Title</th>
@@ -33,5 +58,5 @@
             </tr>
         {% end %}
     </tbody>
-</table>
+</table-->
 {% end %}

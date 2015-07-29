@@ -18,3 +18,17 @@ body {
     height: 120px;
     background-color: #E7E7E7;
 }
+.divider{
+    margin-top:     6px;
+    margin-bottom:  6px;
+    height: 1px;
+    background-color: #E7E7E7;
+    width: 100%;
+}
+
+.bulletin-header{
+    font-size: 20px;
+}
+
+
+
