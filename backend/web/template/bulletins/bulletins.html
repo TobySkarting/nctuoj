@@ -1,35 +1,29 @@
 {% extends './../frame.html' %}
 {% block content %}
 
-
 {% if map_group_power["admin_manage"] in current_group_power %}
-    <a class="btn btn-success" href="/group/{{current_group}}/bulletins/0/edit/">New</a>
+    <a class="btn btn-success" href="/group/{{current_group}}/bulletins/0/edit/" style="margin-bottom: 12px;">New</a>
 {% end %}
 
-
-<div>
+<div class="row">
     {% for x in data %}
-        <div class="row bulletin-header">
-            <div class="col-xs-3 bulletin-title">
-                {{x['title']}}
-            </div>
-            <div class="col-xs-3 bulletin-setter">
-                {{x['setter_user']}}
-            </div>
-            <div class="col-xs-3 bulletin-created">
-                {{x['created_at']}}
-            </div>
-            {% if map_group_power["admin_manage"] in current_group_power %}
-                <div class="col-xs-3">
-                    <a class="btn btn-warning btn-sm" href="/group/{{current_group}}/bulletins/{{x['id']}}/edit/">Edit</a>
+        <div class="col-xs-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    {{x['title']}}
+                    {% if map_group_power["admin_manage"] in current_group_power %}
+                        <span style="float: right;">
+                            <a class="btn btn-success btn-xs" href="/group/{{current_group}}/bulletins/{{x['id']}}/edit/" style="margin-bottom: 12px;">Edit</a>
+                        </span>
+                    {% end %}
                 </div>
-            {% end %}
-        </div>
-        <div class="divider"></div>
-        <div class="bulletin-content">
-            {% raw x['content'] %}
+                <div class="panel-body">{% raw x['content'] %}</div>
+                <div class="panel-footer">By {{x['setter_user']}} At {{x['created_at']}}</div>
+            </div>
         </div>
     {% end %}
 </div>
+
 {% include './../modules/pagination.html' %}
+
 {% end %}

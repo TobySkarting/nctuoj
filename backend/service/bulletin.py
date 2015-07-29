@@ -40,3 +40,21 @@ class BulletinService(BaseService):
         res['id'] = data['id']
         yield from self.db.flush_tables()
         return (None, res)
+
+    def post_bulletin(self, data={}):
+        required_args = ['id', 'group_id', 'setter_user_id', 'title', 'content']
+        if not self.check_required_args(required_args, data):
+            return ('Etoofewargs', None)
+        if int(data['id']) == 0:
+            data.pop('id')
+            sql, parma = self.gen_insert_sql("bulletins", data)
+            yield from self.db.execute(sql, parma)
+        else:
+            res = yield from self.db.execute("SELECT id FROM bulletins where group_id=%s order by id DESC limit %s, 1", (data['group_id'], int(data['id'])-1,))
+            if len(res) == 0:
+                return ('ENoExist', None)
+            data.pop('id')
+            sql, parma = self.gen_update_sql("bulletins", data)
+            yield from self.db.execute(sql + " WHERE id=" + str(res[0][0]), parma)
+        yield from self.db.flush_tables()
+        return (None, None)

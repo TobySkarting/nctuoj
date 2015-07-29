@@ -46,5 +46,6 @@ class WebBulletinHandler(RequestHandler):
             if not Service.User.check_user_group_power_info(meta['setter_user_id'], meta['group_id'], 1):
                 self.render('403.html')
                 return
+            err, data = yield from Service.Bulletin.post_bulletin(meta)
             self.redirect('/group/'+group_id+'/bulletins/')
         pass

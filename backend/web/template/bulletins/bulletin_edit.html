@@ -1,12 +1,16 @@
 {% extends './../frame.html' %}
 {% block content %}
-{{data}}
 
-Single Bulletin edit
 <form method="post">
-    Title <input type="text" name="title">
-    Content <textarea name="content"></textarea>
-    <input type="submit">
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" class="form-control" name="title" value={{data['title']}}>
+    </div>
+    <div class="form-group">
+        <label for="content">Content</label>
+        <textarea class="form-control" name="content">{% raw data['content'] %}</textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
 </form>
 
 {% end %}
