@@ -46,10 +46,13 @@ class UserService(BaseService):
         yield from self.db.flush_tables()
         return (None, power)
 
-    def get_user_group_power(self, uid, gid):
-        #res = yield from self.db.execute("SELECT `ground_id`, `right` from")
-        res = None
-        return (None, res)
+    def get_user_group_power_info(self, uid, gid):
+        res = yield from self.db.execute("SELECT `right` from map_group_user_right where user_id=%s AND group_id=%s", (uid, gid,))
+        power = set()
+        for x in res:
+            power.add(x[0])
+        yield from self.db.flush_tables()
+        return (None, power)
 
     def modify(self, data={}):
         pass

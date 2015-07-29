@@ -8,6 +8,7 @@ import tornado.template
 import tornado.gen
 import tornado.web
 import tornado.websocket
+import re
 from power import map_power, map_group_power
 class Service:
     pass
@@ -58,17 +59,16 @@ class RequestHandler(tornado.web.RequestHandler):
             return self.request.files[name][0]
         except:
             return None
-
+    
     def render(self, templ, **kwargs):
         kwargs['map_power'] = self.map_power
         kwargs['map_group_power'] = self.map_group_power
         kwargs['account'] = self.account
         kwargs['title'] = kwargs["title"] + " | NCTUOJ" if "title" in kwargs else "NCTUOJ"
         kwargs['group'] = self.group
-        try:
-            kwargs['current_group'] = self.current_group
-        except:
-            kwargs['current_group'] = 1
+        kwargs['current_group'] = self.current_group
+        kwargs['current_group_power'] = self.current_group_power
+
         print("This function in req.py's render: ", kwargs)
         class _encoder(json.JSONEncoder):
             def default(self, obj):
@@ -100,6 +100,11 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 def reqenv(func):
     @tornado.gen.coroutine
     def wrap(self, *args, **kwargs):
+        """ get current group from url """
+        try:
+            self.current_group = re.search(r'/group/(\d+).*', self.request.uri).groups(1)[0]
+        except:
+            self.current_group = 1
         self.map_power = map_power
         self.map_group_power = map_group_power
         self.account = {}
@@ -108,7 +113,7 @@ def reqenv(func):
             id = self.get_secure_cookie('id').decode()
             err, data = yield from Service.User.get_user_basic_info(id)
             if err:
-                id = None
+                id = 0
                 self.clear_cookie('id')
             else:
                 self.account = data
@@ -118,9 +123,7 @@ def reqenv(func):
         self.account["id"] = id
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
-        #err, self.group_power = yield from Service.User.get_user_group_power_info(id)
-        #self.group = group_data
-        #self.account['power'] = power_data
+        err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
         
         ret = func(self, *args, **kwargs)
         if isinstance(ret, types.GeneratorType):

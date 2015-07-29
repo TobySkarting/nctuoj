@@ -11,9 +11,6 @@ CREATE TABLE users (
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 INSERT INTO users (`account`, `passwd`, `email`, `student_id`, `school_id`) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '0');
 
-
-
-
 CREATE TABLE map_user_right (
     `id`            int(11)         NOT NULL    AUTO_INCREMENT,
     `user_id`       int(11)         NOT NULL,

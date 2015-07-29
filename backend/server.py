@@ -91,7 +91,7 @@ if __name__ == '__main__':
         #('/api/user/', ApiUserListHandler),
         ### bulletin
         ('/group/(\d+)/bulletins/',                 WebBulletinsHandler),
-        #('/group/(\d+)/bulletin/(\d+)/(\w*)/',      WebBulletinHandler),
+        ('/group/(\d+)/bulletins/(\d+)/(\w*/?)',    WebBulletinHandler),
         ('/group/(\d+)/problems/',                  WebProblemsHandler),
         ('/group/(\d+)/submissions/',               WebSubmissionsHandler),
         ('/group/(\d+)/contests/',                  WebContestsHandler),

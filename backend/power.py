@@ -5,5 +5,4 @@ map_power = {
 
 map_group_power = {
     "admin_manage": 1,      #add admin for group
-    "problem_manage": 2,    #problem and others
 }

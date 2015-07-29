@@ -6,7 +6,6 @@ from req import Service
 class WebBulletinsHandler(RequestHandler):
     @reqenv
     def get(self, group_id):
-        self.current_group = group_id
         args = ["page"]
         meta = self.get_args(args)
         meta["page"] = meta["page"] if meta["page"] else 1
@@ -20,8 +19,23 @@ class WebBulletinsHandler(RequestHandler):
 
 class WebBulletinHandler(RequestHandler):
     @reqenv
-    def get(self, id=None, action=None):
-        pass
+    def get(self, group_id, id, action):
+        meta = {}
+        meta["group_id"] = group_id
+        meta["id"] = id
+        if action == "": action = "view"
+        if action == "view":
+            err, data = yield from Service.Bulletin.get_bulletin(meta)
+            if not err:
+                self.render('./bulletins/bulletin.html', data=data)
+                return
+        if action == "edit":
+            self.render('./bulletins/bulletin_edit.html')
+            return
+            
+        
+        
+        self.render('./404.html')
 
     @reqenv
     def post(self): 
