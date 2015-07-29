@@ -20,6 +20,7 @@ class WebBulletinsHandler(RequestHandler):
 class WebBulletinHandler(RequestHandler):
     @reqenv
     def get(self, group_id, id, action):
+        print("=========================", group_id, id, action)
         meta = {}
         meta["group_id"] = group_id
         meta["id"] = id
@@ -30,7 +31,8 @@ class WebBulletinHandler(RequestHandler):
                 self.render('./bulletins/bulletin.html', data=data)
                 return
         if action == "edit":
-            self.render('./bulletins/bulletin_edit.html')
+            err, data = yield from Service.Bulletin.get_bulletin(meta)
+            self.render('./bulletins/bulletin_edit.html', data=data)
             return
             
         
