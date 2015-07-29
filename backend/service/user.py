@@ -54,6 +54,11 @@ class UserService(BaseService):
         yield from self.db.flush_tables()
         return (None, power)
 
+    def check_user_group_power_info(self, uid, gid, pid):
+        res = yield from self.db.execute("SELECT count(*) FROM map_group_user_right where user_id=%s AND group_id=%s AND `right`=%s", (uid, gid,pid))
+        yield from self.db.flush_tables()
+        return int(res[0][0])
+
     def modify(self, data={}):
         pass
 

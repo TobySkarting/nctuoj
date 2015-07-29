@@ -124,6 +124,16 @@ def reqenv(func):
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
         err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
+
+        """ if the user not in the group print(403) """
+        in_group = False
+        for x in self.group:
+            if x['id'] == int(self.current_group):
+                in_group = True
+        if not in_group:
+            self.render('403.html')
+            return
+
         
         ret = func(self, *args, **kwargs)
         if isinstance(ret, types.GeneratorType):
