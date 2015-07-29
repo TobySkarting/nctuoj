@@ -31,6 +31,7 @@ from api.user import ApiUserListHandler
 
 
 ### web class
+
 from web.err import Web404Handler
 from web.index import WebIndexHandler
 from web.bulletin import WebBulletinsHandler
@@ -45,6 +46,9 @@ from web.user import WebUserSignHandler
 from web.user import WebUserHandler
 #from web.problem import WebProblemHandler
 #from web.problem import WebProblemListHandler
+
+
+
 
 def sig_handler(sig, frame):
     print('catch stop signal')
@@ -83,27 +87,16 @@ if __name__ == '__main__':
 
     app = tornado.web.Application([
         ('/', WebIndexHandler),
-        ### api handler
-        #('/api/user/signup/', ApiUserSignupHandler),
-        #('/api/user/signin/', ApiUserSigninHandler),
-        #('/api/user/logout/', ApiUserLogoutHandler),
-        #('/api/user/(\d+)/change_password/', ApiUserChangePasswordHandler),
-        #('/api/user/(\d+)/', ApiUserInfoHandler),           # get => info post => modify
-        #('/api/user/', ApiUserListHandler),
-        ### bulletin
         ('/group/(\d+)/bulletins/',                 WebBulletinsHandler),
         ('/group/(\d+)/bulletins/(\d+)/(\w*)/?',    WebBulletinHandler),
         ('/group/(\d+)/problems/',                  WebProblemsHandler),
         ('/group/(\d+)/submissions/',               WebSubmissionsHandler),
         ('/group/(\d+)/contests/',                  WebContestsHandler),
 
-        ###""" problem handler
-        ### user handler
         ('/users/', WebUsersHandler),
         ('/user/', WebUserHandler),
         ('/user/(sign\w*)/?', WebUserSignHandler),
         ('/user/(\d+)/(\w*)/?', WebUserHandler),
-        ### web handler
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/.*', Web404Handler)
         ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape')
