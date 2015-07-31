@@ -1,17 +1,45 @@
 from req import RequestHandler
 from req import reqenv
 from req import Service
+import math
 
 
 class WebBulletinsHandler(RequestHandler):
     @reqenv
-    def get(self, group_id):
+    def get(self):
         args = ["page"]
         meta = self.get_args(args)
-        meta["page"] = meta["page"] if meta["page"] else 1
-        meta["group_id"] = group_id
+        meta['count'] = 10
+        meta["group_id"] = self.current_group
+        ### default page is 1
+        if not meta['page']:
+            meta['page'] = 1
+        ### if get page is not int then redirect to page 1 
+        try:
+            meta["page"] = int(meta["page"])
+        except:
+            self.redirect('/group/'+meta['group_id']+'/bulletins/')
+            return
+        ### modify page in range (1, page_count)
+        err, count = yield from Service.Bulletin.get_bulletin_list_count(meta)
+        page_count = max(math.ceil(count / meta['count']), 1)
+        if int(meta['page']) < 1:
+            self.redirect('/group/'+meta['group_id']+'/bulletins/')
+            return
+        if int(meta['page']) > page_count:
+            self.redirect('/group/'+meta['group_id']+'/bulletins/?page='+str(page_count))
+            return
+        ### get data
         err, data = yield from Service.Bulletin.get_bulletin_list(meta)
-        self.render('./bulletins/bulletins.html', data=data)
+        for x in data:
+            x['content'] = x['content'].replace('\n', '<br>')
+        ### about pagination 
+        page = {}
+        page['total'] = page_count
+        page['current'] = meta['page']
+        page['url'] = '/group/' + meta['group_id'] + '/bulletins/'
+        page['get'] = {}
+        self.Render('./bulletins/bulletins.html', data=data, page=page)
 
     @reqenv
     def post(self):
@@ -19,33 +47,43 @@ class WebBulletinsHandler(RequestHandler):
 
 class WebBulletinHandler(RequestHandler):
     @reqenv
-    def get(self, group_id, id, action):
+    def get(self, id, action):
         meta = {}
-        meta["group_id"] = group_id
+        meta["group_id"] = self.current_group
         meta["id"] = id
         if action == "": action = "view"
         if action == "view":
             err, data = yield from Service.Bulletin.get_bulletin(meta)
-            if err: self.render('./404.html')
-            else: self.render('./bulletins/bulletin.html', data=data)
+            if err: self.Render('./404.html')
+            else: self.Render('./bulletins/bulletin.html', data=data)
         elif action == "edit":
+            ### check power
+            if not Service.User.check_user_group_power_info(self.account['id'], meta['group_id'], 1):
+                self.Render('403.html')
+                return
             err, data = yield from Service.Bulletin.get_bulletin(meta)
-            if err: self.render('./404.html')
-            else: self.render('./bulletins/bulletin_edit.html', data=data)
+            if err: self.Render('./404.html')
+            else: self.Render('./bulletins/bulletin_edit.html', data=data)
+        elif action == "delete":
+            if not Service.User.check_user_group_power_info(self.account['id'], meta['group_id'], 1):
+                self.Render('403.html')
+                return
+            err, data = yield from Service.Bulletin.delete_bulletin(meta)
+            self.redirect('/group/'+meta['group_id']+'/bulletins/')
         else:
-            self.render('./404.html')
+            self.Render('./404.html')
 
     @reqenv
-    def post(self, group_id, id, action): 
-        if action == "edit":
-            args = ["title", "content"]
-            meta = self.get_args(args)
-            meta['group_id'] = group_id
-            meta['setter_user_id'] = self.account['id']
-            meta['id'] = id
-            if not Service.User.check_user_group_power_info(meta['setter_user_id'], meta['group_id'], 1):
-                self.render('403.html')
-                return
-            err, data = yield from Service.Bulletin.post_bulletin(meta)
-            self.redirect('/group/'+group_id+'/bulletins/')
-        pass
+    def post(self, id, action): 
+        args = ["title", "content"]
+        meta = self.get_args(args)
+        meta['group_id'] = self.current_group
+        meta['setter_user_id'] = self.account['id']
+        meta['id'] = id
+        if not Service.User.check_user_group_power_info(meta['setter_user_id'], meta['group_id'], 1):
+            self.Render('403.html')
+            return
+        err, data = yield from Service.Bulletin.post_bulletin(meta)
+        self.redirect('/group/'+meta['group_id']+'/bulletins/')
+        return
+

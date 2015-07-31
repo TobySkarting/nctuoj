@@ -60,7 +60,7 @@ class RequestHandler(tornado.web.RequestHandler):
         except:
             return None
     
-    def render(self, templ, **kwargs):
+    def Render(self, templ, **kwargs):
         kwargs['map_power'] = self.map_power
         kwargs['map_group_power'] = self.map_group_power
         kwargs['account'] = self.account
@@ -68,6 +68,7 @@ class RequestHandler(tornado.web.RequestHandler):
         kwargs['group'] = self.group
         kwargs['current_group'] = self.current_group
         kwargs['current_group_power'] = self.current_group_power
+        kwargs['current_group_active'] = self.current_group_active
 
         print("This function in req.py's render: ", kwargs)
         class _encoder(json.JSONEncoder):
@@ -87,6 +88,8 @@ class RequestHandler(tornado.web.RequestHandler):
             self.finish(json.dumps(kwargs, cls=_encoder))
 
         else:
+            self.render('./web/template/'+templ, **kwargs)
+            return
             tpldr = tornado.template.Loader('./web/template')
             data = tpldr.load(templ).generate(**kwargs)
             self.finish(data)
@@ -102,9 +105,14 @@ def reqenv(func):
     def wrap(self, *args, **kwargs):
         """ get current group from url """
         try:
-            self.current_group = re.search(r'/group/(\d+).*', self.request.uri).groups(1)[0]
+            self.current_group = re.search(r'.*/group/(\d+).*', self.request.uri).groups(1)[0]
         except:
             self.current_group = 1
+
+        try:
+            self.current_group_active = re.search(r'/group/\d+/(\w+)/.*', self.request.uri).groups(1)[0]
+        except:
+            self.current_group_active = "bulletins"
         self.map_power = map_power
         self.map_group_power = map_group_power
         self.account = {}

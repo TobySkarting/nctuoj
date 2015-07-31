@@ -1,7 +1,7 @@
 {% extends './../frame.html' %}
 {% block content %}
 
-<form method="post">
+<form method="post" action="/group/{{current_group}}/bulletins/{{data['id']}}/">
     <div class="form-group">
         <label for="title">Title</label>
         <input type="text" class="form-control" name="title" value={{data['title']}}>

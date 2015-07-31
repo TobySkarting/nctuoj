@@ -100,16 +100,23 @@ CREATE TABLE problems (
     `output`            text            ,
     `sample_input`      text            ,
     `sample_output`     text            ,
+    `hint`              text            ,
+    `source`            text            ,
     `group_id`          int(11)         NOT NULL,
     `setter_user_id`    int(11)         NOT NULL,
-    `visible`           int(11)         NOT NULL,
-    `interactive`       bool            NOT NULL,
+    `visible`           int(11)         NOT NULL    DEFAULT 0,
+    `interactive`       bool            NOT NULL    DEFAULT 0,
     `checker_id`        int(11)         ,
     `created_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY(`id`)
+    PRIMARY KEY(`id`),
+    INDEX(`visible`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 # visible => 0 invisible for all, 1 visible in group, 2 visible in all
+
+CREATE TABLE tags (
+    `id`                int(11)         NOT 
+)
 
 CREATE TABLE checkers (
     `id`                int(11)         NOT NULL    AUTO_INCREMENT,

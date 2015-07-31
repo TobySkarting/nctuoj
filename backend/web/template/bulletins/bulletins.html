@@ -2,18 +2,19 @@
 {% block content %}
 
 {% if map_group_power["admin_manage"] in current_group_power %}
-    <a class="btn btn-success" href="/group/{{current_group}}/bulletins/0/edit/" style="margin-bottom: 12px;">New</a>
+    <a class="btn btn-default" href="/group/{{current_group}}/bulletins/0/edit/" style="margin-bottom: 12px;">New</a>
 {% end %}
 
 <div class="row">
     {% for x in data %}
         <div class="col-xs-12">
-            <div class="panel panel-primary">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     {{x['title']}}
                     {% if map_group_power["admin_manage"] in current_group_power %}
                         <span style="float: right;">
-                            <a class="btn btn-success btn-xs" href="/group/{{current_group}}/bulletins/{{x['id']}}/edit/" style="margin-bottom: 12px;">Edit</a>
+                            <a class="btn btn-default btn-xs" href="/group/{{current_group}}/bulletins/{{x['id']}}/edit/">Edit</a>
+                            <a class="btn btn-default btn-xs" onclick="delete_bulletin(this)" data-href="/group/{{current_group}}/bulletins/{{x['id']}}/delete/">Delete</a> 
                         </span>
                     {% end %}
                 </div>
@@ -23,7 +24,16 @@
         </div>
     {% end %}
 </div>
+<script>
+function delete_bulletin(ele){
+    bootbox.confirm("Are you sure?", function(result) {
+        if(result){
+            location.href = $(ele).attr("data-href");
+        }
+    }); 
+}
+</script>
 
-{% include './../modules/pagination.html' %}
+{% module Pagination(page) %}
 
 {% end %}

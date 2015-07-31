@@ -1,5 +1,10 @@
 {% extends './../frame.html' %}
 {% block content %}
+
+{% if map_group_power["admin_manage"] in current_group_power %}
+    <a class="btn btn-default" href="/group/{{current_group}}/problems/0/edit/" style="margin-bottom: 12px;">New</a>
+{% end %}
+
 <table class="table table-hover">
     <thead>
         <tr>
@@ -22,4 +27,5 @@
         {% end %}
     </tbody>
 </table>
+{% module Pagination(page) %}
 {% end %}

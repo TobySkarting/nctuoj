@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAGA,cAAc;EACZ,YAAY,ECJQ,OAAc;EDKlC,6BAAc;IACZ,gBAAgB,ECNE,OAAc",
+"sources": ["theme.sass","purple.sass"],
+"names": [],
+"file": "purple.css"
+}

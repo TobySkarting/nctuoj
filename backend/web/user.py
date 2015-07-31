@@ -7,7 +7,7 @@ class WebUsersHandler(RequestHandler):
     @reqenv
     def get(self):
         err, meta = yield from Service.User.get_users_info()
-        self.render('./users/users.html', data=meta)
+        self.Render('./users/users.html', data=meta)
 
     @reqenv
     def post(self):
@@ -20,7 +20,7 @@ class WebUserHandler(RequestHandler):
         if id == None:
             id = self.account["id"]
         err, meta = yield from Service.User.get_user_advanced_info(id)
-        self.render('./users/user.html', data=meta)
+        self.Render('./users/user.html', data=meta)
 
     """ update user data """
     @reqenv
@@ -32,14 +32,14 @@ class WebUserSignHandler(RequestHandler):
     def get(self, action):
         print(action)
         if action == "signin":
-            self.render('./users/user_signin.html')
+            self.Render('./users/user_signin.html')
         elif action == "signout":
             Service.User.SignOut(self)
             self.redirect('/')
         elif action == "signup":
-            self.render('./users/user_signup.html')
+            self.Render('./users/user_signup.html')
         else:
-            self.render('./404.html')
+            self.Render('./404.html')
 
     @reqenv
     def post(self, action): 
@@ -48,7 +48,7 @@ class WebUserSignHandler(RequestHandler):
             meta = self.get_args(args)
             err, id = yield from Service.User.SignIn(meta, self)
             if err:
-                self.render('./users/user_signin.html')
+                self.Render('./users/user_signin.html')
             else:
                 self.redirect('/')
         elif action == "signout":
@@ -60,10 +60,10 @@ class WebUserSignHandler(RequestHandler):
             passwd = meta['passwd']
             err, id = yield from Service.User.SignUp(meta)
             if err:
-                self.render('./users/user_signup.html')
+                self.Render('./users/user_signup.html')
             else:
                 meta['passwd'] = passwd
                 err, id = yield from Service.User.SignIn(meta, self)
                 self.redirect('/')
         else:
-            self.render('./404.html')
+            self.Render('./404.html')

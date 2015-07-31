@@ -1,1 +1,17 @@
-XDDD
+<nav>
+    <ul class="pagination">
+        <li {{ 'class=disabled' if page['urls']['prev'] == page['urls'][int(page['current'])] else '' }} >
+            <a href="{{page['urls']['prev']}}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% for x in range(page['range'][0], page['range'][1]) %}
+            <li {{'class=disabled' if page['urls'][x] == page['urls'][int(page['current'])] else '' }}><a href={{page['urls'][x]}}>{{x}}</a></li>
+        {% end %}
+        <li {{ 'class=disabled' if page['urls']['next'] == page['urls'][int(page['current'])] else ''}}>
+            <a href="{{page['urls']['next']}}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>

@@ -6,7 +6,7 @@ from req import Service
 class WebIndexHandler(RequestHandler):
     @reqenv
     def get(self):
-        self.render('index.html')
+        self.Render('index.html')
         return
 
     @reqenv

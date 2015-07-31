@@ -28,9 +28,12 @@ from api.user import ApiUserChangePasswordHandler
 from api.user import ApiUserLogoutHandler
 from api.user import ApiUserInfoHandler
 from api.user import ApiUserListHandler
+from api.bulletin import ApiBulletinsHandler
+from api.bulletin import ApiBulletinHandler
 
 
 ### web class
+import web.modules
 
 from web.err import Web404Handler
 from web.index import WebIndexHandler
@@ -84,12 +87,16 @@ if __name__ == '__main__':
             passwd=config.DBPASSWORD,
             host=config.DBHOST)
     rs = myredis.MyRedis(db=1)
-
+    ui_modules = {
+            "Pagination": web.modules.Pagination,
+            }
     app = tornado.web.Application([
         ('/', WebIndexHandler),
-        ('/group/(\d+)/bulletins/',                 WebBulletinsHandler),
-        ('/group/(\d+)/bulletins/(\d+)/(\w*)/?',    WebBulletinHandler),
-        ('/group/(\d+)/problems/',                  WebProblemsHandler),
+        ('/api/group/\d+/bulletins/',               ApiBulletinsHandler),
+        ('/api/group/\d+/bulletin/(\d+)',           ApiBulletinHandler),
+        ('/group/\d+/bulletins/',                   WebBulletinsHandler),
+        ('/group/\d+/bulletins/(\d+)/(\w*)/?',      WebBulletinHandler),
+        ('/group/\d+/problems/',                    WebProblemsHandler),
         ('/group/(\d+)/submissions/',               WebSubmissionsHandler),
         ('/group/(\d+)/contests/',                  WebContestsHandler),
 
@@ -99,7 +106,7 @@ if __name__ == '__main__':
         ('/user/(\d+)/(\w*)/?', WebUserHandler),
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/.*', Web404Handler)
-        ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape')
+        ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape', ui_modules = ui_modules)
     global srv
     srv = tornado.httpserver.HTTPServer(app)
     srv.listen(config.PORT)

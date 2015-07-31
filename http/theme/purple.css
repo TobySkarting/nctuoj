@@ -1,3 +1,6 @@
-.panel-primary > .panel-heading{
-    background-color: #000;
-}
+.panel-primary {
+  border-color: #3c2dbf; }
+  .panel-primary .panel-heading {
+    background-color: #3c2dbf; }
+
+/*# sourceMappingURL=purple.css.map */

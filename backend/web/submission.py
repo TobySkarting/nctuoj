@@ -11,7 +11,7 @@ class WebSubmissionsHandler(RequestHandler):
         meta = self.get_args(args)
         meta["page"] = meta["page"] if meta["page"] else 1
         meta["group_id"] = group_id
-        self.render('./submissions/submissions.html')
+        self.Render('./submissions/submissions.html')
         pass
 
     @reqenv

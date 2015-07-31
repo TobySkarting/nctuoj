@@ -8,11 +8,19 @@ class ProblemService(BaseService):
         ProblemService.inst = self
 
     def get_problem_list(self, data={}):
-        if not "page" in data: data["page"] = 1
-        if not "count" in data: data["count"] = 100
+        required_args = ['group_id', 'page', 'count']
+        if not self.check_required_args(required_args, data) :
+            return ('Etoofewargs', None)
         sql = "SELECT `id`, `title`, `group_id`, `created_at` FROM `problems` LIMIT %s, %s"
         col = ("id", "title", "setter", "created_at",)
         res = yield from self.db.execute(sql, ((int(data["page"])-1)*data["count"], data["count"], ), col=col)
         yield from self.db.flush_tables()
         return (None, res)
         
+    def get_problem_list_count(self, data={}):
+        required_args = ['group_id']
+        if not self.check_required_args(required_args, data):
+            return ('Etoofewargs', None)
+        res = yield from self.db.execute("SELECT COUNT(*) FROM problems WHERE group_id=%s", (data['group_id'],));
+        yield from self.db.flush_tables()
+        return (None, res[0][0])

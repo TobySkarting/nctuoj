@@ -62,7 +62,7 @@
             <div class="col-md-2" style="padding: 0px">
                 <ul class="nav nav-pills nav-stacked">
                     {% for x in group %}
-                    <li role="presentation" {{ 'class=active' if str(x['id'])== str(current_group) else '' }} ><a href="/group/{{x['id']}}/bulletins/">{{x['name']}}</a></li>
+                    <li role="presentation" {{ 'class=active' if str(x['id'])== str(current_group) else '' }} ><a href="/group/{{x['id']}}/{{current_group_active}}/">{{x['name']}}</a></li>
                     {% end %}
                 </ul>
             </div>
@@ -76,6 +76,7 @@
     <!-- font-awesome -->
     <script src="/asset/jQuery/jquery.min.js"></script>
     <script src="/asset/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/asset/bootbox/bootbox.min.js"></script>
     </body>
     <footer class="footer">
     </footer>
