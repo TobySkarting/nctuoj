@@ -39,10 +39,6 @@ class WebProblemsHandler(RequestHandler):
         page['get'] = {}
         self.Render('./problems/problems.html', data=data, page=page)
 
-    @reqenv
-    def post(self):
-        return
-
 class WebProblemHandler(RequestHandler):
     @reqenv
     def get(self, id=None, action=None):
@@ -52,12 +48,6 @@ class WebProblemHandler(RequestHandler):
             self.Render("./problems/problem.html")
         elif action == "edit":
             self.Render('./problems/problem_edit.html')
-        elif action == "delete":
-            pass
         else:
             self.Render('404.html')
 
-    """ update """
-    @reqenv
-    def post(self): 
-        pass

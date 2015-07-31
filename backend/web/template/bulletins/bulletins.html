@@ -14,7 +14,7 @@
                     {% if map_group_power["admin_manage"] in current_group_power %}
                         <span style="float: right;">
                             <a class="btn btn-default btn-xs" href="/group/{{current_group}}/bulletins/{{x['id']}}/edit/">Edit</a>
-                            <a class="btn btn-default btn-xs" onclick="delete_bulletin(this)" data-href="/group/{{current_group}}/bulletins/{{x['id']}}/delete/">Delete</a> 
+                            <a class="btn btn-default btn-xs" onclick="delete_bulletin(this)" data-href="/api/group/{{current_group}}/bulletins/{{x['id']}}/" data-method="delete">Delete</a> 
                         </span>
                     {% end %}
                 </div>
@@ -28,7 +28,18 @@
 function delete_bulletin(ele){
     bootbox.confirm("Are you sure?", function(result) {
         if(result){
-            location.href = $(ele).attr("data-href");
+            $.ajax({
+                url: $(ele).attr("data-href"),
+                type: $(ele).attr("data-method"),
+                dataType: "json",
+                success: function(msg){
+                    if(msg['status'] == 'success'){
+                        location.href = location.href;
+                    } else {
+                        alert(msg['msg']);
+                    }
+                }
+            });
         }
     }); 
 }

@@ -9,8 +9,8 @@ class BulletinService(BaseService):
 
     def get_bulletin_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
-        if not self.check_required_args(required_args, data) :
-            return ('Etoofewargs', None)
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
         sql = "SELECT bulletins.*, users.account as setter_user FROM bulletins, users WHERE bulletins.group_id = %s and bulletins.setter_user_id = users.id order by bulletins.id DESC limit %s, %s"
         col = ["id", "group_id", "setter_user_id", "title", "content", "created_at", "updated_at", "setter_user"]
         res = yield from self.db.execute(sql, (data["group_id"], (int(data["page"])-1)*data["count"], data["count"], ), col=col)
@@ -22,8 +22,8 @@ class BulletinService(BaseService):
 
     def get_bulletin_list_count(self, data={}):
         required_args = ['group_id']
-        if not self.check_required_args(required_args, data):
-            return ('Etoofewargs', None)
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
         res = yield from self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s", (data['group_id'],));
         yield from self.db.flush_tables()
         return (None, res[0][0])
@@ -31,14 +31,15 @@ class BulletinService(BaseService):
 
     def get_bulletin(self, data={}):
         required_args = ['group_id', 'id']
-        if not self.check_required_args(required_args, data):
-            return ('Etoofewargs', None)
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
         col = ["id", "group_id", "setter_user_id", "title", "content", "created_at", "updated_at", "setter_user"]
         """ new bulletin """
         if int(data['id']) == 0:
             res = {}
             for x in col:
                 res[x] = ""
+            res['id'] = 0
             return (None, res)
 
         sql = "SELECT bulletins.*, users.account as setter_user FROM bulletins, users WHERE bulletins.group_id = %s and bulletins.setter_user_id = users.id order by bulletins.id ASC limit %s, 1"
@@ -52,8 +53,8 @@ class BulletinService(BaseService):
 
     def post_bulletin(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id', 'title', 'content']
-        if not self.check_required_args(required_args, data):
-            return ('Etoofewargs', None)
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
         if int(data['id']) == 0:
             data.pop('id')
             sql, parma = self.gen_insert_sql("bulletins", data)
@@ -70,7 +71,7 @@ class BulletinService(BaseService):
 
     def delete_bulletin(self, data={}):
         required_args = ['id', 'group_id']
-        if not self.check_required_args(required_args, data):
-            return ('Etoofewargs', None)
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
         yield from self.db.execute("DELETE FROM bulletins WHERE id IN (SELECT * FROM (SELECT id FROM bulletins WHERE group_id=%s ORDER BY id ASC limit %s, 1) as t)", (data['group_id'], int(data['id'])-1))
         return (None, None)

@@ -41,10 +41,6 @@ class WebBulletinsHandler(RequestHandler):
         page['get'] = {}
         self.Render('./bulletins/bulletins.html', data=data, page=page)
 
-    @reqenv
-    def post(self):
-        pass
-
 class WebBulletinHandler(RequestHandler):
     @reqenv
     def get(self, id, action):
@@ -64,26 +60,6 @@ class WebBulletinHandler(RequestHandler):
             err, data = yield from Service.Bulletin.get_bulletin(meta)
             if err: self.Render('./404.html')
             else: self.Render('./bulletins/bulletin_edit.html', data=data)
-        elif action == "delete":
-            if not Service.User.check_user_group_power_info(self.account['id'], meta['group_id'], 1):
-                self.Render('403.html')
-                return
-            err, data = yield from Service.Bulletin.delete_bulletin(meta)
-            self.redirect('/group/'+meta['group_id']+'/bulletins/')
         else:
             self.Render('./404.html')
-
-    @reqenv
-    def post(self, id, action): 
-        args = ["title", "content"]
-        meta = self.get_args(args)
-        meta['group_id'] = self.current_group
-        meta['setter_user_id'] = self.account['id']
-        meta['id'] = id
-        if not Service.User.check_user_group_power_info(meta['setter_user_id'], meta['group_id'], 1):
-            self.Render('403.html')
-            return
-        err, data = yield from Service.Bulletin.post_bulletin(meta)
-        self.redirect('/group/'+meta['group_id']+'/bulletins/')
-        return
 

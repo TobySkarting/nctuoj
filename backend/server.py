@@ -93,7 +93,8 @@ if __name__ == '__main__':
     app = tornado.web.Application([
         ('/', WebIndexHandler),
         ('/api/group/\d+/bulletins/',               ApiBulletinsHandler),
-        ('/api/group/\d+/bulletin/(\d+)',           ApiBulletinHandler),
+        ('/api/group/\d+/bulletins/(\d+)/',          ApiBulletinHandler),
+
         ('/group/\d+/bulletins/',                   WebBulletinsHandler),
         ('/group/\d+/bulletins/(\d+)/(\w*)/?',      WebBulletinHandler),
         ('/group/\d+/problems/',                    WebProblemsHandler),

@@ -69,12 +69,10 @@ class UserService(BaseService):
         '''
         ### check required arguemts
         required_args = ['account', 'passwd']
-        if not self.check_required_args(required_args, data) :
-            return ('Etoofewargs', None)
-        ### check data validation
-        err = self.check_data_not_empty(data)
+        err = self.check_required_args(required_args, data)
         if err:
             return (err, None)
+
         ### get hashed passwd
         col = ['passwd', 'id']
         sql = self.gen_select_sql('users', col)
@@ -102,8 +100,9 @@ class UserService(BaseService):
         '''
         ### check required arguemts
         required_args = ['account', 'student_id', 'passwd', 'repasswd', 'email', 'school_id']
-        if not self.check_required_args(required_args, data) :
-            return ('Etoofewargs', None)
+        err = self.check_required_args(required_args, data)
+        if err:
+            return (err, None)
         ### check data valadation
         err = self.check_data_not_empty(data)
         if err:

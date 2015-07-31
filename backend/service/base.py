@@ -6,15 +6,9 @@ class BaseService:
     def check_required_args(self, args, data):
         for a in args:
             if a not in data:
-                return False
+                return 'Error: %s should exist' % a
             if not data[a]:
-                return False
-        return True
-
-    def check_data_not_empty(self, data):
-        for d in data:
-            if data[d] == '':
-                return 'E%sempty'%d
+                return 'Error: %s should not be empty.' % a
         return None
 
     def gen_insert_sql(self, tablename, data):
