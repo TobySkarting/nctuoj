@@ -63,11 +63,33 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-2" style="padding: 0px">
-                <ul class="nav nav-pills nav-stacked">
-                    {% for x in group %}
-                    <li role="presentation" {{ 'class=active' if str(x['id'])== str(current_group) else '' }} ><a href="/group/{{x['id']}}/{{current_group_active}}/">{{x['name']}}</a></li>
-                    {% end %}
-                </ul>
+                <div class="row">
+                    <div class="computer only col-md-12">
+                        <ul class="nav nav-pills nav-stacked">
+                            {% for x in group %}
+                                <li role="presentation" {{ 'class=active' if str(x['id'])== str(current_group) else '' }} ><a href="/group/{{x['id']}}/{{current_group_active}}/">{{x['name']}}</a></li>
+                            {% end %}
+                        </ul>
+                    </div>
+                    <div class="tablet mobile only col-xs-12">
+                        <div class="dropdown">
+                            {% for x in group %}
+                                {% if str(x['id']) == str(current_group) %}
+                                    {% set now_group = x %}
+                                {% end %}
+                            {% end %}
+                            <button class="btn btn-default btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                {{ now_group['name'] }}
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" style="width: 100%">
+                                {% for x in group %}
+                                    <li><a href="/group/{{x['id']}}/{{current_group_active}}/">{{x['name']}}</a></li>
+                                {% end %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-md-10" style="padding: 15px;">
                 {% block content %}
@@ -76,7 +98,6 @@
         </div>
     </div>
 
-    <!-- font-awesome -->
     </body>
     <footer class="footer">
     </footer>

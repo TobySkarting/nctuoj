@@ -11,6 +11,7 @@ class WebProblemsHandler(RequestHandler):
         meta = self.get_args(args)
         meta['count'] = 100
         meta["group_id"] = self.current_group
+        meta["is_admin"] = Service.User.check_user_group_power_info(self.account['id'], meta['group_id'], 1)
         ### default page is 1
         if not meta['page']:
             meta['page'] = 1
