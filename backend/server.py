@@ -6,8 +6,7 @@ import tornado.web
 ### self define
 from req import RequestHandler
 from req import reqenv
-from req import Service
-
+from req import Service 
 ### my app
 import config
 import mysql
@@ -42,7 +41,9 @@ from web.bulletin import WebBulletinHandler
 from web.problem import WebProblemsHandler
 from web.problem import WebProblemHandler
 from web.submission import WebSubmissionsHandler
+from web.submission import WebSubmissionHandler
 from web.contest import WebContestsHandler
+from web.contest import WebContestHandler
 
 from web.user import WebUsersHandler
 from web.user import WebUserSignHandler
@@ -98,8 +99,11 @@ if __name__ == '__main__':
         ('/group/\d+/bulletins/',                   WebBulletinsHandler),
         ('/group/\d+/bulletins/(\d+)/(\w*)/?',      WebBulletinHandler),
         ('/group/\d+/problems/',                    WebProblemsHandler),
-        ('/group/(\d+)/submissions/',               WebSubmissionsHandler),
-        ('/group/(\d+)/contests/',                  WebContestsHandler),
+        ('/group/\d+/problems/(\d+)/(\w*)/?',       WebProblemHandler),
+        ('/group/\d+/submissions/',                 WebSubmissionsHandler),
+        ('/group/\d+/submissions/(\d+)/(\w*)/?',    WebSubmissionHandler),
+        ('/group/\d+/contests/',                    WebContestsHandler),
+        ('/group/\d+/contests/(\d+)/(\w*)/?',       WebContestHandler),
 
         ('/users/', WebUsersHandler),
         ('/user/', WebUserHandler),

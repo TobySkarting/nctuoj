@@ -7,7 +7,7 @@ class ProblemService(BaseService):
         ProblemService.inst = self
 
     ### 
-    ###
+    ### 
     ###
     def get_problem_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
@@ -21,7 +21,7 @@ class ProblemService(BaseService):
             if data['is_admin']:
                 sql += "WHERE (problems.group_id=%s OR problems.visible = 2)"
             else:
-                sql += "WHERE ((problems.group_id=%s AND problems.visible <> 0) OR problem.visible = 2)"
+                sql += "WHERE ((problems.group_id=%s AND problems.visible <> 0) OR problems.visible = 2)"
         else:
             if data['is_admin']:
                 sql += "WHERE problems.group_id=%s"
@@ -43,7 +43,39 @@ class ProblemService(BaseService):
         required_args = ['group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        if int(data['group_id']) == 1: res = yield from self.db.execute("SELECT COUNT(*) FROM problems WHERE group_id=%s OR visible=2", (data['group_id'],))
-        else: res = yield from self.db.execute("SELECT COUNT(*) FROM problems WHERE group_id=%s", (data['group_id'],))
+        sql = "SELECT COUNT(*) FROM problems "
+        if int(data['group_id']) == 1:
+            if data['is_admin']:
+                sql += "WHERE (problems.group_id=%s OR problems.visible = 2)"
+            else:
+                sql += "WHERE (problems.group_id=%s AND problems.visible <> 0) OR problems.visible = 2)"
+        else:
+            if data['is_admin']:
+                sql += "WHERE problems.group_id=%s"
+            else:
+                sql += "WHERE problems.group_id=%s AND problems.visible <> 0"
+        res = yield from self.db.execute(sql, (data['group_id'],))
         yield from self.db.flush_tables()
         return (None, res[0][0])
+
+    def get_problem(self, data={}):
+        required_args = ['group_id', 'id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        col = ("id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at")
+        if int(data['id']) == 0:
+            res = {}
+            for x in col:
+                res[x] = ""
+            res['id'] = 0
+            return (None, res)
+        sql = "SELECT problems.*, b.account as setter_user FROM problems inner join (SELECT id, account FROM users) as b on problems.setter_user_id=b.id WHERE problems.id=%s"
+        res = yield from self.db.execute(sql, (data["id"]), col=col)
+        if len(res) == 0:
+            return ('Error problem id', None)
+        res = res[0]
+        if int(res['group_id']) != int(data['group_id']):
+            return ('Error mapping problem id and group id', None)
+        yield from self.db.flush_tables()
+        return (None, res)
+

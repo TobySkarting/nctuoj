@@ -20,11 +20,11 @@
     <tbody>
         {% for x in data %}
             <tr>
-                <td><a href='/group/{{current_group}}/problems/{{x['id']}}/'>{{x['id']}}</a></td>
-                <td><a href='/group/{{current_group}}/problems/{{x['id']}}/'>{{x['real_id']}}</a></td>
+                <td><a href='/group/{{current_group}}/problems/{{x['real_id']}}/'>{{x['id']}}</a></td>
+                <td><a href='/group/{{current_group}}/problems/{{x['real_id']}}/'>{{x['real_id']}}</a></td>
                 <td><a href='/group/{{x['group_id']}}/problems/'>{{x['group_id']}}</a></td>
-                <td><a href='/group/{{current_group}}/problems/{{x['id']}}/'>{{x['title']}}</a></td>
-                <td>{{x['setter_user']}}</td>
+                <td><a href='/group/{{current_group}}/problems/{{x['real_id']}}/'>{{x['title']}}</a></td>
+                <td><a href='/user/{{x['setter_user_id']}}/'>{{x['setter_user']}}</a></td>
                 <td>{{x['source']}}</td>
                 <td>{{x['created_at']}}</td>
             </tr>

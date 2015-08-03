@@ -3,5 +3,66 @@
 
 
 Single Problem
-
+{{data}}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="text-center">{{data['id']}}.{{data['title']}}</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Description</div>
+            <div class="panel-body">{% raw data['description'] %}</div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Input</div>
+            <div class="panel-body">{% raw data['input'] %}</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Output</div>
+            <div class="panel-body">{% raw data['output'] %}</div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Sample Input</div>
+            <div class="panel-body">{% raw data['sample_input'] %}</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Sample Output</div>
+            <div class="panel-body">{% raw data['sample_output'] %}</div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Hint</div>
+            <div class="panel-body">{% raw data['hint'] %}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">Tag</div>
+            <div class="panel-body"></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">Source</div>
+            <div class="panel-body">{% raw data['source'] %}</div>
+        </div>
+    </div>
+</div>
 {% end %}

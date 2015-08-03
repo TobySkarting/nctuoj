@@ -11,7 +11,7 @@ class WebProblemsHandler(RequestHandler):
         meta = self.get_args(args)
         meta['count'] = 100
         meta["group_id"] = self.current_group
-        meta["is_admin"] = Service.User.check_user_group_power_info(self.account['id'], meta['group_id'], 1)
+        meta["is_admin"] = 1 if 1 in self.current_group_power else 0
         ### default page is 1
         if not meta['page']:
             meta['page'] = 1
@@ -43,10 +43,14 @@ class WebProblemsHandler(RequestHandler):
 class WebProblemHandler(RequestHandler):
     @reqenv
     def get(self, id=None, action=None):
+        meta = {}
+        meta['id'] = id
+        meta['group_id'] = self.current_group
         if not action: action = "view"
         print(id, action)
         if action == "view":
-            self.Render("./problems/problem.html")
+            err, data = yield from Service.Problem.get_problem(meta)
+            self.Render("./problems/problem.html", data=data)
         elif action == "edit":
             self.Render('./problems/problem_edit.html')
         else:

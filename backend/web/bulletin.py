@@ -54,12 +54,16 @@ class WebBulletinHandler(RequestHandler):
             else: self.Render('./bulletins/bulletin.html', data=data)
         elif action == "edit":
             ### check power
-            if not Service.User.check_user_group_power_info(self.account['id'], meta['group_id'], 1):
+            if not 1 in self.current_group_power:
                 self.Render('403.html')
                 return
             err, data = yield from Service.Bulletin.get_bulletin(meta)
-            if err: self.Render('./404.html')
-            else: self.Render('./bulletins/bulletin_edit.html', data=data)
+            if err == 'Error bulletin id':
+                self.Render('404.html')
+            elif err == 'Error mapping bulletin id and group id':
+                self.Render('403.html')
+            else:
+                self.Render('./bulletins/bulletin_edit.html', data=data)
         else:
             self.Render('./404.html')
 

@@ -28,7 +28,7 @@ class ApiBulletinHandler(RequestHandler):
         meta["group_id"] = self.current_group
         meta["setter_user_id"] = self.account['id']
         meta['id'] = id
-        if not Service.User.check_user_group_power_info(meta['setter_user_id'], meta['group_id'], 1):
+        if not 1 in self.current_group_power:
             self.error("Permission Denied")
             return
         err, data = yield from Service.Bulletin.post_bulletin(meta)
@@ -41,7 +41,7 @@ class ApiBulletinHandler(RequestHandler):
         meta["group_id"] = self.current_group
         meta["setter_user_id"] = self.account['id']
         meta['id'] = id
-        if not Service.User.check_user_group_power_info(meta['setter_user_id'], meta['group_id'], 1):
+        if not 1 in self.current_group_power:
             self.error("Permission Denied")
             return
         err, data = yield from Service.Bulletin.delete_bulletin(meta)
