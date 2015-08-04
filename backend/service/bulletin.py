@@ -49,6 +49,18 @@ class BulletinService(BaseService):
             return ('Error mapping bulletin id and group id', None)
         yield from self.db.flush_tables()
         return (None, res)
+    
+    def get_latest_bulletin(self, data={}):
+        required_args = ['group_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        col = ["id", "group_id", "setter_user_id", "title", "content", "created_at", "updated_at", "setter_user"]
+        sql = "SELECT bulletins.*, b.account as setter_user FROM bulletins inner join (SELECT id, account FROM users) as b on bulletins.setter_user_id=b.id WHERE bulletins.group_id=%s ORDER BY bulletins.id DESC LIMIT 1"
+        res = yield from self.db.execute(sql, (data["group_id"]), col=col)
+        if len(res) == 0:
+            return ('Empty', None)
+        return (None, res[0])
+        
 
     def post_bulletin(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id', 'title', 'content']

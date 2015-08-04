@@ -49,7 +49,8 @@ class WebProblemHandler(RequestHandler):
         if not action: action = "view"
         print(id, action)
         if action == "view":
-            err, data = yield from Service.Problem.get_problem(meta)
+            data = {}
+            err, data['problem'] = yield from Service.Problem.get_problem(meta)
             self.Render("./problems/problem.html", data=data)
         elif action == "edit":
             self.Render('./problems/problem_edit.html')

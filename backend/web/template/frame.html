@@ -28,11 +28,15 @@
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a href="/group/{{current_group}}/bulletins/">Bulletins</a></li>
-                    <li><a href="/group/{{current_group}}/problems/">Problems</a></li>
-                    <li><a href="/group/{{current_group}}/submissions/">Submissions</a></li>
-                    <li><a href="/group/{{current_group}}/contests/">Contests</a></li>
-                    <li><a href="/group/{{current_group}}/rank/">Rank</a></li>
+                    {% if current_group == 0 %}
+                        {% set link_group = 1 %}
+                    {% else %}
+                        {% set link_group = current_group %}
+                    {% end %}
+                    <li><a href="/group/{{link_group}}/bulletins/">Bulletins</a></li>
+                    <li><a href="/group/{{link_group}}/problems/">Problems</a></li>
+                    <li><a href="/group/{{link_group}}/submissions/">Submissions</a></li>
+                    <li><a href="/group/{{link_group}}/contests/">Contests</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <!-- admin -->
@@ -73,13 +77,16 @@
                     </div>
                     <div class="tablet mobile only col-xs-12">
                         <div class="dropdown">
+                            {% set now_group = None %}
                             {% for x in group %}
                                 {% if str(x['id']) == str(current_group) %}
                                     {% set now_group = x %}
                                 {% end %}
                             {% end %}
                             <button class="btn btn-default btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                {{ now_group['name'] }}
+                                {% if now_group %}
+                                    {{ now_group['name'] }}
+                                {% end %}
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" style="width: 100%">

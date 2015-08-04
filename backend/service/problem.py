@@ -6,17 +6,17 @@ class ProblemService(BaseService):
         super().__init__(db, rs)
         ProblemService.inst = self
 
-    ### 
-    ### 
-    ###
     def get_problem_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         sql = """
             SELECT
-            problems.`id`, problems.`title`, problems.`source`, problems.`group_id`, problems.`created_at`, users.`id`, users.`account` 
-            FROM `problems`, `users`"""
+            problems.`id`, problems.`title`, problems.`source`, problems.`group_id`, problems.`created_at`, u.`id`, u.`account`, g.`name` 
+            FROM `problems` 
+            INNER JOIN (SELECT users.id, users.account FROM users) as u on u.id = problems.setter_user_id 
+            INNER JOIN (SELECT groups.id, groups.name FROM groups) as g on g.id = problems.group_id 
+            """
         if int(data['group_id']) == 1:
             if data['is_admin']:
                 sql += "WHERE (problems.group_id=%s OR problems.visible = 2)"
@@ -28,10 +28,9 @@ class ProblemService(BaseService):
             else:
                 sql += "WHERE problems.group_id=%s AND problems.visible <> 0"
         sql += """
-            AND problems.setter_user_id=users.id 
             ORDER by problems.id LIMIT %s, %s
             """
-        col = ("id", "title", "source", "group_id", "created_at", "setter_user_id", "setter_user")
+        col = ("id", "title", "source", "group_id", "created_at", "setter_user_id", "setter_user", "group_name")
         res = yield from self.db.execute(sql, (data['group_id'], (int(data["page"])-1)*int(data["count"]), data["count"], ), col=col)
         for x in range(len(res)):
             res[x]['real_id'] = res[x]['id']
@@ -48,7 +47,7 @@ class ProblemService(BaseService):
             if data['is_admin']:
                 sql += "WHERE (problems.group_id=%s OR problems.visible = 2)"
             else:
-                sql += "WHERE (problems.group_id=%s AND problems.visible <> 0) OR problems.visible = 2)"
+                sql += "WHERE ((problems.group_id=%s AND problems.visible <> 0) OR problems.visible = 2)"
         else:
             if data['is_admin']:
                 sql += "WHERE problems.group_id=%s"
@@ -74,7 +73,7 @@ class ProblemService(BaseService):
         if len(res) == 0:
             return ('Error problem id', None)
         res = res[0]
-        if int(res['group_id']) != int(data['group_id']):
+        if int(res['group_id']) != int(data['group_id']) and int(res['visible']) != 2:
             return ('Error mapping problem id and group id', None)
         yield from self.db.flush_tables()
         return (None, res)

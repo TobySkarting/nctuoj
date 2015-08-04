@@ -107,7 +107,7 @@ def reqenv(func):
         try:
             self.current_group = re.search(r'.*/group/(\d+).*', self.request.uri).groups(1)[0]
         except:
-            self.current_group = 1
+            self.current_group = 0
 
         try:
             self.current_group_active = re.search(r'/group/\d+/(\w+)/.*', self.request.uri).groups(1)[0]
@@ -138,7 +138,7 @@ def reqenv(func):
         for x in self.group:
             if x['id'] == int(self.current_group):
                 in_group = True
-        if not in_group:
+        if not in_group and self.current_group != 0:
             self.Render('403.html')
             return
 

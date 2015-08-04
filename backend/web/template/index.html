@@ -1,5 +1,17 @@
 {% extends 'frame.html' %}
 {% block content %}
-Indexxxx
+<div class="row">
+    {% for x in data['bulletins'] %}
+        <div class="col-xs-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{ x['title'] }}
+                </div>
+                <div class="panel-body">{% raw x['content'] %}</div>
+                <div class="panel-footer">By {{x['setter_user']}} At {{x['created_at']}}</div>
+            </div>
+        </div>
+    {% end %}
+</div>
 {% end %}
 
