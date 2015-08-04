@@ -20,6 +20,35 @@
         <div class="col-md-2">
             <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['problem']['id']}}/testdata/">Testdata</a>
         </div>
+        <div class="col-md-1">
+            <a class="btn btn-default btn-block btn-sm">Tag</a>
+        </div>
+        <div class="col-md-1">
+            <a class="btn btn-default btn-block btn-sm" onclick="delete_problem(this)" data-href="/api/group/{{current_group}}/problems/{{data['problem']['id']}}/" data-method="delete">Delete</a> 
+        </div>
+        <div class="col-md-1">
+            <a class="btn btn-default btn-block btn-sm">Rejudge</a>
+        </div>
+<script>
+function delete_problem(ele){
+    bootbox.confirm("Are you sure?", function(result) {
+        if(result){
+            $.ajax({
+                url: $(ele).attr("data-href"),
+                type: $(ele).attr("data-method"),
+                dataType: "json",
+                success: function(msg){
+                    if(msg['status'] == 'success'){
+                        location.href = '/group/{{current_group}}/problems/';
+                    } else {
+                        alert(msg['msg']);
+                    }
+                }
+            });
+        }
+    }); 
+}
+</script>
     {% end %}
 </div>
 <div class="row">

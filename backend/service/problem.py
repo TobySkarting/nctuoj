@@ -78,3 +78,29 @@ class ProblemService(BaseService):
         yield from self.db.flush_tables()
         return (None, res)
 
+    def post_problem(self, data={}):
+        required_args = ['id', 'group_id', 'setter_user_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        if int(data['id']) == 0:
+            data.pop('id')
+            sql, parma = self.gen_insert_sql("problems", data)
+            yield from self.db.execute(sql, parma)
+        else:
+            err, res = yield from self.get_problem(data)
+            if err:
+                return (err, None)
+            data.pop('id')
+            sql, parma = self.gen_update_sql("problems", data)
+            yield from self.db.execute(sql + " WHERE id=" + str(res['id']), parma)
+        yield from self.db.flush_tables()
+        return (None, None)
+
+    def delete_problem(self, data={}):
+        required_args = ['id', 'group_id', 'setter_user_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        err, res = yield from self.get_problem(data)
+        if err: return (err, None)
+        yield from self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id'])))
+        return (None, None)

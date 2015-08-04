@@ -18,7 +18,7 @@ class ApiBulletinsHandler(RequestHandler):
 
 class ApiBulletinHandler(RequestHandler):
     @reqenv
-    def get(self):
+    def get(self, id):
         pass
 
     @reqenv

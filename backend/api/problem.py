@@ -18,23 +18,21 @@ class ApiProblemsHandler(RequestHandler):
 
 class ApiProblemHandler(RequestHandler):
     @reqenv
-    def get(self):
+    def get(self, id):
         pass
         
     @reqenv
-    def post(self, id, action):
+    def post(self, id):
         ### /api/{{group_id}}/problems/{{problem_id}}/
-        """
-        args = ["title", "content"]
+        args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source"]
         meta = self.get_args(args)
-        meta["group_id"] = self.current_group
-        meta["setter_user_id"] = self.account['id']
+        meta['group_id'] = self.current_group
+        meta['setter_user_id'] = self.account['id']
         meta['id'] = id
         if not 1 in self.current_group_power:
             self.error("Permission Denied")
             return
-        err, data = yield from Service.Bulletin.post_bulletin(meta)
-        """
+        err, data = yield from Service.Problem.post_problem(meta)
         if err: self.error(err)
         else: self.success("")
 
@@ -47,6 +45,6 @@ class ApiProblemHandler(RequestHandler):
         if not 1 in self.current_group_power:
             self.error("Permission Denied")
             return
-        err, data = yield from Service.Bulletin.delete_bulletin(meta)
+        err, data = yield from Service.Problem.delete_problem(meta)
         if err: self.error(err)
         else: self.success("")

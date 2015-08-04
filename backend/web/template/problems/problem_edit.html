@@ -1,7 +1,7 @@
 {% extends './../frame.html' %}
 {% block content %}
 
-<form class="form" method="post" action="/api/group/{{current_group}}/problmes/{{data['id']}}/">
+<form class="form" method="post" action="/api/group/{{current_group}}/problems/{{data['id']}}/">
     <p>
     <div class="row">
         <div class="form-horizontal">
@@ -43,7 +43,7 @@
         </div>
         <div class="col-md-6">
             <div class="panel panel-default problem edit">
-                <div class="panel-heading">Hint</div>
+                <div class="panel-heading">Sample Output</div>
                 <div class="panel-body"><textarea class="form-control" rows=5 name="sample_output">{% raw data['sample_output'] %}</textarea></div>
             </div>
         </div>
@@ -63,12 +63,6 @@
                 <div class="panel-body"><textarea class="form-control" rows=5 name="source">{% raw data['source'] %}</textarea></div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">Tag</div>
-                <div class="panel-body"></div>
-            </div>
-        </div>
     </div>
     <button type="submit" class="btn btn-success">Submit</button>
 </form>
@@ -77,8 +71,6 @@
 $( document ).ready(function(){
     $("form").submit(function(){
         form = $(this);
-        alert(form.serialize());
-        /*
         $.ajax({
             url: form.attr("action"),
             type: form.attr("method"),
@@ -86,14 +78,12 @@ $( document ).ready(function(){
             dataType: "json",
             success: function(msg){
                 if(msg['status'] == "success"){
-                    location.href = "/group/{{current_group}}/bulletins/";
-                    return false;
+                    location.href = "/group/{{current_group}}/problems/";
                 } else {
                     bootbox.alert(msg['msg'])
                 }
             }
         });
-        */
         return false;
     });
 });

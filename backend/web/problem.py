@@ -47,7 +47,6 @@ class WebProblemHandler(RequestHandler):
         meta['id'] = id
         meta['group_id'] = self.current_group
         if not action: action = "view"
-        print(id, action)
         if action == "view":
             data = {}
             err, data['problem'] = yield from Service.Problem.get_problem(meta)

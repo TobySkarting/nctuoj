@@ -21,12 +21,8 @@ import logging
 from service.user import UserService
 from service.problem import ProblemService
 from service.bulletin import BulletinService
+
 ### api class from api.user import ApiUserSignupHandler
-from api.user import ApiUserSigninHandler
-from api.user import ApiUserChangePasswordHandler
-from api.user import ApiUserLogoutHandler
-from api.user import ApiUserInfoHandler
-from api.user import ApiUserListHandler
 from api.bulletin import ApiBulletinsHandler
 from api.bulletin import ApiBulletinHandler
 from api.problem import ApiProblemsHandler
@@ -106,7 +102,6 @@ if __name__ == '__main__':
     ### ('/api/group/\d+/problems/(\d+)/tags/',             ApiProblemTagsHandler),
     ### ('/api/group/\d+/problems/(\d+)/tags/(\d+)/',       ApiProblemTagHandler),
 
-
         ('/group/\d+/bulletins/',                   WebBulletinsHandler),
         ('/group/\d+/bulletins/(\d+)/(\w*)/?',      WebBulletinHandler),
         ('/group/\d+/problems/',                    WebProblemsHandler),
@@ -115,6 +110,10 @@ if __name__ == '__main__':
         ('/group/\d+/submissions/(\d+)/(\w*)/?',    WebSubmissionHandler),
         ('/group/\d+/contests/',                    WebContestsHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/?',       WebContestHandler),
+
+    ### ('/manage/problemtags/', WebManageProblemTagsHandler),
+    ### ('/manage/users/', WebManageUsersHandler),
+    ### ('/manage/groups/', WebManageGroupsHandler),
 
         ('/users/', WebUsersHandler),
         ('/user/', WebUserHandler),
