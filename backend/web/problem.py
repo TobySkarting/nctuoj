@@ -53,7 +53,8 @@ class WebProblemHandler(RequestHandler):
             err, data['problem'] = yield from Service.Problem.get_problem(meta)
             self.Render("./problems/problem.html", data=data)
         elif action == "edit":
-            self.Render('./problems/problem_edit.html')
+            err, data = yield from Service.Problem.get_problem(meta)
+            self.Render('./problems/problem_edit.html', data=data)
         else:
             self.Render('404.html')
 

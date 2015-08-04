@@ -1,0 +1,102 @@
+{% extends './../frame.html' %}
+{% block content %}
+
+<form class="form" method="post" action="/api/group/{{current_group}}/problmes/{{data['id']}}/">
+    <p>
+    <div class="row">
+        <div class="form-horizontal">
+            <label class="col-sm-offset-2 col-sm-2 control-label">{{data['id'] if data['id'] else 'New'}}.</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" name="title" value="{{data['title']}}">
+            </div>
+        </div>
+    </div>
+    </p>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default problem edit">
+                <div class="panel-heading">Description</div>
+                <div class="panel-body"><textarea class="form-control" rows=5 name="description">{% raw data['description'] %}</textarea></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default problem edit">
+                <div class="panel-heading">Input</div>
+                <div class="panel-body"><textarea class="form-control" rows=5 name="input">{% raw data['input'] %}</textarea></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default problem edit">
+                <div class="panel-heading">Output</div>
+                <div class="panel-body"><textarea class="form-control" rows=5 name="output">{% raw data['output'] %}</textarea></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default problem edit">
+                <div class="panel-heading">Sample Input</div>
+                <div class="panel-body"><textarea class="form-control" rows=5 name="sample_input">{% raw data['sample_input'] %}</textarea></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default problem edit">
+                <div class="panel-heading">Hint</div>
+                <div class="panel-body"><textarea class="form-control" rows=5 name="sample_output">{% raw data['sample_output'] %}</textarea></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default problem edit">
+                <div class="panel-heading">Hint</div>
+                <div class="panel-body"><textarea class="form-control" rows=5 name="hint">{% raw data['hint'] %}</textarea></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default problem edit">
+                <div class="panel-heading">Source</div>
+                <div class="panel-body"><textarea class="form-control" rows=5 name="source">{% raw data['source'] %}</textarea></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Tag</div>
+                <div class="panel-body"></div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+
+<script>
+$( document ).ready(function(){
+    $("form").submit(function(){
+        form = $(this);
+        alert(form.serialize());
+        /*
+        $.ajax({
+            url: form.attr("action"),
+            type: form.attr("method"),
+            data: form.serialize(),
+            dataType: "json",
+            success: function(msg){
+                if(msg['status'] == "success"){
+                    location.href = "/group/{{current_group}}/bulletins/";
+                    return false;
+                } else {
+                    bootbox.alert(msg['msg'])
+                }
+            }
+        });
+        */
+        return false;
+    });
+});
+</script>
+
+{% end %}

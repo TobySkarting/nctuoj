@@ -45,3 +45,11 @@ body {
 .bulletin-header{
     font-size: 20px;
 }
+
+.problem.edit > .panel-body{
+    padding: 0px;
+}
+.problem.edit > .panel-body > textarea{
+    border: 0px;
+    resize: none;
+}

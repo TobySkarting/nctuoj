@@ -29,6 +29,8 @@ from api.user import ApiUserInfoHandler
 from api.user import ApiUserListHandler
 from api.bulletin import ApiBulletinsHandler
 from api.bulletin import ApiBulletinHandler
+from api.problem import ApiProblemsHandler
+from api.problem import ApiProblemHandler
 
 
 ### web class
@@ -94,7 +96,16 @@ if __name__ == '__main__':
     app = tornado.web.Application([
         ('/', WebIndexHandler),
         ('/api/group/\d+/bulletins/',               ApiBulletinsHandler),
-        ('/api/group/\d+/bulletins/(\d+)/',          ApiBulletinHandler),
+        ('/api/group/\d+/bulletins/(\d+)/',         ApiBulletinHandler),
+        ('/api/group/\d+/problems/',                ApiProblemsHandler),
+        ('/api/group/\d+/problems/(\d+)/',          ApiProblemHandler),
+    ### ('/api/group/\d+/problems/(\d+)/testdata/',         ApiProblemTestdataHaneler),
+    ### ('/api/group/\d+/problems/(\d+)/testdata/(\d+)/',   ApiProblemTestdatumHandler),
+    ### ('/api/group/\d+/problems/(\d+)/attachments/',      ApiProblemAttachmentsHandler),
+    ### ('/api/group/\d+/problems/(\d+)/attachments/(\d+)/',ApiProblemAttachmentHandler),
+    ### ('/api/group/\d+/problems/(\d+)/tags/',             ApiProblemTagsHandler),
+    ### ('/api/group/\d+/problems/(\d+)/tags/(\d+)/',       ApiProblemTagHandler),
+
 
         ('/group/\d+/bulletins/',                   WebBulletinsHandler),
         ('/group/\d+/bulletins/(\d+)/(\w*)/?',      WebBulletinHandler),
