@@ -78,7 +78,7 @@ $( document ).ready(function(){
             dataType: "json",
             success: function(msg){
                 if(msg['status'] == "success"){
-                    location.href = "/group/{{current_group}}/problems/";
+                    location.href = "/group/{{current_group}}/problems/" + msg['msg']['id'] + "/";
                 } else {
                     bootbox.alert(msg['msg'])
                 }

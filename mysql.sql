@@ -110,7 +110,8 @@ CREATE TABLE problems (
     `created_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
-    INDEX(`visible`)
+    INDEX(`visible`),
+    INDEX(`group_id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 # visible => 0 invisible for all, 1 visible in group, 2 visible in all
 

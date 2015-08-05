@@ -60,6 +60,9 @@ class RequestHandler(tornado.web.RequestHandler):
         except:
             return None
     
+    def write_error(self, status_code, **kwargs):
+        self.Render('./err/'+str(status_code)+'.html')
+
     def Render(self, templ, **kwargs):
         kwargs['map_power'] = self.map_power
         kwargs['map_group_power'] = self.map_group_power
@@ -139,7 +142,7 @@ def reqenv(func):
             if x['id'] == int(self.current_group):
                 in_group = True
         if not in_group and self.current_group != 0:
-            self.Render('403.html')
+            self.write_error(403)
             return
 
         

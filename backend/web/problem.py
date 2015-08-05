@@ -53,7 +53,12 @@ class WebProblemHandler(RequestHandler):
             self.Render("./problems/problem.html", data=data)
         elif action == "edit":
             err, data = yield from Service.Problem.get_problem(meta)
-            self.Render('./problems/problem_edit.html', data=data)
+            if err == 'Error problem id':
+                self.Render('404.html')
+            elif err == 'Error mapping problem id and group id':
+                self.Render('403.html')
+            else:
+                self.Render('./problems/problem_edit.html', data=data)
         else:
             self.Render('404.html')
 

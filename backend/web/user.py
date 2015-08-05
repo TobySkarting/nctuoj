@@ -39,7 +39,7 @@ class WebUserSignHandler(RequestHandler):
         elif action == "signup":
             self.Render('./users/user_signup.html')
         else:
-            self.Render('./404.html')
+            self.write_error(404)
 
     @reqenv
     def post(self, action): 
@@ -66,4 +66,4 @@ class WebUserSignHandler(RequestHandler):
                 err, id = yield from Service.User.SignIn(meta, self)
                 self.redirect('/')
         else:
-            self.Render('./404.html')
+            self.write_error(404)

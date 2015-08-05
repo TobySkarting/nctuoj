@@ -12,27 +12,23 @@ class AsyncMysql:
                 user = self._user,
                 passwd = self._passwd,
                 db = self._database,
-                charset = self._charset
+                charset = self._charset,
+                autocommit = True,
                 )
 
     def get_conn(self):
         conn = yield self._pool.Connection()
         return conn
 
-    def execute(self, sql, prama=(), col=()):
+    def execute(self, sql, prama=()):
         conn = yield from self.get_conn()
-        cur = conn.cursor()
+        cur = conn.cursor(tormysql.cursor.DictCursor)
         yield cur.execute(sql, prama)
-        if len(col):
-            _x = list(cur.fetchall())
-            res = []
-            for _ in _x:
-                res.append(dict(zip(col, _)))
-        else:
-            res = cur.fetchall()
+        res = cur.fetchall()
         yield cur.close()
         conn.close()
-        return res
+        if conn.insert_id():
+            return conn.insert_id()
+        else:
+            return res
 
-    def flush_tables(self):
-        yield from self.execute('FLUSH TABLES;')

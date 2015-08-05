@@ -50,20 +50,21 @@ class WebBulletinHandler(RequestHandler):
         if action == "": action = "view"
         if action == "view":
             err, data = yield from Service.Bulletin.get_bulletin(meta)
-            if err: self.Render('./404.html')
+            if err: self.write_error(404)
             else: self.Render('./bulletins/bulletin.html', data=data)
         elif action == "edit":
             ### check power
             if not 1 in self.current_group_power:
-                self.Render('403.html')
+                self.write_error(403)
                 return
             err, data = yield from Service.Bulletin.get_bulletin(meta)
             if err == 'Error bulletin id':
-                self.Render('404.html')
+                self.write_error(404)
+                #self.Render('404.html')
             elif err == 'Error mapping bulletin id and group id':
-                self.Render('403.html')
+                self.write_error(404)
             else:
                 self.Render('./bulletins/bulletin_edit.html', data=data)
         else:
-            self.Render('./404.html')
+            self.write_error(404)
 

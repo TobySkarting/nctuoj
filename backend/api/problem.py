@@ -34,7 +34,7 @@ class ApiProblemHandler(RequestHandler):
             return
         err, data = yield from Service.Problem.post_problem(meta)
         if err: self.error(err)
-        else: self.success("")
+        else: self.success({"id": data})
 
     @reqenv
     def delete(self, id):

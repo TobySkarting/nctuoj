@@ -15,43 +15,36 @@ class UserService(BaseService):
     def get_users_info(self, meta={}):
         col = ["id", "account", "email", "student_id", "school_id", "created_at"]
         sql = self.gen_select_sql("users", col)
-        res = yield from self.db.execute(sql, (), col)
+        res = yield from self.db.execute(sql)
         for x in res:
             err, power = yield from self.get_user_power_info(x["id"])
             x["power"] = power
-        yield from self.db.flush_tables()
         return (None, res)
 
     def get_user_basic_info(self, id):
-        col = ["id", "account", "passwd", "email", "student_id", "school_id", "created_at", "updated_at"]
-        res = yield from self.db.execute("SELECT * FROM users where id=%s", (id,), col)
+        res = yield from self.db.execute("SELECT * FROM users where id=%s", (id,))
         if len(res) == 0:
             return ('Eidnotexist', None)
         res = res[0]
         res.pop("passwd")
-        yield from self.db.flush_tables()
         return (None, res)
 
     def get_user_group_info(self, id):
-        col = ["id", "name", "description"]
-        res = yield from self.db.execute("SELECT groups.id, groups.name, groups.description FROM groups inner join (select group_id from map_group_user where user_id = %s order by group_id) as b on groups.id = b.group_id", (id,), col)
-        yield from self.db.flush_tables()
+        res = yield from self.db.execute("SELECT groups.* FROM groups inner join (select group_id from map_group_user where user_id = %s order by group_id) as b on groups.id = b.group_id", (id,))
         return (None, res)
 
     def get_user_power_info(self, id):
         res = yield from self.db.execute("SELECT `right` from map_user_right WHERE user_id=%s", (id,))
         power = set()
         for x in res:
-            power.add(x[0])
-        yield from self.db.flush_tables()
+            power.add(x['right'])
         return (None, power)
 
     def get_user_group_power_info(self, uid, gid):
         res = yield from self.db.execute("SELECT `right` from map_group_user_right where user_id=%s AND group_id=%s", (uid, gid,))
         power = set()
         for x in res:
-            power.add(x[0])
-        yield from self.db.flush_tables()
+            power.add(x['right'])
         return (None, power)
 
     def modify(self, data={}):
@@ -65,15 +58,14 @@ class UserService(BaseService):
         ### check required arguemts
         required_args = ['account', 'passwd']
         err = self.check_required_args(required_args, data)
-        if err:
-            return (err, None)
+        if err: return (err, None)
 
         ### get hashed passwd
         col = ['passwd', 'id']
         sql = self.gen_select_sql('users', col)
         res = yield from self.db.execute(sql+
                 'WHERE `account` = %s;',
-                (data['account'],), col)
+                (data['account'],))
         ### check account 
         if len(res) == 0:
             return ('Euser', None)
@@ -82,7 +74,6 @@ class UserService(BaseService):
         if _hash(data['passwd']) != hpwd:
             return ('Epasswd', None)
         req.set_secure_cookie('id', str(id))
-        yield from self.db.flush_tables()
         return (None, str(id))
 
     def SignOut(self, req):
@@ -96,12 +87,8 @@ class UserService(BaseService):
         ### check required arguemts
         required_args = ['account', 'student_id', 'passwd', 'repasswd', 'email', 'school_id']
         err = self.check_required_args(required_args, data)
-        if err:
-            return (err, None)
+        if err: return (err, None)
         ### check data valadation
-        err = self.check_data_not_empty(data)
-        if err:
-            return (err, None)
         if data['passwd'] != data['repasswd']:
             return ('Econfirmpwd', None)
 
@@ -121,10 +108,9 @@ class UserService(BaseService):
         res = yield from self.db.execute(sql, prama)
         res = yield from self.db.execute('SELECT `id` FROM `users` '
                 'WHERE `account` = %s',
-                (data['account'],), ["id",])
+                (data['account'],))
         if len(res) == 0:
             return ('Ecreate', None)
         id = res[0]["id"]
-        yield from self.db.flush_tables()
         return (None, str(id))
 

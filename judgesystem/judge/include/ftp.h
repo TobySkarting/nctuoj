@@ -38,6 +38,7 @@ class FTP{
         FTP(std::string, std::string, std::string, std::string _ftp_log = "./ftp.log");
         bool get(std::string, std::string);
         bool put(std::string, std::string);
+        /* sshpass -p vuvsawkArnErcecs scp nctuojftp@140.113.194.120:~/nctuoj_develop/data/submission/1/test.cpp  ./testgg.cpp */
         /* string("curl -s --create-dirs -u ") + config.ftp_user() + string(":") + config.ftp_password() + string(" ") + source + string(" -o ") + output; */
 };
 
