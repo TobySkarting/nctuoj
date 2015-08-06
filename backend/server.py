@@ -2,9 +2,7 @@
 import tornado.ioloop
 import tornado.httpserver
 import tornado.web
-
-### self define
-from req import RequestHandler
+### self define from req import RequestHandler
 from req import reqenv
 from req import Service 
 ### my app
@@ -28,6 +26,9 @@ from api.bulletin import ApiBulletinHandler
 from api.problem import ApiProblemsHandler
 from api.problem import ApiProblemHandler
 
+from api.execute_type import ApiExecuteTypesHandler
+from api.execute_type import ApiExecuteTypeHandler
+
 
 ### web class
 import web.modules
@@ -42,6 +43,8 @@ from web.submission import WebSubmissionsHandler
 from web.submission import WebSubmissionHandler
 from web.contest import WebContestsHandler
 from web.contest import WebContestHandler
+
+from web.execute_type import WebExecuteTypesHandler
 
 from web.user import WebUsersHandler
 from web.user import WebUserSignHandler
@@ -95,6 +98,10 @@ if __name__ == '__main__':
         ('/api/group/\d+/bulletins/(\d+)/',         ApiBulletinHandler),
         ('/api/group/\d+/problems/',                ApiProblemsHandler),
         ('/api/group/\d+/problems/(\d+)/',          ApiProblemHandler),
+
+        ('/api/execute_types/',                     ApiManageExecuteTypesHandler),
+        ('/api/execute_types/(\d+)/',               ApiManageExecuteTypeHandler),
+
     ### ('/api/group/\d+/problems/(\d+)/testdata/',         ApiProblemTestdataHaneler),
     ### ('/api/group/\d+/problems/(\d+)/testdata/(\d+)/',   ApiProblemTestdatumHandler),
     ### ('/api/group/\d+/problems/(\d+)/attachments/',      ApiProblemAttachmentsHandler),
@@ -110,10 +117,8 @@ if __name__ == '__main__':
         ('/group/\d+/submissions/(\d+)/(\w*)/?',    WebSubmissionHandler),
         ('/group/\d+/contests/',                    WebContestsHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/?',       WebContestHandler),
-
-    ### ('/manage/problemtags/', WebManageProblemTagsHandler),
-    ### ('/manage/users/', WebManageUsersHandler),
-    ### ('/manage/groups/', WebManageGroupsHandler),
+        
+        ('/execute_types/',                         WebExecuteTypesHandler),
 
         ('/users/', WebUsersHandler),
         ('/user/', WebUserHandler),
