@@ -26,8 +26,8 @@ from api.bulletin import ApiBulletinHandler
 from api.problem import ApiProblemsHandler
 from api.problem import ApiProblemHandler
 
-from api.execute_type import ApiExecuteTypesHandler
-from api.execute_type import ApiExecuteTypeHandler
+#from api.execute_type import ApiExecuteTypesHandler
+#from api.execute_type import ApiExecuteTypeHandler
 
 
 ### web class
@@ -44,7 +44,7 @@ from web.submission import WebSubmissionHandler
 from web.contest import WebContestsHandler
 from web.contest import WebContestHandler
 
-from web.execute_type import WebExecuteTypesHandler
+#from web.execute_type import WebExecuteTypesHandler
 
 from web.user import WebUsersHandler
 from web.user import WebUserSignHandler
@@ -99,8 +99,8 @@ if __name__ == '__main__':
         ('/api/group/\d+/problems/',                ApiProblemsHandler),
         ('/api/group/\d+/problems/(\d+)/',          ApiProblemHandler),
 
-        ('/api/execute_types/',                     ApiManageExecuteTypesHandler),
-        ('/api/execute_types/(\d+)/',               ApiManageExecuteTypeHandler),
+#        ('/api/execute_types/',                     ApiManageExecuteTypesHandler),
+#        ('/api/execute_types/(\d+)/',               ApiManageExecuteTypeHandler),
 
     ### ('/api/group/\d+/problems/(\d+)/testdata/',         ApiProblemTestdataHaneler),
     ### ('/api/group/\d+/problems/(\d+)/testdata/(\d+)/',   ApiProblemTestdatumHandler),
@@ -118,7 +118,7 @@ if __name__ == '__main__':
         ('/group/\d+/contests/',                    WebContestsHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/?',       WebContestHandler),
         
-        ('/execute_types/',                         WebExecuteTypesHandler),
+#        ('/execute_types/',                         WebExecuteTypesHandler),
 
         ('/users/', WebUsersHandler),
         ('/user/', WebUserHandler),
