@@ -29,26 +29,26 @@
         <div class="col-md-1">
             <a class="btn btn-default btn-block btn-sm">Rejudge</a>
         </div>
-<script>
-function delete_problem(ele){
-    bootbox.confirm("Are you sure?", function(result) {
-        if(result){
-            $.ajax({
-                url: $(ele).attr("data-href"),
-                type: $(ele).attr("data-method"),
-                dataType: "json",
-                success: function(msg){
-                    if(msg['status'] == 'success'){
-                        location.href = '/group/{{current_group}}/problems/';
-                    } else {
-                        alert(msg['msg']);
-                    }
+        <script>
+        function delete_problem(ele){
+            bootbox.confirm("Are you sure?", function(result) {
+                if(result){
+                    $.ajax({
+                        url: $(ele).attr("data-href"),
+                        type: $(ele).attr("data-method"),
+                        dataType: "json",
+                        success: function(msg){
+                            if(msg['status'] == 'success'){
+                                location.href = '/group/{{current_group}}/problems/';
+                            } else {
+                                alert(msg['msg']);
+                            }
+                        }
+                    });
                 }
-            });
+            }); 
         }
-    }); 
-}
-</script>
+        </script>
     {% end %}
 </div>
 <div class="row">
@@ -112,21 +112,38 @@ function delete_problem(ele){
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
+            <div class="panel-heading">Execute Type</div>
+            <table class="table table-hover table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Lang</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
             <div class="panel-heading">Testdata</div>
-            <div class="panel-body">
-                <table class="table table-hover table-striped table-condensed">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Time Limit</th>
-                            <th>Memory Limit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        
-                    </tbody>
-                </table>
-            </div>
+            <table class="table table-hover table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Time Limit</th>
+                        <th>Memory Limit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
