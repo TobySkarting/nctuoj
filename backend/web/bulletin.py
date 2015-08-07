@@ -58,13 +58,8 @@ class WebBulletinHandler(RequestHandler):
                 self.write_error(403)
                 return
             err, data = yield from Service.Bulletin.get_bulletin(meta)
-            if err == 'Error bulletin id':
-                self.write_error(404)
-                #self.Render('404.html')
-            elif err == 'Error mapping bulletin id and group id':
-                self.write_error(404)
-            else:
-                self.Render('./bulletins/bulletin_edit.html', data=data)
+            if err: self.write_error(404)
+            else: self.Render('./bulletins/bulletin_edit.html', data=data)
         else:
             self.write_error(404)
 

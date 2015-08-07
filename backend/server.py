@@ -19,8 +19,12 @@ import logging
 from service.user import UserService
 from service.problem import ProblemService
 from service.bulletin import BulletinService
+from service.execute import ExecuteService
 
 ### api class from api.user import ApiUserSignupHandler
+from api.user import ApiUserSignHandler
+from api.user import ApiUsersHandler
+from api.user import ApiUserHandler
 from api.bulletin import ApiBulletinsHandler
 from api.bulletin import ApiBulletinHandler
 from api.problem import ApiProblemsHandler
@@ -43,6 +47,12 @@ from web.submission import WebSubmissionsHandler
 from web.submission import WebSubmissionHandler
 from web.contest import WebContestsHandler
 from web.contest import WebContestHandler
+
+from web.execute import WebExecuteTypesHandler
+from web.execute import WebExecuteTypeHandler
+from web.verdict import WebVerdictTypesHandler
+from web.verdict import WebVerdictTypeHandler
+
 
 #from web.execute_type import WebExecuteTypesHandler
 
@@ -94,6 +104,10 @@ if __name__ == '__main__':
             }
     app = tornado.web.Application([
         ('/', WebIndexHandler),
+        ('/api/users/',                             ApiUsersHandler),
+        ('/api/users/(\d+)/',                       ApiUserHandler),
+        ('/api/users/(sign\w*)/',                   ApiUserSignHandler),
+        
         ('/api/group/\d+/bulletins/',               ApiBulletinsHandler),
         ('/api/group/\d+/bulletins/(\d+)/',         ApiBulletinHandler),
         ('/api/group/\d+/problems/',                ApiProblemsHandler),
@@ -118,9 +132,13 @@ if __name__ == '__main__':
         ('/group/\d+/contests/',                    WebContestsHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/?',       WebContestHandler),
         
-#        ('/execute_types/',                         WebExecuteTypesHandler),
+        ('/execute_types/',                         WebExecuteTypesHandler),
+        ('/execute_types/(\d+)/(\w*)/?',            WebExecuteTypeHandler),
+        ('/verdict_types/',                         WebVerdictTypesHandler),
+        ('/verdict_types/(\d+)/(\w*)/?',            WebVerdictTypeHandler),
 
-        ('/users/', WebUsersHandler),
+        ### user list only admin
+        ('/users/', WebUsersHandler),       
         ('/user/', WebUserHandler),
         ('/user/(sign\w*)/?', WebUserSignHandler),
         ('/user/(\d+)/(\w*)/?', WebUserHandler),
@@ -133,6 +151,7 @@ if __name__ == '__main__':
     Service.User = UserService(db, rs)
     Service.Problem = ProblemService(db, rs)
     Service.Bulletin = BulletinService(db, rs)
+    Service.Execute = ExecuteService(db, rs)
     print('start')
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)

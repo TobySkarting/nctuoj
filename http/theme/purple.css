@@ -1,3 +1,9 @@
+.bulletin.panel {
+  border-color: #3c2dbf; }
+  .bulletin.panel .panel-heading {
+    background-color: #3c2dbf;
+    color: white; }
+
 .panel-primary {
   border-color: #3c2dbf; }
   .panel-primary .panel-heading {

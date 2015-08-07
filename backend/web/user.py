@@ -6,6 +6,9 @@ from req import Service
 class WebUsersHandler(RequestHandler):
     @reqenv
     def get(self):
+        if not self.map_power['user_manage'] in self.account['power']:
+            self.write_error(403)
+            return
         err, meta = yield from Service.User.get_users_info()
         self.Render('./users/users.html', data=meta)
 

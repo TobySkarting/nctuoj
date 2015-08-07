@@ -9,7 +9,7 @@ import tornado.gen
 import tornado.web
 import tornado.websocket
 import re
-from power import map_power, map_group_power
+from map import map_power, map_group_power, map_lang
 class Service:
     pass
 
@@ -66,6 +66,7 @@ class RequestHandler(tornado.web.RequestHandler):
     def Render(self, templ, **kwargs):
         kwargs['map_power'] = self.map_power
         kwargs['map_group_power'] = self.map_group_power
+        kwargs['map_lang'] = self.map_lang
         kwargs['account'] = self.account
         kwargs['title'] = kwargs["title"] + " | NCTUOJ" if "title" in kwargs else "NCTUOJ"
         kwargs['group'] = self.group
@@ -111,13 +112,14 @@ def reqenv(func):
             self.current_group = re.search(r'.*/group/(\d+).*', self.request.uri).groups(1)[0]
         except:
             self.current_group = 0
-
         try:
             self.current_group_active = re.search(r'/group/\d+/(\w+)/.*', self.request.uri).groups(1)[0]
         except:
             self.current_group_active = "bulletins"
+
         self.map_power = map_power
         self.map_group_power = map_group_power
+        self.map_lang = map_lang
         self.account = {}
         self.group = {}
         try:

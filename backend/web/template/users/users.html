@@ -1,9 +1,6 @@
 {% extends './../frame.html' %}
 {% block content %}
 
-User Manage
-{{data}}
-
 <table class="table table-hover">
     <thead>
         <tr>
@@ -12,8 +9,9 @@ User Manage
             <th>Student ID</th>
             <th>User</th>
             <th>Group</th>
+            <th>Execute</th>
+            <th>Verdict</th>
             <th>Created At</th>
-            <th></th>
         </tr>
         <tr>
         </tr>
@@ -24,17 +22,47 @@ User Manage
                 <td>{{x["id"]}}</td>
                 <td>{{x["account"]}}</td>
                 <td>{{x["student_id"]}}</td>
-                <td id="user_manage_{{x["id"]}}">
-                    <input type="checkbox" {{ "checked" if map_power['user_manage'] in x["power"] else ""}}>
+                <td>
+                    <div onclick="update({{x['id']}}, 1);" class="btn btn-sm {{ "btn-success" if map_power['user_manage'] in x['power'] else "btn-danger"}}">
+                        {{ "Yes" if map_power['user_manage'] in x['power'] else "No"}}
+                    </div>
                 </td>
-                <td id="group_manage_{{x["id"]}}">
-                    <input type="checkbox" {{ "checked" if map_power['group_manage'] in x["power"] else ""}}>
+                <td>
+                    <div onclick="update({{x['id']}}, 2);" class="btn btn-sm {{ "btn-success" if map_power['group_manage'] in x['power'] else "btn-danger"}}">
+                        {{ "Yes" if map_power['group_manage'] in x['power'] else "No"}}
+                    </div>
+                </td>
+                <td>
+                    <div onclick="update({{x['id']}}, 3);" class="btn btn-sm {{ "btn-success" if map_power['execute_manage'] in x['power'] else "btn-danger"}}">
+                        {{ "Yes" if map_power['execute_manage'] in x['power'] else "No"}}
+                    </div>
+                </td>
+                <td>
+                    <div onclick="update({{x['id']}}, 4);" class="btn btn-sm {{ "btn-success" if map_power['verdict_manage'] in x['power'] else "btn-danger"}}">
+                        {{ "Yes" if map_power['verdict_manage'] in x['power'] else "No"}}
+                    </div>
                 </td>
                 <td>{{x["created_at"]}}</td>
-                <td><button class="btn btn-success">Update</button></td>
             </tr>
         {% end %}
     </tbody>
 </table>
+<script>
+function update(id, power_type){
+    $.ajax({
+        url: '/api/users/'+id+'/',
+        type: "POST",
+        data: {'power': power_type},
+        dataType: "json",
+        success: function(msg){
+            if(msg["status"] == "success"){
+                location.href = location.href;
+            } else {
+                alert(msg);
+            }
+        }
+    });
+}
+</script>
 
 {% end %}

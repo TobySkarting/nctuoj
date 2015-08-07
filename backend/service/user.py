@@ -34,17 +34,24 @@ class UserService(BaseService):
         return (None, res)
 
     def get_user_power_info(self, id):
-        res = yield from self.db.execute("SELECT `right` from map_user_right WHERE user_id=%s", (id,))
+        res = yield from self.db.execute("SELECT `power` from map_user_power WHERE user_id=%s", (id,))
         power = set()
         for x in res:
-            power.add(x['right'])
+            power.add(x['power'])
         return (None, power)
 
+    def post_user_power(self, id, power):
+        err, current_power = yield from self.get_user_power_info(id)
+        if int(power) in current_power:
+            yield from self.db.execute("DELETE FROM map_user_power WHERE user_id=%s and power=%s", (id, power,))
+        else:
+            yield from self.db.execute("INSERT INTO map_user_power (user_id, power) VALUES (%s, %s)", (id, power,))
+
     def get_user_group_power_info(self, uid, gid):
-        res = yield from self.db.execute("SELECT `right` from map_group_user_right where user_id=%s AND group_id=%s", (uid, gid,))
+        res = yield from self.db.execute("SELECT `power` from map_group_user_power where user_id=%s AND group_id=%s", (uid, gid,))
         power = set()
         for x in res:
-            power.add(x['right'])
+            power.add(x['power'])
         return (None, power)
 
     def modify(self, data={}):

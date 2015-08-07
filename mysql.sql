@@ -11,28 +11,18 @@ CREATE TABLE users (
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 INSERT INTO users (`account`, `passwd`, `email`, `student_id`, `school_id`) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '0');
 
-CREATE TABLE map_user_right (
+CREATE TABLE map_user_power (
     `id`            int(11)         NOT NULL    AUTO_INCREMENT,
     `user_id`       int(11)         NOT NULL,
-    `right`         int(11)         NOT NULL,
+    `power`         int(11)         NOT NULL,
     `created_at`    datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
-    INDEX (`right`),
+    INDEX (`power`),
     INDEX (`user_id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
-INSERT INTO map_user_right (`user_id`, `right`) VALUES (1, 1);
-
-CREATE TABLE user_right (
-    `id`            int(11)         NOT NULL    AUTO_INCREMENT,
-    `description`   varchar(255),
-    `created_at`    datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at`    datetime        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`)
-) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
-
-INSERT INTO user_right (`description`) VALUES ('Users modify admin');
+INSERT INTO map_user_poser (`user_id`, `power`) VALUES (1, 1);
 
 CREATE TABLE schools (
     `id`            int(11)         NOT NULL    AUTO_INCREMENT,
@@ -67,18 +57,18 @@ CREATE TABLE map_group_user (
 
 INSERT INTO map_group_user (`group_id`, `user_id`) VALUES (1, 1);
 
-CREATE TABLE map_group_user_right (
+CREATE TABLE map_group_user_power (
     `id`            int(11)         NOT NULL    AUTO_INCREMENT,
     `group_id`      int(11)         NOT NULL,
     `user_id`       int(11)         NOT NULL,
-    `right`         int(11)         NOT NULL,
+    `power`         int(11)         NOT NULL,
     PRIMARY KEY (`id`),
     INDEX (`group_id`),
     INDEX (`user_id`),
-    INDEX (`right`)
+    INDEX (`power`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
-INSERT INTO map_group_user_right (`group_id`, `user_id`, `right`) VALUES (1, 1, 1)
+INSERT INTO map_group_user_power (`group_id`, `user_id`, `power`) VALUES (1, 1, 1)
 
 CREATE TABLE bulletins (
     `id`                int(11)         NOT NULL    AUTO_INCREMENT,
@@ -106,7 +96,7 @@ CREATE TABLE problems (
     `setter_user_id`    int(11)         NOT NULL,
     `visible`           int(11)         NOT NULL    DEFAULT 0,
     `interactive`       bool            NOT NULL    DEFAULT 0,
-    `checker_id`        int(11)         ,
+    `verdict_id`        int(11)         ,
     `created_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
@@ -119,9 +109,10 @@ CREATE TABLE tags (
     `id`                int(11)         NOT 
 )
 
-CREATE TABLE checkers (
+CREATE TABLE verdicts (
     `id`                int(11)         NOT NULL    AUTO_INCREMENT,
-    `run_type_id`       int(11)         NOT NULL,
+    `execute_type_id`   int(11)         NOT NULL,
+    `description`       int(11)         NOT NULL,
     `created_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`)
@@ -187,10 +178,10 @@ CREATE TABLE wait_submissions (
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
-CREATE TABLE run_problem (
+CREATE TABLE map_execute_problem (
     `id`            int(11)         NOT NULL    AUTO_INCREMENT,
     `problem_id`    int(11)         NOT NULL,
-    `run_type_id`   int(11)         NOT NULL,
+    `execute_type_id`   int(11)         NOT NULL,
     `created_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
@@ -198,7 +189,7 @@ CREATE TABLE run_problem (
     INDEX (run_type_id)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
-CREATE TABLE run_type (
+CREATE TABLE execute_types (
     `id`            int(11)         NOT NULL AUTO_INCREMENT,
     `description`   varchar(128)    NOT NULL DEFAULT "",
     `lang`          int(11)         NOT NULL,
@@ -208,9 +199,9 @@ CREATE TABLE run_type (
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
 
-CREATE TABLE run_step (
+CREATE TABLE execute_steps (
     `id`            int(11)         NOT NULL    AUTO_INCREMENT,
-    `run_type_id`   int(11)         NOT NULL,
+    `execute_type_id`   int(11)         NOT NULL,
     `step`          int(11)         NOT NULL,
     `command`       varchar(256)    NOT NULL    DEFAULT "",
     `primary`       bool            NOT NULL    DEFAULT false,

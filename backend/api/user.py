@@ -3,71 +3,33 @@ from req import reqenv
 from req import Service
 
 
-class ApiUserSignupHandler(RequestHandler):
-    @reqenv
-    def post(self):
-        args = ['account', 'student_id', 'passwd', 'repasswd']
-        meta = self.get_args(args)
-        err, id = yield from Service.User.signup(meta)
-        if err:
-            self.error(err)
-            return
-        self.success({'id': id})
-        return 
 
-class ApiUserSigninHandler(RequestHandler):
+class ApiUsersHandler(RequestHandler):
     @reqenv
-    def post(self):
-        args = ['account', 'passwd']
-        meta = self.get_args(args)
-        err, id = yield from Service.User.signin(meta, self)
-        if err:
-            self.error(err)
-            return
-        self.success({'id': id})
-        return
+    def get(self):
+        pass
 
-class ApiUserChangePasswordHandler(RequestHandler):
+class ApiUserHandler(RequestHandler):
     @reqenv
     def post(self, id):
-        args = ['passwd', 'npasswd', 'rnpasswd']
+        args = ['basic_info', 'power']
         meta = self.get_args(args)
-        meta['id'] = id
-        err, id = yield from Service.User.change_password(meta, self.acct)
-        if err:
-            self.error(err)
+        if meta['power']:
+            if not self.map_power['user_manage'] in self.account['power']:
+                self.error("Permission Denied")
+                return
+            yield from Service.User.post_user_power(id, meta['power'])
+            self.success("")
             return
-        self.success({'id': id})
-        return
 
-class ApiUserLogoutHandler(RequestHandler):
+class ApiUserSignHandler(RequestHandler):
     @reqenv
-    def post(self):
-        self.clear_cookie('id')
-        return
-
-    @reqenv
-    def get(self):
-        self.clear_cookie('id')
-        self.redirect('/')
-        return
-
-class ApiUserInfoHandler(RequestHandler):
-    @reqenv
-    def get(self, id):
-        err, meta = yield from Service.User.get_user_info(str(id))
-        if err:
-            self.error(err)
-            return
-        self.success(meta)
-        return
-
-class ApiUserListHandler(RequestHandler):
-    @reqenv
-    def get(self):
-        err, meta = yield from Service.User.get_user_list()
-        if err:
-            self.error(err)
-            return
-        self.success(meta)
-        return
+    def post(self, action):
+        if action == 'signin':
+            pass
+        elif action == 'signup':
+            pass
+        elif action == 'signout':
+            pass
+        else:
+            self.error("404")
