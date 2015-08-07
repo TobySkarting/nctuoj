@@ -27,7 +27,7 @@
                     <td><a href='/group/{{x['group_id']}}/problems/'>{{x['group_name']}}</a></td>
                 {% end %}
                 <td><a href='/group/{{current_group}}/problems/{{x['real_id']}}/'>{{x['title']}}</a></td>
-                <td><a href='/user/{{x['setter_user_id']}}/'>{{x['setter_user']}}</a></td>
+                <td><a href='/users/{{x['setter_user_id']}}/'>{{x['setter_user']}}</a></td>
                 <td>{{x['source']}}</td>
             </tr>
         {% end %}
