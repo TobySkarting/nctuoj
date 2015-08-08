@@ -10,13 +10,13 @@ map_group_power = {
 }
 
 map_lang = {
-    0: "c",
-    1: "c++",
-    2: "java",
-    3: "python2",
-    4: "python3",
-    5: "go",
-    6: "perl",
-    7: "javascript",
-    7: "haskell",
+    0: "C",
+    1: "C++",
+    2: "Java",
+    3: "Python2",
+    4: "Python3",
+    5: "Go",
+    6: "Perl",
+    7: "Javascript",
+    7: "Haskell",
 }
