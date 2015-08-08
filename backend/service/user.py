@@ -46,7 +46,10 @@ class UserService(BaseService):
         if res:
             return (None, res)
         res = yield from self.db.execute("SELECT `power` from map_user_power WHERE user_id=%s", (id,))
-        power = set([ x['power'] for x in res ])
+        #power = set()
+        #for x in res:
+            #power.add(x['power'])
+        power = list(set([ x['power'] for x in res ]))
         self.rs.set('user_power@%s' % str(id), power)
         return (None, power)
 

@@ -29,7 +29,7 @@ class ApiProblemHandler(RequestHandler):
         meta['group_id'] = self.current_group
         meta['setter_user_id'] = self.account['id']
         meta['id'] = id
-        if not 1 in self.current_group_power:
+        if 1 not in self.current_group_power:
             self.error("Permission Denied")
             return
         err, data = yield from Service.Problem.post_problem(meta)
@@ -42,7 +42,7 @@ class ApiProblemHandler(RequestHandler):
         meta["group_id"] = self.current_group
         meta["setter_user_id"] = self.account['id']
         meta['id'] = id
-        if not 1 in self.current_group_power:
+        if 1 not in self.current_group_power:
             self.error("Permission Denied")
             return
         err, data = yield from Service.Problem.delete_problem(meta)

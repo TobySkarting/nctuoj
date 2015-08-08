@@ -31,9 +31,9 @@ class BulletinService(BaseService):
         """ new bulletin """
         if int(data['id']) == 0:
             col = ['content', 'title']
-            res = {}
-            for x in col:
-                res[x] = ""
+            res = { x: "" for x in col }
+            #for x in col:
+                #res[x] = ""
             res['id'] = 0
             return (None, res)
 
@@ -50,10 +50,14 @@ class BulletinService(BaseService):
         required_args = ['group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        res = self.rs.get('latest_bulletin@%s' % str(data["group_id"]))
+        if res:
+            return (None, res)
         sql = "SELECT bulletins.*, b.account as setter_user FROM bulletins inner join (SELECT id, account FROM users) as b on bulletins.setter_user_id=b.id WHERE bulletins.group_id=%s ORDER BY bulletins.id DESC LIMIT 1"
         res = yield from self.db.execute(sql, (data["group_id"]))
         if len(res) == 0:
             return ('Empty', None)
+        self.rs.set('latest_bulletin@%s' % str(data["group_id"]), res[0])
         return (None, res[0])
         
 
