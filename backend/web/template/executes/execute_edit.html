@@ -1,39 +1,36 @@
 {% extends './../frame.html' %}
 {% block content %}
-
-<form method="post" action="/api/group/{{current_group}}/bulletins/{{data['id']}}/">
-    <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" class="form-control" name="title" value={{data['title']}}>
+<a class="btn btn-default" href="/executes/{{data['id']}}/" style="margin-bottom: 12px;">Back</a>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="edit panel panel-default">
+            <div class="panel-heading">
+                Lang: 
+                <select>
+                    {% for x in map_lang %}
+                        <option value={{x}}>{{map_lang[x]}}</option>
+                    {% end %}
+                </select>
+            </div>
+            <div class="panel-body"><textarea class="form-control" rows=5 name="description">{% raw data['description'] %}</textarea></div>
+            <table class="table table-hover table-striped table-condensed">
+                <thead>
+                    <th>#</th>
+                    <th>Command</th>
+                    <th>Primary</th>
+                </thead>
+                <tbody>
+                    {% for x in data['steps'] %}
+                        <tr>
+                            <td>{{x['step']}}</td>
+                            <td>{{x['command']}}</td>
+                            <td>{{x['primary']}}</td>
+                        </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="content">Content</label>
-        <textarea class="form-control" name="content">{% raw data['content'] %}</textarea>
-    </div>
-    <button type="submit" class="btn btn-success">Submit</button>
-</form>
-
-<script>
-$( document ).ready(function(){
-    $("form").submit(function(){
-        form = $(this);
-        $.ajax({
-            url: form.attr("action"),
-            type: form.attr("method"),
-            data: form.serialize(),
-            dataType: "json",
-            success: function(msg){
-                if(msg['status'] == "success"){
-                    location.href = "/group/{{current_group}}/bulletins/";
-                    return false;
-                } else {
-                    bootbox.alert(msg['msg'])
-                }
-            }
-        });
-        return false;
-    });
-});
-</script>
+</div>
 
 {% end %}

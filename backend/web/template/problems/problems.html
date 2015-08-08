@@ -9,13 +9,13 @@
     <thead>
         <tr>
             <th>#</th>
-            <th>Real ID</th>
+            <th>PID</th>
             {% if int(current_group) == 1 %}
                 <th>Group</th>
             {% end %}
             <th>Problem</th>
-            <th>Setter</th>
-            <th>Source</th>
+            <th class="tablet computer only">Setter</th>
+            <th class="tablet computer only">Source</th>
         </tr>
     </thead>
     <tbody>
@@ -27,8 +27,8 @@
                     <td><a href='/group/{{x['group_id']}}/problems/'>{{x['group_name']}}</a></td>
                 {% end %}
                 <td><a href='/group/{{current_group}}/problems/{{x['real_id']}}/'>{{x['title']}}</a></td>
-                <td><a href='/users/{{x['setter_user_id']}}/'>{{x['setter_user']}}</a></td>
-                <td>{{x['source']}}</td>
+                <td class="tablet computer only"><a href='/users/{{x['setter_user_id']}}/'>{{x['setter_user']}}</a></td>
+                <td class="tablet computer only">{{x['source']}}</td>
             </tr>
         {% end %}
     </tbody>

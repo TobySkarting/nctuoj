@@ -78,7 +78,7 @@ class ProblemService(BaseService):
         res = res[0]
         if int(res['group_id']) != int(data['group_id']) and int(res['visible']) != 2:
             return ('Error mapping problem id and group id', None)
-        self.rs.set('problem@%s' % str(data['id']), res[0])
+        self.rs.set('problem@%s' % str(data['id']), res)
         return (None, res)
 
     def post_problem(self, data={}):
@@ -92,6 +92,7 @@ class ProblemService(BaseService):
             return (None, insert_id)
         else:
             err, res = yield from self.get_problem(data)
+            self.rs.delete('problem@%s' % str(data['id']))
             if err:
                 return (err, None)
             if int(res['group_id']) != int(data['group_id']):

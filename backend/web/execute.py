@@ -23,7 +23,7 @@ class WebExecuteTypeHandler(RequestHandler):
             else: self.Render('./executes/execute.html', data=data)
         elif action == "edit":
             ### check power
-            if not map_power['execute_manage'] in self.map_power:
+            if not self.map_power['execute_manage'] in self.account['power']:
                 self.write_error(403)
                 return
             err, data = yield from Service.Execute.get_execute(meta)
