@@ -113,8 +113,8 @@ if __name__ == '__main__':
         ('/api/group/\d+/problems/',                ApiProblemsHandler),
         ('/api/group/\d+/problems/(\d+)/',          ApiProblemHandler),
 
-#        ('/api/execute_types/',                     ApiManageExecuteTypesHandler),
-#        ('/api/execute_types/(\d+)/',               ApiManageExecuteTypeHandler),
+#        ('/api/executes/',                     ApiManageExecuteTypesHandler),
+#        ('/api/executes/(\d+)/',               ApiManageExecuteTypeHandler),
 
     ### ('/api/group/\d+/problems/(\d+)/testdata/',         ApiProblemTestdataHaneler),
     ### ('/api/group/\d+/problems/(\d+)/testdata/(\d+)/',   ApiProblemTestdatumHandler),
@@ -132,10 +132,10 @@ if __name__ == '__main__':
         ('/group/\d+/contests/',                    WebContestsHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/?',       WebContestHandler),
         
-        ('/execute_types/',                         WebExecuteTypesHandler),
-        ('/execute_types/(\d+)/(\w*)/?',            WebExecuteTypeHandler),
-        ('/verdict_types/',                         WebVerdictTypesHandler),
-        ('/verdict_types/(\d+)/(\w*)/?',            WebVerdictTypeHandler),
+        ('/executes/',                         WebExecuteTypesHandler),
+        ('/executes/(\d+)/(\w*)/?',            WebExecuteTypeHandler),
+        ('/verdicts/',                         WebVerdictTypesHandler),
+        ('/verdicts/(\d+)/(\w*)/?',            WebVerdictTypeHandler),
 
         ### user list only admin
         ('/users/', WebUsersHandler),       

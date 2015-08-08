@@ -190,11 +190,12 @@ CREATE TABLE map_execute_problem (
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
 CREATE TABLE execute_types (
-    `id`            int(11)         NOT NULL AUTO_INCREMENT,
-    `description`   varchar(128)    NOT NULL DEFAULT "",
-    `lang`          int(11)         NOT NULL,
-    `created_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `id`                int(11)         NOT NULL AUTO_INCREMENT,
+    `description`       varchar(128)    NOT NULL DEFAULT "",
+    `lang`              int(11)         NOT NULL,
+    `setter_user_id`    int(11)         NOT NULL,
+    `created_at`        datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`        datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
@@ -208,7 +209,7 @@ CREATE TABLE execute_steps (
     `created_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
-    INDEX(`run_type_id`)
+    INDEX(`execute_type_id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
 
