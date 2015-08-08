@@ -12,14 +12,17 @@ class UserService(BaseService):
         super().__init__(db, rs)
         UserService.inst = self
 
-    def get_users_info(self, meta={}):
-        col = ["id", "account", "email", "student_id", "school_id", "created_at"]
-        sql = self.gen_select_sql("users", col)
-        res = yield from self.db.execute(sql)
+    def get_user_list(self, data={}):
+        required_args = ['group_id', 'page', 'count']
+        res = yield from self.db.execute("SELECT * FROM users ORDER BY id LIMIT %s, %s", ((int(data['page'])-1)*int(data['count']), data['count'],))
         for x in res:
             err, x["power"] = yield from self.get_user_power_info(x["id"])
             #x["power"] = power
         return (None, res)
+
+    def get_user_list_count(self, data={}):
+        res = yield from self.db.execute("SELECT COUNT(*) FROM users")
+        return (None, res[0]['COUNT(*)'])
 
     def get_user_basic_info(self, id):
         res = self.rs.get("user_basic@%s" % str(id))

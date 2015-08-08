@@ -1,6 +1,7 @@
 from req import RequestHandler
 from req import reqenv
 from req import Service
+import math
 
 
 class WebUsersHandler(RequestHandler):
@@ -9,8 +10,35 @@ class WebUsersHandler(RequestHandler):
         if not self.map_power['user_manage'] in self.account['power']:
             self.write_error(403)
             return
-        err, meta = yield from Service.User.get_users_info()
-        self.Render('./users/users.html', data=meta)
+        args = ["page"]
+        meta = self.get_args(args)
+        meta['count'] = 10
+        ### default page is 1
+        if not meta['page']:
+            meta['page'] = 1
+        ### if get page is not int then redirect to page 1 
+        try:
+            meta["page"] = int(meta["page"])
+        except:
+            self.redirect('/executes/')
+            return
+        ### modify page in range (1, page_count)
+        err, count = yield from Service.User.get_user_list_count()
+        page_count = max(math.ceil(count / meta['count']), 1)
+        if int(meta['page']) < 1:
+            self.redirect('/userss/')
+            return
+        if int(meta['page']) > page_count:
+            self.redirect('/users/?page='+str(page_count))
+            return
+        err, data = yield from Service.User.get_user_list(meta)
+        ### about pagination
+        page = {}
+        page['total'] = page_count
+        page['current'] = meta['page']
+        page['url'] = '/users/'
+        page['get'] = {}
+        self.Render('./users/users.html', data=data, page=page)
 
     @reqenv
     def post(self):
