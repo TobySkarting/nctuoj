@@ -69,7 +69,7 @@ class MySQL:
 if __name__ == '__main__':
     db = MySQL('140.113.194.120', 'nctuoj', 'yavaf2droyPo', 'nctuoj')
     db.connect();
-    for i in range(1, 1000000):
+    for i in range(1000000, 2000000):
         re = db.execute("INSERT users (account, passwd, email, school_id, student_id) values (%s, 'XD', 'gg', 0, 0)", (str(i),))
     re = db.execute("SELECT * FROM users");
     print(re)

@@ -1,15 +1,12 @@
 import redis
-import msgpack
-import json
 import pickle
-
-DEFAULT_EXPIRE_TIME = 3600
+import config
 
 class MyRedis(redis.StrictRedis):
     def __init__(self, host='localhost', port=6379, db=0):
         super().__init__(host=host, port=port, db=db)
 
-    def set(self, name, value, time=DEFAULT_EXPIRE_TIME):
+    def set(self, name, value, time=config.DATA_EXPIRE_SECOND):
         return self.setex(name, time, value)
 
     def get(self, name):

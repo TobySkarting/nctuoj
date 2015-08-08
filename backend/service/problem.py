@@ -61,9 +61,6 @@ class ProblemService(BaseService):
         if err: return (err, None)
         if int(data['id']) == 0:
             col = ["id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at"]
-            #res = {}
-            #for x in col:
-                #res[x] = ""
             res = { x: "" for x in col }
             res['id'] = 0
             return (None, res)
@@ -98,7 +95,7 @@ class ProblemService(BaseService):
                 return ('Error mapping problem id and group id', None)
             data.pop('id')
             sql, parma = self.gen_update_sql("problems", data)
-            yield from self.db.execute(sql + " WHERE id=" + str(res['id']), parma)
+            yield from self.db.execute("%s WHERE id = %s" % (sql, str(res['id'])), parma)
             return (None, res['id'])
 
     def delete_problem(self, data={}):

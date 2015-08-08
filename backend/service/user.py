@@ -14,20 +14,21 @@ class UserService(BaseService):
 
     def get_user_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
-        res = yield from self.db.execute("SELECT * FROM users ORDER BY id LIMIT %s, %s", ((int(data['page'])-1)*int(data['count']), data['count'],))
+        res = yield from self.db.execute("SELECT * FROM users, (SELECT id FROM users ORDER BY id LIMIT %s, %s) AS b WHERE users.id = b.id", ((int(data['page'])-1)*int(data['count']), data['count'],))
         for x in res:
             err, x["power"] = yield from self.get_user_power_info(x["id"])
-            #x["power"] = power
         return (None, res)
 
     def get_user_list_count(self, data={}):
+        res = self.rs.get('user_list_count')
+        if res: return (None, res)
         res = yield from self.db.execute("SELECT COUNT(*) FROM users")
+        self.rs.set('user_list_count', res[0]['COUNT(*)'])
         return (None, res[0]['COUNT(*)'])
 
     def get_user_basic_info(self, id):
         res = self.rs.get("user_basic@%s" % str(id))
-        if res:
-            return (None, res)
+        if res: return (None, res)
         res = yield from self.db.execute("SELECT * FROM users where id=%s", (id,))
         if len(res) == 0:
             return ('Eidnotexist', None)
@@ -38,20 +39,15 @@ class UserService(BaseService):
 
     def get_user_group_info(self, id):
         res = self.rs.get('user_group@%s' % str(id))
-        if res:
-            return (None, res)
-        res = yield from self.db.execute("SELECT groups.* FROM groups inner join (select group_id from map_group_user where user_id = %s order by group_id) as b on groups.id = b.group_id", (id,))
+        if res: return (None, res)
+        res = yield from self.db.execute("SELECT groups.* FROM groups, (select group_id from map_group_user where user_id = %s order by group_id) as b WHERE groups.id = b.group_id", (id,))
         self.rs.set('user_group@%s' % str(id), res)
         return (None, res)
 
     def get_user_power_info(self, id):
         res = self.rs.get('user_power@%s' % str(id))
-        if res:
-            return (None, res)
+        if res: return (None, res)
         res = yield from self.db.execute("SELECT `power` from map_user_power WHERE user_id=%s", (id,))
-        #power = set()
-        #for x in res:
-            #power.add(x['power'])
         power = set([ x['power'] for x in res ])
         self.rs.set('user_power@%s' % str(id), power)
         return (None, power)
@@ -64,8 +60,11 @@ class UserService(BaseService):
             yield from self.db.execute("INSERT INTO map_user_power (user_id, power) VALUES (%s, %s)", (id, power,))
 
     def get_user_group_power_info(self, uid, gid):
+        res = self.rs.get('user_group_power@%s@%s' % (str(uid), str(gid)))
+        if res: return (None, res)
         res = yield from self.db.execute("SELECT `power` from map_group_user_power where user_id=%s AND group_id=%s", (uid, gid,))
         power = set([x['power'] for x in res])
+        self.rs.set('user_group_power@%s@%s' % (str(uid), str(gid)), power)
         return (None, power)
 
     def modify(self, data={}):
@@ -133,5 +132,6 @@ class UserService(BaseService):
         if len(res) == 0:
             return ('Ecreate', None)
         id = res[0]["id"]
+        self.rs.delete('user_list_count')
         return (None, str(id))
 

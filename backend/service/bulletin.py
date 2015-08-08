@@ -77,7 +77,7 @@ class BulletinService(BaseService):
                 return (err, None)
             data.pop('id')
             sql, parma = self.gen_update_sql("bulletins", data)
-            yield from self.db.execute(sql + " WHERE id=" + str(res['id']), parma)
+            yield from self.db.execute("%s WHERE id = %s" % (sql, str(res['id'])), parma)
             return (None, None)
 
     def delete_bulletin(self, data={}):
