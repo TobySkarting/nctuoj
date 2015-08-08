@@ -61,11 +61,15 @@ class ProblemService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         if int(data['id']) == 0:
-            col = ("id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at")
-            res = {}
-            for x in col:
-                res[x] = ""
+            col = ["id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at"]
+            #res = {}
+            #for x in col:
+                #res[x] = ""
+            res = { x: "" for x in col }
             res['id'] = 0
+            return (None, res)
+        res = self.rs.get('problem@%s' % str(data['id']))
+        if res:
             return (None, res)
         sql = "SELECT problems.*, b.account as setter_user FROM problems inner join (SELECT id, account FROM users) as b on problems.setter_user_id=b.id WHERE problems.id=%s"
         res = yield from self.db.execute(sql, (data["id"]))
@@ -74,6 +78,7 @@ class ProblemService(BaseService):
         res = res[0]
         if int(res['group_id']) != int(data['group_id']) and int(res['visible']) != 2:
             return ('Error mapping problem id and group id', None)
+        self.rs.set('problem@%s' % str(data['id']), res[0])
         return (None, res)
 
     def post_problem(self, data={}):
