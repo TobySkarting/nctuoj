@@ -24,6 +24,7 @@ class WebUsersHandler(RequestHandler):
             return
         ### modify page in range (1, page_count)
         err, count = yield from Service.User.get_user_list_count()
+        print(count, type(count))
         page_count = max(math.ceil(count / meta['count']), 1)
         if int(meta['page']) < 1:
             self.redirect('/userss/')

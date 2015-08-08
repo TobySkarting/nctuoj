@@ -1,4 +1,5 @@
 import mysql.connector
+import random
 class MySQL:
     def __init__(self, host='127.0.0.1', user="root", password="", database="", port=3306, charset='utf8'):
         self._config = {}
@@ -69,7 +70,6 @@ class MySQL:
 if __name__ == '__main__':
     db = MySQL('140.113.194.120', 'nctuoj', 'yavaf2droyPo', 'nctuoj')
     db.connect();
-    for i in range(1000000, 2000000):
-        re = db.execute("INSERT users (account, passwd, email, school_id, student_id) values (%s, 'XD', 'gg', 0, 0)", (str(i),))
-    re = db.execute("SELECT * FROM users");
-    print(re)
+    for x in range(0, 10**6):
+        sql = '''INSERT INTO `problems` (`title`, `description`, `sample_input`, `sample_output`, `hint`, `source`, `group_id`, `setter_user_id`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s) '''
+        db.execute(sql, (str(x), str(x)*10, str(x)*20, str(x)*20, str(x)*10, str(x)*10, random.randint(1, 2), random.randint(0, 100)))

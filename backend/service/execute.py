@@ -46,6 +46,6 @@ class ExecuteService(BaseService):
             id = data['id']
             data.pop('id')
             sql, parma = self.gen_update_sql("execute_types", data)
-            yield from self.db.execute(sql + " WHERE id=" + str(id), parma)
+            yield from self.db.execute("%s WHERE id = %s" % (sql, str(id)), parma)
             return (None, str(id))
 

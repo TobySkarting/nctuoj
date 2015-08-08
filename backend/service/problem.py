@@ -41,6 +41,9 @@ class ProblemService(BaseService):
         required_args = ['group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        res = self.rs.get('problem_list_count@%s@%s' 
+                % (str(data['is_admin']), str(data['group_id'])))
+        if res: return (None, res)
         sql = "SELECT COUNT(*) FROM problems "
         if int(data['group_id']) == 1:
             if data['is_admin']:
@@ -53,6 +56,8 @@ class ProblemService(BaseService):
             else:
                 sql += "WHERE problems.group_id=%s AND problems.visible <> 0"
         res = yield from self.db.execute(sql, (data['group_id'],))
+        self.rs.set('problem_list_count@%s@%s'
+                % (str(data['is_admin']), str(data['group_id'])), res[0]['COUNT(*)'])
         return (None, res[0]['COUNT(*)'])
 
     def get_problem(self, data={}):
@@ -61,15 +66,11 @@ class ProblemService(BaseService):
         if err: return (err, None)
         if int(data['id']) == 0:
             col = ["id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at"]
-            #res = {}
-            #for x in col:
-                #res[x] = ""
             res = { x: "" for x in col }
             res['id'] = 0
             return (None, res)
         res = self.rs.get('problem@%s' % str(data['id']))
-        if res:
-            return (None, res)
+        if res: return (None, res)
         sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
         res = yield from self.db.execute(sql, (data["id"]))
         if len(res) == 0:
@@ -98,7 +99,7 @@ class ProblemService(BaseService):
                 return ('Error mapping problem id and group id', None)
             data.pop('id')
             sql, parma = self.gen_update_sql("problems", data)
-            yield from self.db.execute(sql + " WHERE id=" + str(res['id']), parma)
+            yield from self.db.execute("%s WHERE id = %s" % (sql, str(res['id'])), parma)
             return (None, res['id'])
 
     def delete_problem(self, data={}):
