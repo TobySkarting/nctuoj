@@ -24,7 +24,7 @@ class ApiProblemHandler(RequestHandler):
     @reqenv
     def post(self, id):
         ### /api/{{group_id}}/problems/{{problem_id}}/
-        args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source"]
+        args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible"]
         meta = self.get_args(args)
         meta['group_id'] = self.current_group
         meta['setter_user_id'] = self.account['id']

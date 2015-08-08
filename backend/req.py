@@ -9,7 +9,7 @@ import tornado.gen
 import tornado.web
 import tornado.websocket
 import re
-from map import map_power, map_group_power, map_lang
+from map import map_power, map_group_power, map_lang, map_visible
 class Service:
     pass
 
@@ -67,6 +67,7 @@ class RequestHandler(tornado.web.RequestHandler):
         kwargs['map_power'] = self.map_power
         kwargs['map_group_power'] = self.map_group_power
         kwargs['map_lang'] = self.map_lang
+        kwargs['map_visible'] = map_visible
         kwargs['account'] = self.account
         kwargs['title'] = kwargs["title"] + " | NCTUOJ" if "title" in kwargs else "NCTUOJ"
         kwargs['group'] = self.group

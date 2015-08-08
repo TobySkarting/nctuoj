@@ -1,36 +1,62 @@
 {% extends './../frame.html' %}
 {% block content %}
 <a class="btn btn-default" href="/executes/{{data['id']}}/" style="margin-bottom: 12px;">Back</a>
-<div class="row">
-    <div class="col-xs-12">
-        <div class="edit panel panel-default">
-            <div class="panel-heading">
-                Lang: 
-                <select>
-                    {% for x in map_lang %}
-                        <option value={{x}}>{{map_lang[x]}}</option>
-                    {% end %}
-                </select>
+
+<form method="post" action="/api/executes/{{data['id']}}/">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="edit panel panel-default">
+                <div class="panel-heading">
+                    Lang: 
+                    <select class="select" name="lang">
+                        {% for x in map_lang %}
+                            <option value={{x}}>{{map_lang[x]}}</option>
+                        {% end %}
+                    </select>
+                </div>
+                <div class="panel-body"><textarea class="form-control" rows=5 name="description">{% raw data['description'] %}</textarea></div>
+                <table class="table table-hover table-striped table-condensed">
+                    <thead>
+                        <th class="col-md-2">#</th>
+                        <th class="col-md-8">Command</th>
+                        <th class="col-md-2">Primary</th>
+                    </thead>
+                    <tbody>
+                        {% for x in data['steps'] %}
+                            <tr>
+                                <td>{{x['step']}}</td>
+                                <td>{{x['command']}}</td>
+                                <td>{{x['primary']}}</td>
+                            </tr>
+                        {% end %}
+                    </tbody>
+                </table>
             </div>
-            <div class="panel-body"><textarea class="form-control" rows=5 name="description">{% raw data['description'] %}</textarea></div>
-            <table class="table table-hover table-striped table-condensed">
-                <thead>
-                    <th>#</th>
-                    <th>Command</th>
-                    <th>Primary</th>
-                </thead>
-                <tbody>
-                    {% for x in data['steps'] %}
-                        <tr>
-                            <td>{{x['step']}}</td>
-                            <td>{{x['command']}}</td>
-                            <td>{{x['primary']}}</td>
-                        </tr>
-                    {% end %}
-                </tbody>
-            </table>
         </div>
     </div>
-</div>
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+<script>
+$( document ).ready(function(){
+    $(".select").selectpicker();
+    $("form").submit(function(){
+        form = $(this);
+        $.ajax({
+            url: form.attr("action"),
+            type: form.attr("method"),
+            data: form.serialize(),
+            dataType: "json",
+            success: function(msg){
+                if(msg['status'] == "success"){
+                    location.href = '/executes/{{data['id']}}/';
+                } else {
+                    bootbox.alert(msg['msg']);
+                }
+            }
+        });
+        return false;
+    });
+});
+</script>
 
 {% end %}

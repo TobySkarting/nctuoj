@@ -53,7 +53,7 @@ class BulletinService(BaseService):
         res = self.rs.get('latest_bulletin@%s' % str(data["group_id"]))
         if res:
             return (None, res)
-        sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id ORDER BY b.id DESC LIMIT 1"
+        sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND group_id=%s ORDER BY b.id DESC LIMIT 1"
         res = yield from self.db.execute(sql, (data["group_id"]))
         if len(res) == 0:
             return ('Empty', None)

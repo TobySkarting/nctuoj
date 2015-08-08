@@ -1,13 +1,23 @@
 {% extends './../frame.html' %}
 {% block content %}
-
+{{data['visible']}}
 <form class="form" method="post" action="/api/group/{{current_group}}/problems/{{data['id']}}/">
     <p>
     <div class="row">
         <div class="form-horizontal">
-            <label class="col-sm-offset-2 col-sm-2 control-label">{{data['id'] if data['id'] else 'New'}}.</label>
+            <label class="col-sm-1 control-label">{{data['id'] if data['id'] else 'New'}}.</label>
             <div class="col-sm-4">
                 <input type="text" class="form-control" name="title" value="{{data['title']}}">
+            </div>
+            <label class="col-sm-1 control-label">
+                Visible
+            </label>
+            <div class="col-sm-2">
+                <select class="select" name="visible">
+                    {% for x in map_visible %}
+                        <option value={{x}}>{{map_visible[x]}}</option>
+                    {% end %}
+                </select>
             </div>
         </div>
     </div>
@@ -69,6 +79,7 @@
 
 <script>
 $( document ).ready(function(){
+    $("[name=visible]").selectpicker().selectpicker('val', {{data["visible"]}});
     $("form").submit(function(){
         form = $(this);
         $.ajax({

@@ -20,3 +20,9 @@ map_lang = {
     7: "Javascript",
     7: "Haskell",
 }
+
+map_visible = {
+    1: "Invisible",
+    2: "Visible In Group",
+    3: "Pulbic",
+}

@@ -29,6 +29,8 @@ from api.bulletin import ApiBulletinsHandler
 from api.bulletin import ApiBulletinHandler
 from api.problem import ApiProblemsHandler
 from api.problem import ApiProblemHandler
+from api.execute import ApiExecutesHandler
+from api.execute import ApiExecuteHandler
 
 #from api.execute_type import ApiExecuteTypesHandler
 #from api.execute_type import ApiExecuteTypeHandler
@@ -113,8 +115,8 @@ if __name__ == '__main__':
         ('/api/group/\d+/problems/',                ApiProblemsHandler),
         ('/api/group/\d+/problems/(\d+)/',          ApiProblemHandler),
 
-#        ('/api/executes/',                     ApiManageExecuteTypesHandler),
-#        ('/api/executes/(\d+)/',               ApiManageExecuteTypeHandler),
+        ('/api/executes/',                     ApiExecutesHandler),
+        ('/api/executes/(\d+)/',               ApiExecuteHandler),
 
     ### ('/api/group/\d+/problems/(\d+)/testdata/',         ApiProblemTestdataHaneler),
     ### ('/api/group/\d+/problems/(\d+)/testdata/(\d+)/',   ApiProblemTestdatumHandler),
