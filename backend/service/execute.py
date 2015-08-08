@@ -8,7 +8,7 @@ class ExecuteService(BaseService):
         ExecuteService.inst = self
 
     def get_execute_list(self, data={}):
-        sql = "SELECT execute_types.*, u.account as setter_user  FROM execute_types INNER JOIN (SELECT id, account FROM users) as u ON execute_types.setter_user_id=u.id"
+        sql = "SELECT e.*, u.account as setter_user  FROM execute_types as e, users as u WHERE e.setter_user_id=u.id"
         res = yield from self.db.execute(sql)
         return (None, res)
 
@@ -25,7 +25,7 @@ class ExecuteService(BaseService):
             res['steps'] = []
             res['id'] = 0
             return (None, res)
-        sql = "SELECT execute_types.*, u.account as setter_user  FROM execute_types INNER JOIN (SELECT id, account FROM users) as u ON execute_types.setter_user_id=u.id WHERE execute_types.id=%s"
+        sql = "SELECT e.*, u.account as setter_user  FROM execute_types as e, users as u WHERE e.id=%s AND e.setter_user_id=u.id"
         res = yield from self.db.execute(sql, (data["id"]))
         if len(res) == 0:
             return ('Error execute id', None)

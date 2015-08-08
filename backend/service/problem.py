@@ -12,25 +12,24 @@ class ProblemService(BaseService):
         if err: return (err, None)
         sql = """
             SELECT
-            problems.`id`, problems.`title`, problems.`source`, problems.`group_id`, problems.`created_at`, 
+            p.`id`, p.`title`, p.`source`, p.`group_id`, p.`created_at`, 
             u.`id` as setter_user_id, u.`account` as setter_user,
             g.`name` as `group_name`
-            FROM `problems` 
-            INNER JOIN (SELECT users.id, users.account FROM users) as u on u.id = problems.setter_user_id 
-            INNER JOIN (SELECT groups.id, groups.name FROM groups) as g on g.id = problems.group_id 
+            FROM `problems` as p, `users` as u, `groups` as g
             """
         if int(data['group_id']) == 1:
             if data['is_admin']:
-                sql += "WHERE (problems.group_id=%s OR problems.visible = 2)"
+                sql += "WHERE (p.group_id=%s OR p.visible = 2)"
             else:
-                sql += "WHERE ((problems.group_id=%s AND problems.visible <> 0) OR problems.visible = 2)"
+                sql += "WHERE ((p.group_id=%s AND p.visible <> 0) OR p.visible = 2)"
         else:
             if data['is_admin']:
-                sql += "WHERE problems.group_id=%s"
+                sql += "WHERE p.group_id=%s"
             else:
-                sql += "WHERE problems.group_id=%s AND problems.visible <> 0"
+                sql += "WHERE p.group_id=%s AND p.visible <> 0"
         sql += """
-            ORDER by problems.id LIMIT %s, %s
+            AND u.id = p.setter_user_id AND g.id = p.group_id
+            ORDER by p.id LIMIT %s, %s
             """
         res = yield from self.db.execute(sql, (data['group_id'], (int(data["page"])-1)*int(data["count"]), data["count"], ))
         for x in range(len(res)):
@@ -71,7 +70,7 @@ class ProblemService(BaseService):
         res = self.rs.get('problem@%s' % str(data['id']))
         if res:
             return (None, res)
-        sql = "SELECT problems.*, b.account as setter_user FROM problems inner join (SELECT id, account FROM users) as b on problems.setter_user_id=b.id WHERE problems.id=%s"
+        sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
         res = yield from self.db.execute(sql, (data["id"]))
         if len(res) == 0:
             return ('Error problem id', None)

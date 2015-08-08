@@ -37,7 +37,7 @@ class BulletinService(BaseService):
             res['id'] = 0
             return (None, res)
 
-        sql = "SELECT bulletins.*, b.account as setter_user FROM bulletins inner join (SELECT id, account FROM users) as b on bulletins.setter_user_id=b.id WHERE bulletins.id=%s"
+        sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND b.id=%s"
         res = yield from self.db.execute(sql, (data["id"]))
         if len(res) == 0:
             return ('Error bulletin id', None)
@@ -53,7 +53,7 @@ class BulletinService(BaseService):
         res = self.rs.get('latest_bulletin@%s' % str(data["group_id"]))
         if res:
             return (None, res)
-        sql = "SELECT bulletins.*, b.account as setter_user FROM bulletins inner join (SELECT id, account FROM users) as b on bulletins.setter_user_id=b.id WHERE bulletins.group_id=%s ORDER BY bulletins.id DESC LIMIT 1"
+        sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id ORDER BY b.id DESC LIMIT 1"
         res = yield from self.db.execute(sql, (data["group_id"]))
         if len(res) == 0:
             return ('Empty', None)
