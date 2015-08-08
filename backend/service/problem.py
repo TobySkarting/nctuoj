@@ -41,6 +41,9 @@ class ProblemService(BaseService):
         required_args = ['group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        res = self.rs.get('problem_list_count@%s@%s' 
+                % (str(data['is_admin']), str(data['group_id'])))
+        if res: return (None, res)
         sql = "SELECT COUNT(*) FROM problems "
         if int(data['group_id']) == 1:
             if data['is_admin']:
@@ -53,6 +56,8 @@ class ProblemService(BaseService):
             else:
                 sql += "WHERE problems.group_id=%s AND problems.visible <> 0"
         res = yield from self.db.execute(sql, (data['group_id'],))
+        self.rs.set('problem_list_count@%s@%s'
+                % (str(data['is_admin']), str(data['group_id'])), res[0]['COUNT(*)'])
         return (None, res[0]['COUNT(*)'])
 
     def get_problem(self, data={}):
@@ -65,8 +70,7 @@ class ProblemService(BaseService):
             res['id'] = 0
             return (None, res)
         res = self.rs.get('problem@%s' % str(data['id']))
-        if res:
-            return (None, res)
+        if res: return (None, res)
         sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
         res = yield from self.db.execute(sql, (data["id"]))
         if len(res) == 0:
