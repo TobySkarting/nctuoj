@@ -49,7 +49,7 @@ class UserService(BaseService):
         #power = set()
         #for x in res:
             #power.add(x['power'])
-        power = set([ x['power'] for x in res ])
+        power = list(set([ x['power'] for x in res ]))
         self.rs.set('user_power@%s' % str(id), power)
         return (None, power)
 
