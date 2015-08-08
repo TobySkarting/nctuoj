@@ -17,27 +17,40 @@ class UserService(BaseService):
         sql = self.gen_select_sql("users", col)
         res = yield from self.db.execute(sql)
         for x in res:
-            err, power = yield from self.get_user_power_info(x["id"])
-            x["power"] = power
+            err, x["power"] = yield from self.get_user_power_info(x["id"])
+            #x["power"] = power
         return (None, res)
 
     def get_user_basic_info(self, id):
+        res = self.rs.get("user_basic@%s" % str(id))
+        if res:
+            return (None, res)
         res = yield from self.db.execute("SELECT * FROM users where id=%s", (id,))
         if len(res) == 0:
             return ('Eidnotexist', None)
         res = res[0]
         res.pop("passwd")
+        self.rs.set("user_basic@%s" % str(id), res)
         return (None, res)
 
     def get_user_group_info(self, id):
+        res = self.rs.get('user_group@%s' % str(id))
+        if res:
+            return (None, res)
         res = yield from self.db.execute("SELECT groups.* FROM groups inner join (select group_id from map_group_user where user_id = %s order by group_id) as b on groups.id = b.group_id", (id,))
+        self.rs.set('user_group@%s' % str(id))
         return (None, res)
 
     def get_user_power_info(self, id):
+        res = self.rs.get('user_power@%s' % str(id))
+        if res:
+            return (None, res)
         res = yield from self.db.execute("SELECT `power` from map_user_power WHERE user_id=%s", (id,))
-        power = set()
-        for x in res:
-            power.add(x['power'])
+        #power = set()
+        #for x in res:
+            #power.add(x['power'])
+        power = set([ x['power'] for x in res ])
+        self.rs.set('user_power@%s' % str(id), power)
         return (None, power)
 
     def post_user_power(self, id, power):
