@@ -38,7 +38,7 @@ class UserService(BaseService):
         if res:
             return (None, res)
         res = yield from self.db.execute("SELECT groups.* FROM groups inner join (select group_id from map_group_user where user_id = %s order by group_id) as b on groups.id = b.group_id", (id,))
-        self.rs.set('user_group@%s' % str(id))
+        self.rs.set('user_group@%s' % str(id), res)
         return (None, res)
 
     def get_user_power_info(self, id):
@@ -49,7 +49,7 @@ class UserService(BaseService):
         #power = set()
         #for x in res:
             #power.add(x['power'])
-        power = list(set([ x['power'] for x in res ]))
+        power = set([ x['power'] for x in res ])
         self.rs.set('user_power@%s' % str(id), power)
         return (None, power)
 
