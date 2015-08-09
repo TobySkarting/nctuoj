@@ -48,7 +48,7 @@ class UserService(BaseService):
         res = self.rs.get('user_power@%s' % str(id))
         if res: return (None, res)
         res = yield from self.db.execute("SELECT `power` from map_user_power WHERE user_id=%s", (id,))
-        power = set([ x['power'] for x in res ])
+        power = { x['power'] for x in res }
         self.rs.set('user_power@%s' % str(id), power)
         return (None, power)
 
@@ -63,7 +63,7 @@ class UserService(BaseService):
         res = self.rs.get('user_group_power@%s@%s' % (str(uid), str(gid)))
         if res: return (None, res)
         res = yield from self.db.execute("SELECT `power` from map_group_user_power where user_id=%s AND group_id=%s", (uid, gid,))
-        power = set([x['power'] for x in res])
+        power = { x['power'] for x in res }
         self.rs.set('user_group_power@%s@%s' % (str(uid), str(gid)), power)
         return (None, power)
 
