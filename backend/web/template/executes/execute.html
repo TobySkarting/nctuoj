@@ -1,5 +1,7 @@
 {% extends './../frame.html' %}
 {% block content %}
+
+<a class="btn btn-default" href="/executes/" style="margin-bottom: 12px;">Back to List</a>
 {% if map_power['execute_manage'] in account['power'] %}
     <a class="btn btn-default" href="/executes/{{data['id']}}/edit/" style="margin-bottom: 12px;">Edit</a>
 {% end %}
@@ -23,7 +25,11 @@
                         <tr>
                             <td>{{x['step']}}</td>
                             <td>{{x['command']}}</td>
-                            <td>{{x['primary']}}</td>
+                            <td>
+                                <div class="btn btn-sm {{ "btn-success" if x['primary'] else "btn-danger"}}">
+                                    {{ "Yes" if x['primary'] else "No"}}
+                                </div>
+                            </td>
                         </tr>
                     {% end %}
                 </tbody>

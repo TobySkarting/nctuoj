@@ -1,5 +1,5 @@
 <nav>
-    <ul class="pagination">
+    <ul class="pagination" style="margin: 0px;">
         <li {{ 'class=disabled' if page['urls']['prev'] == page['urls'][int(page['current'])] else '' }} >
             <a href="{{page['urls']['prev']}}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
@@ -13,5 +13,11 @@
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>
+        <!--li class="form-inline">
+            <div class="form-group">
+                <label>Page</label>
+                <input class="form-control">
+            </div>
+        </li-->
     </ul>
 </nav>

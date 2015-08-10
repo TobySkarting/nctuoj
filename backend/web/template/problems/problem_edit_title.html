@@ -1,0 +1,21 @@
+<h2><p>Edit Problem.{{data['id'] if data['id'] else 'New'}}</p></h2>
+{% if data['id'] != 0 %}
+    <div class="row">
+        <div class="col-md-2">
+            <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['id']}}/edit/basic/">Basic</a>
+        </div>
+        <div class="col-md-2">
+            <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['id']}}/edit/tag/">Tag</a>
+        </div>
+        <div class="col-md-2">
+            <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['id']}}/edit/execute/">Execute</a>
+        </div>
+        <div class="col-md-2">
+            <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['id']}}/edit/testdata/">Testdata</a>
+        </div>
+        <div class="col-md-2">
+                <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['id']}}/">Go Back</a>
+        </div>
+    </div>
+    <p></p>
+{% end %}

@@ -48,20 +48,36 @@ class WebProblemHandler(RequestHandler):
         meta['group_id'] = self.current_group
         if not action: action = "view"
         if action == "view":
-            data = {}
-            err, data['problem'] = yield from Service.Problem.get_problem(meta)
-            self.Render("./problems/problem.html", data=data)
-        elif action == "edit":
-            if not 1 in self.current_group_power:
-                self.write_error(403)
-                return
             err, data = yield from Service.Problem.get_problem(meta)
-            if err == 'Error problem id':
-                self.Render('404.html')
-            elif err == 'Error mapping problem id and group id':
-                self.Render('403.html')
-            else:
-                self.Render('./problems/problem_edit.html', data=data)
+            self.Render("./problems/problem.html", data=data)
         else:
-            self.Render('404.html')
+            self.write_error(404)
 
+class WebProblemEditHandler(RequestHandler):
+    @reqenv
+    def get(self, id=None, action=None):
+        meta = {}
+        meta['id'] = id
+        meta['group_id'] = self.current_group
+        if not 1 in self.current_group_power:
+            self.write_error(403)
+            return
+        err, data = yield from Service.Problem.get_problem(meta)
+        if err == 'Error problem id':
+            self.write_error(404)
+        elif err == 'Error mapping problem id and group id':
+            self.write_error(403)
+        elif err != None:
+            self.error(err)
+
+        if not action: action = "basic"
+        if action == "basic":
+            self.Render('./problems/problem_edit.html', data=data)
+        elif action == "tag":
+            self.Render('./problems/problem_edit_tag.html', data=data)
+        elif action == "execute":
+            self.Render('./problems/problem_edit_execute.html', data=data)
+        elif action == "testdata":
+            self.Render('./problems/problem_edit_testdata.html', data=data)
+        else:
+            self.write_error(404)

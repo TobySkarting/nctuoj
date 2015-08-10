@@ -136,23 +136,23 @@ CREATE TABLE testdata (
 CREATE TABLE judge_problem_attachment (
     `id`            int(11)         NOT NULL    AUTO_INCREMENT,
     `problem_id`    int(11)         NOT NULL,
-    `run_type_id`   int(11)         NOT NULL,
+    `execute_type_id`   int(11)         NOT NULL,
     `created_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
     INDEX (`problem_id`),
-    INDEX (`run_type_id`)
+    INDEX (`execute_type_id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
 CREATE TABLE judge_testdata_attachment (
     `id`            int(11)         NOT NULL    AUTO_INCREMENT,
     `testdata_id`   int(11)         NOT NULL,
-    `run_type_id`   int(11)         NOT NULL,
+    `execute_type_id`   int(11)         NOT NULL,
     `created_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
     INDEX (`testdata_id`),
-    INDEX (`run_type_id`)
+    INDEX (`execute_type_id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
 CREATE TABLE submissions (
@@ -178,7 +178,7 @@ CREATE TABLE wait_submissions (
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
-CREATE TABLE map_execute_problem (
+CREATE TABLE map_problem_execute (
     `id`            int(11)         NOT NULL    AUTO_INCREMENT,
     `problem_id`    int(11)         NOT NULL,
     `execute_type_id`   int(11)         NOT NULL,
@@ -186,7 +186,7 @@ CREATE TABLE map_execute_problem (
     `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
     INDEX (problem_id),
-    INDEX (run_type_id)
+    INDEX (execute_type_id)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
 CREATE TABLE execute_types (

@@ -44,17 +44,17 @@ class ProblemService(BaseService):
         res = self.rs.get('problem_list_count@%s@%s' 
                 % (str(data['is_admin']), str(data['group_id'])))
         if res: return (None, res)
-        sql = "SELECT COUNT(*) FROM problems "
+        sql = "SELECT COUNT(*) FROM problems as p "
         if int(data['group_id']) == 1:
             if data['is_admin']:
-                sql += "WHERE (problems.group_id=%s OR problems.visible = 2)"
+                sql += "WHERE (p.group_id=%s OR p.visible = 2)"
             else:
-                sql += "WHERE ((problems.group_id=%s AND problems.visible <> 0) OR problems.visible = 2)"
+                sql += "WHERE ((p.group_id=%s AND p.visible <> 0) OR p.visible = 2)"
         else:
             if data['is_admin']:
-                sql += "WHERE problems.group_id=%s"
+                sql += "WHERE p.group_id=%s"
             else:
-                sql += "WHERE problems.group_id=%s AND problems.visible <> 0"
+                sql += "WHERE p.group_id=%s AND p.visible <> 0"
         res = yield from self.db.execute(sql, (data['group_id'],))
         self.rs.set('problem_list_count@%s@%s'
                 % (str(data['is_admin']), str(data['group_id'])), res[0]['COUNT(*)'])
@@ -68,6 +68,7 @@ class ProblemService(BaseService):
             col = ["id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at"]
             res = { x: "" for x in col }
             res['id'] = 0
+            res['visible'] = 1
             return (None, res)
         res = self.rs.get('problem@%s' % str(data['id']))
         if res: return (None, res)
@@ -78,6 +79,7 @@ class ProblemService(BaseService):
         res = res[0]
         if int(res['group_id']) != int(data['group_id']) and int(res['visible']) != 2:
             return ('Error mapping problem id and group id', None)
+        err, res['execute'] = yield from self.get_problem_execute(data)
         self.rs.set('problem@%s' % str(data['id']), res)
         return (None, res)
 
@@ -101,6 +103,17 @@ class ProblemService(BaseService):
             sql, parma = self.gen_update_sql("problems", data)
             yield from self.db.execute("%s WHERE id = %s" % (sql, str(res['id'])), parma)
             return (None, res['id'])
+
+    def get_problem_execute(self, data={}):
+        print(data)
+        required_args = ['id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        res = self.rs.get('problem_execute@%s' % str(data['id']))
+        if res: return (None, res)
+        res = yield from self.db.execute("SELECT e.* FROM execute_types as e, (SELECT execute_type_id as id FROM map_problem_execute WHERE problem_id=%s) as b WHERE e.id=b.id", (data['id'],))
+        self.rs.set('problem_execute@%s' % str(data['id']), res)
+        return (None, res)
 
     def delete_problem(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id']

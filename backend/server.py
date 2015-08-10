@@ -45,6 +45,7 @@ from web.bulletin import WebBulletinsHandler
 from web.bulletin import WebBulletinHandler
 from web.problem import WebProblemsHandler
 from web.problem import WebProblemHandler
+from web.problem import WebProblemEditHandler
 from web.submission import WebSubmissionsHandler
 from web.submission import WebSubmissionHandler
 from web.contest import WebContestsHandler
@@ -113,7 +114,7 @@ if __name__ == '__main__':
         ('/api/group/\d+/bulletins/',               ApiBulletinsHandler),
         ('/api/group/\d+/bulletins/(\d+)/',         ApiBulletinHandler),
         ('/api/group/\d+/problems/',                ApiProblemsHandler),
-        ('/api/group/\d+/problems/(\d+)/',          ApiProblemHandler),
+        ('/api/group/\d+/problems/(\d+)/(\w*)/?',   ApiProblemHandler),
 
         ('/api/executes/',                     ApiExecutesHandler),
         ('/api/executes/(\d+)/',               ApiExecuteHandler),
@@ -128,6 +129,7 @@ if __name__ == '__main__':
         ('/group/\d+/bulletins/',                   WebBulletinsHandler),
         ('/group/\d+/bulletins/(\d+)/(\w*)/?',      WebBulletinHandler),
         ('/group/\d+/problems/',                    WebProblemsHandler),
+        ('/group/\d+/problems/(\d+)/edit/(\w*)/?',  WebProblemEditHandler),
         ('/group/\d+/problems/(\d+)/(\w*)/?',       WebProblemHandler),
         ('/group/\d+/submissions/',                 WebSubmissionsHandler),
         ('/group/\d+/submissions/(\d+)/(\w*)/?',    WebSubmissionHandler),
@@ -147,6 +149,7 @@ if __name__ == '__main__':
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/.*', Web404Handler)
         ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape', ui_modules = ui_modules)
+    #rs.flushdb()
     global srv
     srv = tornado.httpserver.HTTPServer(app)
     srv.listen(config.PORT)

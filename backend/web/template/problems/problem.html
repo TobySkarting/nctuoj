@@ -3,30 +3,24 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h2 class="text-center">{{data['problem']['id']}}.{{data['problem']['title']}}</h2>
+        <h2 class="text-center">{{data['id']}}.{{data['title']}}</h2>
     </div>
 </div>
-<div class="row" style="margin-bottom: 20px">
+<div class="row margin-bottom">
     <div class="col-md-2">
         <a class="btn btn-default btn-block btn-sm">Submit</a>
     </div>
     <div class="col-md-2">
         <a class="btn btn-default btn-block btn-sm">Submissions</a>
     </div>
-    {% if map_group_power["admin_manage"] in current_group_power and int(current_group) == int(data['problem']['group_id']) %}
+    {% if map_group_power["admin_manage"] in current_group_power and int(current_group) == int(data['group_id']) %}
         <div class="col-md-2">
-            <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['problem']['id']}}/edit/">Edit</a>
+            <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['id']}}/edit/">Edit</a>
         </div>
         <div class="col-md-2">
-            <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['problem']['id']}}/testdata/">Testdata</a>
+            <a class="btn btn-default btn-block btn-sm" onclick="delete_problem(this)" data-href="/api/group/{{current_group}}/problems/{{data['id']}}/basic/" data-method="delete">Delete</a> 
         </div>
-        <div class="col-md-1">
-            <a class="btn btn-default btn-block btn-sm">Tag</a>
-        </div>
-        <div class="col-md-1">
-            <a class="btn btn-default btn-block btn-sm" onclick="delete_problem(this)" data-href="/api/group/{{current_group}}/problems/{{data['problem']['id']}}/" data-method="delete">Delete</a> 
-        </div>
-        <div class="col-md-1">
+        <div class="col-md-2">
             <a class="btn btn-default btn-block btn-sm">Rejudge</a>
         </div>
         <script>
@@ -50,12 +44,15 @@
         }
         </script>
     {% end %}
+    <div class="col-md-2">
+        <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/">Back to List</a>
+    </div>
 </div>
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">Description</div>
-            <div class="panel-body">{% raw data['problem']['description'] %}</div>
+            <div class="panel-body">{% raw data['description'] %}</div>
         </div>
     </div>
 </div>
@@ -63,13 +60,13 @@
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Input</div>
-            <div class="panel-body">{% raw data['problem']['input'] %}</div>
+            <div class="panel-body">{% raw data['input'] %}</div>
         </div>
     </div>
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Output</div>
-            <div class="panel-body">{% raw data['problem']['output'] %}</div>
+            <div class="panel-body">{% raw data['output'] %}</div>
         </div>
     </div>
 </div>
@@ -77,13 +74,13 @@
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Sample Input</div>
-            <div class="panel-body">{% raw data['problem']['sample_input'] %}</div>
+            <div class="panel-body">{% raw data['sample_input'] %}</div>
         </div>
     </div>
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Sample Output</div>
-            <div class="panel-body">{% raw data['problem']['sample_output'] %}</div>
+            <div class="panel-body">{% raw data['sample_output'] %}</div>
         </div>
     </div>
 </div>
@@ -91,7 +88,7 @@
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">Hint</div>
-            <div class="panel-body">{% raw data['problem']['hint'] %}</div>
+            <div class="panel-body">{% raw data['hint'] %}</div>
         </div>
     </div>
 </div>
@@ -99,7 +96,7 @@
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Source</div>
-            <div class="panel-body">{% raw data['problem']['source'] %}</div>
+            <div class="panel-body">{% raw data['source'] %}</div>
         </div>
     </div>
     <div class="col-md-6">
@@ -122,7 +119,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
+                    {% for x in data['execute'] %}
+                        <tr>
+                            <td>{{x['id']}}</td>
+                            <td>{{map_lang[x['lang']]}}</td>
+                            <td>{{x['description']}}</td>
+                        </tr>
+                    {% end %}
                 </tbody>
             </table>
         </div>
@@ -141,7 +144,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
                 </tbody>
             </table>
         </div>

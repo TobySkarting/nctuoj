@@ -1,0 +1,71 @@
+
+.computer.only, .mobile.only, .tablet.only{
+    display: none;
+}
+@media screen and (min-width: 992px){
+    .computer.only{
+        display: inline-block;
+    }
+}
+@media screen and (min-width: 768px) and (max-width: 992px){
+    .tablet.only{
+        display: inline-block;
+    }
+}
+@media screen and (max-width: 768px){
+    .mobile.only{
+        display: inline-block;
+    }
+}
+a:hover{
+    text-decoration: none;
+}
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 120px;
+}
+div.table{
+    display: table;
+}
+div.thead{
+    display: table-header-group;
+}
+div.tbody{
+    display: table-row-group;
+}
+div.tr{
+    display: table-row;
+}
+div.td, div.th{
+    display: table-cell;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 120px;
+    background-color: #E7E7E7;
+}
+.divider{
+    margin-top:     6px;
+    margin-bottom:  6px;
+    height: 1px;
+    background-color: #E7E7E7;
+    width: 100%;
+}
+.bulletin-header{
+    font-size: 20px;
+}
+
+.edit.panel > .panel-body{
+    padding: 0px;
+}
+.edit.panel > .panel-body > textarea{
+    border: 0px;
+    resize: none;
+}

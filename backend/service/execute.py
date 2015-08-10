@@ -18,12 +18,11 @@ class ExecuteService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         if int(data['id']) == 0:
-            col = ("id", "description", "lang")
             res = {}
-            for x in col:
-                res[x] = ""
             res['steps'] = []
             res['id'] = 0
+            res['lang'] = 0
+            res['description'] = ''
             return (None, res)
         sql = "SELECT e.*, u.account as setter_user  FROM execute_types as e, users as u WHERE e.id=%s AND e.setter_user_id=u.id"
         res = yield from self.db.execute(sql, (data["id"]))
@@ -37,15 +36,26 @@ class ExecuteService(BaseService):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        command = data.pop('command')
+        primary = data.pop('primary')
+        id = None
         if int(data['id']) == 0:
             data.pop('id')
             sql, parma = self.gen_insert_sql("execute_types", data)
-            insert_id = yield from self.db.execute(sql, parma)
-            return (None, insert_id)
+            id = yield from self.db.execute(sql, parma)
         else:
             id = data['id']
             data.pop('id')
             sql, parma = self.gen_update_sql("execute_types", data)
             yield from self.db.execute("%s WHERE id = %s" % (sql, str(id)), parma)
-            return (None, str(id))
+        yield from self.db.execute("DELETE FROM execute_steps WHERE execute_type_id=%s", (id,))
+        for x in range(len(command)):
+            meta = {}
+            meta['step'] = x+1
+            meta['command'] = command[x]
+            meta['primary'] = primary[x]
+            meta['execute_type_id'] = id
+            sql, parma = self.gen_insert_sql("execute_steps", meta)
+            yield from self.db.execute(sql, parma)
+        return (None, id)
 

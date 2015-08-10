@@ -23,7 +23,8 @@ class ApiExecuteHandler(RequestHandler):
 
     @reqenv
     def post(self, id):
-        args = ["description", "lang"]
+        args = ["description", "lang", "command[]", "primary[]"]
+        #args = ["description", "lang", "command[]", "primary[]"]
         meta = self.get_args(args)
         meta["setter_user_id"] = self.account['id']
         meta['id'] = id

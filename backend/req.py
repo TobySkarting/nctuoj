@@ -8,8 +8,19 @@ import tornado.template
 import tornado.gen
 import tornado.web
 import tornado.websocket
+import datetime
 import re
 from map import map_power, map_group_power, map_lang, map_visible
+
+
+class DatetimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime('%Y-%m-%dT%H:%M:%SZ')
+        elif isinstance(obj, datetime.date):
+            return obj.strftime('%Y-%m-%d')
+        else:
+            return json.JSONEncoder.default(self, obj)
 class Service:
     pass
 
@@ -35,12 +46,12 @@ class RequestHandler(tornado.web.RequestHandler):
 
     def error(self, err):
         self.finish(json.dumps({'status': 'error',
-                                'msg': err}))
+                                'msg': err}, cls=DatetimeEncoder))
         return
 
     def success(self, msg):
         self.finish(json.dumps({'status': 'success',
-                                'msg': msg}))
+                                'msg': msg}, cls=DatetimeEncoder))
         return
 
     def set_secure_cookie(self, name, value, expires_days=30, version=None, **kwargs):
@@ -51,7 +62,11 @@ class RequestHandler(tornado.web.RequestHandler):
     def get_args(self, name):
         meta = {}
         for n in name:
-            meta[n] = self.get_argument(n, None)
+            if n[-2:] == "[]":
+                n = n[:-2]
+                meta[n] = self.get_arguments(n)
+            else:
+                meta[n] = self.get_argument(n, None)
         return meta
 
     def get_file(self, name):
@@ -74,7 +89,6 @@ class RequestHandler(tornado.web.RequestHandler):
         kwargs['current_group'] = self.current_group
         kwargs['current_group_power'] = self.current_group_power
         kwargs['current_group_active'] = self.current_group_active
-
         print("This function in req.py's render: ", kwargs)
         class _encoder(json.JSONEncoder):
             def default(self, obj):
@@ -144,7 +158,7 @@ def reqenv(func):
         for x in self.group:
             if x['id'] == int(self.current_group):
                 in_group = True
-        if not in_group and self.current_group != 0:
+        if not in_group and int(self.current_group) != 0:
             self.write_error(403)
             return
 

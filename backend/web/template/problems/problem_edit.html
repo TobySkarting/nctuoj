@@ -1,27 +1,28 @@
 {% extends './../frame.html' %}
 {% block content %}
-{{data['visible']}}
-<form class="form" method="post" action="/api/group/{{current_group}}/problems/{{data['id']}}/">
-    <p>
+
+{% include 'problem_edit_title.html' %}
+
+<form class="form" method="post" action="/api/group/{{current_group}}/problems/{{data['id']}}/basic/">
     <div class="row">
-        <div class="form-horizontal">
-            <label class="col-sm-1 control-label">{{data['id'] if data['id'] else 'New'}}.</label>
-            <div class="col-sm-4">
-                <input type="text" class="form-control" name="title" value="{{data['title']}}">
+        <div class="col-md-3 form-group">
+            <label class="control-label">Name</label>
+            <input type="text" class="form-control" name="title" value="{{data['title']}}">
+        </div>
+        <div class="col-md-3 form-group">
+            <div>
+                <label class="control-label">Visible</label>
             </div>
-            <label class="col-sm-1 control-label">
-                Visible
-            </label>
-            <div class="col-sm-2">
-                <select class="select" name="visible">
-                    {% for x in map_visible %}
-                        <option value={{x}}>{{map_visible[x]}}</option>
-                    {% end %}
-                </select>
-            </div>
+            <select class="select" name="visible">
+                {% for x in map_visible %}
+                    <option value={{x}}>{{map_visible[x]}}</option>
+                {% end %}
+            </select>
+        </div>
+        <div class="col-md-3 form-group">
+            <label class="control-label">Verdict</label>
         </div>
     </div>
-    </p>
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default problem edit">
@@ -89,7 +90,7 @@ $( document ).ready(function(){
             dataType: "json",
             success: function(msg){
                 if(msg['status'] == "success"){
-                    location.href = "/group/{{current_group}}/problems/" + msg['msg']['id'] + "/";
+                    location.href = "/group/{{current_group}}/problems/" + msg['msg']['id'] + "/edit/";
                 } else {
                     bootbox.alert(msg['msg'])
                 }
@@ -99,5 +100,4 @@ $( document ).ready(function(){
     });
 });
 </script>
-
 {% end %}

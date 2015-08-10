@@ -2,9 +2,10 @@
 {% block content %}
 
 {% if map_group_power["admin_manage"] in current_group_power %}
-    <a class="btn btn-default" href="/group/{{current_group}}/problems/0/edit/" style="margin-bottom: 12px;">New</a>
+    <a class="btn btn-default margin-bottom" href="/group/{{current_group}}/problems/0/edit/">New</a>
 {% end %}
 
+{% module Pagination(page) %}
 <table class="table table-hover">
     <thead>
         <tr>
