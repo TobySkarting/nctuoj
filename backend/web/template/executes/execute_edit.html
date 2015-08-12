@@ -25,7 +25,7 @@
                         <th class="col-md-2">Primary</th>
                         <th class="col-md-2">Delete</th>
                     </thead>
-                    <tbody class="">
+                    <tbody>
                         {% for x in data['steps'] %}
                             <tr>
                                 <td><input class="form-control" name="command" value="{{x['command']}}"></td>
@@ -54,7 +54,7 @@
                 <div onclick="primary_option(this);" class="isprimary btn btn-sm btn-danger">No</div>
                 <input class="hidden" name="primary" value='0'>
             </td>
-            <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div</td>
+            <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div></td>
         </tr>
     </tbody>
 </table>

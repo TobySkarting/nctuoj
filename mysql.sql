@@ -121,12 +121,12 @@ CREATE TABLE verdicts (
 CREATE TABLE testdata (
     `id`            int(11)         NOT NULL    AUTO_INCREMENT,
     `problem_id`    int(11)         NOT NULL,
-    `order`         int(11)         NOT NULL,
     `time_limit`    int(11)         NOT NULL    DEFAULT 1000,
     `memory_limit`  int(11)         NOT NULL    DEFAULT 65536,
+    `output_limit`  int(11)         NOT NULL    DEFAULT 65536,
     `input_size`    int(11)         NOT NULL    DEFAULT 0,
     `output_size`   int(11)         NOT NULL    DEFAULT 0,
-    `score`         int(11)                 ,
+    `score`         int(11)         NOT NULL    DEFAULT 0,
     `created_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
@@ -186,7 +186,8 @@ CREATE TABLE map_problem_execute (
     `updated_at`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
     INDEX (problem_id),
-    INDEX (execute_type_id)
+    INDEX (execute_type_id),
+    UNIQUE (problem_id, execute_type_id)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
 CREATE TABLE execute_types (

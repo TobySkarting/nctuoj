@@ -6,7 +6,8 @@ from req import Service
 class ApiExecutesHandler(RequestHandler):
     @reqenv
     def get(self):
-        pass
+        err, data = yield from Service.Execute.get_execute_list()
+        self.success(data)
 
     @reqenv
     def post(self):
@@ -24,7 +25,6 @@ class ApiExecuteHandler(RequestHandler):
     @reqenv
     def post(self, id):
         args = ["description", "lang", "command[]", "primary[]"]
-        #args = ["description", "lang", "command[]", "primary[]"]
         meta = self.get_args(args)
         meta["setter_user_id"] = self.account['id']
         meta['id'] = id

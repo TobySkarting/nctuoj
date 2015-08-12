@@ -42,20 +42,16 @@ class WebProblemsHandler(RequestHandler):
 
 class WebProblemHandler(RequestHandler):
     @reqenv
-    def get(self, id=None, action=None):
+    def get(self, id):
         meta = {}
         meta['id'] = id
         meta['group_id'] = self.current_group
-        if not action: action = "view"
-        if action == "view":
-            err, data = yield from Service.Problem.get_problem(meta)
-            self.Render("./problems/problem.html", data=data)
-        else:
-            self.write_error(404)
+        err, data = yield from Service.Problem.get_problem(meta)
+        self.Render("./problems/problem.html", data=data)
 
 class WebProblemEditHandler(RequestHandler):
     @reqenv
-    def get(self, id=None, action=None):
+    def get(self, id, action = None):
         meta = {}
         meta['id'] = id
         meta['group_id'] = self.current_group

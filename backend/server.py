@@ -43,9 +43,11 @@ from web.err import Web404Handler
 from web.index import WebIndexHandler
 from web.bulletin import WebBulletinsHandler
 from web.bulletin import WebBulletinHandler
+
 from web.problem import WebProblemsHandler
 from web.problem import WebProblemHandler
 from web.problem import WebProblemEditHandler
+
 from web.submission import WebSubmissionsHandler
 from web.submission import WebSubmissionHandler
 from web.contest import WebContestsHandler
@@ -111,28 +113,33 @@ if __name__ == '__main__':
         ('/api/users/(\d+)/',                       ApiUserHandler),
         ('/api/users/(sign\w*)/',                   ApiUserSignHandler),
         
-        ('/api/group/\d+/bulletins/',               ApiBulletinsHandler),
-        ('/api/group/\d+/bulletins/(\d+)/',         ApiBulletinHandler),
-        ('/api/group/\d+/problems/',                ApiProblemsHandler),
-        ('/api/group/\d+/problems/(\d+)/(\w*)/?',   ApiProblemHandler),
+        ('/api/group/\d+/bulletins/',                       ApiBulletinsHandler),
+        ('/api/group/\d+/bulletins/(\d+)/',                 ApiBulletinHandler),
+
+        ('/api/group/\d+/problems/',                                    ApiProblemsHandler),
+        ('/api/group/\d+/problems/(\d+)/',                              ApiProblemHandler),
+        ('/api/group/\d+/problems/(\d+)/(basic)/',                      ApiProblemHandler),
+        ('/api/group/\d+/problems/(\d+)/(execute)/',                    ApiProblemHandler),
+        ('/api/group/\d+/problems/(\d+)/(tag)/',                        ApiProblemHandler),
+        ('/api/group/\d+/problems/(\d+)/(testdata)/',                   ApiProblemHandler),
+        ('/api/group/\d+/problems/(\d+)/(testdata)/(\d+)/(w*)/?',       ApiProblemHandler),
 
         ('/api/executes/',                     ApiExecutesHandler),
         ('/api/executes/(\d+)/',               ApiExecuteHandler),
 
-    ### ('/api/group/\d+/problems/(\d+)/testdata/',         ApiProblemTestdataHaneler),
-    ### ('/api/group/\d+/problems/(\d+)/testdata/(\d+)/',   ApiProblemTestdatumHandler),
-    ### ('/api/group/\d+/problems/(\d+)/attachments/',      ApiProblemAttachmentsHandler),
-    ### ('/api/group/\d+/problems/(\d+)/attachments/(\d+)/',ApiProblemAttachmentHandler),
-    ### ('/api/group/\d+/problems/(\d+)/tags/',             ApiProblemTagsHandler),
-    ### ('/api/group/\d+/problems/(\d+)/tags/(\d+)/',       ApiProblemTagHandler),
-
         ('/group/\d+/bulletins/',                   WebBulletinsHandler),
         ('/group/\d+/bulletins/(\d+)/(\w*)/?',      WebBulletinHandler),
-        ('/group/\d+/problems/',                    WebProblemsHandler),
-        ('/group/\d+/problems/(\d+)/edit/(\w*)/?',  WebProblemEditHandler),
-        ('/group/\d+/problems/(\d+)/(\w*)/?',       WebProblemHandler),
+
+        ('/group/\d+/problems/',                        WebProblemsHandler),
+        ('/group/\d+/problems/(\d+)/',                  WebProblemHandler),
+        ('/group/\d+/problems/(\d+)/(\w*)/edit/',       WebProblemEditHandler),
+        ### /group/\d+/problems/\d+/basic/edit/
+        ### /group/\d+/problems/\d+/tag/edit/
+        ### /group/\d+/problems/\d+/execute/edit/
+        ### /group/\d+/problems/\d+/testdata/edit/
         ('/group/\d+/submissions/',                 WebSubmissionsHandler),
         ('/group/\d+/submissions/(\d+)/(\w*)/?',    WebSubmissionHandler),
+
         ('/group/\d+/contests/',                    WebContestsHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/?',       WebContestHandler),
         

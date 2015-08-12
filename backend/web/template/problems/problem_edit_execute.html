@@ -3,42 +3,114 @@
 
 {% include 'problem_edit_title.html' %}
 <div class="row margin-bottom">
-    <form id="same_problem_id" class="form-inline col-md-4" method="get">
-        <label class="contorl-label">同題號</label>
+    <form id="same_problem_id" class="form-inline col-md-4">
+        <label class="control-label">同題號</label>
         <input class="form-control" type="number" name="id">
+        <button type="submit" class="btn btn-success">Go</button>
     </form>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">Execute Type</div>
-            <table class="table table-hover table-striped table-condensed">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Lang</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for x in data['execute'] %}
-                        <tr>
-                            <td>{{x['id']}}</td>
-                            <td>{{map_lang[x['lang']]}}</td>
-                            <td>{{x['description']}}</td>
-                        </tr>
-                    {% end %}
-                </tbody>
-            </table>
+    <div class="col-md-4">
+        <div class="dropdown col-md-10">
+            <span>新增</span>
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Execute List
+                <span class="caret"></span>
+            </button>
+            <ul class="execute list dropdown-menu" style="width: 100%">
+            </ul>
         </div>
     </div>
 </div>
+<form id="problem_execute_form" method="post" action="/api/group/{{current_group}}/problems/{{data['id']}}/execute/">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Execute Type</div>
+                <table class="table table-hover table-striped table-condensed">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Lang</th>
+                            <th>Description</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        {% for x in data['execute'] %}
+                            <tr>
+                                <td data-id="{{x['id']}}">{{x['id']}}<input type="hidden" name="execute" value="{{x['id']}}"</td>
+                                <td>{{map_lang[x['lang']]}}</td>
+                                <td>{{x['description']}}</td>
+                                <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div></td>
+                            </tr>
+                        {% end %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+<table class="hidden">
+    <tbody class="template execute type">
+        <tr>
+            <td data-id="%id%">%id%<input type="hidden" name="execute" value="%id%"></td>
+            <td>%lang%</td>
+            <td>%description%</td>
+            <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div></td>
+        </tr>
+    </tbody>
+</table>
+<div class="hidden template execute list">
+    <li>
+        <a data-id='%id%' data-lang='%lang-code%' data-description='%description%' onclick='add_execute_from_list(this);'>
+            <div class="row">
+                <div class="col-xs-4">%lang%</div>
+                <div class="col-xs-8">
+                |
+                %description%
+                </div>
+            </div>
+        </a>
+    </li>
+</div>
     
-    {{data}}
 <script>
+map_lang = Object;
+{% for x in map_lang %}
+    map_lang[{{x}}] = "{{map_lang[x]}}";
+{% end %}
+function add_execute(ele){
+    data = $(".template.execute.type").html();
+    data = data.replace(/%id%/g, ele['id']);
+    data = data.replace(/%lang%/g, map_lang[ele['lang']]);
+    data = data.replace(/%description%/g, ele['description']);
+    $('tbody:not(.template)').append(data);
+}
+function add_execute_from_list(ele){
+    element = Object;
+    element['id'] = $(ele).attr("data-id");
+    element['lang'] = $(ele).attr("data-lang");
+    element['description'] = $(ele).attr("data-description");
+    add_execute(element);
+}
 $( document ).ready(function(){
-    $("[name=visible]").selectpicker().selectpicker('val', {{data["visible"]}});
-    $("#same_proble_id").submit(function(){
+    $("#same_problem_id").submit(function(){
+        form = $(this);
+        $.ajax({
+            url: "/api/group/0/problems/"+$("[name=id]").val()+"/execute/",
+            dataType: "json",
+            success: function(msg){
+                $('tbody:not(.template)').html("");
+                if(msg['status'] == 'success'){
+                    $.each(msg['msg'], function(index, element){
+                        add_execute(element);
+                    });
+                    $("#problem_execute_form").submit();
+                }
+            }
+        });
+        return false;
+    });
+    $("#problem_execute_form").submit(function(){
         form = $(this);
         $.ajax({
             url: form.attr("action"),
@@ -46,12 +118,16 @@ $( document ).ready(function(){
             data: form.serialize(),
             dataType: "json",
             success: function(msg){
+                if(msg['status'] == 'success'){
+                    bootbox.alert("success", function(){
+                        location.href = "/group/{{current_group}}/problems/{{data['id']}}/";
+                    })
+                }
             }
         });
         return false;
     });
 });
-
 </script>
 
 {% end %}

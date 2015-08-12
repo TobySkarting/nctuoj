@@ -15,7 +15,7 @@
     </div>
     {% if map_group_power["admin_manage"] in current_group_power and int(current_group) == int(data['group_id']) %}
         <div class="col-md-2">
-            <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['id']}}/edit/">Edit</a>
+            <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['id']}}/basic/edit/">Edit</a>
         </div>
         <div class="col-md-2">
             <a class="btn btn-default btn-block btn-sm" onclick="delete_problem(this)" data-href="/api/group/{{current_group}}/problems/{{data['id']}}/basic/" data-method="delete">Delete</a> 
@@ -141,13 +141,24 @@
                         <th>#</th>
                         <th>Time Limit</th>
                         <th>Memory Limit</th>
+                        <th>Output Limit</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {% for id in range(len(data['testdata'])) %}
+                        {% set x = data['testdata'][id] %}
+                        <tr>
+                            <td>{{id+1}}</td>
+                            <td>{{x['time_limit']}}</td>
+                            <td>{{x['memory_limit']}}</td>
+                            <td>{{x['output_limit']}}</td>
+                        </tr>
+                    {% end %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
+{{data['testdata']}}
 {% end %}

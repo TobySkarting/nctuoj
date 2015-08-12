@@ -8,8 +8,11 @@ class ExecuteService(BaseService):
         ExecuteService.inst = self
 
     def get_execute_list(self, data={}):
-        sql = "SELECT e.*, u.account as setter_user  FROM execute_types as e, users as u WHERE e.setter_user_id=u.id"
-        res = yield from self.db.execute(sql)
+        res = self.rs.get('execute_list')
+        if not res:
+            sql = "SELECT e.*, u.account as setter_user FROM execute_types as e, users as u WHERE e.setter_user_id=u.id"
+            res = yield from self.db.execute(sql)
+            self.rs.set('execute_list', res)
         return (None, res)
 
     
@@ -33,6 +36,7 @@ class ExecuteService(BaseService):
         return (None, res)
 
     def post_execute(self, data={}):
+        self.rs.delete('execute_list')
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)

@@ -10,26 +10,30 @@ class ProblemService(BaseService):
         required_args = ['group_id', 'page', 'count']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        subsql = """
+            (SELECT
+            p.`id` 
+            FROM `problems` as p
+            """
+        if int(data['group_id']) == 1:
+            if data['is_admin']:
+                subsql += "WHERE (p.group_id=%s OR p.visible = 2)"
+            else:
+                subsql += "WHERE ((p.group_id=%s AND p.visible <> 0) OR p.visible = 2)"
+        else:
+            if data['is_admin']:
+                subsql += "WHERE p.group_id=%s"
+            else:
+                subsql += "WHERE p.group_id=%s AND p.visible <> 0"
+        subsql += "ORDER BY p.id limit %s, %s) as p2"
         sql = """
             SELECT
             p.`id`, p.`title`, p.`source`, p.`group_id`, p.`created_at`, 
             u.`id` as setter_user_id, u.`account` as setter_user,
             g.`name` as `group_name`
-            FROM `problems` as p, `users` as u, `groups` as g
-            """
-        if int(data['group_id']) == 1:
-            if data['is_admin']:
-                sql += "WHERE (p.group_id=%s OR p.visible = 2)"
-            else:
-                sql += "WHERE ((p.group_id=%s AND p.visible <> 0) OR p.visible = 2)"
-        else:
-            if data['is_admin']:
-                sql += "WHERE p.group_id=%s"
-            else:
-                sql += "WHERE p.group_id=%s AND p.visible <> 0"
-        sql += """
-            AND u.id = p.setter_user_id AND g.id = p.group_id
-            ORDER by p.id LIMIT %s, %s
+            FROM `problems` as p, `users` as u, `groups` as g, 
+            """ + subsql + """
+            WHERE u.id = p.setter_user_id AND g.id = p.group_id AND p.id = p2.id
             """
         res = yield from self.db.execute(sql, (data['group_id'], (int(data["page"])-1)*int(data["count"]), data["count"], ))
         for x in range(len(res)):
@@ -64,23 +68,26 @@ class ProblemService(BaseService):
         required_args = ['group_id', 'id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+
         if int(data['id']) == 0:
             col = ["id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at"]
             res = { x: "" for x in col }
             res['id'] = 0
-            res['visible'] = 1
+            res['visible'] = 0
             return (None, res)
+
         res = self.rs.get('problem@%s' % str(data['id']))
-        if res: return (None, res)
-        sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
-        res = yield from self.db.execute(sql, (data["id"]))
-        if len(res) == 0:
-            return ('Error problem id', None)
-        res = res[0]
-        if int(res['group_id']) != int(data['group_id']) and int(res['visible']) != 2:
-            return ('Error mapping problem id and group id', None)
+        if not res:
+            sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
+            res = yield from self.db.execute(sql, (data["id"]))
+            if len(res) == 0:
+                return ('Error problem id', None)
+            res = res[0]
+            if int(res['group_id']) != int(data['group_id']) and int(res['visible']) != 2:
+                return ('Error mapping problem id and group id', None)
+            self.rs.set('problem@%s' % str(data['id']), res)
         err, res['execute'] = yield from self.get_problem_execute(data)
-        self.rs.set('problem@%s' % str(data['id']), res)
+        err, res['testdata'] = yield from self.get_problem_testdata(data)
         return (None, res)
 
     def post_problem(self, data={}):
@@ -93,26 +100,43 @@ class ProblemService(BaseService):
             insert_id = yield from self.db.execute(sql, parma)
             return (None, insert_id)
         else:
-            err, res = yield from self.get_problem(data)
-            self.rs.delete('problem@%s' % str(data['id']))
-            if err:
-                return (err, None)
-            if int(res['group_id']) != int(data['group_id']):
-                return ('Error mapping problem id and group id', None)
+            id = data['id']
             data.pop('id')
+            self.rs.delete('problem@%s' % str(id))
             sql, parma = self.gen_update_sql("problems", data)
-            yield from self.db.execute("%s WHERE id = %s" % (sql, str(res['id'])), parma)
-            return (None, res['id'])
+            yield from self.db.execute("%s WHERE id = %s" % (sql, id), parma)
+            return (None, id)
 
     def get_problem_execute(self, data={}):
-        print(data)
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res = self.rs.get('problem_execute@%s' % str(data['id']))
+        res = self.rs.get('problem@%s@execute' % str(data['id']))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT e.* FROM execute_types as e, (SELECT execute_type_id as id FROM map_problem_execute WHERE problem_id=%s) as b WHERE e.id=b.id", (data['id'],))
-        self.rs.set('problem_execute@%s' % str(data['id']), res)
+        res = yield from self.db.execute("SELECT e.* FROM execute_types as e, (SELECT execute_type_id as id FROM map_problem_execute WHERE problem_id=%s) as b WHERE e.id=b.id ORDER BY e.id", (data['id'],))
+        self.rs.set('problem@%s@execute' % str(data['id']), res)
+        return (None, res)
+
+    def post_problem_execute(self, data={}):
+        err, res = yield from self.get_problem(data)
+        if err: return(err, None)
+        if int(res['group_id']) != int(data['group_id']):
+            return ('Error mapping problem id and group id', None)
+        self.rs.delete('problem@%s@execute' % str(data['id']))
+        yield from self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['id'],))
+        """ Use try-except for process UNIQUE for execute_type_id-problem_id"""
+        for x in data['execute']:
+            yield from self.db.execute("INSERT IGNORE INTO map_problem_execute (`execute_type_id`, `problem_id`) values (%s, %s)", (x, data['id']))
+        return (None, None)
+    
+    def get_problem_testdata(self, data={}):
+        required_args = ['id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        res = self.rs.get('problem@%s@testdata' % str(data['id']))
+        if res: return (None, res)
+        res = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id']))
+        self.rs.set('problem@%s@testdata' % str(data['id']), res)
         return (None, res)
 
     def delete_problem(self, data={}):
@@ -124,4 +148,5 @@ class ProblemService(BaseService):
             return ('Error mapping problem id and group id', None)
         if err: return (err, None)
         yield from self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id'])))
+        self.rs.delete('problem@%s' % str(data['id']))
         return (None, None)

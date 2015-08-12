@@ -23,7 +23,12 @@ class AsyncMysql:
     def execute(self, sql, prama=()):
         conn = yield from self.get_conn()
         cur = conn.cursor(tormysql.cursor.DictCursor)
-        yield cur.execute(sql, prama)
+        try:
+            yield cur.execute(sql, prama)
+        except:
+            yield cur.close()
+            conn.close()
+            return None
         res = cur.fetchall()
         yield cur.close()
         conn.close()
@@ -31,4 +36,3 @@ class AsyncMysql:
             return conn.insert_id()
         else:
             return res
-

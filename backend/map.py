@@ -22,7 +22,7 @@ map_lang = {
 }
 
 map_visible = {
-    1: "Invisible",
-    2: "Visible In Group",
-    3: "Pulbic",
+    0: "Invisible",
+    1: "Visible In Group",
+    2: "Pulbic",
 }
