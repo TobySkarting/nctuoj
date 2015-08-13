@@ -90,10 +90,18 @@ class ProblemService(BaseService):
         err, res['testdata'] = yield from self.get_problem_testdata(data)
         return (None, res)
 
+    def reset_rs_problem_count(self, group_id):
+        self.rs.delete('problem_list_count@0@%s' % str(group_id))
+        self.rs.delete('problem_list_count@1@%s' % str(group_id))
+        """ public """
+        self.rs.delete('problem_list_count@0@1' % str(group_id))
+        self.rs.delete('problem_list_count@1@1' % str(group_id))
+
     def post_problem(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        self.reset_rs_problem_count(data['group_id'])
         if int(data['id']) == 0:
             data.pop('id')
             sql, parma = self.gen_insert_sql("problems", data)
@@ -107,6 +115,15 @@ class ProblemService(BaseService):
             yield from self.db.execute("%s WHERE id = %s" % (sql, id), parma)
             return (None, id)
 
+    def delete_problem(self, data={}):
+        required_args = ['id', 'group_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        self.reset_rs_problem_count(data['group_id'])
+        yield from self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id'])))
+        self.rs.delete('problem@%s' % str(data['id']))
+        return (None, None)
+
     def get_problem_execute(self, data={}):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
@@ -118,10 +135,6 @@ class ProblemService(BaseService):
         return (None, res)
 
     def post_problem_execute(self, data={}):
-        err, res = yield from self.get_problem(data)
-        if err: return(err, None)
-        if int(res['group_id']) != int(data['group_id']):
-            return ('Error mapping problem id and group id', None)
         self.rs.delete('problem@%s@execute' % str(data['id']))
         yield from self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['id'],))
         """ Use try-except for process UNIQUE for execute_type_id-problem_id"""
@@ -129,6 +142,17 @@ class ProblemService(BaseService):
             yield from self.db.execute("INSERT IGNORE INTO map_problem_execute (`execute_type_id`, `problem_id`) values (%s, %s)", (x, data['id']))
         return (None, None)
     
+
+    def get_problem_testdata_list(self, data={}):
+        required_args = ['id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        res = self.rs.get('problem@%s@testdata' % str(data['id']))
+        if res: return (None, res)
+        res = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id']))
+        self.rs.set('problem@%s@testdata' % str(data['id']), res)
+        return (None, res)
+
     def get_problem_testdata(self, data={}):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
@@ -139,14 +163,27 @@ class ProblemService(BaseService):
         self.rs.set('problem@%s@testdata' % str(data['id']), res)
         return (None, res)
 
-    def delete_problem(self, data={}):
-        required_args = ['id', 'group_id', 'setter_user_id']
+    def post_problem_testdata(self, data={}):
+        required_args = ['id', 'testdata_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        err, res = yield from self.get_problem(data)
-        if int(res['group_id']) != int(data['group_id']):
-            return ('Error mapping problem id and group id', None)
+        self.rs.delete('problem@%s@testdata' % str(data['id']))
+        if int(data['testdata_id']) == 0:
+            id = yield from self.db.execute("INSERT INTO testdata (`problem_id`) VALUES (%s)", (data['id'],));
+            return (None, id)
+        else:
+            required_args = ['time_limit', 'memory_limit', 'output_limit', 'score']
+            err = self.check_required_args(required_args, data)
+            if err: return (err, None)
+            meta = { x: data[x] for x in required_args }
+            sql, parma = self.gen_update_sql("testdata", meta)
+            yield from self.db.execute("%s WHERE id=%s" % (sql, data['testdata_id']), parma)
+            return (None, data['testdata_id'])
+
+    def delete_problem_testdata(self, data={}):
+        required_args = ['testdata_id']
+        err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        yield from self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id'])))
-        self.rs.delete('problem@%s' % str(data['id']))
+        self.rs.delete('problem@%s@testdata' % str(data['id']))
+        yield from self.db.execute("DELETE FROM testdata WHERE id=%s", (data['testdata_id'],))
         return (None, None)

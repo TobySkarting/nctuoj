@@ -2,5 +2,111 @@
 {% block content %}
 
 {% include 'problem_edit_title.html' %}
+<a class="btn btn-default margin-bottom" onclick="new_testdata();">New</a>
+<script>
+function new_testdata(){
+    $.post("/api/group/{{current_group}}/problems/{{data['id']}}/testdata/0/", function(msg){
+        if(msg['status'] == 'success'){
+            location.href = location.href;
+        } else {
+            bootbox.alert(msg['msg']);
+        }
+    }, "json");
+}
+</script>
+<table class="table table-striped table-hover table-condesed table-responsive">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th colspan=2>Input</th>
+            <th colspan=2>Output</th>
+            <th>Time</th>
+            <th>Memory</th>
+            <th>Output</th>
+            <th>Score</th>
+            <th colspan=3></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for id in range(len(data['testdata'])) %}
+            {% set x = data['testdata'][id] %}
+            <form class="form" action="/api/group/{{current_group}}/problems/{{data['id']}}/testdata/{{x['id']}}/">
+                <tr>
+                    <td>{{id+1}}</td>
+                    <td>
+                        <a class="btn btn-default btn-sm btn-file" onclick="$(this).parent().find('input').click();">
+                            上傳
+                        </a>
+                        <input class="input hidden" type="file" onchange="$(this).parent().find('a.btn-file').html($(this).val());">
+                    </td>
+                    <td>
+                        <a class="btn btn-default btn-sm">
+                            下載
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-default btn-sm btn-file" onclick="$(this).parent().find('input').click();">
+                            上傳
+                        </a>
+                        <input class="output hidden" type="file" onchange="$(this).parent().find('a.btn-file').html($(this).val());">
+                    </td>
+                    <td>
+                        <a class="btn btn-default btn-sm">
+                            下載
+                        </a>
+                    </td>
+                    <td><input class="form-control" type="number" name="time_limit"   value="{{x['time_limit']}}"></td>
+                    <td><input class="form-control" type="number" name="memory_limit" value="{{x['memory_limit']}}"></td>
+                    <td><input class="form-control" type="number" name="output_limit" value="{{x['output_limit']}}"></td>
+                    <td><input class="form-control" type="number" name="score"        value="{{x['score']}}"></td>
+                    <td>
+                        <a class="btn btn-default">View</a>
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-success btn-sm">Submit</button>
+                    </td>
+                    <td>
+                        <a class="btn btn-danger btn-sm" onclick="delete_testdata({{x['id']}});">Delete</a>
+                    </td>
+                </tr>
+            </form>
+        {% end %}
+    </tbody>
+</table>
+
+<script>
+function delete_testdata(id){
+    $.ajax({
+        url: "/api/group/{{current_group}}/problems/{{data['id']}}/testdata/"+id+"/",
+        type: "delete",
+        dataType:"json",
+        success: function(msg){
+            if(msg['status'] == 'success'){
+                location.href=location.href;
+            } else {
+            }
+        }
+    });
+}
+$( document ).ready(function(){
+    $("form").submit(function(){
+        form = $(this);
+        $.ajax({
+            url: form.attr("action"),
+            type: "post",
+            data: form.serialize(),
+            dataType: "json",
+            success: function(msg){
+                if(msg['msg'] == "success"){
+                    location.href = location.href;
+                } else {
+                }
+            }
+        });
+        return false;
+    });
+    
+});
+</script>
 
 {% end %}

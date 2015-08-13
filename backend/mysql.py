@@ -1,4 +1,5 @@
 import tormysql
+import sys
 class AsyncMysql:
     def __init__(self, user, database, passwd, host='127.0.0.1', charset='utf8', **kwargs):
         self._user = user
@@ -26,6 +27,7 @@ class AsyncMysql:
         try:
             yield cur.execute(sql, prama)
         except:
+            print(str(sys.exc_info()[0]))
             yield cur.close()
             conn.close()
             return None

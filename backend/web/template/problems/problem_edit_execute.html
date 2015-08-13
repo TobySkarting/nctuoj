@@ -93,6 +93,16 @@ function add_execute_from_list(ele){
     add_execute(element);
 }
 $( document ).ready(function(){
+    $.get("/api/executes/", function(msg){
+        $.each(msg['msg'], function(index, element){
+            data = $(".template.execute.list").html();
+            data = data.replace(/%id%/g, element['id']);
+            data = data.replace(/%lang-code%/g, element['lang']);
+            data = data.replace(/%lang%/g, map_lang[element['lang']]);
+            data = data.replace(/%description%/g, element['description']);
+            $(".execute.list:not(.template)").append(data);
+        });
+    }, "json");
     $("#same_problem_id").submit(function(){
         form = $(this);
         $.ajax({
