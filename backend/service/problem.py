@@ -177,9 +177,13 @@ class ProblemService(BaseService):
             meta = { x: data[x] for x in required_args }
             sql, parma = self.gen_update_sql("testdata", meta)
             yield from self.db.execute("%s WHERE id=%s" % (sql, data['testdata_id']), parma)
+
+            """ create folder """
             folder = "../data/testdata/%s/" % data['testdata_id']
             try: os.makedirs(folder)
             except: pass
+
+            """ save file and upload to ftp """
             for x in ['input', 'output']:
                 if data[x] != None:
                     file_path = "%s/%s" % (folder, x)
