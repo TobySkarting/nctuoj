@@ -1,4 +1,5 @@
 from service.base import BaseService
+import os
 import config
 
 class ProblemService(BaseService):
@@ -81,10 +82,8 @@ class ProblemService(BaseService):
             sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
             res = yield from self.db.execute(sql, (data["id"]))
             if len(res) == 0:
-                return ('Error problem id', None)
+                return ('No problem id', None)
             res = res[0]
-            if int(res['group_id']) != int(data['group_id']) and int(res['visible']) != 2:
-                return ('Error mapping problem id and group id', None)
             self.rs.set('problem@%s' % str(data['id']), res)
         err, res['execute'] = yield from self.get_problem_execute(data)
         err, res['testdata'] = yield from self.get_problem_testdata(data)
@@ -94,8 +93,8 @@ class ProblemService(BaseService):
         self.rs.delete('problem_list_count@0@%s' % str(group_id))
         self.rs.delete('problem_list_count@1@%s' % str(group_id))
         """ public """
-        self.rs.delete('problem_list_count@0@1' % str(group_id))
-        self.rs.delete('problem_list_count@1@1' % str(group_id))
+        self.rs.delete('problem_list_count@0@1')
+        self.rs.delete('problem_list_count@1@1')
 
     def post_problem(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id']
@@ -137,9 +136,9 @@ class ProblemService(BaseService):
     def post_problem_execute(self, data={}):
         self.rs.delete('problem@%s@execute' % str(data['id']))
         yield from self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['id'],))
-        """ Use try-except for process UNIQUE for execute_type_id-problem_id"""
-        for x in data['execute']:
-            yield from self.db.execute("INSERT IGNORE INTO map_problem_execute (`execute_type_id`, `problem_id`) values (%s, %s)", (x, data['id']))
+        if data['execute']:
+            for x in data['execute']:
+                yield from self.db.execute("INSERT INTO map_problem_execute (`execute_type_id`, `problem_id`) values (%s, %s)", (x, data['id']))
         return (None, None)
     
 
@@ -178,6 +177,15 @@ class ProblemService(BaseService):
             meta = { x: data[x] for x in required_args }
             sql, parma = self.gen_update_sql("testdata", meta)
             yield from self.db.execute("%s WHERE id=%s" % (sql, data['testdata_id']), parma)
+            folder = "../data/testdata/%s/" % data['testdata_id']
+            try: os.makedirs(folder)
+            except: pass
+            for x in ['input', 'output']:
+                if data[x] != None:
+                    file_path = "%s/%s" % (folder, x)
+                    f = open(file_path, 'wb+')
+                    f.write(data[x]['body'])
+                    f.close()
             return (None, data['testdata_id'])
 
     def delete_problem_testdata(self, data={}):

@@ -22,18 +22,27 @@ class ApiProblemHandler(RequestHandler):
         meta = {}
         meta['id'] = id
         meta['group_id'] = self.current_group
-        if action == None:
-            err, data = yield from Service.Problem.get_problem(meta)
-            if err: self.error(err)
-            else: self.success(data)
-        elif action == "basic":
-            self.success(action_id)
-            pass
-        elif action == "tag":
-            pass
-        elif action == "execute":
+
+        if action == "execute":
             err, data = yield from Service.Problem.get_problem_execute(meta)
             self.success(data)
+            return
+    
+        err, data = yield from Service.Problem.get_problem(meta)
+        if err:
+            self.error(err)
+        else:
+            if int(data['visible']) == 2:
+                pass
+            elif int(data['group_id']) == int(meta['group_id']) and int(data['visible']) == 1:
+                pass
+            else:
+                self.error("Forbidden")
+
+        if action == "basic":
+            self.success(data)
+        elif action == "tag":
+            pass
         elif action == "testdata":
             if sub_id == None:
                 err, data = yield from Service.Problem.get_problem_testdata_list(meta)
@@ -59,7 +68,7 @@ class ApiProblemHandler(RequestHandler):
         err, data = yield from Service.Problem.get_problem(check_meta)
         if err: self.error(err)
         if int(data['group_id']) != int(check_meta['group_id']):
-            self.error('Error mapping problem id and group id')
+            self.error("403")
 
         ### /api/{{group_id}}/problems/{{problem_id}}/basic/
         if action == "basic":
@@ -81,7 +90,7 @@ class ApiProblemHandler(RequestHandler):
             if err: self.error(err)
             else: self.success("")
         elif action == "testdata":
-            args = ['score', 'time_limit', 'memory_limit', 'output_limit']
+            args = ['score', 'time_limit', 'memory_limit', 'output_limit', 'input[file]', 'output[file]']
             meta = self.get_args(args)
             meta['testdata_id'] = sub_id
             meta['id'] = id
@@ -100,7 +109,7 @@ class ApiProblemHandler(RequestHandler):
         err, data = yield from Service.Problem.get_problem(check_meta)
         if err: self.error(err)
         if int(data['group_id']) != int(check_meta['group_id']):
-            self.error('Error mapping problem id and group id')
+            self.error('403')
         if action == "basic":
             meta = {}
             meta["group_id"] = self.current_group

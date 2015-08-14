@@ -62,11 +62,18 @@ class RequestHandler(tornado.web.RequestHandler):
     def get_args(self, name):
         meta = {}
         for n in name:
-            if n[-2:] == "[]":
-                n = n[:-2]
-                meta[n] = self.get_arguments(n)
-            else:
-                meta[n] = self.get_argument(n, None)
+            try:
+                if n[-2:] == "[]":
+                    n = n[:-2]
+                    meta[n] = self.get_arguments(n)
+                if n[-6:] == "[file]":
+                    n = n[:-6]
+                    meta[n] = self.request.files[n][0]
+                else:
+                    meta[n] = self.get_argument(n, None)
+            except:
+                meta[n] = None
+                print("get_args error: ", n)
         return meta
 
     def get_file(self, name):

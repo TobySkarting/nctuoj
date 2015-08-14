@@ -118,11 +118,14 @@ if __name__ == '__main__':
 
         ('/api/group/\d+/problems/',                                    ApiProblemsHandler),
         ('/api/group/\d+/problems/(\d+)/',                              ApiProblemHandler),
-        ('/api/group/\d+/problems/(\d+)/(basic)/',                      ApiProblemHandler),
-        ('/api/group/\d+/problems/(\d+)/(execute)/',                    ApiProblemHandler),
-        ('/api/group/\d+/problems/(\d+)/(tag)/',                        ApiProblemHandler),
-        ('/api/group/\d+/problems/(\d+)/(testdata)/',                   ApiProblemHandler),
-        ('/api/group/\d+/problems/(\d+)/(testdata)/(\d+)/',             ApiProblemHandler),
+        ('/api/group/\d+/problems/(\d+)/(\w*)/',                      ApiProblemHandler),
+        ### /api/group/\d+/problems/(\d+)/(\w*)/
+        ### /api/group/\d+/problems/(\d+)/(execute)/
+        ### /api/group/\d+/problems/(\d+)/(execute)/
+        ### /api/group/\d+/problems/(\d+)/(tag)/
+        ### /api/group/\d+/problems/(\d+)/(testdata)/
+        ('/api/group/\d+/problems/(\d+)/(\w*)/(\d+)/',             ApiProblemHandler),
+        ### /api/group/\d+/problems/(\d+)/(testdata)/(\d+)/'
 
         ('/api/executes/',                     ApiExecutesHandler),
         ('/api/executes/(\d+)/',               ApiExecuteHandler),

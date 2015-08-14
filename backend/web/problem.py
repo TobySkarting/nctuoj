@@ -47,7 +47,18 @@ class WebProblemHandler(RequestHandler):
         meta['id'] = id
         meta['group_id'] = self.current_group
         err, data = yield from Service.Problem.get_problem(meta)
-        self.Render("./problems/problem.html", data=data)
+        if err:
+            self.write_error(404)
+        else:
+            if int(data['visible']) == 2:
+                self.Render('./problems/problem.html', data=data)
+            elif int(data['group_id']) == int(meta['group_id']) and int(data['visible']==1):
+                self.Render('./problems/problem.html', data=data)
+            else:
+                self.write_error(403)
+
+        
+
 
 class WebProblemEditHandler(RequestHandler):
     @reqenv
@@ -59,12 +70,13 @@ class WebProblemEditHandler(RequestHandler):
             self.write_error(403)
             return
         err, data = yield from Service.Problem.get_problem(meta)
-        if err == 'Error problem id':
+        if err:
             self.write_error(404)
-        elif err == 'Error mapping problem id and group id':
-            self.write_error(403)
-        elif err != None:
-            self.error(err)
+            return
+        else:
+            if int(data['group_id']) != int(meta['group_id']):
+                self.write_error(403)
+                return
 
         if not action: action = "basic"
         if action == "basic":
