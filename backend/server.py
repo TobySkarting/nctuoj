@@ -141,7 +141,7 @@ if __name__ == '__main__':
         ### /group/\d+/problems/\d+/execute/edit/
         ### /group/\d+/problems/\d+/testdata/edit/
         ('/group/\d+/submissions/',                 WebSubmissionsHandler),
-        ('/group/\d+/submissions/(\d+)/(\w*)/?',    WebSubmissionHandler),
+        ('/group/\d+/submissions/(\d+)/',    WebSubmissionHandler),
 
         ('/group/\d+/contests/',                    WebContestsHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/?',       WebContestHandler),
