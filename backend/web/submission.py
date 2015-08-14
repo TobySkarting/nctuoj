@@ -5,24 +5,16 @@ from req import Service
 
 class WebSubmissionsHandler(RequestHandler):
     @reqenv
-    def get(self, group_id):
-        self.current_group = group_id
+    def get(self):
         args = ["page"]
         meta = self.get_args(args)
         meta["page"] = meta["page"] if meta["page"] else 1
-        meta["group_id"] = group_id
+        meta["count"] = 10
+        meta["group_id"] = self.current_group
         self.Render('./submissions/submissions.html')
-        pass
-
-    @reqenv
-    def post(self):
-        pass
 
 class WebSubmissionHandler(RequestHandler):
     @reqenv
-    def get(self, id=None, action=None):
+    def get(self, id=None):
         pass
 
-    @reqenv
-    def post(self): 
-        pass
