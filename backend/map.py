@@ -18,7 +18,7 @@ map_lang = {
     5: "Go",
     6: "Perl",
     7: "Javascript",
-    7: "Haskell",
+    8: "Haskell",
 }
 
 map_visible = {
