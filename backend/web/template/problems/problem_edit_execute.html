@@ -36,7 +36,7 @@
                     <tbody> 
                         {% for x in data['execute'] %}
                             <tr>
-                                <td data-id="{{x['id']}}">{{x['id']}}<input type="hidden" name="execute" value="{{x['id']}}"</td>
+                                <td data-id="{{x['id']}}">{{x['id']}}<input type="hidden" name="execute[]" value="{{x['id']}}"</td>
                                 <td>{{map_lang[x['lang']]}}</td>
                                 <td>{{x['description']}}</td>
                                 <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div></td>
@@ -52,7 +52,7 @@
 <table class="hidden">
     <tbody class="template execute type">
         <tr>
-            <td data-id="%id%">%id%<input type="hidden" name="execute" value="%id%"></td>
+            <td data-id="%id%">%id%<input type="hidden" name="execute[]" value="%id%"></td>
             <td>%lang%</td>
             <td>%description%</td>
             <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div></td>

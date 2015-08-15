@@ -63,8 +63,12 @@ class RequestHandler(tornado.web.RequestHandler):
         for n in name:
             try:
                 if n[-2:] == "[]":
+<<<<<<< HEAD
                     n = n[:-2]
                     meta[n] = self.get_arguments(n)
+=======
+                    meta[n[:-2]] = self.get_arguments(n)
+>>>>>>> 2531b68bcd636bb9b2a0ac1b733c32241c956423
                 elif n[-6:] == "[file]":
                     n = n[:-6]
                     meta[n] = self.request.files[n][0]
@@ -114,10 +118,6 @@ class RequestHandler(tornado.web.RequestHandler):
 
         else:
             self.render('./web/template/'+templ, **kwargs)
-            return
-            tpldr = tornado.template.Loader('./web/template')
-            data = tpldr.load(templ).generate(**kwargs)
-            self.finish(data)
 
         return
 

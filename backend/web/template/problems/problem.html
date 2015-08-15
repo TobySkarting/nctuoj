@@ -149,9 +149,9 @@
                         {% set x = data['testdata'][id] %}
                         <tr>
                             <td>{{id+1}}</td>
-                            <td>{{x['time_limit']}}</td>
-                            <td>{{x['memory_limit']}}</td>
-                            <td>{{x['output_limit']}}</td>
+                            <td>{{x['time_limit']}} msec</td>
+                            <td>{{x['memory_limit']}} Kb</td>
+                            <td>{{x['output_limit']}} Kb</td>
                         </tr>
                     {% end %}
                 </tbody>

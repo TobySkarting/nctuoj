@@ -84,9 +84,9 @@ class ProblemService(BaseService):
         if len(res) == 0:
             return ('No problem id', None)
         res = res[0]
-        self.rs.set('problem@%s' % str(data['id']), res)
         err, res['execute'] = yield from self.get_problem_execute(data)
         err, res['testdata'] = yield from self.get_problem_testdata(data)
+        self.rs.set('problem@%s' % str(data['id']), res)
         return (None, res)
 
     def reset_rs_problem_count(self, group_id):
@@ -95,6 +95,7 @@ class ProblemService(BaseService):
         """ public """
         self.rs.delete('problem_list_count@0@1')
         self.rs.delete('problem_list_count@1@1')
+
 
     def post_problem(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id']
@@ -135,6 +136,7 @@ class ProblemService(BaseService):
 
     def post_problem_execute(self, data={}):
         self.rs.delete('problem@%s@execute' % str(data['id']))
+        self.rs.delete('problem@%s' % str(data['id']))
         yield from self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['id'],))
         if data['execute']:
             for x in data['execute']:
@@ -167,6 +169,7 @@ class ProblemService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         self.rs.delete('problem@%s@testdata' % str(data['id']))
+        self.rs.delete('problem@%s' % str(data['id']))
         if int(data['testdata_id']) == 0:
             id = yield from self.db.execute("INSERT INTO testdata (`problem_id`) VALUES (%s)", (data['id'],));
             return (None, id)
@@ -196,5 +199,6 @@ class ProblemService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         self.rs.delete('problem@%s@testdata' % str(data['id']))
+        self.rs.delete('problem@%s' % str(data['id']))
         yield from self.db.execute("DELETE FROM testdata WHERE id=%s", (data['testdata_id'],))
         return (None, None)
