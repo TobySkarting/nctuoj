@@ -71,5 +71,5 @@ if __name__ == '__main__':
     db = MySQL('140.113.194.120', 'nctuoj', 'yavaf2droyPo', 'nctuoj')
     db.connect();
     for x in range(0, 10**6):
-        sql = '''INSERT INTO `problems` (`title`, `description`, `sample_input`, `sample_output`, `hint`, `source`, `group_id`, `setter_user_id`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s) '''
-        db.execute(sql, (str(x), str(x)*10, str(x)*20, str(x)*20, str(x)*10, str(x)*10, random.randint(1, 2), random.randint(1, 100)))
+        sql = '''INSERT INTO `submissions` (`user_id`, `problem_id`, `execute_type_id`, `time_usage`, `memory_usage`, `score`) VALUES(%s, %s, %s, %s, %s, %s) '''
+        db.execute(sql, (random.randint(1, 100), random.randint(1, 100), random.randint(1, 5), random.randint(1, 65535), random.randint(1, 65535), random.randint(1, 100)))
