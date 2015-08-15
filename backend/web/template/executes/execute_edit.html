@@ -28,12 +28,12 @@
                     <tbody>
                         {% for x in data['steps'] %}
                             <tr>
-                                <td><input class="form-control" name="command" value="{{x['command']}}"></td>
+                                <td><input class="form-control" name="command[]" value="{{x['command']}}"></td>
                                 <td>
                                     <div onclick="primary_option(this);" class="isprimary btn btn-sm {{ "btn-success" if x['primary'] else "btn-danger"}}">
                                         {{ "Yes" if x['primary'] else "No"}}
                                     </div>
-                                    <input class="hidden" name="primary" value="{{x['primary']}}">
+                                    <input class="hidden" name="primary[]" value="{{x['primary']}}">
                                 </td>
                                 <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div</td>
                             </tr>
@@ -49,10 +49,10 @@
 <table class="hidden">
     <tbody class="template execute step">
         <tr>
-            <td><input class="form-control" name="command" value=""></td>
+            <td><input class="form-control" name="command[]" value=""></td>
             <td>
                 <div onclick="primary_option(this);" class="isprimary btn btn-sm btn-danger">No</div>
-                <input class="hidden" name="primary" value='0'>
+                <input class="hidden" name="primary[]" value='0'>
             </td>
             <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div></td>
         </tr>
