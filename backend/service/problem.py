@@ -66,7 +66,7 @@ class ProblemService(BaseService):
         return (None, res[0]['COUNT(*)'])
 
     def get_problem(self, data={}):
-        required_args = ['group_id', 'id']
+        required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
 

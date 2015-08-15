@@ -169,7 +169,11 @@ CREATE TABLE submissions (
     PRIMARY KEY (`id`),
     INDEX (`user_id`),
     INDEX (`problem_id`),
-    INDEX (`run_type_id`)
+    INDEX (`run_type_id`),
+    INDEX (`time_usage`),
+    INDEX (`memory_usage`),
+    INDEX (`verdict`),
+    INDEX (`score`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
 
 CREATE TABLE wait_submissions (
