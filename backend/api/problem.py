@@ -55,7 +55,6 @@ class ApiProblemHandler(RequestHandler):
                 else: self.success(data)
         else:
             self.error("404")
-        pass
         
     @reqenv
     def post(self, id, action=None, sub_id=None):
@@ -66,9 +65,12 @@ class ApiProblemHandler(RequestHandler):
         check_meta['group_id'] = self.current_group
         check_meta['id'] = id
         err, data = yield from Service.Problem.get_problem(check_meta)
-        if err: self.error(err)
+        if err: 
+            self.error(err)
+            return
         if int(data['group_id']) != int(check_meta['group_id']):
             self.error("403")
+            return
 
         ### /api/{{group_id}}/problems/{{problem_id}}/basic/
         if action == "basic":
@@ -107,9 +109,12 @@ class ApiProblemHandler(RequestHandler):
         check_meta['group_id'] = self.current_group
         check_meta['id'] = id
         err, data = yield from Service.Problem.get_problem(check_meta)
-        if err: self.error(err)
+        if err: 
+            self.error(err)
+            return
         if int(data['group_id']) != int(check_meta['group_id']):
             self.error('403')
+            return
         if action == "basic":
             meta = {}
             meta["group_id"] = self.current_group

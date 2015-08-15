@@ -56,7 +56,6 @@ class RequestHandler(tornado.web.RequestHandler):
 
     def set_secure_cookie(self, name, value, expires_days=30, version=None, **kwargs):
         kwargs['httponly'] = True
-        #kwargs['secure'] = True
         super().set_secure_cookie(name, value, expires_days, version, **kwargs)
 
     def get_args(self, name):

@@ -78,13 +78,13 @@ class ProblemService(BaseService):
             return (None, res)
 
         res = self.rs.get('problem@%s' % str(data['id']))
-        if not res:
-            sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
-            res = yield from self.db.execute(sql, (data["id"]))
-            if len(res) == 0:
-                return ('No problem id', None)
-            res = res[0]
-            self.rs.set('problem@%s' % str(data['id']), res)
+        if res: return (None, res)
+        sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
+        res = yield from self.db.execute(sql, (data["id"]))
+        if len(res) == 0:
+            return ('No problem id', None)
+        res = res[0]
+        self.rs.set('problem@%s' % str(data['id']), res)
         err, res['execute'] = yield from self.get_problem_execute(data)
         err, res['testdata'] = yield from self.get_problem_testdata(data)
         return (None, res)
@@ -187,9 +187,8 @@ class ProblemService(BaseService):
             for x in ['input', 'output']:
                 if data[x] != None:
                     file_path = "%s/%s" % (folder, x)
-                    f = open(file_path, 'wb+')
-                    f.write(data[x]['body'])
-                    f.close()
+                    with open(file_path, 'wb+') as f:
+                        f.write(data[x]['body'])
             return (None, data['testdata_id'])
 
     def delete_problem_testdata(self, data={}):

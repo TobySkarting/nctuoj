@@ -9,10 +9,10 @@ class ExecuteService(BaseService):
 
     def get_execute_list(self, data={}):
         res = self.rs.get('execute_list')
-        if not res:
-            sql = "SELECT e.*, u.account as setter_user FROM execute_types as e, users as u WHERE e.setter_user_id=u.id"
-            res = yield from self.db.execute(sql)
-            self.rs.set('execute_list', res)
+        if res: return (None, res)
+        sql = "SELECT e.*, u.account as setter_user FROM execute_types as e, users as u WHERE e.setter_user_id=u.id"
+        res = yield from self.db.execute(sql)
+        self.rs.set('execute_list', res)
         return (None, res)
 
     
