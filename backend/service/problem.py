@@ -85,7 +85,7 @@ class ProblemService(BaseService):
             return ('No problem id', None)
         res = res[0]
         err, res['execute'] = yield from self.get_problem_execute(data)
-        err, res['testdata'] = yield from self.get_problem_testdata(data)
+        err, res['testdata'] = yield from self.get_problem_testdata_list(data)
         self.rs.set('problem@%s' % str(data['id']), res)
         return (None, res)
 
