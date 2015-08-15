@@ -78,12 +78,13 @@ class ProblemService(BaseService):
             return (None, res)
 
         res = self.rs.get('problem@%s' % str(data['id']))
-        if res: return (None, res)
-        sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
-        res = yield from self.db.execute(sql, (data["id"]))
-        if len(res) == 0:
-            return ('No problem id', None)
-        res = res[0]
+        if not res:
+           # return (None, res)
+            sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
+            res = yield from self.db.execute(sql, (data["id"]))
+            if len(res) == 0:
+                return ('No problem id', None)
+            res = res[0]
         err, res['execute'] = yield from self.get_problem_execute(data)
         err, res['testdata'] = yield from self.get_problem_testdata_list(data)
         self.rs.set('problem@%s' % str(data['id']), res)
