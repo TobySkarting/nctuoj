@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
         ('/api/group/\d+/problems/',                                    ApiProblemsHandler),
         ('/api/group/\d+/problems/(\d+)/',                              ApiProblemHandler),
-        ('/api/group/\d+/problems/(\d+)/(\w*)/',                      ApiProblemHandler),
+        ('/api/group/\d+/problems/(\d+)/(\w*)/',                        ApiProblemHandler),
         ### /api/group/\d+/problems/(\d+)/(\w*)/
         ### /api/group/\d+/problems/(\d+)/(execute)/
         ### /api/group/\d+/problems/(\d+)/(execute)/
@@ -141,15 +141,15 @@ if __name__ == '__main__':
         ### /group/\d+/problems/\d+/execute/edit/
         ### /group/\d+/problems/\d+/testdata/edit/
         ('/group/\d+/submissions/',                 WebSubmissionsHandler),
-        ('/group/\d+/submissions/(\d+)/',    WebSubmissionHandler),
+        ('/group/\d+/submissions/(\d+)/(\w*)/?',    WebSubmissionHandler),
 
         ('/group/\d+/contests/',                    WebContestsHandler),
-        ('/group/\d+/contests/(\d+)/(\w*)/?',       WebContestHandler),
+        ('/group/\d+/contests/(\d+)/(\w*)/',        WebContestHandler),
         
-        ('/executes/',                         WebExecuteTypesHandler),
-        ('/executes/(\d+)/(\w*)/?',            WebExecuteTypeHandler),
-        ('/verdicts/',                         WebVerdictTypesHandler),
-        ('/verdicts/(\d+)/(\w*)/?',            WebVerdictTypeHandler),
+        ('/executes/',                          WebExecuteTypesHandler),
+        ('/executes/(\d+)/(\w*)/',              WebExecuteTypeHandler),
+        ('/verdicts/',                          WebVerdictTypesHandler),
+        ('/verdicts/(\d+)/(\w*)/',              WebVerdictTypeHandler),
 
         ### user list only admin
         ('/users/', WebUsersHandler),       

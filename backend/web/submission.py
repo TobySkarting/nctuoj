@@ -15,6 +15,6 @@ class WebSubmissionsHandler(RequestHandler):
 
 class WebSubmissionHandler(RequestHandler):
     @reqenv
-    def get(self, id=None):
+    def get(self, id, action):
         pass
 
