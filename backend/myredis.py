@@ -25,5 +25,5 @@ class MyRedis(redis.StrictRedis):
 
     def getset(self, name, value):
         value = pickle.dumps(value)
-        return super().getset(name, value)
+        return pickle.loads(super().getset(name, value), encoding='utf-8')
 
