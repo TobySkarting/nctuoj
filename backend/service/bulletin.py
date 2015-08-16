@@ -1,6 +1,6 @@
 from service.base import BaseService
 import config
-
+### need to add rs
 class BulletinService(BaseService):
     def __init__(self, db, rs):
         super().__init__(db, rs)
@@ -23,7 +23,6 @@ class BulletinService(BaseService):
         res = yield from self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s", (data['group_id'],))
         return (None, res[0]['COUNT(*)'])
 
-
     def get_bulletin(self, data={}):
         required_args = ['group_id', 'id']
         err = self.check_required_args(required_args, data)
@@ -32,8 +31,6 @@ class BulletinService(BaseService):
         if int(data['id']) == 0:
             col = ['content', 'title']
             res = { x: "" for x in col }
-            #for x in col:
-                #res[x] = ""
             res['id'] = 0
             return (None, res)
 
@@ -51,15 +48,12 @@ class BulletinService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         res = self.rs.get('latest_bulletin@%s' % str(data["group_id"]))
-        if res:
-            return (None, res)
+        if res: return (None, res)
         sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND group_id=%s ORDER BY b.id DESC LIMIT 1"
         res = yield from self.db.execute(sql, (data["group_id"]))
-        if len(res) == 0:
-            return ('Empty', None)
+        if len(res) == 0: return ('Empty', None)
         self.rs.set('latest_bulletin@%s' % str(data["group_id"]), res[0])
         return (None, res[0])
-        
 
     def post_bulletin(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id', 'title', 'content']
@@ -73,8 +67,7 @@ class BulletinService(BaseService):
             return (None, insert_id)
         else:
             err, res = yield from self.get_bulletin(data)
-            if err:
-                return (err, None)
+            if err: return (err, None)
             data.pop('id')
             sql, parma = self.gen_update_sql("bulletins", data)
             yield from self.db.execute("%s WHERE id = %s" % (sql, str(res['id'])), parma)
