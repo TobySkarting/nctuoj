@@ -15,7 +15,7 @@ class ApiUserHandler(RequestHandler):
         args = ['basic_info', 'power']
         meta = self.get_args(args)
         if meta['power']:
-            if not self.map_power['user_manage'] in self.account['power']:
+            if self.map_power['user_manage'] not in self.account['power']:
                 self.error("Permission Denied")
                 return
             yield from Service.User.post_user_power(id, meta['power'])
