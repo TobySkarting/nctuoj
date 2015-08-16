@@ -7,6 +7,7 @@ from req import reqenv
 from req import Service 
 ### my app
 import config
+import pg
 import mysql
 import myredis
 
@@ -99,10 +100,11 @@ if __name__ == '__main__':
             filename=config.LOG_FILE_PATH,
             filemode='a')
     '''
-    db = mysql.AsyncMysql(user=config.DBUSER,
-            database=config.DBNAME,
-            passwd=config.DBPASSWORD,
-            host=config.DBHOST)
+    #db = mysql.AsyncMysql(user=config.DBUSER,
+    #        database=config.DBNAME,
+    #        passwd=config.DBPASSWORD,
+    #        host=config.DBHOST)
+    db = pg.AsyncPG(config.DBNAME, config.DBUSER, config.DBPASSWORD, host=config.DBHOST, dbtz='+8')
     rs = myredis.MyRedis(db=1)
     ui_modules = {
             "Pagination": web.modules.Pagination,
