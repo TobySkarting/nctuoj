@@ -19,16 +19,16 @@ class WebProblemsHandler(RequestHandler):
         try:
             meta["page"] = int(meta["page"])
         except:
-            self.redirect('/group/'+meta['group_id']+'/problems/')
+            self.redirect('/group/%s/problems/'%meta['group_id'])
             return
         ### modify page in range (1, page_count)
         err, count = yield from Service.Problem.get_problem_list_count(meta)
         page_count = max(math.ceil(count / meta['count']), 1)
         if int(meta['page']) < 1:
-            self.redirect('/group/'+meta['group_id']+'/problems/')
+            self.redirect('/group/%s/problems/'%meta['group_id'])
             return
         if int(meta['page']) > page_count:
-            self.redirect('/group/'+meta['group_id']+'/problems/?page='+str(page_count))
+            self.redirect('/group/%s/problems/?page=%s'%(meta['group_id'], str(page_count)))
             return
         ### get data
         err, data = yield from Service.Problem.get_problem_list(meta)
@@ -36,7 +36,7 @@ class WebProblemsHandler(RequestHandler):
         page = {}
         page['total'] = page_count
         page['current'] = meta['page']
-        page['url'] = '/group/' + meta['group_id'] + '/problems/'
+        page['url'] = '/group/%s/problems/' % meta['group_id']
         page['get'] = {}
         self.Render('./problems/problems.html', data=data, page=page)
 
@@ -52,7 +52,7 @@ class WebProblemHandler(RequestHandler):
         else:
             if int(data['visible']) == 2:
                 self.Render('./problems/problem.html', data=data)
-            elif int(data['group_id']) == int(meta['group_id']) and int(data['visible']==1):
+            elif int(data['group_id']) == int(meta['group_id']) and int(data['visible']) == 1:
                 self.Render('./problems/problem.html', data=data)
             else:
                 self.write_error(403)
@@ -66,7 +66,7 @@ class WebProblemEditHandler(RequestHandler):
         meta = {}
         meta['id'] = id
         meta['group_id'] = self.current_group
-        if not 1 in self.current_group_power:
+        if 1 not in self.current_group_power:
             self.write_error(403)
             return
         err, data = yield from Service.Problem.get_problem(meta)
