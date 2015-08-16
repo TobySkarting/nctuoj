@@ -19,16 +19,16 @@ class BaseService:
         '''
         sql1, sql2, prama = '', '', []
         for col in data:
-            sql1 += ' `%s`,'%col
+            sql1 += ' %s,'%col
             sql2 += ' %s,'
             prama.append(data[col])
         ### remove last comma
         sql1, sql2 = sql1[:-1], sql2[:-1]
-        ### sql1 = ''.join( ' `%s`,'%col for col in data )[:-1]
+        ### sql1 = ''.join( ' %s,'%col for col in data )[:-1]
         ### sql2 = (' %s,'*len(data))[:-1]
         ### prama = tuple( val for val in data.values() )
-        sql = ('INSERT INTO `%s` '%tablename) + ('(%s) '%sql1) + ('VALUES(%s) '%sql2) + ''
-        ### sql = 'INSERT INTO `%s` (%s) VALUES(%s)' % (tablename, sql1, sql2)
+        sql = ('INSERT INTO %s '%tablename) + ('(%s) '%sql1) + ('VALUES(%s) RETURNING id'%sql2) + ''
+        ### sql = 'INSERT INTO %s (%s) VALUES(%s)' % (tablename, sql1, sql2)
         return (sql, tuple(prama))
     
     def gen_update_sql(self, tablename, data):
@@ -39,13 +39,13 @@ class BaseService:
         '''
         sql, prama = '', []
         for col in data:
-            sql += ((' `%s` = '%col) + '%s,')
+            sql += ((' %s = '%col) + '%s,')
             prama.append(data[col])
         ### remove last comma
         sql = sql[:-1]
-        ### sql = ''.join(' `%s` = %%s,'%col for col in data)[:-1]
+        ### sql = ''.join(' %s = %%s,'%col for col in data)[:-1]
         ### prama = tuple( val for val in data.values() )
-        sql = 'UPDATE `%s` SET %s '%(tablename, sql)
+        sql = 'UPDATE %s SET %s '%(tablename, sql)
         return (sql, tuple(prama))
 
     def gen_select_sql(self, tablename, data):
@@ -56,7 +56,7 @@ class BaseService:
         '''
         sql = ''
         for col in data:
-            sql += ' `%s`,'%col
+            sql += ' %s,'%col
         ### remove last comma
         sql = sql[:-1]
         ### sql = ''.join(' %s,'%col for col in data)[:-1]

@@ -47,7 +47,7 @@ class UserService(BaseService):
     def get_user_power_info(self, id):
         res = self.rs.get('user_power@%s' % str(id))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT `power` from map_user_power WHERE user_id=%s", (id,))
+        res = yield from self.db.execute("SELECT power from map_user_power WHERE user_id=%s", (id,))
         power = { x['power'] for x in res }
         self.rs.set('user_power@%s' % str(id), power)
         return (None, power)
@@ -62,7 +62,7 @@ class UserService(BaseService):
     def get_user_group_power_info(self, uid, gid):
         res = self.rs.get('user_group_power@%s@%s' % (str(uid), str(gid)))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT `power` from map_group_user_power where user_id=%s AND group_id=%s", (uid, gid,))
+        res = yield from self.db.execute("SELECT power from map_group_user_power where user_id=%s AND group_id=%s", (uid, gid,))
         power = { x['power'] for x in res }
         self.rs.set('user_group_power@%s@%s' % (str(uid), str(gid)), power)
         return (None, power)
@@ -84,11 +84,13 @@ class UserService(BaseService):
         col = ['passwd', 'id']
         sql = self.gen_select_sql('users', col)
         res = yield from self.db.execute(sql+
-                'WHERE `account` = %s;',
+                'WHERE account = %s;',
                 (data['account'],))
         ### check account 
         if len(res) == 0:
             return ('Euser', None)
+        print('=========================')
+        print(res)
         hpwd, id = res[0]["passwd"], res[0]["id"]
         ### check passwd
         if _hash(data['passwd']) != hpwd:
@@ -113,8 +115,8 @@ class UserService(BaseService):
             return ('Econfirmpwd', None)
 
         ### check conflict
-        res = yield from self.db.execute('SELECT `id` FROM `users` ' 
-                'WHERE `account` = %s OR `student_id` = %s', 
+        res = yield from self.db.execute('SELECT id FROM users ' 
+                'WHERE account = %s OR student_id = %s', 
                 (data['account'], data['student_id'],))
         if len(res) != 0:
             return ('Eexist', None)
@@ -126,8 +128,8 @@ class UserService(BaseService):
         data.pop('repasswd')
         sql, prama = self.gen_insert_sql('users', data)
         res = yield from self.db.execute(sql, prama)
-        res = yield from self.db.execute('SELECT `id` FROM `users` '
-                'WHERE `account` = %s',
+        res = yield from self.db.execute('SELECT id FROM users '
+                'WHERE account = %s',
                 (data['account'],))
         if len(res) == 0:
             return ('Ecreate', None)

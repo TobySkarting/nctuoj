@@ -11,8 +11,8 @@ class BulletinService(BaseService):
         required_args = ['group_id', 'page', 'count']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        sql = "SELECT bulletins.*, users.account as setter_user FROM bulletins, users WHERE bulletins.group_id = %s and bulletins.setter_user_id = users.id order by bulletins.id DESC limit %s, %s"
-        res = yield from self.db.execute(sql, (data["group_id"], (int(data["page"])-1)*data["count"], data["count"], ))
+        sql = "SELECT bulletins.*, users.account as setter_user FROM bulletins, users WHERE bulletins.group_id = %s and bulletins.setter_user_id = users.id order by bulletins.id DESC limit %s offset %s"
+        res = yield from self.db.execute(sql, (data["group_id"], data['count'], (int(data["page"])-1)*data["count"],))
         err, total = yield from self.get_bulletin_list_count(data)
         return (None, res)
 
@@ -21,7 +21,7 @@ class BulletinService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         res = yield from self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s", (data['group_id'],))
-        return (None, res[0]['COUNT(*)'])
+        return (None, res[0]['count'])
 
     def get_bulletin(self, data={}):
         required_args = ['group_id', 'id']
@@ -35,7 +35,7 @@ class BulletinService(BaseService):
             return (None, res)
 
         sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND b.id=%s"
-        res = yield from self.db.execute(sql, (data["id"]))
+        res = yield from self.db.execute(sql, (data["id"],))
         if len(res) == 0:
             return ('Error bulletin id', None)
         res = res[0]
@@ -50,7 +50,7 @@ class BulletinService(BaseService):
         res = self.rs.get('latest_bulletin@%s' % str(data["group_id"]))
         if res: return (None, res)
         sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND group_id=%s ORDER BY b.id DESC LIMIT 1"
-        res = yield from self.db.execute(sql, (data["group_id"]))
+        res = yield from self.db.execute(sql, (data["group_id"],))
         if len(res) == 0: return ('Empty', None)
         self.rs.set('latest_bulletin@%s' % str(data["group_id"]), res[0])
         return (None, res[0])
@@ -63,7 +63,7 @@ class BulletinService(BaseService):
         if int(data['id']) == 0:
             data.pop('id')
             sql, parma = self.gen_insert_sql("bulletins", data)
-            insert_id = yield from self.db.execute(sql, parma)
+            insert_id = (yield from self.db.execute(sql, parma))[0]['id']
             return (None, insert_id)
         else:
             err, res = yield from self.get_bulletin(data)
@@ -79,5 +79,5 @@ class BulletinService(BaseService):
         if err: return (err, None)
         err, res = yield from self.get_bulletin(data)
         if err: return (err, None)
-        yield from self.db.execute("DELETE FROM bulletins WHERE id=%s", (int(data['id'])))
+        yield from self.db.execute("DELETE FROM bulletins WHERE id=%s", (data['id'],))
         return (None, None)

@@ -161,7 +161,7 @@ if __name__ == '__main__':
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/.*', Web404Handler)
         ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape', ui_modules = ui_modules)
-    #rs.flushdb()
+    rs.flushdb()
     global srv
     srv = tornado.httpserver.HTTPServer(app)
     srv.listen(config.PORT)

@@ -1,6 +1,7 @@
 import random
 import datetime
 import psycopg2
+import psycopg2.extras
 from collections import deque
 from tornado.stack_context import wrap
 from tornado.ioloop import IOLoop
@@ -175,7 +176,7 @@ class AsyncPG:
             if err != None:
                 callback(None,err)
 
-            callback(conn[4].cursor())
+            callback(conn[4].cursor(cursor_factory=psycopg2.extras.RealDictCursor))
 
         if conn == None:
             conn = self._share_connpool[
@@ -292,3 +293,13 @@ class AsyncPG:
                 cb(e)
 
         self._ioloop.add_callback(self._dispatch,fd,0)
+
+    def execute(self, sql, prama=()):
+        cur = yield self.cursor()
+        yield cur.execute(sql, prama)
+        res = None
+        try:
+            res = cur.fetchall()
+        except:
+            pass
+        return res
