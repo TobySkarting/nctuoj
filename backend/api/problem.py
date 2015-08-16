@@ -68,7 +68,7 @@ class ApiProblemHandler(RequestHandler):
         if err: 
             self.error(err)
             return
-        if int(data['group_id']) != int(check_meta['group_id']):
+        if int(id)!=0 and int(data['group_id']) != int(check_meta['group_id']):
             self.error("403")
             return
 

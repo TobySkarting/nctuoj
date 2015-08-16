@@ -44,6 +44,8 @@ class ApiBulletinHandler(RequestHandler):
         if 1 not in self.current_group_power:
             self.error("Permission Denied")
             return
+        err, data = yield from Service.Bulletin.get_bulletin(meta)
+        ### not in this group
         err, data = yield from Service.Bulletin.delete_bulletin(meta)
         if err: self.error(err)
         else: self.success("")
