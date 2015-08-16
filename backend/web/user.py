@@ -7,7 +7,7 @@ import math
 class WebUsersHandler(RequestHandler):
     @reqenv
     def get(self):
-        if not self.map_power['user_manage'] in self.account['power']:
+        if self.map_power['user_manage'] not in self.account['power']:
             self.write_error(403)
             return
         args = ["page"]
@@ -27,10 +27,10 @@ class WebUsersHandler(RequestHandler):
         print(count, type(count))
         page_count = max(math.ceil(count / meta['count']), 1)
         if int(meta['page']) < 1:
-            self.redirect('/userss/')
+            self.redirect('/users/')
             return
         if int(meta['page']) > page_count:
-            self.redirect('/users/?page='+str(page_count))
+            self.redirect('/users/?page=%s'%str(page_count))
             return
         err, data = yield from Service.User.get_user_list(meta)
         ### about pagination
@@ -49,8 +49,7 @@ class WebUserHandler(RequestHandler):
     """ single user data """
     @reqenv
     def get(self, id=None, action=None):
-        if id == None:
-            id = self.account["id"]
+        if not id: id = self.account["id"]
         err, meta = yield from Service.User.get_user_advanced_info(id)
         self.Render('./users/user.html', data=meta)
 
