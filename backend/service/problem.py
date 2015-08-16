@@ -17,15 +17,9 @@ class ProblemService(BaseService):
             FROM `problems` as p
             """
         if int(data['group_id']) == 1:
-            if data['is_admin']:
-                subsql += "WHERE (p.group_id=%s OR p.visible = 2)"
-            else:
-                subsql += "WHERE ((p.group_id=%s AND p.visible <> 0) OR p.visible = 2)"
+            subsql += "WHERE ((p.group_id=%s AND p.visible <> 0) OR p.visible = 2)"
         else:
-            if data['is_admin']:
-                subsql += "WHERE p.group_id=%s"
-            else:
-                subsql += "WHERE p.group_id=%s AND p.visible <> 0"
+            subsql += "WHERE p.group_id=%s AND p.visible <> 0"
         subsql += "ORDER BY p.id limit %s, %s) as p2"
         sql = """
             SELECT
@@ -46,23 +40,17 @@ class ProblemService(BaseService):
         required_args = ['group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res = self.rs.get('problem_list_count@%s@%s' 
-                % (str(data['is_admin']), str(data['group_id'])))
+        res = self.rs.get('problem_list_count@%s' 
+                % (str(data['group_id'])))
         if res: return (None, res)
         sql = "SELECT COUNT(*) FROM problems as p "
         if int(data['group_id']) == 1:
-            if data['is_admin']:
-                sql += "WHERE (p.group_id=%s OR p.visible = 2)"
-            else:
-                sql += "WHERE ((p.group_id=%s AND p.visible <> 0) OR p.visible = 2)"
+            sql += "WHERE ((p.group_id=%s AND p.visible <> 0) OR p.visible = 2)"
         else:
-            if data['is_admin']:
-                sql += "WHERE p.group_id=%s"
-            else:
-                sql += "WHERE p.group_id=%s AND p.visible <> 0"
+            sql += "WHERE p.group_id=%s AND p.visible <> 0"
         res = yield from self.db.execute(sql, (data['group_id'],))
-        self.rs.set('problem_list_count@%s@%s'
-                % (str(data['is_admin']), str(data['group_id'])), res[0]['COUNT(*)'])
+        self.rs.set('problem_list_count@%s'
+                % (str(data['group_id'])), res[0]['COUNT(*)'])
         return (None, res[0]['COUNT(*)'])
 
     def get_problem(self, data={}):
