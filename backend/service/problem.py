@@ -79,19 +79,16 @@ class ProblemService(BaseService):
         return (None, res)
 
     def reset_rs_problem_count(self, group_id):
-        self.rs.delete('problem_list_count@0@%s' % str(group_id))
-        self.rs.delete('problem_list_count@1@%s' % str(group_id))
-        """ public """
-        self.rs.delete('problem_list_count@0@1')
-        self.rs.delete('problem_list_count@1@1')
+        self.rs.delete('problem_list_count@%s' % str(group_id))
+        self.rs.delete('problem_list_count@1')
 
 
     def post_problem(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        self.reset_rs_problem_count(data['group_id'])
         if int(data['id']) == 0:
+            self.reset_rs_problem_count(data['group_id'])
             data.pop('id')
             sql, parma = self.gen_insert_sql("problems", data)
             insert_id = yield from self.db.execute(sql, parma)
