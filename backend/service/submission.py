@@ -12,32 +12,36 @@ class SubmissionService(BaseService):
         err = self.check_required_args(required_args, data)
         print(data)
         if err: return (err, None)
-        subsql = "(SELECT s.id FROM submissions as s "
+        subsql = "(SELECT s.id FROM submissions as s, problems as p "
+        cond = " WHERE p.id=s.problem_id AND p.group_id=%s AND "
+        if data['problem_id']:
+            cond += "problem_id=%s AND " % (int(data['problem_id']))
+        if data['user_id']:
+            cond += "user_id=%s AND " % (int(data['user_id']))
+        else:
+            cond = cond[:-4]
+        subsql += cond + "ORDER BY id LIMIT %s OFFSET %s) as s2"
+        sql = """
+            SELECT s.*,
+            u.account as user,
+            e.lang
+            FROM submissions as s, users as u, execute_types as e,
+            """ + subsql + """
+            WHERE s.id = s2.id and u.id = s.user_id and e.id=s.execute_type_id
+            """
+
+        res = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"])))
+        return (None, res)
+
+    def get_submission_list_count(self, data):
+        subsql = "SELECT count(*) FROM submissions as s "
         cond = " WHERE "
         if data['problem_id']:
             cond += "problem_id=%s AND " % (int(data['problem_id']))
         if data['user_id']:
             cond += "user_id=%s AND " % (int(data['user_id']))
         if cond == " WHERE ":
-            cond == ""
+            cond = ""
         else:
             cond = cond[:-4]
-        subsql += cond + "ORDER BY id LIMIT %s OFFSET %s) as s2"
-        sql = """
-            SELECT s.* 
-            FROM submissions as s, 
-            """ + subsql + """
-            WHERE s.id = s2.id
-            """
-
-        res = yield from self.db.execute(sql, (data['count'], (int(data["page"])-1)*int(data["count"]), ))
-        return (None, res)
-
-    def get_submission_list_count(self, data):
-        ### if exist data['problem_id']
-        ### else exist data['group_id']
-        if 'problem_id' in data and data['problem_id']:
-            pass
-        elif 'group_id' in data and data['group_id']:
-            res = self.rs.get('submission_list_count@%s' % (str(data['group_id'])))
 
