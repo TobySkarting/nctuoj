@@ -77,7 +77,5 @@ class BulletinService(BaseService):
         required_args = ['id', 'group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        err, res = yield from self.get_bulletin(data)
-        if err: return (err, None)
         yield from self.db.execute("DELETE FROM bulletins WHERE id=%s", (data['id'],))
         return (None, None)

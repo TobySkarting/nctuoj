@@ -13,24 +13,24 @@ class ProblemService(BaseService):
         if err: return (err, None)
         subsql = """
             (SELECT
-            p.`id` 
-            FROM `problems` as p
+            p.id 
+            FROM problems as p
             """
         if int(data['group_id']) == 1:
-            subsql += "WHERE ((p.group_id=%s AND p.visible <> 0) OR p.visible = 2)"
+            subsql += "WHERE p.group_id=%s UNION SELECT p.id FROM problems as p WHERE p.visible=2"
         else:
-            subsql += "WHERE p.group_id=%s AND p.visible <> 0"
-        subsql += "ORDER BY p.id limit %s, %s) as p2"
+            subsql += "WHERE p.group_id=%s"
+        subsql += "ORDER BY id limit %s offset %s) as p2"
         sql = """
             SELECT
-            p.`id`, p.`title`, p.`source`, p.`group_id`, p.`created_at`, 
-            u.`id` as setter_user_id, u.`account` as setter_user,
-            g.`name` as `group_name`
-            FROM `problems` as p, `users` as u, `groups` as g, 
+            p.id, p.title, p.source, p.group_id, p.created_at, 
+            u.id as setter_user_id, u.account as setter_user,
+            g.name as group_name
+            FROM problems as p, users as u, groups as g, 
             """ + subsql + """
             WHERE u.id = p.setter_user_id AND g.id = p.group_id AND p.id = p2.id
             """
-        res = yield from self.db.execute(sql, (data['group_id'], (int(data["page"])-1)*int(data["count"]), data["count"], ))
+        res = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
         for x in range(len(res)):
             res[x]['real_id'] = res[x]['id']
             res[x]['id'] = ((int)(data['page'])-1) * (int(data['count'])) + x + 1
@@ -50,8 +50,8 @@ class ProblemService(BaseService):
             sql += "WHERE p.group_id=%s AND p.visible <> 0"
         res = yield from self.db.execute(sql, (data['group_id'],))
         self.rs.set('problem_list_count@%s'
-                % (str(data['group_id'])), res[0]['COUNT(*)'])
-        return (None, res[0]['COUNT(*)'])
+                % (str(data['group_id'])), res[0]['count'])
+        return (None, res[0]['count'])
 
     def get_problem(self, data={}):
         required_args = ['id']
@@ -69,7 +69,7 @@ class ProblemService(BaseService):
         if not res:
            # return (None, res)
             sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
-            res = yield from self.db.execute(sql, (data["id"]))
+            res = yield from self.db.execute(sql, (data["id"],))
             if len(res) == 0:
                 return ('No problem id', None)
             res = res[0]
@@ -91,7 +91,7 @@ class ProblemService(BaseService):
             self.reset_rs_problem_count(data['group_id'])
             data.pop('id')
             sql, parma = self.gen_insert_sql("problems", data)
-            insert_id = yield from self.db.execute(sql, parma)
+            insert_id = (yield from self.db.execute(sql, parma))[0]['id']
             return (None, insert_id)
         else:
             id = data['id']
@@ -106,7 +106,7 @@ class ProblemService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         self.reset_rs_problem_count(data['group_id'])
-        yield from self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id'])))
+        yield from self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id']),))
         self.rs.delete('problem@%s' % str(data['id']))
         return (None, None)
 
@@ -126,7 +126,7 @@ class ProblemService(BaseService):
         yield from self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['id'],))
         if data['execute']:
             for x in data['execute']:
-                yield from self.db.execute("INSERT INTO map_problem_execute (`execute_type_id`, `problem_id`) values (%s, %s)", (x, data['id']))
+                yield from self.db.execute("INSERT INTO map_problem_execute (execute_type_id, problem_id) values (%s, %s)", (x, data['id']))
         return (None, None)
     
 
@@ -157,7 +157,7 @@ class ProblemService(BaseService):
         self.rs.delete('problem@%s@testdata' % str(data['id']))
         self.rs.delete('problem@%s' % str(data['id']))
         if int(data['testdata_id']) == 0:
-            id = yield from self.db.execute("INSERT INTO testdata (`problem_id`) VALUES (%s)", (data['id'],));
+            id = yield from self.db.execute("INSERT INTO testdata (problem_id) VALUES (%s)", (data['id'],));
             return (None, id)
         else:
             required_args = ['time_limit', 'memory_limit', 'output_limit', 'score']

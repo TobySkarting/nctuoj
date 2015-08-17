@@ -11,7 +11,6 @@ class WebProblemsHandler(RequestHandler):
         meta = self.get_args(args)
         meta['count'] = 100
         meta["group_id"] = self.current_group
-        meta["is_admin"] = 1 if 1 in self.current_group_power else 0
         ### default page is 1
         if not meta['page']:
             meta['page'] = 1
@@ -52,8 +51,11 @@ class WebProblemHandler(RequestHandler):
         else:
             if int(data['visible']) == 2:
                 self.Render('./problems/problem.html', data=data)
-            elif int(data['group_id']) == int(meta['group_id']) and int(data['visible']) == 1:
-                self.Render('./problems/problem.html', data=data)
+            elif int(data['group_id']) == int(meta['group_id']):
+                if 1 in self.current_group_power or int(data['visible']) == 1:
+                    self.Render('./problems/problem.html', data=data)
+                else:
+                    self.write_error(403)
             else:
                 self.write_error(403)
 
@@ -73,7 +75,7 @@ class WebProblemEditHandler(RequestHandler):
         if err:
             self.write_error(404)
             return
-        else:
+        elif int(id) != 0:
             if int(data['group_id']) != int(meta['group_id']):
                 self.write_error(403)
                 return

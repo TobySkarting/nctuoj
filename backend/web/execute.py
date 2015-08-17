@@ -13,10 +13,10 @@ class WebExecuteTypesHandler(RequestHandler):
 
 class WebExecuteTypeHandler(RequestHandler):
     @reqenv
-    def get(self, id, action):
+    def get(self, id, action=None):
         meta = {}
         meta["id"] = id
-        if action == "": action = "view"
+        if not action : action = "view"
         if action == "view":
             err, data = yield from Service.Execute.get_execute(meta)
             if err: self.write_error(404)

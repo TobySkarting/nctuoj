@@ -18,18 +18,12 @@
                 <thead>
                     <th>#</th>
                     <th>Command</th>
-                    <th>Primary</th>
                 </thead>
                 <tbody>
                     {% for x in data['steps'] %}
                         <tr>
                             <td>{{x['step']}}</td>
                             <td>{{x['command']}}</td>
-                            <td>
-                                <div class="btn btn-sm {{ "btn-success" if x['primary'] else "btn-danger"}}">
-                                    {{ "Yes" if x['primary'] else "No"}}
-                                </div>
-                            </td>
                         </tr>
                     {% end %}
                 </tbody>

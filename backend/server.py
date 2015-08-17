@@ -19,6 +19,7 @@ import logging
 ### service class
 from service.user import UserService
 from service.problem import ProblemService
+from service.submission import SubmissionService
 from service.bulletin import BulletinService
 from service.execute import ExecuteService
 
@@ -58,6 +59,9 @@ from web.execute import WebExecuteTypesHandler
 from web.execute import WebExecuteTypeHandler
 from web.verdict import WebVerdictTypesHandler
 from web.verdict import WebVerdictTypeHandler
+
+
+from web.about import WebAboutHandler
 
 
 #from web.execute_type import WebExecuteTypesHandler
@@ -143,12 +147,14 @@ if __name__ == '__main__':
         ### /group/\d+/problems/\d+/execute/edit/
         ### /group/\d+/problems/\d+/testdata/edit/
         ('/group/\d+/submissions/',                 WebSubmissionsHandler),
-        ('/group/\d+/submissions/(\d+)/(\w*)/?',    WebSubmissionHandler),
+        ('/group/\d+/submissions/(\d+)/',           WebSubmissionHandler),
+        ('/group/\d+/submissions/(\d+)/(\w*)/',     WebSubmissionHandler),
 
         ('/group/\d+/contests/',                    WebContestsHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/',        WebContestHandler),
         
         ('/executes/',                          WebExecuteTypesHandler),
+        ('/executes/(\d+)/',                    WebExecuteTypeHandler),
         ('/executes/(\d+)/(\w*)/',              WebExecuteTypeHandler),
         ('/verdicts/',                          WebVerdictTypesHandler),
         ('/verdicts/(\d+)/(\w*)/',              WebVerdictTypeHandler),
@@ -158,6 +164,10 @@ if __name__ == '__main__':
         ('/user/', WebUserHandler),
         ('/user/(sign\w*)/?', WebUserSignHandler),
         ('/user/(\d+)/(\w*)/?', WebUserHandler),
+
+
+
+        ('/about/',                             WebAboutHandler),
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/.*', Web404Handler)
         ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape', ui_modules = ui_modules)
@@ -167,6 +177,7 @@ if __name__ == '__main__':
     srv.listen(config.PORT)
     Service.User = UserService(db, rs)
     Service.Problem = ProblemService(db, rs)
+    Service.Submission = SubmissionService(db, rs)
     Service.Bulletin = BulletinService(db, rs)
     Service.Execute = ExecuteService(db, rs)
     print('start')

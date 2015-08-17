@@ -22,19 +22,12 @@
                 <table class="table table-hover table-striped table-condensed">
                     <thead>
                         <th class="col-md-8">Command</th>
-                        <th class="col-md-2">Primary</th>
                         <th class="col-md-2">Delete</th>
                     </thead>
                     <tbody>
                         {% for x in data['steps'] %}
                             <tr>
                                 <td><input class="form-control" name="command[]" value="{{x['command']}}"></td>
-                                <td>
-                                    <div onclick="primary_option(this);" class="isprimary btn btn-sm {{ "btn-success" if x['primary'] else "btn-danger"}}">
-                                        {{ "Yes" if x['primary'] else "No"}}
-                                    </div>
-                                    <input class="hidden" name="primary[]" value="{{x['primary']}}">
-                                </td>
                                 <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div</td>
                             </tr>
                         {% end %}
@@ -50,31 +43,11 @@
     <tbody class="template execute step">
         <tr>
             <td><input class="form-control" name="command[]" value=""></td>
-            <td>
-                <div onclick="primary_option(this);" class="isprimary btn btn-sm btn-danger">No</div>
-                <input class="hidden" name="primary[]" value='0'>
-            </td>
             <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div></td>
         </tr>
     </tbody>
 </table>
 <script>
-function primary_option(ele){
-    if($(ele).hasClass("btn-success")){
-        $(ele).removeClass("btn-success").addClass("btn-danger");
-        $(ele).html("No");
-        $(ele).next().val(0);
-    } else {
-        $(".isprimary").each(function(){
-            $(this).removeClass("btn-success").addClass("btn-danger");
-            $(this).html("No");
-            $(this).next().val(0);
-        });
-        $(ele).addClass("btn-success").removeClass("btn-danger");
-        $(ele).html("Yes");
-        $(ele).next().val(1);
-    }
-}
 $( document ).ready(function(){
     $(".select").selectpicker();
     $(".select").selectpicker('val', {{data['lang']}});
