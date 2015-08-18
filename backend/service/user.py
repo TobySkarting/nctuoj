@@ -40,7 +40,7 @@ class UserService(BaseService):
     def get_user_group_info(self, id):
         res = self.rs.get('user_group@%s' % str(id))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT groups.* FROM groups, (select group_id from map_group_user where user_id = %s order by group_id) as b WHERE groups.id = b.group_id", (id,))
+        res = yield from self.db.execute("SELECT g.* FROM groups as g, map_group_user as m where m.user_id=%s and g.id=m.group_id ORDER BY g.id", (id,))
         self.rs.set('user_group@%s' % str(id), res)
         return (None, res)
 

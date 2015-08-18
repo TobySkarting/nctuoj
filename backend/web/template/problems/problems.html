@@ -9,12 +9,11 @@
 <table class="table table-hover">
     <thead>
         <tr>
-            <th>#</th>
             <th>PID</th>
+            <th>Problem</th>
             {% if int(current_group) == 1 %}
                 <th>Group</th>
             {% end %}
-            <th>Problem</th>
             <th class="tablet computer only">Setter</th>
             <th class="tablet computer only">Source</th>
         </tr>
@@ -22,17 +21,16 @@
     <tbody>
         {% for x in data %}
             <tr>
-                <td><a href='/group/{{current_group}}/problems/{{x['real_id']}}/'>{{x['id']}}</a></td>
-                <td><a href='/group/{{current_group}}/problems/{{x['real_id']}}/'>{{x['real_id']}}</a></td>
-                {% if int(current_group) == 1 %}
-                    <td><a href='/group/{{x['group_id']}}/problems/'>{{x['group_name']}}</a></td>
-                {% end %}
+                <td>{{x['id']}}</td>
                 <td>
-                    {% if map_group_power['admin_manage'] in current_group or int(x['visible']) %}
-                        <a href='/group/{{current_group}}/problems/{{x['real_id']}}/'>{{x['title']}}</a>
+                    {% if (map_group_power['admin_manage'] in current_group_power) or int(x['visible']) %}
+                        <a href='/group/{{current_group}}/problems/{{x['id']}}/'>{{x['title']}}</a>
                     {% else %}
                     {% end %}
                 </td>
+                {% if int(current_group) == 1 %}
+                    <td><a href='/group/{{x['group_id']}}/problems/'>{{x['group_name']}}</a></td>
+                {% end %}
                 <td class="tablet computer only">
                     <a href='/users/{{x['setter_user_id']}}/'>{{x['setter_user']}}</a>
                 </td>

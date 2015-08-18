@@ -1,0 +1,8 @@
+from req import RequestHandler
+from req import reqenv
+from req import Service
+
+
+class ApiTimeHandler(RequestHandler):
+    def get(self):
+        self.error(404)

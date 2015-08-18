@@ -11,29 +11,21 @@ class ProblemService(BaseService):
         required_args = ['group_id', 'page', 'count']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        subsql = """
-            (SELECT
-            p.id 
-            FROM problems as p
+        sql = """
+            SELECT 
+            p.id, p.title, p.source, p.visible, p.created_at,
+            u.id as setter_user_id, u.account as setter_user,
+            g.id as group_id, g.name as group_name
+            FROM problems as p, users as u, groups as g
+            WHERE u.id=p.setter_user_id AND g.id=p.group_id AND
             """
         if int(data['group_id']) == 1:
-            subsql += "WHERE p.group_id=%s UNION SELECT p.id FROM problems as p WHERE p.visible=2"
+            sql += """ (p.group_id=%s OR p.visible=2) """
         else:
-            subsql += "WHERE p.group_id=%s"
-        subsql += "ORDER BY id limit %s offset %s) as p2"
-        sql = """
-            SELECT
-            p.id, p.title, p.source, p.group_id, p.created_at, 
-            u.id as setter_user_id, u.account as setter_user,
-            g.name as group_name
-            FROM problems as p, users as u, groups as g, 
-            """ + subsql + """
-            WHERE u.id = p.setter_user_id AND g.id = p.group_id AND p.id = p2.id
-            """
+            sql += """ (p.group_id=%s) """
+        sql += """ ORDER BY p.id limit %s OFFSET %s """
+
         res = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
-        for x in range(len(res)):
-            res[x]['real_id'] = res[x]['id']
-            res[x]['id'] = ((int)(data['page'])-1) * (int(data['count'])) + x + 1
         return (None, res)
         
     def get_problem_list_count(self, data={}):
@@ -45,9 +37,9 @@ class ProblemService(BaseService):
         if res: return (None, res)
         sql = "SELECT COUNT(*) FROM problems as p "
         if int(data['group_id']) == 1:
-            sql += "WHERE ((p.group_id=%s AND p.visible <> 0) OR p.visible = 2)"
+            sql += "WHERE (p.group_id=%s OR p.visible = 2)"
         else:
-            sql += "WHERE p.group_id=%s AND p.visible <> 0"
+            sql += "WHERE p.group_id=%s"
         res = yield from self.db.execute(sql, (data['group_id'],))
         self.rs.set('problem_list_count@%s'
                 % (str(data['group_id'])), res[0]['count'])
@@ -136,7 +128,7 @@ class ProblemService(BaseService):
         if err: return (err, None)
         res = self.rs.get('problem@%s@testdata' % str(data['id']))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id']))
+        res = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id'],))
         self.rs.set('problem@%s@testdata' % str(data['id']), res)
         return (None, res)
 
@@ -146,7 +138,7 @@ class ProblemService(BaseService):
         if err: return (err, None)
         res = self.rs.get('problem@%s@testdata' % str(data['id']))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id']))
+        res = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id'],))
         self.rs.set('problem@%s@testdata' % str(data['id']), res)
         return (None, res)
 
