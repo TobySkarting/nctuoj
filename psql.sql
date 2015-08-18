@@ -1,3 +1,4 @@
+
 CREATE OR REPLACE FUNCTION updated_row() 
 RETURNS TRIGGER AS $$
 BEGIN
@@ -6,12 +7,12 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
- -- CREATE TABLE table_name (
- --     id              serial          NOT NULL    PRIMARY KEY,
- --     created_at      timestamp       DEFAULT now(),
- --     updated_at      timestamp       DEFAULT now()
- -- );
- -- CREATE TRIGGER table_name_updated_at_column BEFORE UPDATE ON table_name FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column_column();
+-- CREATE TABLE table_name (
+    --     id              serial          NOT NULL    PRIMARY KEY,
+    --     created_at      timestamp       DEFAULT now(),
+    --     updated_at      timestamp       DEFAULT now()
+    -- );
+-- CREATE TRIGGER table_name_updated_at_column BEFORE UPDATE ON table_name FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column_column();
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
@@ -53,6 +54,7 @@ CREATE TABLE groups (
 );
 CREATE TRIGGER groups_updated_row BEFORE UPDATE ON groups FOR EACH ROW EXECUTE PROCEDURE updated_row();
 INSERT INTO groups (name, description) VALUES ('Public', 'For Public');
+INSERT INTO groups (name, description) VALUES ('Normal', 'For Normal');
 
 DROP TABLE IF EXISTS map_group_user;
 CREATE TABLE map_group_user (
@@ -63,7 +65,9 @@ CREATE TABLE map_group_user (
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER map_group_user_updated_row BEFORE UPDATE ON map_group_user FOR EACH ROW EXECUTE PROCEDURE updated_row();
+INSERT INTO map_group_user (group_id, user_id) VALUES (1, 0);
 INSERT INTO map_group_user (group_id, user_id) VALUES (1, 1);
+INSERT INTO map_group_user (group_id, user_id) VALUES (2, 1);
 
 DROP TABLE IF EXISTS map_group_user_power;
 CREATE TABLE map_group_user_power (
@@ -93,6 +97,9 @@ CREATE TABLE bulletins (
 );
 CREATE TRIGGER bulletins_updated_row BEFORE UPDATE ON bulletins FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON bulletins (group_id);
+INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (1, 1, 'Public', 'New Group Public');
+INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (2, 1, 'Normal', 'New Group Normal');
+
 
 DROP TABLE IF EXISTS problems;
 CREATE TABLE problems (
@@ -116,6 +123,7 @@ CREATE TABLE problems (
 CREATE TRIGGER problems_updated_row BEFORE UPDATE ON problems FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON problems (visible);
 CREATE INDEX ON problems (group_id);
+INSERT INTO problems (group_id, setter_user_id) values (1, 1);
 
 DROP TABLE IF EXISTS execute_types;
 CREATE TABLE execute_types (
@@ -127,6 +135,9 @@ CREATE TABLE execute_types (
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER execute_types_updated_row BEFORE UPDATE ON execute_types FOR EACH ROW EXECUTE PROCEDURE updated_row();
+INSERT INTO execute_types (description, lang, setter_user_id) values ('Basic C', 0, 1);
+INSERT INTO execute_types (description, lang, setter_user_id) values ('Basic C++', 1, 1);
+INSERT INTO execute_types (description, lang, setter_user_id) values ('Basic C++14', 1, 1);
 
 DROP TABLE IF EXISTS execute_steps;
 CREATE TABLE execute_steps (
@@ -138,6 +149,15 @@ CREATE TABLE execute_steps (
 );
 CREATE TRIGGER execute_steps_updated_row BEFORE UPDATE ON execute_steps FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON execute_steps (execute_type_id);
+INSERT INTO execute_steps (execute_type_id, command) values (1, 'gcc __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (1, '__CHECK_CE__ ./a.out');
+INSERT INTO execute_steps (execute_type_id, command) values (1, './a.out');
+INSERT INTO execute_steps (execute_type_id, command) values (2, 'g++ __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (2, '__CHECK_CE__ ./a.out');
+INSERT INTO execute_steps (execute_type_id, command) values (2, './a.out');
+INSERT INTO execute_steps (execute_type_id, command) values (3, 'g++ -std=c++11  __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (3, '__CHECK_CE__ ./a.out');
+INSERT INTO execute_steps (execute_type_id, command) values (3, './a.out');
 
 DROP TABLE IF EXISTS map_problem_execute;
 CREATE TABLE map_problem_execute (
@@ -151,6 +171,9 @@ CREATE TRIGGER map_problem_execute_updated_row BEFORE UPDATE ON map_problem_exec
 CREATE INDEX ON map_problem_execute (problem_id);
 CREATE INDEX ON map_problem_execute (execute_type_id);
 CREATE UNIQUE INDEX ON map_problem_execute (problem_id, execute_type_id);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (1, 1);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (1, 2);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (1, 3);
 
 DROP TABLE IF EXISTS testdata;
 CREATE TABLE testdata(
@@ -165,6 +188,8 @@ CREATE TABLE testdata(
 );
 CREATE TRIGGER testdata_updated_row BEFORE UPDATE ON testdata FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON testdata (problem_id);
+INSERT INTO testdata (problem_id, score) values (1, 50);
+INSERT INTO testdata (problem_id, score) values (1, 50);
 
 DROP TABLE IF EXISTS submissions;
 CREATE TABLE submissions(

@@ -170,7 +170,7 @@ if __name__ == '__main__':
         ('/about/',                             WebAboutHandler),
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/.*', Web404Handler)
-        ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape', ui_modules = ui_modules)
+        ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape', ui_modules = ui_modules, xsrf_cookies=True)
     rs.flushdb()
     global srv
     srv = tornado.httpserver.HTTPServer(app)
