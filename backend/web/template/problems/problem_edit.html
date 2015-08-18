@@ -4,6 +4,7 @@
 {% include 'problem_edit_title.html' %}
 
 <form class="form" method="post" action="/api/group/{{current_group}}/problems/{{data['id']}}/basic/">
+    {% module xsrf_form_html() %}
     <div class="row">
         <div class="col-md-3 form-group">
             <label class="control-label">Name</label>

@@ -31,6 +31,9 @@ function delete_bulletin(ele){
             $.ajax({
                 url: $(ele).attr("data-href"),
                 type: $(ele).attr("data-method"),
+                data: {
+                    "xsrf": getCookie("_xsrf")
+                }
                 dataType: "json",
                 success: function(msg){
                     if(msg['status'] == 'success'){

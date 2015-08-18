@@ -30,6 +30,9 @@
                     $.ajax({
                         url: $(ele).attr("data-href"),
                         type: $(ele).attr("data-method"),
+                        data: {
+                            "_xsrf": getCookie("_xsrf")
+                        },
                         dataType: "json",
                         success: function(msg){
                             if(msg['status'] == 'success'){

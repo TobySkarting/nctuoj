@@ -20,6 +20,7 @@
     </div>
 </div>
 <form id="problem_execute_form" method="post" action="/api/group/{{current_group}}/problems/{{data['id']}}/execute/">
+    {% module xsrf_form_html() %}
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">

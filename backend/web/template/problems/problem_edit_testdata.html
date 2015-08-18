@@ -5,7 +5,7 @@
 <a class="btn btn-default margin-bottom" onclick="new_testdata();">New</a>
 <script>
 function new_testdata(){
-    $.post("/api/group/{{current_group}}/problems/{{data['id']}}/testdata/0/", function(msg){
+    $.post("/api/group/{{current_group}}/problems/{{data['id']}}/testdata/0/", {"_xsrf": getCookie("_xsrf")}, function(msg){
         if(msg['status'] == 'success'){
             location.href = location.href;
         } else {
@@ -35,6 +35,7 @@ function new_testdata(){
         {% for id in range(len(data['testdata'])) %}
             {% set x = data['testdata'][id] %}
             <form class="form" action="/api/group/{{current_group}}/problems/{{data['id']}}/testdata/{{x['id']}}/">
+                {% module xsrf_form_html() %}
                 <tr>
                     <td>{{id+1}}</td>
                     <td>
