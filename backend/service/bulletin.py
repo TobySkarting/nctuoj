@@ -39,8 +39,6 @@ class BulletinService(BaseService):
         if len(res) == 0:
             return ('Error bulletin id', None)
         res = res[0]
-        if int(res['group_id']) != int(data['group_id']):
-            return ('Error mapping bulletin id and group id', None)
         return (None, res)
     
     def get_latest_bulletin(self, data={}):

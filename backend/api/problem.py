@@ -1,23 +1,36 @@
-from req import RequestHandler
-from req import reqenv
+from req import ApiRequestHandler
 from req import Service
+import tornado
 
 
-class ApiProblemsHandler(RequestHandler):
-    @reqenv
+class ApiProblemsHandler(ApiRequestHandler):
     def get(self):
         pass
 
-    @reqenv
+    
     def post(self):
         pass
 
-    @reqenv
+    
     def delete(self):
         pass
 
-class ApiProblemHandler(RequestHandler):
-    @reqenv
+class ApiProblemHandler(ApiRequestHandler):
+    def check(self, meta):
+        if 1 not in self.current_group_power:
+            self.render(403, "Permission Denied")
+            return False
+        err, data = yield from Service.Problem.get_problem(meta)
+        if meta['id'] != 0:
+            if err: 
+                self.render(500, err)
+                return False
+            if int(data['group_id']) != int(meta['group_id']):
+                self.render('403', 'Permission Denied')
+                return False
+        return True
+
+    @tornado.gen.coroutine
     def get(self, id, action=None, sub_id=None):
         meta = {}
         meta['id'] = id
@@ -30,7 +43,7 @@ class ApiProblemHandler(RequestHandler):
     
         err, data = yield from Service.Problem.get_problem(meta)
         if err:
-            self.error(err)
+            self.render(500, err)
         else:
             if int(data['visible']) == 2:
                 pass
@@ -56,7 +69,8 @@ class ApiProblemHandler(RequestHandler):
         else:
             self.error("404")
         
-    @reqenv
+    
+    @tornado.gen.coroutine
     def post(self, id, action=None, sub_id=None):
         if 1 not in self.current_group_power:
             self.error("Permission Denied")
@@ -64,69 +78,52 @@ class ApiProblemHandler(RequestHandler):
         check_meta = {}
         check_meta['group_id'] = self.current_group
         check_meta['id'] = id
-        err, data = yield from Service.Problem.get_problem(check_meta)
-        if err: 
-            self.error(err)
-            return
-        if int(id)!=0 and int(data['group_id']) != int(check_meta['group_id']):
-            self.error("403")
-            return
 
-        ### /api/{{group_id}}/problems/{{problem_id}}/basic/
-        if action == "basic":
-            args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible"]
-            meta = self.get_args(args)
-            meta['group_id'] = self.current_group
-            meta['setter_user_id'] = self.account['id']
-            meta['id'] = id
-            err, data = yield from Service.Problem.post_problem(meta)
-            if err: self.error(err)
-            else: self.success({"id": data})
-        ### /api/{{group_id}}/problems/{{problem_id}}/execute/
-        elif action == "execute":
-            args = ['execute[]']
-            meta = self.get_args(args)
-            meta['group_id'] = self.current_group
-            meta['id'] = id
-            err, data = yield from Service.Problem.post_problem_execute(meta)
-            if err: self.error(err)
-            else: self.success("")
-        elif action == "testdata":
-            args = ['score', 'time_limit', 'memory_limit', 'output_limit', 'input[file]', 'output[file]']
-            meta = self.get_args(args)
-            meta['testdata_id'] = sub_id
-            meta['id'] = id
-            err, data = yield from Service.Problem.post_problem_testdata(meta)
-            if err: self.error(err)
-            else: self.success("")
+        if self.check(check_meta):
+            ### /api/{{group_id}}/problems/{{problem_id}}/basic/
+            if action == "basic":
+                args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible"]
+                meta = self.get_args(args)
+                meta['group_id'] = self.current_group
+                meta['setter_user_id'] = self.account['id']
+                meta['id'] = id
+                err, data = yield from Service.Problem.post_problem(meta)
+                if err: self.render(500, err)
+                else: self.render(200, {"id": data})
+            ### /api/{{group_id}}/problems/{{problem_id}}/execute/
+            elif action == "execute":
+                args = ['execute[]']
+                meta = self.get_args(args)
+                meta['group_id'] = self.current_group
+                meta['id'] = id
+                err, data = yield from Service.Problem.post_problem_execute(meta)
+                if err: self.error(err)
+                else: self.success("")
+            elif action == "testdata":
+                args = ['score', 'time_limit', 'memory_limit', 'output_limit', 'input[file]', 'output[file]']
+                meta = self.get_args(args)
+                meta['testdata_id'] = sub_id
+                meta['id'] = id
+                err, data = yield from Service.Problem.post_problem_testdata(meta)
+                if err: self.error(err)
+                else: self.success("")
 
-    @reqenv
+    
+    @tornado.gen.coroutine
     def delete(self, id, action=None, sub_id=None):
-        if 1 not in self.current_group_power:
-            self.error("Permission Denied")
-            return
         check_meta = {}
         check_meta['group_id'] = self.current_group
         check_meta['id'] = id
-        err, data = yield from Service.Problem.get_problem(check_meta)
-        if err: 
-            self.error(err)
-            return
-        if int(data['group_id']) != int(check_meta['group_id']):
-            self.error('403')
-            return
-        if action == "basic":
-            meta = {}
-            meta["group_id"] = self.current_group
-            meta["setter_user_id"] = self.account['id']
-            meta['id'] = id
-            err, data = yield from Service.Problem.delete_problem(meta)
-            if err: self.error(err)
-            else: self.success("")
-        elif action == "testdata":
-            meta = {}
-            meta['testdata_id'] = sub_id
-            meta['id'] = id
-            err, data = yield from Service.Problem.delete_problem_testdata(meta)
-            if err: self.error(err)
-            else: self.success("")
+        if self.check(check_meta):
+            if action == "basic":
+                meta = {}
+                meta['id'] = id
+                err, data = yield from Service.Problem.delete_problem(meta)
+                if err: self.render(500, err)
+                else: self.render()
+            elif action == "testdata":
+                meta = {}
+                meta['testdata_id'] = sub_id
+                err, data = yield from Service.Problem.delete_problem_testdata(meta)
+                if err: self.error(err)
+                else: self.success("")

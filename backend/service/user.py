@@ -37,6 +37,17 @@ class UserService(BaseService):
         self.rs.set("user_basic@%s" % str(id), res)
         return (None, res)
 
+    def get_user_basic_info_by_token(self, token):
+        res = self.rs.get("user_token@%s" % token)
+        if not res:
+            res = yield from self.db.execute("SELECT id FROM users WHERE token=%s", (token,))
+            if len(res) == 0:
+                return ('Etokennotexist', None)
+            res = res[0]['id']
+            self.rs.set("user_token@%s" % token, res)
+        err, data = yield from self.get_user_basic_info(res)
+        return (err, data)
+
     def get_user_group_info(self, id):
         res = self.rs.get('user_group@%s' % str(id))
         if res: return (None, res)

@@ -1,5 +1,4 @@
 from req import RequestHandler
-from req import reqenv
 from req import Service
 
 

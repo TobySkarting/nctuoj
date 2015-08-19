@@ -31,11 +31,11 @@
                         url: $(ele).attr("data-href"),
                         type: $(ele).attr("data-method"),
                         data: {
-                            "_xsrf": getCookie("_xsrf")
+                            "token": "{{account['token']}}"
                         },
                         dataType: "json",
                         success: function(msg){
-                            if(msg['status'] == 'success'){
+                            if(msg['status'] == 200){
                                 location.href = '/group/{{current_group}}/problems/';
                             } else {
                                 alert(msg['msg']);

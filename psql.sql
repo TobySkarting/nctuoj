@@ -22,11 +22,14 @@ CREATE TABLE users (
     email           varchar(255)    NOT NULL,
     student_id      varchar(255)    NOT NULL,
     school_id       integer         NOT NULL,
+    token           varchar(64)    NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second', now()),
     updated_at      timestamp       DEFAULT date_trunc('second', now())
 );
 CREATE TRIGGER users_updated_row BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE updated_row();
-INSERT INTO users (account, passwd, email, student_id, school_id) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '0');
+CREATE UNIQUE INDEX on users (token);
+INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '0', 'P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr');
+
 
 DROP TABLE IF EXISTS map_user_power;
 CREATE TABLE map_user_power (
@@ -124,6 +127,7 @@ CREATE TRIGGER problems_updated_row BEFORE UPDATE ON problems FOR EACH ROW EXECU
 CREATE INDEX ON problems (visible);
 CREATE INDEX ON problems (group_id);
 INSERT INTO problems (group_id, setter_user_id) values (1, 1);
+INSERT INTO problems (group_id, setter_user_id) values (2, 1);
 
 DROP TABLE IF EXISTS execute_types;
 CREATE TABLE execute_types (

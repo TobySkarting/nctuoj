@@ -1,18 +1,18 @@
-from req import RequestHandler
-from req import reqenv
+from req import WebRequestHandler
 from req import Service
+import tornado
 import math
 
 
-class WebExecuteTypesHandler(RequestHandler):
-    @reqenv
+class WebExecuteTypesHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self):
         err, data = yield from Service.Execute.get_execute_list()
         self.Render('./executes/executes.html', data=data)
         pass
 
-class WebExecuteTypeHandler(RequestHandler):
-    @reqenv
+class WebExecuteTypeHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self, id, action=None):
         meta = {}
         meta["id"] = id

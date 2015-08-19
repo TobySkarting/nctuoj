@@ -1,10 +1,8 @@
 from req import RequestHandler
-from req import reqenv
 from req import Service
 
 
 class WebContestsHandler(RequestHandler):
-    @reqenv
     def get(self, group_id):
         self.current_group = group_id
         args = ["page"]
@@ -14,15 +12,12 @@ class WebContestsHandler(RequestHandler):
         self.render('./contests/contests.html')
         pass
 
-    @reqenv
     def post(self):
         pass
 
 class WebContestHandler(RequestHandler):
-    @reqenv
     def get(self, id=None, action=None):
         pass
 
-    @reqenv
     def post(self): 
         pass

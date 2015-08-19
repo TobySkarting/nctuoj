@@ -4,7 +4,7 @@
 {% include 'problem_edit_title.html' %}
 
 <form class="form" method="post" action="/api/group/{{current_group}}/problems/{{data['id']}}/basic/">
-    {% module xsrf_form_html() %}
+    <input type="hidden" name="token" value="{{account['token']}}">
     <div class="row">
         <div class="col-md-3 form-group">
             <label class="control-label">Name</label>
@@ -90,7 +90,7 @@ $( document ).ready(function(){
             data: form.serialize(),
             dataType: "json",
             success: function(msg){
-                if(msg['status'] == "success"){
+                if(msg['status'] == 200){
                     location.href = "/group/{{current_group}}/problems/" + msg['msg']['id'] + "/";
                 } else {
                     bootbox.alert(msg['msg'])

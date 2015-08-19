@@ -1,28 +1,22 @@
 from req import RequestHandler
-from req import reqenv
 from req import Service
 
 
 class ApiExecutesHandler(RequestHandler):
-    @reqenv
     def get(self):
         err, data = yield from Service.Execute.get_execute_list()
         self.success(data)
 
-    @reqenv
     def post(self):
         pass
 
-    @reqenv
     def delete(self):
         pass
 
 class ApiExecuteHandler(RequestHandler):
-    @reqenv
     def get(self, id):
         pass
 
-    @reqenv
     def post(self, id):
         args = ["description", "lang", "command[]"]
         meta = self.get_args(args)
@@ -35,6 +29,5 @@ class ApiExecuteHandler(RequestHandler):
         if err: self.error(err)
         else: self.success({"id": data})
 
-    @reqenv
     def delete(self, id):
         pass

@@ -16,6 +16,9 @@
             {% end %}
             <th class="tablet computer only">Setter</th>
             <th class="tablet computer only">Source</th>
+            {% if 1 in current_group_power %}
+                <th>Visible</th>
+            {% end %}
         </tr>
     </thead>
     <tbody>
@@ -37,6 +40,11 @@
                 <td class="tablet computer only">
                     {{x['source']}}
                 </td>
+                {% if 1 in current_group_power %}
+                <td>
+                    {{map_visible[x['visible']]}}
+                </td>
+                {% end %}
             </tr>
         {% end %}
     </tbody>

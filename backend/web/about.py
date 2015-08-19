@@ -1,14 +1,9 @@
-from req import RequestHandler
-from req import reqenv
+from req import WebRequestHandler
 from req import Service
+import tornado
 
-
-class WebAboutHandler(RequestHandler):
-    @reqenv
+class WebAboutHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self):
         self.Render('about/about.html')
-        return
-
-    @reqenv
-    def post(self):
         return

@@ -16,6 +16,29 @@
                             <a class="btn btn-default btn-xs" href="/group/{{current_group}}/bulletins/{{x['id']}}/edit/">Edit</a>
                             <a class="btn btn-default btn-xs" onclick="delete_bulletin(this)" data-href="/api/group/{{current_group}}/bulletins/{{x['id']}}/" data-method="delete">Delete</a> 
                         </span>
+                        <script>
+                        function delete_bulletin(ele){
+                            bootbox.confirm("Are you sure?", function(result) {
+                                if(result){
+                                    $.ajax({
+                                        url: $(ele).attr("data-href"),
+                                        type: $(ele).attr("data-method"),
+                                        data: {
+                                            "token": '{{account['token']}}'
+                                        },
+                                        dataType: "json",
+                                        success: function(msg){
+                                            if(msg['status'] == 200){
+                                                location.href = location.href;
+                                            } else {
+                                                alert(msg['msg']);
+                                            }
+                                        }
+                                    });
+                                }
+                            }); 
+                        }
+                        </script>
                     {% end %}
                 </div>
                 <div class="panel-body">{% raw x['content'] %}</div>
@@ -24,29 +47,6 @@
         </div>
     {% end %}
 </div>
-<script>
-function delete_bulletin(ele){
-    bootbox.confirm("Are you sure?", function(result) {
-        if(result){
-            $.ajax({
-                url: $(ele).attr("data-href"),
-                type: $(ele).attr("data-method"),
-                data: {
-                    "xsrf": getCookie("_xsrf")
-                }
-                dataType: "json",
-                success: function(msg){
-                    if(msg['status'] == 'success'){
-                        location.href = location.href;
-                    } else {
-                        alert(msg['msg']);
-                    }
-                }
-            });
-        }
-    }); 
-}
-</script>
 
 {% module Pagination(page) %}
 

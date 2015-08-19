@@ -1,11 +1,11 @@
-from req import RequestHandler
-from req import reqenv
+from req import WebRequestHandler
 from req import Service
+import tornado
 import math
 
 
-class WebProblemsHandler(RequestHandler):
-    @reqenv
+class WebProblemsHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self):
         args = ["page"]
         meta = self.get_args(args)
@@ -39,8 +39,8 @@ class WebProblemsHandler(RequestHandler):
         page['get'] = {}
         self.Render('./problems/problems.html', data=data, page=page)
 
-class WebProblemHandler(RequestHandler):
-    @reqenv
+class WebProblemHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self, id):
         meta = {}
         meta['id'] = id
@@ -59,11 +59,8 @@ class WebProblemHandler(RequestHandler):
             else:
                 self.write_error(403)
 
-        
-
-
-class WebProblemEditHandler(RequestHandler):
-    @reqenv
+class WebProblemEditHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self, id, action = None):
         meta = {}
         meta['id'] = id

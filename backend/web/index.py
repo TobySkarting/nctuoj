@@ -1,10 +1,10 @@
-from req import RequestHandler
-from req import reqenv
+from req import WebRequestHandler
 from req import Service
+import tornado
 
 
-class WebIndexHandler(RequestHandler):
-    @reqenv
+class WebIndexHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self):
         data = {}
         data['bulletins'] = []
@@ -18,6 +18,3 @@ class WebIndexHandler(RequestHandler):
         self.Render('index.html', data=data)
         return
 
-    @reqenv
-    def post(self):
-        return

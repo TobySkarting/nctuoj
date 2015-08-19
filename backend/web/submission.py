@@ -1,10 +1,8 @@
 from req import RequestHandler
-from req import reqenv
 from req import Service
 
 
 class WebSubmissionsHandler(RequestHandler):
-    @reqenv
     def get(self):
         args = ["page", "user_id", "problem_id"]
         meta = self.get_args(args)
@@ -15,7 +13,6 @@ class WebSubmissionsHandler(RequestHandler):
         self.Render('./submissions/submissions.html', data=data)
 
 class WebSubmissionHandler(RequestHandler):
-    @reqenv
     def get(self, id, action):
         pass
 

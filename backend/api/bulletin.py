@@ -1,51 +1,53 @@
-from req import RequestHandler
-from req import reqenv
+from req import ApiRequestHandler
 from req import Service
+import tornado
 
 
-class ApiBulletinsHandler(RequestHandler):
-    @reqenv
+class ApiBulletinsHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
     def get(self):
         pass
 
-    @reqenv
-    def post(self):
-        pass
+class ApiBulletinHandler(ApiRequestHandler):
+    def check(self, meta):
+        if 1 not in self.current_group_power:
+            self.render(403, "Permission Denied")
+            return False
+        if meta['id'] != 0:
+            err, data = yield from Service.Bulletin.get_bulletin(meta)
+            if err: 
+                self.render(500, err)
+                return False
+            if int(data['group_id']) != int(meta['group_id']):
+                self.render(403, "Permission Denied")
+                return False
+        return True
 
-    @reqenv
-    def delete(self):
-        pass
-
-class ApiBulletinHandler(RequestHandler):
-    @reqenv
+    @tornado.gen.coroutine
     def get(self, id):
         pass
 
-    @reqenv
+    
+    @tornado.gen.coroutine
     def post(self, id):
         args = ["title", "content"]
         meta = self.get_args(args)
         meta["group_id"] = self.current_group
         meta["setter_user_id"] = self.account['id']
         meta['id'] = id
-        if 1 not in self.current_group_power:
-            self.error("Permission Denied")
-            return
-        err, data = yield from Service.Bulletin.post_bulletin(meta)
-        if err: self.error(err)
-        else: self.success("")
+        if self.check(meta):
+            err, data = yield from Service.Bulletin.post_bulletin(meta)
+            if err: self.render(500 ,err)
+            else: self.render()
 
-    @reqenv
+    
+    @tornado.gen.coroutine
     def delete(self, id):
         meta = {}
         meta["group_id"] = self.current_group
         meta["setter_user_id"] = self.account['id']
         meta['id'] = id
-        if 1 not in self.current_group_power:
-            self.error("Permission Denied")
-            return
-        err, data = yield from Service.Bulletin.get_bulletin(meta)
-        ### not in this group
-        err, data = yield from Service.Bulletin.delete_bulletin(meta)
-        if err: self.error(err)
-        else: self.success("")
+        if self.check(meta):
+            err, data = yield from Service.Bulletin.delete_bulletin(meta)
+            if err: self.render(500, err)
+            else: self.render()

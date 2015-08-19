@@ -1,11 +1,11 @@
-from req import RequestHandler
-from req import reqenv
+from req import WebRequestHandler
 from req import Service
+import tornado
 import math
 
 
-class WebBulletinsHandler(RequestHandler):
-    @reqenv
+class WebBulletinsHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self):
         args = ["page"]
         meta = self.get_args(args)
@@ -41,8 +41,8 @@ class WebBulletinsHandler(RequestHandler):
         page['get'] = {}
         self.Render('./bulletins/bulletins.html', data=data, page=page)
 
-class WebBulletinHandler(RequestHandler):
-    @reqenv
+class WebBulletinHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self, id, action):
         meta = {}
         meta["group_id"] = self.current_group

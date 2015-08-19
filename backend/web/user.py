@@ -1,11 +1,11 @@
-from req import RequestHandler
-from req import reqenv
+from req import WebRequestHandler
 from req import Service
+import tornado
 import math
 
 
-class WebUsersHandler(RequestHandler):
-    @reqenv
+class WebUsersHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self):
         if self.map_power['user_manage'] not in self.account['power']:
             self.write_error(403)
@@ -41,25 +41,17 @@ class WebUsersHandler(RequestHandler):
         page['get'] = {}
         self.Render('./users/users.html', data=data, page=page)
 
-    @reqenv
-    def post(self):
-        pass
 
-class WebUserHandler(RequestHandler):
+class WebUserHandler(WebRequestHandler):
     """ single user data """
-    @reqenv
+    @tornado.gen.coroutine
     def get(self, id=None, action=None):
         if not id: id = self.account["id"]
         err, meta = yield from Service.User.get_user_advanced_info(id)
         self.Render('./users/user.html', data=meta)
 
-    """ update user data """
-    @reqenv
-    def post(self, id=None, action=None):
-        pass
-
-class WebUserSignHandler(RequestHandler):
-    @reqenv
+class WebUserSignHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self, action):
         print(action)
         if action == "signin":
@@ -72,7 +64,7 @@ class WebUserSignHandler(RequestHandler):
         else:
             self.write_error(404)
 
-    @reqenv
+    @tornado.gen.coroutine
     def post(self, action): 
         if action == "signin":
             args = ['account', 'passwd']

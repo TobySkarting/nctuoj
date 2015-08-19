@@ -1,16 +1,13 @@
 from req import RequestHandler
-from req import reqenv
 from req import Service
 
 
 
 class ApiUsersHandler(RequestHandler):
-    @reqenv
     def get(self):
         pass
 
 class ApiUserHandler(RequestHandler):
-    @reqenv
     def post(self, id):
         args = ['basic_info', 'power']
         meta = self.get_args(args)
@@ -23,7 +20,6 @@ class ApiUserHandler(RequestHandler):
             return
 
 class ApiUserSignHandler(RequestHandler):
-    @reqenv
     def post(self, action):
         if action == 'signin':
             pass

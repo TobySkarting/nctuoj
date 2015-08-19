@@ -3,7 +3,6 @@ import tornado.ioloop
 import tornado.httpserver
 import tornado.web
 ### self define from req import RequestHandler
-from req import reqenv
 from req import Service 
 ### my app
 import config
@@ -170,7 +169,7 @@ if __name__ == '__main__':
         ('/about/',                             WebAboutHandler),
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/.*', Web404Handler)
-        ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape', ui_modules = ui_modules, xsrf_cookies=True)
+        ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape', ui_modules = ui_modules)
     rs.flushdb()
     global srv
     srv = tornado.httpserver.HTTPServer(app)

@@ -21,6 +21,7 @@ class DatetimeEncoder(json.JSONEncoder):
             return obj.strftime('%Y-%m-%d')
         else:
             return json.JSONEncoder.default(self, obj)
+
 class Service:
     pass
 
@@ -28,14 +29,12 @@ class RequestHandler(tornado.web.RequestHandler):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
-
         try:
             self.get_argument('json')
             self.res_json = True
 
         except tornado.web.HTTPError:
             self.res_json = False
-
     def log(self, msg):
         if not self.acct:
             id = 0
@@ -43,20 +42,6 @@ class RequestHandler(tornado.web.RequestHandler):
             id = self.acct['id']
         msg = '<USER %d> '%id + str(msg)
         logging.debug(msg)
-
-    def error(self, err):
-        self.finish(json.dumps({'status': 'error',
-                                'msg': err}, cls=DatetimeEncoder))
-        return
-
-    def success(self, msg):
-        self.finish(json.dumps({'status': 'success',
-                                'msg': msg}, cls=DatetimeEncoder))
-        return
-
-    def set_secure_cookie(self, name, value, expires_days=30, version=None, **kwargs):
-        kwargs['httponly'] = True
-        super().set_secure_cookie(name, value, expires_days, version, **kwargs)
 
     def get_args(self, name):
         meta = {}
@@ -74,12 +59,51 @@ class RequestHandler(tornado.web.RequestHandler):
                 print("get_args error: ", n)
         return meta
 
-    def get_file(self, name):
+    def prepare(self):
         try:
-            return self.request.files[name][0]
+            self.current_group = re.search(r'.*/group/(\d+).*', self.request.uri).groups(1)[0]
         except:
-            return None
-    
+            self.current_group = 0
+        self.map_power = map_power
+        self.map_group_power = map_group_power
+        self.map_lang = map_lang
+
+
+
+
+class ApiRequestHandler(RequestHandler):
+    def render(self, code=200, msg=""):
+        self.finish(json.dumps({'status': code,
+                                'msg': msg}, cls=DatetimeEncoder))
+        return
+    @tornado.gen.coroutine
+    def prepare(self):
+        super().prepare()
+        self.account = {}
+        token = (self.get_args(['token']))['token']
+        if token == None:
+            self.account['id'] = 0
+        else:
+            err, data = yield from Service.User.get_user_basic_info_by_token(token)
+            if err:
+                self.account['id'] = 0
+            else:
+                self.account = data
+        if self.request.method != 'GET':
+            if self.account['id'] == 0:
+                self.render(403, 'Forbidden')
+        id = self.account['id']
+        err, self.account['power'] = yield from Service.User.get_user_power_info(id)
+        err, self.group = yield from Service.User.get_user_group_info(id)
+        err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
+        print(self.account, self.group)
+            
+
+class WebRequestHandler(RequestHandler):
+    def set_secure_cookie(self, name, value, expires_days=30, version=None, **kwargs):
+        kwargs['httponly'] = True
+        super().set_secure_cookie(name, value, expires_days, version, **kwargs)
+
     def write_error(self, status_code, **kwargs):
         self.Render('./err/'+str(status_code)+'.html')
 
@@ -95,47 +119,18 @@ class RequestHandler(tornado.web.RequestHandler):
         kwargs['current_group_power'] = self.current_group_power
         kwargs['current_group_active'] = self.current_group_active
         print("This function in req.py's render: ", kwargs)
-        class _encoder(json.JSONEncoder):
-            def default(self, obj):
-                if isinstance(obj, datetime.datetime):
-                    return obj.isoformat()
+        self.render('./web/template/'+templ, **kwargs)
 
-                else:
-                    return json.JSONEncoder.default(self,obj)
-
-        def _mp_encoder(obj):
-            if isinstance(obj, datetime.datetime):
-                return obj.isoformat()
-            return obj
-
-        if self.res_json == True:
-            self.finish(json.dumps(kwargs, cls=_encoder))
-
-        else:
-            self.render('./web/template/'+templ, **kwargs)
-
-        return
-
-class WebSocketHandler(tornado.websocket.WebSocketHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-def reqenv(func):
     @tornado.gen.coroutine
-    def wrap(self, *args, **kwargs):
-        """ get current group from url """
-        try:
-            self.current_group = re.search(r'.*/group/(\d+).*', self.request.uri).groups(1)[0]
-        except:
-            self.current_group = 0
+    def prepare(self):
+        super().prepare()
+        ### No group => 0
+        ### No user => 0 (guest)
         try:
             self.current_group_active = re.search(r'/group/\d+/(\w+)/.*', self.request.uri).groups(1)[0]
         except:
             self.current_group_active = "bulletins"
 
-        self.map_power = map_power
-        self.map_group_power = map_group_power
-        self.map_lang = map_lang
         self.account = {}
         self.group = {}
         try:
@@ -162,12 +157,9 @@ def reqenv(func):
         if not in_group and int(self.current_group) != 0:
             self.write_error(403)
             return
-
         
-        ret = func(self, *args, **kwargs)
-        if isinstance(ret, types.GeneratorType):
-            ret = yield from ret
 
-        return ret
+class WebSocketHandler(tornado.websocket.WebSocketHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    return wrap
