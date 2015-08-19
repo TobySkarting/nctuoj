@@ -135,13 +135,14 @@ CREATE TABLE execute_types (
     description     varchar(255)    NOT NULL    DEFAULT '',
     lang            integer         NOT NULL,
     setter_user_id  integer         NOT NULL,
+    priority        integer         NOT NULL    DEFAULT 999,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER execute_types_updated_row BEFORE UPDATE ON execute_types FOR EACH ROW EXECUTE PROCEDURE updated_row();
-INSERT INTO execute_types (description, lang, setter_user_id) values ('Basic C', 0, 1);
-INSERT INTO execute_types (description, lang, setter_user_id) values ('Basic C++', 1, 1);
-INSERT INTO execute_types (description, lang, setter_user_id) values ('Basic C++14', 1, 1);
+INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C', 0, 1, 1);
+INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++', 1, 1, 3);
+INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++14', 1, 1, 2);
 
 DROP TABLE IF EXISTS execute_steps;
 CREATE TABLE execute_steps (
@@ -218,3 +219,14 @@ CREATE INDEX ON submissions (memory_usage);
 CREATE INDEX ON submissions (time_usage);
 CREATE INDEX ON submissions (verdict);
 CREATE INDEX ON submissions (length);
+
+
+DROP TABLE IF EXISTS verdicts;
+CREATE TABLE verdicts(
+    id              serial          NOT NULL    PRIMARY KEY,
+    execute_type_id integer         NOT NULL    DEFAULT 0,
+    file_name       varchar(255)    NOT NULL,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER verdicts_update_row BEFORE UPDATE ON verdicts FOR EACH ROW EXECUTE PROCEDURE updated_row();

@@ -14,7 +14,7 @@ class UserService(BaseService):
 
     def get_user_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
-        res = yield from self.db.execute("SELECT * FROM users, (SELECT id FROM users ORDER BY id LIMIT %s, %s) AS b WHERE users.id = b.id", ((int(data['page'])-1)*int(data['count']), data['count'],))
+        res = yield from self.db.execute("SELECT * FROM users ORDER BY id LIMIT %s OFFSET %s", (data['count'], (int(data['page'])-1)*int(data['count']),))
         for x in res:
             err, x["power"] = yield from self.get_user_power_info(x["id"])
         return (None, res)
@@ -23,8 +23,8 @@ class UserService(BaseService):
         res = self.rs.get('user_list_count')
         if res: return (None, res)
         res = yield from self.db.execute("SELECT COUNT(*) FROM users")
-        self.rs.set('user_list_count', res[0]['COUNT(*)'])
-        return (None, res[0]['COUNT(*)'])
+        self.rs.set('user_list_count', res[0]['count'])
+        return (None, res[0]['count'])
 
     def get_user_basic_info(self, id):
         res = self.rs.get("user_basic@%s" % str(id))

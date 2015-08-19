@@ -117,7 +117,7 @@ class ProblemService(BaseService):
         if err: return (err, None)
         res = self.rs.get('problem@%s@execute' % str(data['id']))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT e.* FROM execute_types as e, (SELECT execute_type_id as id FROM map_problem_execute WHERE problem_id=%s) as b WHERE e.id=b.id ORDER BY e.id", (data['id'],))
+        res = yield from self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['id'],))
         self.rs.set('problem@%s@execute' % str(data['id']), res)
         return (None, res)
 

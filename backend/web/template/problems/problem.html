@@ -116,7 +116,6 @@
             <table class="table table-hover table-striped table-condensed">
                 <thead>
                     <tr>
-                        <th>#</th>
                         <th>Lang</th>
                         <th>Description</th>
                     </tr>
@@ -124,7 +123,6 @@
                 <tbody>
                     {% for x in data['execute'] %}
                         <tr>
-                            <td>{{x['id']}}</td>
                             <td>{{map_lang[x['lang']]}}</td>
                             <td>{{x['description']}}</td>
                         </tr>

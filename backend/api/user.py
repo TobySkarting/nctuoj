@@ -1,25 +1,28 @@
-from req import RequestHandler
+from req import ApiRequestHandler
 from req import Service
+import tornado
 
 
 
-class ApiUsersHandler(RequestHandler):
+class ApiUsersHandler(ApiRequestHandler):
     def get(self):
         pass
 
-class ApiUserHandler(RequestHandler):
+class ApiUserHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
     def post(self, id):
         args = ['basic_info', 'power']
         meta = self.get_args(args)
         if meta['power']:
             if self.map_power['user_manage'] not in self.account['power']:
-                self.error("Permission Denied")
+                self.render(403, "Permission Denied")
                 return
             yield from Service.User.post_user_power(id, meta['power'])
-            self.success("")
+            self.render()
             return
 
-class ApiUserSignHandler(RequestHandler):
+class ApiUserSignHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
     def post(self, action):
         if action == 'signin':
             pass

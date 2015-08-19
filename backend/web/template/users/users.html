@@ -53,13 +53,15 @@ function update(id, power_type){
     $.ajax({
         url: '/api/users/'+id+'/',
         type: "POST",
-        data: {'power': power_type},
+        data: {'power': power_type,
+            'token': "{{account['token']}}"
+        },
         dataType: "json",
         success: function(msg){
-            if(msg["status"] == "success"){
+            if(msg["status"] == 200){
                 location.href = location.href;
             } else {
-                alert(msg);
+                alert(msg['msg']);
             }
         }
     });
