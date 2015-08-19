@@ -103,7 +103,12 @@ class ProblemService(BaseService):
         err, data = yield from self.get_problem(data)
         self.reset_rs_problem_count(data['group_id'])
         yield from self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id']),))
+        yield from self.db.execute("DELETE FROM testdata WHERE problem_id=%s", (int(data['id']),))
+        yield from self.db.execute("DELETE FROM submissions WHERE problem_id=%s", (int(data['id']),))
+        yield from self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (int(data['id']),))
         self.rs.delete('problem@%s' % str(data['id']))
+        self.rs.delete('problem@%s@execute' % str(data['id']))
+        self.rs.delete('problem@%s@testdata' % str(data['id']))
         return (None, None)
 
     def get_problem_execute(self, data={}):
