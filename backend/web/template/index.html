@@ -1,17 +1,29 @@
 {% extends 'frame.html' %}
 {% block content %}
 <div class="row">
-    {% for x in data['bulletins'] %}
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    {{ x['title'] }}
-                </div>
-                <div class="panel-body">{% raw x['content'] %}</div>
-                <div class="panel-footer">By {{x['setter_user']}} At {{x['created_at']}}</div>
-            </div>
+    <div class="col-md-6">
+        <div class="well well-default">
+            <h3>Bulletins</h3>
+            <table class="table table-hover table-striped">
+                <thead>
+                    <th>Group</th>
+                    <th>Title</th>
+                    <th>Setter</th>
+                    <th>Time</th>
+                </thead>
+                <tbody>
+                    {% for x in data['bulletins'] %}
+                        <tr>
+                            <td>{{x['group_name']}}</td>
+                            <td>{{x['title']}}</td>
+                            <td>{{x['setter_user']}}</td>
+                            <td>{{x['created_at']}}</td>
+                        </tr>
+                    {% end %}
+                </tbody>
+            </table>
         </div>
-    {% end %}
+    </div>
 </div>
 {% end %}
 

@@ -87,6 +87,8 @@ class ProblemService(BaseService):
             insert_id = (yield from self.db.execute(sql, parma))[0]['id']
             return (None, insert_id)
         else:
+            err, data = yield from self.get_problem(data)
+            self.reset_rs_problem_count(data['group_id'])
             id = data['id']
             data.pop('id')
             self.rs.delete('problem@%s' % str(id))
@@ -115,13 +117,15 @@ class ProblemService(BaseService):
         return (None, res)
 
     def post_problem_execute(self, data={}):
-        self.rs.delete('problem@%s@execute' % str(data['id']))
-        self.rs.delete('problem@%s' % str(data['id']))
-        yield from self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['id'],))
+        yield from self.delete_problem_execute(data)
         if data['execute']:
             for x in data['execute']:
                 yield from self.db.execute("INSERT INTO map_problem_execute (execute_type_id, problem_id) values (%s, %s)", (x, data['id']))
         return (None, None)
+
+    def delete_problem_execute(self, data={}):
+        self.rs.delete('problem@%s@execute' % str(data['id']))
+        yield from self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['id'],))
     
 
     def get_problem_testdata_list(self, data={}):
@@ -133,16 +137,15 @@ class ProblemService(BaseService):
         res = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id'],))
         self.rs.set('problem@%s@testdata' % str(data['id']), res)
         return (None, res)
-
+        
     def get_problem_testdata(self, data={}):
-        required_args = ['id']
+        required_args = ['testdata_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res = self.rs.get('problem@%s@testdata' % str(data['id']))
-        if res: return (None, res)
-        res = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id'],))
-        self.rs.set('problem@%s@testdata' % str(data['id']), res)
-        return (None, res)
+        res = yield from self.db.execute("SELECT * FROM testdata WHERE id=%s", (data['testdata_id'], ))
+        if len(res) == 0:
+            return ('No testdata id', None)
+        return (None, res[0])
 
     def post_problem_testdata(self, data={}):
         required_args = ['id', 'testdata_id']
@@ -173,11 +176,11 @@ class ProblemService(BaseService):
                         f.write(data[x]['body'])
             return (None, data['testdata_id'])
 
+    
     def delete_problem_testdata(self, data={}):
-        required_args = ['testdata_id']
+        required_args = ['testdata_id', 'id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        
-        # self.rs.delete('problem@%s@testdata' % str(data['id']))
         yield from self.db.execute("DELETE FROM testdata WHERE id=%s", (data['testdata_id'],))
+        self.rs.delete('problem@%s@testdata' % str(data['id']))
         return (None, None)

@@ -30,6 +30,17 @@ class ApiProblemHandler(ApiRequestHandler):
                 return False
         return True
 
+    def check_testdata(self, meta):
+        if meta['testdata_id'] != 0:
+            err, data = yield from Service.Problem.get_problem_testdata(meta)
+            if err:
+                self.render(500, err)
+                return False
+            if data['problem_id'] != meta['id']:
+                self.render(403, 'Permission Denied')
+                return False
+        return True
+
     @tornado.gen.coroutine
     def get(self, id, action=None, sub_id=None):
         meta = {}
@@ -38,7 +49,7 @@ class ApiProblemHandler(ApiRequestHandler):
 
         if action == "execute":
             err, data = yield from Service.Problem.get_problem_execute(meta)
-            self.success(data)
+            self.render(200, data)
             return
     
         err, data = yield from Service.Problem.get_problem(meta)
@@ -50,7 +61,7 @@ class ApiProblemHandler(ApiRequestHandler):
             elif int(data['group_id']) == int(meta['group_id']) and int(data['visible']) == 1:
                 pass
             else:
-                self.error("Forbidden")
+                self.render(403, "Forbidden")
 
         if action == "basic":
             self.success(data)
@@ -64,17 +75,14 @@ class ApiProblemHandler(ApiRequestHandler):
             else:
                 meta['testdata_id'] = sub_id
                 err, data = yield from Service.Problem.get_problem_testdata(meta)
-                if err: self.error(err)
-                else: self.success(data)
+                if err: self.render(500, err)
+                else: self.render()
         else:
             self.error("404")
         
     
     @tornado.gen.coroutine
     def post(self, id, action=None, sub_id=None):
-        if 1 not in self.current_group_power:
-            self.error("Permission Denied")
-            return
         check_meta = {}
         check_meta['group_id'] = self.current_group
         check_meta['id'] = id
@@ -97,16 +105,17 @@ class ApiProblemHandler(ApiRequestHandler):
                 meta['group_id'] = self.current_group
                 meta['id'] = id
                 err, data = yield from Service.Problem.post_problem_execute(meta)
-                if err: self.error(err)
-                else: self.success("")
+                if err: self.render(500, err)
+                else: self.render()
             elif action == "testdata":
                 args = ['score', 'time_limit', 'memory_limit', 'output_limit', 'input[file]', 'output[file]']
                 meta = self.get_args(args)
                 meta['testdata_id'] = sub_id
                 meta['id'] = id
-                err, data = yield from Service.Problem.post_problem_testdata(meta)
-                if err: self.error(err)
-                else: self.success("")
+                if self.check_testdata(meta):
+                    err, data = yield from Service.Problem.post_problem_testdata(meta)
+                    if err: self.render(500, err)
+                    else: self.render()
 
     
     @tornado.gen.coroutine
@@ -124,6 +133,8 @@ class ApiProblemHandler(ApiRequestHandler):
             elif action == "testdata":
                 meta = {}
                 meta['testdata_id'] = sub_id
-                err, data = yield from Service.Problem.delete_problem_testdata(meta)
-                if err: self.error(err)
-                else: self.success("")
+                meta['id'] = id
+                if self.check_testdata(meta):
+                    err, data = yield from Service.Problem.delete_problem_testdata(meta)
+                    if err: self.render(500, err)
+                    else: self.render()

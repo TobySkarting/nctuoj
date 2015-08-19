@@ -20,6 +20,7 @@
     </div>
 </div>
 <form id="problem_execute_form" method="post" action="/api/group/{{current_group}}/problems/{{data['id']}}/execute/">
+    <input type="hidden" name="token" value="{{account['token']}}">
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
@@ -110,11 +111,13 @@ $( document ).ready(function(){
             dataType: "json",
             success: function(msg){
                 $('tbody:not(.template)').html("");
-                if(msg['status'] == 'success'){
+                if(msg['status'] == 200){
                     $.each(msg['msg'], function(index, element){
                         add_execute(element);
                     });
                     $("#problem_execute_form").submit();
+                } else {
+                    bootbox.alert(msg['msg']);
                 }
             }
         });
@@ -128,10 +131,12 @@ $( document ).ready(function(){
             data: form.serialize(),
             dataType: "json",
             success: function(msg){
-                if(msg['status'] == 'success'){
+                if(msg['status'] == 200){
                     bootbox.alert("success", function(){
                         location.href = "/group/{{current_group}}/problems/{{data['id']}}/";
-                    })
+                    });
+                } else {
+                    bootbox.alert(msg['msg']);
                 }
             }
         });
