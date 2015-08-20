@@ -1,7 +1,96 @@
 {% extends './../frame.html' %}
 {% block content %}
-
-
-Single Problem
-
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="text-center">#{{data['id']}}</h2>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-xs-2">
+                Problem
+            </div>
+            <div class="col-xs-2">
+                Submitter
+            </div>
+            <div class="col-xs-2">
+                Time(ms)
+            </div>
+            <div class="col-xs-2">
+                Memory(KiB)
+            </div>
+            <div class="col-xs-2">
+                Verdict
+            </div>
+            <div class="col-xs-2">
+                Score
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-2">
+                {{data['problem_id']}}.{{data['problem_name']}}
+            </div>
+            <div class="col-xs-2">
+                {{data['submitter']}}
+            </div>
+            <div class="col-xs-2">
+                {{data['time_usage'] if data['time_usage'] else '--'}}
+            </div>
+            <div class="col-xs-2">
+                {{data['memory_usage'] if data['memory_usage'] else '--'}}
+            </div>
+            <div class="col-xs-2">
+                {{data['verdict']}}
+            </div>
+            <div class="col-xs-2">
+                {{data['score'] if data['score'] else '--'}}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-xs-4">
+                Compiler
+            </div>
+            <div class="col-xs-4">
+                Execute Type
+            </div>
+            <div class="col-xs-4">
+                Code Length
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-4">
+               {{map_lang[data['execute_lang']]}}
+            </div>
+            <div class="col-xs-4">
+                {{data['execute_description']}}
+            </div>
+            <div class="col-xs-4">
+                {{data['length']}}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{data['file_name']}}
+                </div>
+                <div class="panel-body edit">
+                    <textarea class="form-control" rows=25>{{data['code']}}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% end %}

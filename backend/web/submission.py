@@ -1,8 +1,11 @@
-from req import RequestHandler
+from req import WebRequestHandler
 from req import Service
+import tornado
 
 
-class WebSubmissionsHandler(RequestHandler):
+
+class WebSubmissionsHandler(WebRequestHandler):
+    @tornado.gen.coroutine
     def get(self):
         args = ["page", "user_id", "problem_id"]
         meta = self.get_args(args)
@@ -12,7 +15,11 @@ class WebSubmissionsHandler(RequestHandler):
         err, data = yield from Service.Submission.get_submission_list(meta)
         self.Render('./submissions/submissions.html', data=data)
 
-class WebSubmissionHandler(RequestHandler):
-    def get(self, id, action):
-        pass
+class WebSubmissionHandler(WebRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, id):
+        err, data = yield from Service.Submission.get_submission({'id': id})
+        if err:
+            self.write_error(404)
+        self.Render('./submissions/submission.html', data=data)
 

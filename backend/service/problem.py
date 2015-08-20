@@ -87,7 +87,6 @@ class ProblemService(BaseService):
             insert_id = (yield from self.db.execute(sql, parma))[0]['id']
             return (None, insert_id)
         else:
-            err, data = yield from self.get_problem(data)
             self.reset_rs_problem_count(data['group_id'])
             id = data['id']
             data.pop('id')
