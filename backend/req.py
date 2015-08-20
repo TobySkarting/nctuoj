@@ -91,7 +91,7 @@ class ApiRequestHandler(RequestHandler):
                 self.account = data
         if self.request.method != 'GET':
             if self.account['id'] == 0:
-                self.render(403, 'Forbidden')
+                self.render(403, 'Permission Denied')
         id = self.account['id']
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
@@ -144,6 +144,8 @@ class WebRequestHandler(RequestHandler):
         except:
             id = 0
             self.clear_cookie('id')
+        if id==0:
+            self.account['token'] = ""
         self.account["id"] = id
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)

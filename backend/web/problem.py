@@ -41,7 +41,7 @@ class WebProblemsHandler(WebRequestHandler):
 
 class WebProblemHandler(WebRequestHandler):
     @tornado.gen.coroutine
-    def get(self, id):
+    def get(self, id, action = None):
         meta = {}
         meta['id'] = id
         meta['group_id'] = self.current_group
@@ -49,15 +49,21 @@ class WebProblemHandler(WebRequestHandler):
         if err:
             self.write_error(404)
         else:
-            if int(data['visible']) == 2:
-                self.Render('./problems/problem.html', data=data)
+            if int(data['group_id']==1) or int(data['visible']) == 2:
+                pass
             elif int(data['group_id']) == int(meta['group_id']):
                 if 1 in self.current_group_power or int(data['visible']) == 1:
-                    self.Render('./problems/problem.html', data=data)
+                    pass
                 else:
                     self.write_error(403)
+                    return
             else:
                 self.write_error(403)
+                return
+        if action == None:
+            self.Render('./problems/problem.html', data=data)
+        elif action == "submit":
+            self.Render('./problems/problem_submit.html', data=data)
 
 class WebProblemEditHandler(WebRequestHandler):
     @tornado.gen.coroutine

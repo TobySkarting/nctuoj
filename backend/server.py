@@ -141,6 +141,7 @@ if __name__ == '__main__':
 
         ('/group/\d+/problems/',                        WebProblemsHandler),
         ('/group/\d+/problems/(\d+)/',                  WebProblemHandler),
+        ('/group/\d+/problems/(\d+)/(\w*)/',                  WebProblemHandler),
         ('/group/\d+/problems/(\d+)/(\w*)/edit/',       WebProblemEditHandler),
         ### /group/\d+/problems/\d+/basic/edit/
         ### /group/\d+/problems/\d+/tag/edit/

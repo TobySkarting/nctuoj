@@ -25,9 +25,9 @@
   td.mobile.only, th.mobile.only {
     display: table-cell; } }
 
-.edit.panel .panel-body {
+.panel-body.edit {
   padding: 0px; }
-  .edit.panel .panel-body textarea {
+  .panel-body.edit textarea {
     border: 0px;
     resize: none; }
 
