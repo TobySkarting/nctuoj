@@ -55,7 +55,7 @@ $( document ).ready(function(){
             success: function(msg){
                 $("button").prop("disabled", false);
                 if(msg['status'] == 200){
-                    bootbox.alert("XD");
+                    location.href = "/group/{{current_group}}/submissions/"+msg['msg']+"/";
                 } else {
                     bootbox.alert(msg['msg']);
                 }

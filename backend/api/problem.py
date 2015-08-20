@@ -105,7 +105,7 @@ class ApiProblemHandler(ApiRequestHandler):
                 if err:
                     self.render(500, err)
                 else:
-                    self.render()
+                    self.render(200, data)
             return
 
         if (yield from self.check_edit(check_meta)):

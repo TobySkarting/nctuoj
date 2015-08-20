@@ -73,29 +73,27 @@ class SubmissionService(BaseService):
         res = yield from self.db.execute("SELECT * FROM map_problem_execute WHERE problem_id=%s and execute_type_id=%s", (data['problem_id'], data['execute_type_id'],))
         if len(res) == 0:
             return ('No execute type', None)
-        
         ### get file name and length
         if data['code_file']:
             meta['file_name'] = data['code_file']['filename']
             meta['length'] = len(data['code_file']['body'])
         else:
-            ### check file_name
-            pass
-
+            meta['file_name'] = data['plain_file_name']
+            meta['length'] = len(data['plain_code'])
         ### save to db
         sql, parma = self.gen_insert_sql("submissions", meta)
         id = (yield from self.db.execute(sql, parma))[0]['id']
+        ### save file
         folder = './../data/submissions/%s/' % str(id)
         file_path = '%s/%s' % (folder, meta['file_name'])
         try: shutil.rmtree(folder)
         except: pass
         try: os.makedirs(folder)
         except: pass
-        if data['code_file']:
-            with open(file_path, 'wb+') as f:
+        with open(file_path, 'wb+') as f:
+            if data['code_file']:
                 f.write(data['code_file']['body'])
-
-
-        ### save file
-        return (None, None)
+            else:
+                f.write(data['plain_code'].encode())
+        return (None, id) 
         
