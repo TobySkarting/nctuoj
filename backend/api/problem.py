@@ -17,9 +17,7 @@ class ApiProblemsHandler(ApiRequestHandler):
 
 class ApiProblemHandler(ApiRequestHandler):
     def check_view(self, meta):
-        
         err, data = yield from Service.Problem.get_problem(meta)
-        print(meta, data)
         if err:
             self.render(500, err)
             return False
@@ -48,7 +46,7 @@ class ApiProblemHandler(ApiRequestHandler):
         return True
 
     def check_testdata(self, meta):
-        if meta['testdata_id'] != 0:
+        if int(meta['testdata_id']) != 0:
             err, data = yield from Service.Problem.get_problem_testdata(meta)
             if err:
                 self.render(500, err)
@@ -99,7 +97,15 @@ class ApiProblemHandler(ApiRequestHandler):
 
         if action == "submit":
             if (yield from self.check_view(check_meta)):
-                self.render(200)
+                args = ['execute_type_id', 'code_file[file]', 'plain_code', 'plain_file_name']
+                meta = self.get_args(args)
+                meta['user_id'] = self.account['id']
+                meta['problem_id'] = id
+                err, data = yield from Service.Submission.post_submission(meta)
+                if err:
+                    self.render(500, err)
+                else:
+                    self.render()
             return
 
         if (yield from self.check_edit(check_meta)):
@@ -127,7 +133,7 @@ class ApiProblemHandler(ApiRequestHandler):
                 meta = self.get_args(args)
                 meta['testdata_id'] = sub_id
                 meta['id'] = id
-                if self.check_testdata(meta):
+                if (yield from self.check_testdata(meta)):
                     err, data = yield from Service.Problem.post_problem_testdata(meta)
                     if err: self.render(500, err)
                     else: self.render()
@@ -138,7 +144,7 @@ class ApiProblemHandler(ApiRequestHandler):
         check_meta = {}
         check_meta['group_id'] = self.current_group
         check_meta['id'] = id
-        if self.check_edit(check_meta):
+        if (yield from self.check_edit(check_meta)):
             if action == "basic":
                 meta = {}
                 meta['id'] = id

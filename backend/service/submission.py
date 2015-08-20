@@ -1,6 +1,8 @@
 from service.base import BaseService
+import shutil
 import os
 import config
+import shutil
 
 class SubmissionService(BaseService):
     def __init__(self, db, rs):
@@ -60,3 +62,40 @@ class SubmissionService(BaseService):
         res['code_line'] = len(open(file_path).readlines())
         return (None, res)
 
+    def post_submission(self, data):
+        required_args = ['problem_id', 'execute_type_id', 'user_id']
+        err = self.check_required_args(required_args, data)
+        if err: return(err, None)
+        if data['code_file'] == None and len(data['plain_code']) == 0:
+            return ('No code', None)
+        meta = { x: data[x] for x in required_args }
+        ### check problem has execute_type
+        res = yield from self.db.execute("SELECT * FROM map_problem_execute WHERE problem_id=%s and execute_type_id=%s", (data['problem_id'], data['execute_type_id'],))
+        if len(res) == 0:
+            return ('No execute type', None)
+        
+        ### get file name and length
+        if data['code_file']:
+            meta['file_name'] = data['code_file']['filename']
+            meta['length'] = len(data['code_file']['body'])
+        else:
+            ### check file_name
+            pass
+
+        ### save to db
+        sql, parma = self.gen_insert_sql("submissions", meta)
+        id = (yield from self.db.execute(sql, parma))[0]['id']
+        folder = './../data/submissions/%s/' % str(id)
+        file_path = '%s/%s' % (folder, meta['file_name'])
+        try: shutil.rmtree(folder)
+        except: pass
+        try: os.makedirs(folder)
+        except: pass
+        if data['code_file']:
+            with open(file_path, 'wb+') as f:
+                f.write(data['code_file']['body'])
+
+
+        ### save file
+        return (None, None)
+        

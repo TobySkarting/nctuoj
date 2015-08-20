@@ -126,11 +126,11 @@ $( document ).ready(function(){
             contentType: false,
             success: function(msg){
                 if(msg['status'] == 200){
-                    $(".testdata_update").prop("disabled", false);
-                    $(".testdata_delete").prop("disabled", false);
                 } else {
                     bootbox.alert(msg['msg']);
                 }
+                $(".testdata_update").prop("disabled", false);
+                $(".testdata_delete").prop("disabled", false);
             }
         });
         return false;

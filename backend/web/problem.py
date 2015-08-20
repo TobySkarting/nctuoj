@@ -38,7 +38,6 @@ class WebProblemsHandler(WebRequestHandler):
         page['url'] = '/group/%s/problems/' % meta['group_id']
         page['get'] = {}
         self.Render('./problems/problems.html', data=data, page=page)
-
 class WebProblemHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id, action = None):
@@ -48,18 +47,14 @@ class WebProblemHandler(WebRequestHandler):
         err, data = yield from Service.Problem.get_problem(meta)
         if err:
             self.write_error(404)
+            return
+        if int(meta['group_id'])==1 and int(data['visible']) == 2:
+            pass
+        elif int(data['group_id']) == int(meta['group_id']) and (1 in self.current_group_power or int(data['visible']) != 0):
+            pass
         else:
-            if int(meta['group_id'])==1 and int(data['visible']) == 2:
-                pass
-            elif int(data['group_id']) == int(meta['group_id']):
-                if 1 in self.current_group_power or int(data['visible']) != 0:
-                    pass
-                else:
-                    self.write_error(403)
-                    return
-            else:
-                self.write_error(403)
-                return
+            self.write_error(403)
+            return
         if action == None:
             self.Render('./problems/problem.html', data=data)
         elif action == "submit":
