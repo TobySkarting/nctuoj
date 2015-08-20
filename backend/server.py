@@ -127,7 +127,6 @@ if __name__ == '__main__':
         ('/api/group/\d+/problems/(\d+)/(\w*)/',                        ApiProblemHandler),
         ### /api/group/\d+/problems/(\d+)/(\w*)/
         ### /api/group/\d+/problems/(\d+)/(execute)/
-        ### /api/group/\d+/problems/(\d+)/(execute)/
         ### /api/group/\d+/problems/(\d+)/(tag)/
         ### /api/group/\d+/problems/(\d+)/(testdata)/
         ('/api/group/\d+/problems/(\d+)/(\w*)/(\d+)/',             ApiProblemHandler),

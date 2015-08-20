@@ -46,7 +46,9 @@
                         <a href='/users/{{x['setter_user_id']}}/'>{{x['setter_user']}}</a>
                     </td>
                     <td class="tablet computer only">
-                        {{x['source']}}
+                        {% if (map_group_power['admin_manage'] in current_group_power) or int(x['visible']) %}
+                            {{x['source']}}
+                        {% end %}
                     </td>
                     {% if 1 in current_group_power %}
                         <td>

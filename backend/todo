@@ -1,1 +1,15 @@
 增加UI: markdown
+
+
+
+Check:
+    problem
+        admin: all type in group
+        not admin: visible in group and public
+    problem_edit
+        in group and is admin
+
+    submission
+        admin: all type in group
+        not admin: visible in group and public
+

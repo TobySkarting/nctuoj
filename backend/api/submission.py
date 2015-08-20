@@ -16,24 +16,7 @@ class ApiProblemsHandler(ApiRequestHandler):
         pass
 
 class ApiProblemHandler(ApiRequestHandler):
-    def check_view(self, meta):
-        
-        err, data = yield from Service.Problem.get_problem(meta)
-        print(meta, data)
-        if err:
-            self.render(500, err)
-            return False
-        else:
-            if int(meta['group_id'])==1 and int(data['visible']) == 2:
-                pass
-            elif int(data['group_id']) == int(meta['group_id']) and (int(data['visible']) != 0 or 1 in self.current_group_power):
-                pass
-            else:
-                self.render(403, "Permission Denied")
-                return False
-        return True
-
-    def check_edit(self, meta):
+    def check(self, meta):
         if 1 not in self.current_group_power:
             self.render(403, "Permission Denied")
             return False
@@ -69,26 +52,33 @@ class ApiProblemHandler(ApiRequestHandler):
             self.render(200, data)
             return
     
-        if not (yield from self.check_view(meta)):
-            return
-
         err, data = yield from Service.Problem.get_problem(meta)
+        if err:
+            self.render(500, err)
+        else:
+            if int(data['visible']) == 2:
+                pass
+            elif int(data['group_id']) == int(meta['group_id']) and int(data['visible']) == 1:
+                pass
+            else:
+                self.render(403, "Forbidden")
+
         if action == "basic":
-            self.render(200, data)
+            self.success(data)
         elif action == "tag":
             pass
         elif action == "testdata":
             if sub_id == None:
                 err, data = yield from Service.Problem.get_problem_testdata_list(meta)
-                if err: self.render(500, err)
-                else: self.render(200, data)
+                if err: self.error(err)
+                else: self.success(data)
             else:
                 meta['testdata_id'] = sub_id
                 err, data = yield from Service.Problem.get_problem_testdata(meta)
                 if err: self.render(500, err)
                 else: self.render()
         else:
-            self.render(404)
+            self.error("404")
         
     
     @tornado.gen.coroutine
@@ -97,12 +87,7 @@ class ApiProblemHandler(ApiRequestHandler):
         check_meta['group_id'] = self.current_group
         check_meta['id'] = id
 
-        if action == "submit":
-            if (yield from self.check_view(check_meta)):
-                self.render(200)
-            return
-
-        if (yield from self.check_edit(check_meta)):
+        if self.check(check_meta):
             ### /api/{{group_id}}/problems/{{problem_id}}/basic/
             if action == "basic":
                 args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible"]
@@ -138,7 +123,7 @@ class ApiProblemHandler(ApiRequestHandler):
         check_meta = {}
         check_meta['group_id'] = self.current_group
         check_meta['id'] = id
-        if self.check_edit(check_meta):
+        if self.check(check_meta):
             if action == "basic":
                 meta = {}
                 meta['id'] = id
@@ -149,7 +134,7 @@ class ApiProblemHandler(ApiRequestHandler):
                 meta = {}
                 meta['testdata_id'] = sub_id
                 meta['id'] = id
-                if (yield from self.check_testdata(meta)):
+                if self.check_testdata(meta):
                     err, data = yield from Service.Problem.delete_problem_testdata(meta)
                     if err: self.render(500, err)
                     else: self.render()

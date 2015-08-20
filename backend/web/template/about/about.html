@@ -1,5 +1,33 @@
 {% extends './../frame.html' %}
 {% block content %}
-About
+
+<table class="table">
+    <thead>
+        <tr>
+            <th colspan=2>Type</th>
+            <th>Public Admin</th>
+            <th>Public User</th>
+            <th>Normal Admin</th>
+            <th>Normal user</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td rowspan='2'>Problem</td>
+            <td>View</td>
+            <td>g.id=%s or p.visible=2</td>
+            <td>g.id=%s and p.visible=1 or p.visible=2</td>
+            <td>g.id=%s</td>
+            <td>g.id=%s and p.visible=1</td>
+        </tr>
+        <tr>
+            <td>Edit</td>
+            <td>g.id=%s</td>
+            <td>None</td>
+            <td>g.id=%s</td>
+            <td>None</td>
+        </tr>
+    </tbody>
+</table>
 {% end %}
 

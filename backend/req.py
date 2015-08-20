@@ -96,7 +96,6 @@ class ApiRequestHandler(RequestHandler):
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
         err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
-        print(self.account, self.group)
             
 
 class WebRequestHandler(RequestHandler):

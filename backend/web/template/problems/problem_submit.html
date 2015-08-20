@@ -2,9 +2,8 @@
 {% block content %}
 <div class="row">
     <div class="col-md-12">
-        <form>
+        <form action="/api/group/{{current_group}}/problems/{{data['id']}}/submit/">
             <input type="hidden" name="token" value="{{account['token']}}">
-            <input type="hidden" name="problem_id" value="{{data['id']}}">
             <h1>{{data['id']}}.{{data['title']}}</h1>
             <div class="form-inline margin-bottom">
                 <label class="control-label">Execute Type:</label>
@@ -41,6 +40,26 @@
 <script>
 $( document ).ready(function(){
     $(".selectpicker").selectpicker();
+    $("form").submit(function(){
+        var data = new FormData($(this)[0]);
+        form = $(this);
+       $.ajax({
+            url: form.attr("action"),
+            type: "post",
+            data: data,
+            dataType: "json",
+            processData: false,
+            contentType: false,
+            success: function(msg){
+                if(msg['status'] == 200){
+                    bootbox.alert("XD");
+                } else {
+                    bootbox.alert(msg['msg']);
+                }
+            }
+        });
+        return false;
+    });
 });
 </script>
 {% end %}

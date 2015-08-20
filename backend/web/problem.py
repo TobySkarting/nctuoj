@@ -49,10 +49,10 @@ class WebProblemHandler(WebRequestHandler):
         if err:
             self.write_error(404)
         else:
-            if int(data['group_id']==1) or int(data['visible']) == 2:
+            if int(meta['group_id'])==1 and int(data['visible']) == 2:
                 pass
             elif int(data['group_id']) == int(meta['group_id']):
-                if 1 in self.current_group_power or int(data['visible']) == 1:
+                if 1 in self.current_group_power or int(data['visible']) != 0:
                     pass
                 else:
                     self.write_error(403)
