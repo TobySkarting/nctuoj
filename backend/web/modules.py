@@ -3,6 +3,9 @@ import urllib
 import math
 class Pagination(tornado.web.UIModule):
     def render(self, page):
+        for x in page['get']:
+            if not page['get'][x]:
+                page['get'][x] = ""
         page['urls'] = {}
         start = max(1, int(page['current']) - 5)
         end = min(int(page['current']) + 5, int(page['total'])) + 1

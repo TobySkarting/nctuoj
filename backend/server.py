@@ -5,6 +5,7 @@ import tornado.web
 ### self define from req import RequestHandler
 from req import Service 
 ### my app
+from ftp import FTP
 import config
 import pg
 import mysql
@@ -110,6 +111,7 @@ if __name__ == '__main__':
     #        host=config.DBHOST)
     db = pg.AsyncPG(config.DBNAME, config.DBUSER, config.DBPASSWORD, host=config.DBHOST, dbtz='+8')
     rs = myredis.MyRedis(db=1)
+    ftp = FTP(config.FTPSERVER, config.FTPPORT, config.FTPUSER, config.FTPPASSWD)
     ui_modules = {
             "Pagination": web.modules.Pagination,
             }
@@ -148,7 +150,6 @@ if __name__ == '__main__':
         ### /group/\d+/problems/\d+/testdata/edit/
         ('/group/\d+/submissions/',                 WebSubmissionsHandler),
         ('/group/\d+/submissions/(\d+)/',           WebSubmissionHandler),
-        ('/group/\d+/submissions/(\d+)/(\w*)/',     WebSubmissionHandler),
 
         ('/group/\d+/contests/',                    WebContestsHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/',        WebContestHandler),
@@ -174,11 +175,11 @@ if __name__ == '__main__':
     global srv
     srv = tornado.httpserver.HTTPServer(app)
     srv.listen(config.PORT)
-    Service.User = UserService(db, rs)
-    Service.Problem = ProblemService(db, rs)
-    Service.Submission = SubmissionService(db, rs)
-    Service.Bulletin = BulletinService(db, rs)
-    Service.Execute = ExecuteService(db, rs)
+    Service.User = UserService(db, rs, ftp)
+    Service.Problem = ProblemService(db, rs, ftp)
+    Service.Submission = SubmissionService(db, rs, ftp)
+    Service.Bulletin = BulletinService(db, rs, ftp)
+    Service.Execute = ExecuteService(db, rs, ftp)
     print('start')
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)

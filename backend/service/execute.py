@@ -2,8 +2,8 @@ from service.base import BaseService
 import config
 
 class ExecuteService(BaseService):
-    def __init__(self, db, rs):
-        super().__init__(db, rs)
+    def __init__(self, db, rs, ftp):
+        super().__init__(db, rs, ftp)
 
         ExecuteService.inst = self
 
@@ -32,7 +32,7 @@ class ExecuteService(BaseService):
         if len(res) == 0:
             return ('Error execute id', None)
         res = res[0]
-        res['steps'] = yield from self.db.execute("SELECT execute_steps.* FROM execute_steps WHERE execute_type_id=%s", (res['id'],))
+        res['steps'] = yield from self.db.execute("SELECT execute_steps.* FROM execute_steps WHERE execute_type_id=%s ORDER BY id", (res['id'],))
         for x in range(len(res['steps'])):
             res['steps'][x]['step'] = x + 1
         return (None, res)

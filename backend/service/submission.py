@@ -5,31 +5,30 @@ import config
 import shutil
 
 class SubmissionService(BaseService):
-    def __init__(self, db, rs):
-        super().__init__(db, rs)
+    def __init__(self, db, rs, FTP):
+        super().__init__(db, rs, FTP)
         SubmissionService.inst = self
     
     def get_submission_list(self, data):
         required_args = ['page', 'count']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        subsql = "(SELECT s.id FROM submissions as s, problems as p "
-        cond = " WHERE p.id=s.problem_id AND p.group_id=%s AND "
-        if data['problem_id']:
-            cond += "problem_id=%s AND " % (int(data['problem_id']))
-        if data['user_id']:
-            cond += "user_id=%s AND " % (int(data['user_id']))
-        cond = cond[:-4]
-        subsql += cond + "ORDER BY id LIMIT %s OFFSET %s) as s2"
         sql = """
-            SELECT s.*,
-            u.account as user,
-            e.lang
-            FROM submissions as s, users as u, execute_types as e,
-            """ + subsql + """
-            WHERE s.id = s2.id and u.id = s.user_id and e.id=s.execute_type_id
-            """
-
+        SELECT s.*, u.account as user, e.lang
+        FROM submissions as s, users as u, execute_types as e, problems as p
+        WHERE p.id=s.problem_id AND u.id=s.user_id AND e.id=s.execute_type_id
+        """;
+        subsql = "(SELECT s.id FROM submissions as s, problems as p "
+        if int(data['group_id']) == 1:
+            sql += " AND (p.group_id=%s or p.visible=2) "
+        else:
+            sql += " AND p.group_id=%s  "
+        if data['problem_id']:
+            sql += "AND problem_id=%s " % (int(data['problem_id']))
+        if data['user_id']:
+            sql += "AND user_id=%s " % (int(data['user_id']))
+        sql += " ORDER BY s.id DESC LIMIT %s OFFSET %s"
+        
         res = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"])))
         return (None, res)
 
@@ -44,6 +43,9 @@ class SubmissionService(BaseService):
             cond = ""
         else:
             cond = cond[:-4]
+        sql = "SELECT count(*) FROM submissions " + cond
+        res = yield from self.db.execute(sql)
+        return (None, res[0]['count'])
 
     def get_submission(self, data):
         if data['id'] == 0:

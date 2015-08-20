@@ -1,7 +1,8 @@
 class BaseService:
-    def __init__(self, db, rs):
+    def __init__(self, db, rs, ftp):
         self.db = db
         self.rs = rs
+        self.ftp = ftp
 
     def check_required_args(self, args, data):
         for a in args:

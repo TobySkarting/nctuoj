@@ -18,16 +18,13 @@ class WebProblemsHandler(WebRequestHandler):
         try:
             meta["page"] = int(meta["page"])
         except:
-            self.redirect('/group/%s/problems/'%meta['group_id'])
+            self.write_error(404)
             return
-        ### modify page in range (1, page_count)
+        ### should in range
         err, count = yield from Service.Problem.get_problem_list_count(meta)
         page_count = max(math.ceil(count / meta['count']), 1)
-        if int(meta['page']) < 1:
-            self.redirect('/group/%s/problems/'%meta['group_id'])
-            return
-        if int(meta['page']) > page_count:
-            self.redirect('/group/%s/problems/?page=%s'%(meta['group_id'], str(page_count)))
+        if int(meta['page']) < 1 or int(meta['page']) > page_count:
+            self.write_error(404)
             return
         ### get data
         err, data = yield from Service.Problem.get_problem_list(meta)
