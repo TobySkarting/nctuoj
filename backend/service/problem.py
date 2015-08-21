@@ -25,7 +25,7 @@ class ProblemService(BaseService):
             sql += """ (p.group_id=%s) """
         sql += """ ORDER BY p.id limit %s OFFSET %s """
 
-        res = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
+        res, res_cnt = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
         return (None, res)
         
     ### Should be improvement
@@ -41,7 +41,7 @@ class ProblemService(BaseService):
             sql += "WHERE (p.group_id=%s OR p.visible = 2)"
         else:
             sql += "WHERE p.group_id=%s"
-        res = yield from self.db.execute(sql, (data['group_id'],))
+        res, res_cnt = yield from self.db.execute(sql, (data['group_id'],))
         self.rs.set('problem_list_count@%s'
                 % (str(data['group_id'])), res[0]['count'])
         return (None, res[0]['count'])
@@ -62,8 +62,8 @@ class ProblemService(BaseService):
         if not res:
            # return (None, res)
             sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
-            res = yield from self.db.execute(sql, (data["id"],))
-            if len(res) == 0:
+            res, res_cnt = yield from self.db.execute(sql, (data["id"],))
+            if res_cnt == 0:
                 return ('No problem id', None)
             res = res[0]
             self.rs.set('problem@%s' % str(data['id']), res)
@@ -84,7 +84,7 @@ class ProblemService(BaseService):
             self.reset_rs_problem_count(data['group_id'])
             data.pop('id')
             sql, parma = self.gen_insert_sql("problems", data)
-            insert_id = (yield from self.db.execute(sql, parma))[0]['id']
+            insert_id = (yield from self.db.execute(sql, parma))[0][0]['id']
             return (None, insert_id)
         else:
             self.reset_rs_problem_count(data['group_id'])
@@ -116,7 +116,7 @@ class ProblemService(BaseService):
         if err: return (err, None)
         res = self.rs.get('problem@%s@execute' % str(data['id']))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['id'],))
+        res, res_cnt = yield from self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['id'],))
         self.rs.set('problem@%s@execute' % str(data['id']), res)
         return (None, res)
 
@@ -138,7 +138,7 @@ class ProblemService(BaseService):
         if err: return (err, None)
         res = self.rs.get('problem@%s@testdata' % str(data['id']))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id'],))
+        res, res_cnt = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id'],))
         self.rs.set('problem@%s@testdata' % str(data['id']), res)
         return (None, res)
         

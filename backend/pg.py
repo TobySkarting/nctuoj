@@ -298,8 +298,6 @@ class AsyncPG:
         cur = yield self.cursor()
         yield cur.execute(sql, prama)
         res = None
-        try:
-            res = cur.fetchall()
-        except:
-            pass
-        return res
+        try: res = cur.fetchall()
+        except: pass
+        return (res, cur.rowcount)

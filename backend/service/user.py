@@ -14,7 +14,7 @@ class UserService(BaseService):
 
     def get_user_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
-        res = yield from self.db.execute("SELECT * FROM users ORDER BY id LIMIT %s OFFSET %s", (data['count'], (int(data['page'])-1)*int(data['count']),))
+        res, res_cnt = yield from self.db.execute("SELECT * FROM users ORDER BY id LIMIT %s OFFSET %s", (data['count'], (int(data['page'])-1)*int(data['count']),))
         for x in res:
             err, x["power"] = yield from self.get_user_power_info(x["id"])
         return (None, res)
@@ -22,15 +22,15 @@ class UserService(BaseService):
     def get_user_list_count(self, data={}):
         res = self.rs.get('user_list_count')
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT COUNT(*) FROM users")
+        res, res_cnt = yield from self.db.execute("SELECT COUNT(*) FROM users")
         self.rs.set('user_list_count', res[0]['count'])
         return (None, res[0]['count'])
 
     def get_user_basic_info(self, id):
         res = self.rs.get("user_basic@%s" % str(id))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT * FROM users where id=%s", (id,))
-        if len(res) == 0:
+        res, res_cnt = yield from self.db.execute("SELECT * FROM users where id=%s", (id,))
+        if res_cnt == 0:
             return ('Eidnotexist', None)
         res = res[0]
         res.pop("passwd")
@@ -40,8 +40,8 @@ class UserService(BaseService):
     def get_user_basic_info_by_token(self, token):
         res = self.rs.get("user_token@%s" % token)
         if not res:
-            res = yield from self.db.execute("SELECT id FROM users WHERE token=%s", (token,))
-            if len(res) == 0:
+            res, res_cnt = yield from self.db.execute("SELECT id FROM users WHERE token=%s", (token,))
+            if res_cnt == 0:
                 return ('Etokennotexist', None)
             res = res[0]['id']
             self.rs.set("user_token@%s" % token, res)
@@ -51,14 +51,14 @@ class UserService(BaseService):
     def get_user_group_info(self, id):
         res = self.rs.get('user_group@%s' % str(id))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT g.* FROM groups as g, map_group_user as m where m.user_id=%s and g.id=m.group_id ORDER BY g.id", (id,))
+        res, res_cnt = yield from self.db.execute("SELECT g.* FROM groups as g, map_group_user as m where m.user_id=%s and g.id=m.group_id ORDER BY g.id", (id,))
         self.rs.set('user_group@%s' % str(id), res)
         return (None, res)
 
     def get_user_power_info(self, id):
         res = self.rs.get('user_power@%s' % str(id))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT power from map_user_power WHERE user_id=%s", (id,))
+        res, res_cnt = yield from self.db.execute("SELECT power from map_user_power WHERE user_id=%s", (id,))
         power = { x['power'] for x in res }
         self.rs.set('user_power@%s' % str(id), power)
         return (None, power)
@@ -73,7 +73,7 @@ class UserService(BaseService):
     def get_user_group_power_info(self, uid, gid):
         res = self.rs.get('user_group_power@%s@%s' % (str(uid), str(gid)))
         if res: return (None, res)
-        res = yield from self.db.execute("SELECT power from map_group_user_power where user_id=%s AND group_id=%s", (uid, gid,))
+        res, res_cnt = yield from self.db.execute("SELECT power from map_group_user_power where user_id=%s AND group_id=%s", (uid, gid,))
         power = { x['power'] for x in res }
         self.rs.set('user_group_power@%s@%s' % (str(uid), str(gid)), power)
         return (None, power)
@@ -94,11 +94,9 @@ class UserService(BaseService):
         ### get hashed passwd
         col = ['passwd', 'id']
         sql = self.gen_select_sql('users', col)
-        res = yield from self.db.execute(sql+
-                'WHERE account = %s;',
-                (data['account'],))
+        res, res_cnt = yield from self.db.execute(sql+'WHERE account = %s;', (data['account'],))
         ### check account 
-        if len(res) == 0:
+        if res_cnt == 0:
             return ('Euser', None)
         print('=========================')
         print(res)
@@ -126,10 +124,10 @@ class UserService(BaseService):
             return ('Econfirmpwd', None)
 
         ### check conflict
-        res = yield from self.db.execute('SELECT id FROM users ' 
+        res, res_cnt = yield from self.db.execute('SELECT id FROM users ' 
                 'WHERE account = %s OR student_id = %s', 
                 (data['account'], data['student_id'],))
-        if len(res) != 0:
+        if res_cnt != 0:
             return ('Eexist', None)
 
         ### gen hashed passwd
@@ -138,11 +136,11 @@ class UserService(BaseService):
         data['passwd'] = hpasswd
         data.pop('repasswd')
         sql, prama = self.gen_insert_sql('users', data)
-        res = yield from self.db.execute(sql, prama)
-        res = yield from self.db.execute('SELECT id FROM users '
+        res, res_cnt = yield from self.db.execute(sql, prama)
+        res, res_cnt = yield from self.db.execute('SELECT id FROM users '
                 'WHERE account = %s',
                 (data['account'],))
-        if len(res) == 0:
+        if res_cnt == 0:
             return ('Ecreate', None)
         id = res[0]["id"]
         self.rs.delete('user_list_count')

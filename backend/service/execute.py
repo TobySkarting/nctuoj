@@ -11,7 +11,7 @@ class ExecuteService(BaseService):
         res = self.rs.get('execute_list')
         if res: return (None, res)
         sql = "SELECT e.*, u.account as setter_user FROM execute_types as e, users as u WHERE e.setter_user_id=u.id order by e.priority"
-        res = yield from self.db.execute(sql)
+        res, res_cnt = yield from self.db.execute(sql)
         self.rs.set('execute_list', res)
         return (None, res)
 
@@ -28,11 +28,11 @@ class ExecuteService(BaseService):
             res['description'] = ''
             return (None, res)
         sql = "SELECT e.*, u.account as setter_user FROM execute_types as e, users as u WHERE e.id=%s AND e.setter_user_id=u.id"
-        res = yield from self.db.execute(sql, (data["id"]))
-        if len(res) == 0:
+        res, res_cnt = yield from self.db.execute(sql, (data["id"]))
+        if res_cnt == 0:
             return ('Error execute id', None)
         res = res[0]
-        res['steps'] = yield from self.db.execute("SELECT execute_steps.* FROM execute_steps WHERE execute_type_id=%s ORDER BY id", (res['id'],))
+        res['steps'], res_cnt = yield from self.db.execute("SELECT execute_steps.* FROM execute_steps WHERE execute_type_id=%s ORDER BY id", (res['id'],))
         for x in range(len(res['steps'])):
             res['steps'][x]['step'] = x + 1
         return (None, res)
@@ -47,7 +47,7 @@ class ExecuteService(BaseService):
         if int(data['id']) == 0:
             data.pop('id')
             sql, parma = self.gen_insert_sql("execute_types", data)
-            id = (yield from self.db.execute(sql, parma))[0]['id']
+            id = (yield from self.db.execute(sql, parma))[0][0]['id']
         else:
             id = data['id']
             data.pop('id')

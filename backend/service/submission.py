@@ -32,7 +32,7 @@ class SubmissionService(BaseService):
             sql += "AND user_id=%s " % (int(data['user_id']))
         sql += " ORDER BY s.id DESC LIMIT %s OFFSET %s"
         
-        res = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"])))
+        res, res_cnt = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"])))
         return (None, res)
 
     def get_submission_list_count(self, data):
@@ -47,18 +47,18 @@ class SubmissionService(BaseService):
         else:
             cond = cond[:-4]
         sql = "SELECT count(*) FROM submissions " + cond
-        res = yield from self.db.execute(sql)
+        res, res_cnt = yield from self.db.execute(sql)
         return (None, res[0]['count'])
 
     def get_submission(self, data):
         if data['id'] == 0:
             pass
-        res = yield from self.db.execute("""
+        res, res_cnt = yield from self.db.execute("""
         SELECT s.*, e.lang as execute_lang, e.description as execute_description, u.account as submitter, p.title as problem_name
         FROM submissions as s, execute_types as e, users as u, problems as p
         WHERE s.id=%s AND e.id=s.execute_type_id AND u.id=s.user_id AND s.problem_id=p.id
         """, (data['id'],))
-        if len(res) == 0:
+        if res_cnt == 0:
             return ('No Submission ID', None)
         res = res[0]
         file_path = './../data/submissions/%s/%s' % (res['id'], res['file_name'])
@@ -75,8 +75,8 @@ class SubmissionService(BaseService):
             return ('No code', None)
         meta = { x: data[x] for x in required_args }
         ### check problem has execute_type
-        res = yield from self.db.execute("SELECT * FROM map_problem_execute WHERE problem_id=%s and execute_type_id=%s", (data['problem_id'], data['execute_type_id'],))
-        if len(res) == 0:
+        res, res_cnt = yield from self.db.execute("SELECT * FROM map_problem_execute WHERE problem_id=%s and execute_type_id=%s", (data['problem_id'], data['execute_type_id'],))
+        if res_cnt == 0:
             return ('No execute type', None)
         ### get file name and length
         if data['code_file']:
@@ -87,7 +87,7 @@ class SubmissionService(BaseService):
             meta['length'] = len(data['plain_code'])
         ### save to db
         sql, parma = self.gen_insert_sql("submissions", meta)
-        id = (yield from self.db.execute(sql, parma))[0]['id']
+        id = (yield from self.db.execute(sql, parma))[0][0]['id']
         ### save file
         folder = './../data/submissions/%s/' % str(id)
         remote_folder = './data/submissions/%s/' % str(id)

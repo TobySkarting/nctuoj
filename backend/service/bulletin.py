@@ -12,7 +12,7 @@ class BulletinService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         sql = "SELECT bulletins.*, users.account as setter_user FROM bulletins, users WHERE bulletins.group_id = %s and bulletins.setter_user_id = users.id order by bulletins.id DESC limit %s offset %s"
-        res = yield from self.db.execute(sql, (data["group_id"], data['count'], (int(data["page"])-1)*data["count"],))
+        res, res_cnt = yield from self.db.execute(sql, (data["group_id"], data['count'], (int(data["page"])-1)*data["count"],))
         err, total = yield from self.get_bulletin_list_count(data)
         return (None, res)
 
@@ -20,7 +20,7 @@ class BulletinService(BaseService):
         required_args = ['group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res = yield from self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s", (data['group_id'],))
+        res, res_cnt = yield from self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s", (data['group_id'],))
         return (None, res[0]['count'])
 
     def get_bulletin(self, data={}):
@@ -35,8 +35,8 @@ class BulletinService(BaseService):
             return (None, res)
 
         sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND b.id=%s"
-        res = yield from self.db.execute(sql, (data["id"],))
-        if len(res) == 0:
+        res, res_cnt = yield from self.db.execute(sql, (data["id"],))
+        if res_cnt == 0:
             return ('Error bulletin id', None)
         res = res[0]
         return (None, res)
@@ -48,8 +48,8 @@ class BulletinService(BaseService):
         res = self.rs.get('latest_bulletin@%s' % str(data["group_id"]))
         if res: return (None, res)
         sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND group_id=%s ORDER BY b.id DESC LIMIT 1"
-        res = yield from self.db.execute(sql, (data["group_id"],))
-        if len(res) == 0: return ('Empty', None)
+        res, res_cnt = yield from self.db.execute(sql, (data["group_id"],))
+        if res_cnt == 0: return ('Empty', None)
         self.rs.set('latest_bulletin@%s' % str(data["group_id"]), res[0])
         return (None, res[0])
 
