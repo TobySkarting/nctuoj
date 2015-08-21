@@ -123,6 +123,7 @@ CREATE TABLE problems (
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
+ALTER SEQUENCE problems_id_seq RESTART WITH 10001;
 CREATE TRIGGER problems_updated_row BEFORE UPDATE ON problems FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON problems (visible);
 CREATE INDEX ON problems (group_id);
