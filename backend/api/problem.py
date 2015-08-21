@@ -51,7 +51,7 @@ class ApiProblemHandler(ApiRequestHandler):
             if err:
                 self.render(500, err)
                 return False
-            if data['problem_id'] != meta['id']:
+            if int(data['problem_id']) != int(meta['id']):
                 self.render(403, 'Permission Denied')
                 return False
         return True

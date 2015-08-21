@@ -59,6 +59,7 @@ class RequestHandler(tornado.web.RequestHandler):
                 print("get_args error: ", n)
         return meta
 
+    @tornado.gen.coroutine
     def prepare(self):
         try:
             self.current_group = re.search(r'.*/group/(\d+).*', self.request.uri).groups(1)[0]
@@ -164,3 +165,11 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+def reqenv(func):
+    @tornado.gen.coroutine
+    def wrap(self,*args,**kwargs):
+        ret = func(self,*args,**kwargs)
+        if isinstance(ret,types.GeneratorType):
+            ret = yield from ret
+        return ret
+    return wrap

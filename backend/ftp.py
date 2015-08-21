@@ -1,7 +1,9 @@
 import paramiko, sys
 from scp import SCPClient
 import os
-import tornado
+import datetime
+import sys
+import config
 
 
 class FTP:
@@ -38,3 +40,9 @@ class FTP:
         ssh = self.createSSHClient()
         try: ssh.exec_command('rm -rf ' + _target)
         except: pass
+
+if __name__ == "__main__":
+    ftp = FTP(config.FTPSERVER, config.FTPPORT, config.FTPUSER, config.FTPPASSWD)
+    action = sys.argv[1]
+    if action.lower() == "upload":
+        ftp.put(sys.argv[2], sys.argv[3])

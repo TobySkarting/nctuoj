@@ -4,7 +4,6 @@ import tornado
 import math
 
 
-
 class WebSubmissionsHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self):
@@ -29,7 +28,7 @@ class WebSubmissionsHandler(WebRequestHandler):
             return
         
         err, data = yield from Service.Submission.get_submission_list(meta)
-
+        
         ### about pagination 
         page = {}
         page['total'] = page_count

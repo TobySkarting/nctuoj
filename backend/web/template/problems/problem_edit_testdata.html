@@ -100,39 +100,43 @@ $( document ).ready(function(){
         $(".testdata_delete").prop("disabled", true);
         var data = new FormData($(this)[0]);
         form = $(this);
-        $.ajax({
-            xhr: function(){
-                var xhr = new window.XMLHttpRequest();
-                xhr.upload.addEventListener("progress", function(evt){
-                    if (evt.lengthComputable) {
-                        var percentComplete = parseInt(evt.loaded / evt.total * 100);
-                        console.log(percentComplete);
-                        value = percentComplete;
-                        percent_value = value+"%";
-                        if(value == 100){
-                            $(".progress-bar").addClass("progress-bar-success").css({"width": percent_value}).attr("aria-valuenow", value).html("Completed");
-                        } else {
-                            $(".progress-bar").removeClass("progress-bar-success").css({"width": percent_value}).attr("aria-valuenow", value).html(percent_value);
+        //$(".progress-bar").removeClass("progress-bar-success").css({"width": '0%'}).attr("aria-valuenow", '0').html("");
+        //setTimeout(function(){
+            $.ajax({
+                xhr: function(){
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function(evt){
+                        if (evt.lengthComputable) {
+                            var percentComplete = parseInt(evt.loaded / evt.total * 100);
+                            console.log(percentComplete);
+                            value = percentComplete;
+                            percent_value = value+"%";
+                            if(value == 100){
+                                $(".progress-bar").addClass("progress-bar-success").css({"width": percent_value}).attr("aria-valuenow", value).html("Wait to FTP");
+                            } else {
+                                $(".progress-bar").removeClass("progress-bar-success").css({"width": percent_value}).attr("aria-valuenow", value).html(percent_value);
+                            }
                         }
+                    }, false);
+                    return xhr;
+                },
+                url: form.attr("action"),
+                type: "post",
+                data: data,
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                success: function(msg){
+                    $(".progress-bar").addClass("progress-bar-success").css({"width": percent_value}).attr("aria-valuenow", value).html("Complete");
+                    if(msg['status'] == 200){
+                    } else {
+                        bootbox.alert(msg['msg']);
                     }
-                }, false);
-                return xhr;
-            },
-            url: form.attr("action"),
-            type: "post",
-            data: data,
-            dataType: "json",
-            processData: false,
-            contentType: false,
-            success: function(msg){
-                if(msg['status'] == 200){
-                } else {
-                    bootbox.alert(msg['msg']);
+                    $(".testdata_update").prop("disabled", false);
+                    $(".testdata_delete").prop("disabled", false);
                 }
-                $(".testdata_update").prop("disabled", false);
-                $(".testdata_delete").prop("disabled", false);
-            }
-        });
+            });
+        //}, 1000);
         return false;
     });
     
