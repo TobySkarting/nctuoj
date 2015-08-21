@@ -3,8 +3,8 @@ import os
 import config
 
 class ProblemService(BaseService):
-    def __init__(self, db, rs, ftp):
-        super().__init__(db, rs, ftp)
+    def __init__(self, db, rs):
+        super().__init__(db, rs)
         ProblemService.inst = self
 
     def get_problem_list(self, data={}):
@@ -169,6 +169,7 @@ class ProblemService(BaseService):
 
             """ create folder """
             folder = "../data/testdata/%s/" % data['testdata_id']
+            remote_folder = "./data/testdata/%s/" % data['testdata_id']
             try: os.makedirs(folder)
             except: pass
 
@@ -178,6 +179,8 @@ class ProblemService(BaseService):
                     file_path = "%s/%s" % (folder, x)
                     with open(file_path, 'wb+') as f:
                         f.write(data[x]['body'])
+                    remote_path = "%s/%s" % (remote_folder, x)
+                    yield from self.ftp.upload(file_path, remote_path)
             return (None, data['testdata_id'])
 
     

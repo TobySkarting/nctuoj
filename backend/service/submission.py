@@ -3,10 +3,13 @@ import shutil
 import os
 import config
 import shutil
+import subprocess
+import time
+import tornado
 
 class SubmissionService(BaseService):
-    def __init__(self, db, rs, FTP):
-        super().__init__(db, rs, FTP)
+    def __init__(self, db, rs):
+        super().__init__(db, rs)
         SubmissionService.inst = self
     
     def get_submission_list(self, data):
@@ -87,7 +90,9 @@ class SubmissionService(BaseService):
         id = (yield from self.db.execute(sql, parma))[0]['id']
         ### save file
         folder = './../data/submissions/%s/' % str(id)
+        remote_folder = './data/submissions/%s/' % str(id)
         file_path = '%s/%s' % (folder, meta['file_name'])
+        remote_path = '%s/%s' % (remote_folder, meta['file_name'])
         try: shutil.rmtree(folder)
         except: pass
         try: os.makedirs(folder)
@@ -97,5 +102,5 @@ class SubmissionService(BaseService):
                 f.write(data['code_file']['body'])
             else:
                 f.write(data['plain_code'].encode())
+        yield from self.ftp.upload(file_path, remote_path)
         return (None, id) 
-        

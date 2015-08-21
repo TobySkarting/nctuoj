@@ -2,8 +2,8 @@ from service.base import BaseService
 import config
 ### need to add rs
 class BulletinService(BaseService):
-    def __init__(self, db, rs, ftp):
-        super().__init__(db, rs, ftp)
+    def __init__(self, db, rs):
+        super().__init__(db, rs)
 
         BulletinService.inst = self
 

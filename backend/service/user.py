@@ -8,8 +8,8 @@ def _hash(pwd):
     return hpwd
 
 class UserService(BaseService):
-    def __init__(self, db, rs, ftp):
-        super().__init__(db, rs, ftp)
+    def __init__(self, db, rs):
+        super().__init__(db, rs)
         UserService.inst = self
 
     def get_user_list(self, data={}):
