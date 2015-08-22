@@ -146,10 +146,10 @@ class ProblemService(BaseService):
         required_args = ['testdata_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res = yield from self.db.execute("SELECT * FROM testdata WHERE id=%s", (data['testdata_id'], ))
-        if len(res) == 0:
+        res, res_cnt = yield from self.db.execute("SELECT * FROM testdata WHERE id=%s", (data['testdata_id'], ))
+        if res_cnt == 0:
             return ('No testdata id', None)
-        return (None, res[0][0])
+        return (None, res[0])
 
     def post_problem_testdata(self, data={}):
         required_args = ['id', 'testdata_id']
@@ -157,7 +157,8 @@ class ProblemService(BaseService):
         if err: return (err, None)
         self.rs.delete('problem@%s@testdata' % str(data['id']))
         if int(data['testdata_id']) == 0:
-            id = yield from self.db.execute("INSERT INTO testdata (problem_id) VALUES (%s)", (data['id'],));
+            id, cnt = yield from self.db.execute("INSERT INTO testdata (problem_id) VALUES (%s) RETURNING id;", (data['id'],))
+            print('ID', id)
             return (None, id)
         else:
             required_args = ['time_limit', 'memory_limit', 'output_limit', 'score']
