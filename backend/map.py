@@ -26,3 +26,12 @@ map_visible = {
     1: "Visible In Group",
     2: "Pulbic",
 }
+
+map_default_file_name = {
+    0: 'main.c',
+    1: 'main.cpp',
+    2: 'main.java',
+    3: 'main.py',
+    4: 'main.py',
+
+}

@@ -149,7 +149,7 @@ class ProblemService(BaseService):
         res = yield from self.db.execute("SELECT * FROM testdata WHERE id=%s", (data['testdata_id'], ))
         if len(res) == 0:
             return ('No testdata id', None)
-        return (None, res[0])
+        return (None, res[0][0])
 
     def post_problem_testdata(self, data={}):
         required_args = ['id', 'testdata_id']
