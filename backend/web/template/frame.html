@@ -24,26 +24,20 @@
     <script src="/asset/bootstrap/js/bootstrap.min.js"></script>
     <script src="/asset/bootbox/bootbox.min.js"></script>
     <script src="/asset/bootstrap-select/bootstrap-select.min.js"></script>
-    <script>
-        function getCookie(name) {
-            var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
-            return r ? r[1] : undefined;
-        }
-    </script>
     </head>
     <body>
 
     <nav class="navbar navbar-default" style="margin: 0px;">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
+            <div class="navbar-header col-md-2">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/">NCTUOJ</a>
+                <a class="navbar-brand" href="/">NCTU Online Judge</a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
@@ -85,13 +79,23 @@
     </nav>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-2" style="padding: 0px">
+            <div class="col-md-2">
                 <div class="row">
-                    <div class="computer only col-xs-12">
-                        <ul class="nav nav-pills nav-stacked">
+                    <div class="computer only col-xs-12" style="background-color: grey;">
+                        <ul id="left-side" class="nav nav-pills nav-stacked">
                             {% for x in group %}
                                 <li role="presentation" {{ 'class=active' if str(x['id'])== str(current_group) else '' }} ><a href="/group/{{x['id']}}/{{current_group_active}}/">{{x['name']}}</a></li>
                             {% end %}
+                            <li role="presentation"><a>XD</a></li>
+                            <li role="presentation"><a>XD</a></li>
+                            <li role="presentation"><a>XD</a></li>
+                            <li role="presentation"><a>XD</a></li>
+                            <li role="presentation"><a>XD</a></li>
+                            <li role="presentation"><a>XD</a></li>
+                            <li role="presentation"><a>XD</a></li>
+                            <li role="presentation"><a>XD</a></li>
+                            <li role="presentation"><a>XD</a></li>
+                            <li role="presentation"><a>XD</a></li>
                         </ul>
                     </div>
                     <div class="tablet mobile only col-xs-12">
@@ -117,7 +121,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-10" style="padding: 15px;">
+            <div class="col-md-10" style="padding-top: 15px;">
                 {% block content %}
                 {% end %}
             </div>

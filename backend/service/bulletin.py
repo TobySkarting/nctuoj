@@ -61,7 +61,7 @@ class BulletinService(BaseService):
         if int(data['id']) == 0:
             data.pop('id')
             sql, parma = self.gen_insert_sql("bulletins", data)
-            insert_id = (yield from self.db.execute(sql, parma))[0]['id']
+            insert_id = (yield from self.db.execute(sql, parma))[0][0]['id']
             return (None, insert_id)
         else:
             err, res = yield from self.get_bulletin(data)
