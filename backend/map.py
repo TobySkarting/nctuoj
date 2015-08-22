@@ -33,5 +33,8 @@ map_default_file_name = {
     2: 'main.java',
     3: 'main.py',
     4: 'main.py',
-
+    5: 'main.go',
+    6: 'main.pl',
+    7: 'main.js',
+    8: 'main.hs'
 }
