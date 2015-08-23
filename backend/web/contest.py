@@ -1,23 +1,15 @@
-from req import RequestHandler
+from req import WebRequestHandler
 from req import Service
+import tornado
+import math
 
 
-class WebContestsHandler(RequestHandler):
-    def get(self, group_id):
-        self.current_group = group_id
-        args = ["page"]
-        meta = self.get_args(args)
-        meta["page"] = meta["page"] if meta["page"] else 1
-        meta["group_id"] = group_id
-        self.render('./contests/contests.html')
-        pass
+class WebContestsHandler(WebRequestHandler):
+    @tornado.gen.coroutine
+    def get(self):
+        self.Render('./contests/contests.html')
 
-    def post(self):
-        pass
-
-class WebContestHandler(RequestHandler):
+class WebContestHandler(WebRequestHandler):
     def get(self, id=None, action=None):
         pass
 
-    def post(self): 
-        pass
