@@ -22,7 +22,7 @@ class ApiProblemHandler(ApiRequestHandler):
             self.render(500, err)
             return False
         else:
-            if int(meta['group_id'])==1 and int(data['visible']) == 2:
+            if int(meta['group_id']) == 1 and int(data['visible']) == 2:
                 pass
             elif int(data['group_id']) == int(meta['group_id']) and (int(data['visible']) != 0 or 1 in self.current_group_power):
                 pass

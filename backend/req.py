@@ -62,7 +62,7 @@ class RequestHandler(tornado.web.RequestHandler):
     @tornado.gen.coroutine
     def prepare(self):
         try:
-            self.current_group = re.search(r'.*/group/(\d+).*', self.request.uri).groups(1)[0]
+            self.current_group = int(re.search(r'.*/group/(\d+).*', self.request.uri).groups(1)[0])
         except:
             self.current_group = 0
         self.map_power = map_power
@@ -134,7 +134,7 @@ class WebRequestHandler(RequestHandler):
         self.account = {}
         self.group = {}
         try:
-            id = self.get_secure_cookie('id').decode()
+            id = int(self.get_secure_cookie('id').decode())
             err, data = yield from Service.User.get_user_basic_info(id)
             if err:
                 id = 0
@@ -154,9 +154,9 @@ class WebRequestHandler(RequestHandler):
         """ if the user not in the group render(403) """
         in_group = False
         for x in self.group:
-            if x['id'] == int(self.current_group):
+            if x['id'] == self.current_group:
                 in_group = True
-        if not in_group and int(self.current_group) != 0:
+        if not in_group and self.current_group != 0:
             self.write_error(403)
             return
         

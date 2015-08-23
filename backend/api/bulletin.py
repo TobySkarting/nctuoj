@@ -13,7 +13,7 @@ class ApiBulletinHandler(ApiRequestHandler):
         if 1 not in self.current_group_power:
             self.render(403, "Permission Denied")
             return False
-        if meta['id'] != 0:
+        if int(meta['id']) != 0:
             err, data = yield from Service.Bulletin.get_bulletin(meta)
             if err: 
                 self.render(500, err)
