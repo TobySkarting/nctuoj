@@ -232,3 +232,21 @@ CREATE TABLE verdicts(
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER verdicts_update_row BEFORE UPDATE ON verdicts FOR EACH ROW EXECUTE PROCEDURE updated_row();
+
+DROP TABLE IF EXISTS contests;
+CREATE TABLE contests(
+    id              serial          NOT NULL    PRIMARY KEY,
+    group_id        integer         NOT NULL,
+    visible         integer         NOT NULL,
+    setter_user_id  integer         NOT NULL,
+    title           varchar(255)    ,
+    description     text            ,
+    register_start  timestamp       NOT NULL    DEFAULT DEFAULT date_trunc('second', now()),
+    register_end    timestamp       NOT NULL    DEFAULT DEFAULT date_trunc('second', now()),
+    start           timestamp       NOT NULL    DEFAULT DEFAULT date_trunc('second', now()),
+    end             timestamp       NOT NULL    DEFAULT DEFAULT date_trunc('second', now()),
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER contests_update_row BEFORE UPDATE ON contests FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE INDEX ON contests (group_id);
