@@ -250,3 +250,4 @@ CREATE TABLE contests(
 );
 CREATE TRIGGER contests_update_row BEFORE UPDATE ON contests FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON contests (group_id);
+
