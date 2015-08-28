@@ -22,7 +22,7 @@ CREATE TABLE users (
     email           varchar(255)    NOT NULL,
     student_id      varchar(255)    NOT NULL,
     school_id       integer         NOT NULL,
-    token           varchar(64)    NOT NULL,
+    token           varchar(64)     NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second', now()),
     updated_at      timestamp       DEFAULT date_trunc('second', now())
 );
@@ -241,13 +241,25 @@ CREATE TABLE contests(
     setter_user_id  integer         NOT NULL,
     title           varchar(255)    ,
     description     text            ,
-    register_start  timestamp       NOT NULL    DEFAULT DEFAULT date_trunc('second', now()),
-    register_end    timestamp       NOT NULL    DEFAULT DEFAULT date_trunc('second', now()),
-    start           timestamp       NOT NULL    DEFAULT DEFAULT date_trunc('second', now()),
-    end             timestamp       NOT NULL    DEFAULT DEFAULT date_trunc('second', now()),
+    register_start  timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
+    register_end    timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
+    "start"         timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
+    "end"           timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER contests_update_row BEFORE UPDATE ON contests FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON contests (group_id);
+
+DROP TABLE IF EXISTS map_user_contest;
+CREATE TABLE map_user_contest (
+    id              serial          NOT NULL    PRIMARY KEY,
+    user_id         integer         NOT NULL,
+    contest_id      integer         NOT NULL,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER map_user_contest_update_row BEFORE UPDATE ON map_user_contest FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE INDEX ON map_user_contest (user_id);
+CREATE INDEX ON map_user_contest (contest_id);
 
