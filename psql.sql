@@ -237,7 +237,7 @@ DROP TABLE IF EXISTS contests;
 CREATE TABLE contests(
     id              serial          NOT NULL    PRIMARY KEY,
     group_id        integer         NOT NULL,
-    visible         integer         NOT NULL,
+    visible         integer         NOT NULL    DEFAULT 0,
     setter_user_id  integer         NOT NULL,
     title           varchar(255)    ,
     description     text            ,
@@ -245,21 +245,36 @@ CREATE TABLE contests(
     register_end    timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
     "start"         timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
     "end"           timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
+    "type"          integer         NOT NULL    DEFAULT 0,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER contests_update_row BEFORE UPDATE ON contests FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON contests (group_id);
+INSERT INTO contests (group_id, setter_user_id, title, description) values (1, 1, 'test', 'contest');
 
-DROP TABLE IF EXISTS map_user_contest;
-CREATE TABLE map_user_contest (
+DROP TABLE IF EXISTS map_contest_problem 
+CREATE TABLE map_contest_problem (
+    id              serial          NOT NULL    PRIMARY KEY,
+    contest_id      integer         NOT NULL,
+    problem_id      integer         NOT NULL,
+    score           varchar(255)    NOT NULL,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now()),
+);
+CREATE TRIGGER map_conteset_problem_update_row BEFORE UPDATE ON map_contest_problem FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE INDEX ON map_contest_problem (contest_id);
+CREATE INDEX ON map_contest_problem (problem_id);
+
+DROP TABLE IF EXISTS map_contest_user;
+CREATE TABLE map_contest_user (
     id              serial          NOT NULL    PRIMARY KEY,
     user_id         integer         NOT NULL,
     contest_id      integer         NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
-CREATE TRIGGER map_user_contest_update_row BEFORE UPDATE ON map_user_contest FOR EACH ROW EXECUTE PROCEDURE updated_row();
-CREATE INDEX ON map_user_contest (user_id);
-CREATE INDEX ON map_user_contest (contest_id);
+CREATE TRIGGER map_contest_user_update_row BEFORE UPDATE ON map_user_contest FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE INDEX ON map_contest_user (user_id);
+CREATE INDEX ON map_contest_user (contest_id);
 

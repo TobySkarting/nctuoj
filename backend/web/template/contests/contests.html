@@ -1,4 +1,18 @@
 {% extends './../frame.html' %}
 {% block content %}
-Contests
+{% if map_group_power["admin_manage"] in current_group_power %}
+    <a class="btn btn-default margin-bottom" href="/group/{{current_group}}/contests/0/edit/">New</a>
+{% end %}
+<div class="panel panel-default">
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Register<br>Time</th>
+                <th>Contest<br>Time</th>
+                <th>Register</th>
+            </tr>
+        </thead>
+    </table>
+</div>
 {% end %}

@@ -21,6 +21,7 @@ from service.problem import ProblemService
 from service.submission import SubmissionService
 from service.bulletin import BulletinService
 from service.execute import ExecuteService
+from service.contest import ContestService
 
 ### api class from api.user import ApiUserSignupHandler
 from api.user import ApiUserSignHandler
@@ -178,6 +179,7 @@ if __name__ == '__main__':
     Service.Submission = SubmissionService(db, rs)
     Service.Bulletin = BulletinService(db, rs)
     Service.Execute = ExecuteService(db, rs)
+    Service.Contest = ContestService(db, rs)
     print('start')
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)

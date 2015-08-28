@@ -25,110 +25,101 @@
     <script src="/asset/bootbox/bootbox.min.js"></script>
     <script src="/asset/bootstrap-select/bootstrap-select.min.js"></script>
     </head>
-    <body>
+<body>
 
-    <nav class="navbar navbar-default" style="margin: 0px;">
+    <div class="body">
+        <nav class="navbar navbar-default" style="margin: 0px;">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header col-md-2">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">NCTU Online Judge</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        {% if current_group == 0 %}
+                            {% set link_group = 1 %}
+                        {% else %}
+                            {% set link_group = current_group %}
+                        {% end %}
+                        <li><a href="/group/{{link_group}}/bulletins/">Bulletins</a></li>
+                        <li><a href="/group/{{link_group}}/problems/">Problems</a></li>
+                        <li><a href="/group/{{link_group}}/submissions/">Submissions</a></li>
+                        <li><a href="/group/{{link_group}}/contests/">Contests</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <!-- admin -->
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Global<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/executes/">Execute Type</a></li>
+                                <li><a href="/verdicts/">Verdict Type</a></li>
+                                {% if map_power['user_manage'] in account['power'] %}
+                                    <li><a href="/users/">User</a></li>
+                                {% end %}
+                                {% if map_power['group_manage'] in account['power'] %}
+                                    <li><a href="/groups/">Group</a></li>
+                                {% end %}
+                            </ul>
+                        </li>
+                        {% if account['id'] != 0 %}
+                            <li><a href="/user/">{{account['account']}}</a></li>
+                            <li><a href="/user/signout/">Sign Out</a><li>
+                        {% else %}
+                            <li><a href="/user/signin/">Sign In</a><li>
+                            <li><a href="/user/signup/">Sign Up</a><li>
+                        {% end %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
         <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header col-md-2">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">NCTU Online Judge</a>
-            </div>
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    {% if current_group == 0 %}
-                        {% set link_group = 1 %}
-                    {% else %}
-                        {% set link_group = current_group %}
-                    {% end %}
-                    <li><a href="/group/{{link_group}}/bulletins/">Bulletins</a></li>
-                    <li><a href="/group/{{link_group}}/problems/">Problems</a></li>
-                    <li><a href="/group/{{link_group}}/submissions/">Submissions</a></li>
-                    <li><a href="/group/{{link_group}}/contests/">Contests</a></li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <!-- admin -->
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Global<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/executes/">Execute Type</a></li>
-                            <li><a href="/verdicts/">Verdict Type</a></li>
-                            {% if map_power['user_manage'] in account['power'] %}
-                                <li><a href="/users/">User</a></li>
-                            {% end %}
-                            {% if map_power['group_manage'] in account['power'] %}
-                                <li><a href="/groups/">Group</a></li>
-                            {% end %}
-                        </ul>
-                    </li>
-                    {% if account['id'] != 0 %}
-                        <li><a href="/user/">{{account['account']}}</a></li>
-                        <li><a href="/user/signout/">Sign Out</a><li>
-                    {% else %}
-                        <li><a href="/user/signin/">Sign In</a><li>
-                        <li><a href="/user/signup/">Sign Up</a><li>
-                    {% end %}
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-2">
-                <div class="row">
-                    <div class="computer only col-xs-12" style="background-color: grey;">
-                        <ul id="left-side" class="nav nav-pills nav-stacked">
-                            {% for x in group %}
-                                <li role="presentation" {{ 'class=active' if str(x['id'])== str(current_group) else '' }} ><a href="/group/{{x['id']}}/{{current_group_active}}/">{{x['name']}}</a></li>
-                            {% end %}
-                            <li role="presentation"><a>XD</a></li>
-                            <li role="presentation"><a>XD</a></li>
-                            <li role="presentation"><a>XD</a></li>
-                            <li role="presentation"><a>XD</a></li>
-                            <li role="presentation"><a>XD</a></li>
-                            <li role="presentation"><a>XD</a></li>
-                            <li role="presentation"><a>XD</a></li>
-                            <li role="presentation"><a>XD</a></li>
-                            <li role="presentation"><a>XD</a></li>
-                            <li role="presentation"><a>XD</a></li>
-                        </ul>
-                    </div>
-                    <div class="tablet mobile only col-xs-12">
-                        <div class="dropdown">
-                            {% set now_group = None %}
-                            {% for x in group %}
-                                {% if str(x['id']) == str(current_group) %}
-                                    {% set now_group = x %}
-                                {% end %}
-                            {% end %}
-                            <button class="btn btn-default btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                {% if now_group %}
-                                    {{ now_group['name'] }}
-                                {% end %}
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" style="width: 100%">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="row">
+                        <div class="computer only col-xs-12" style="background-color: grey;">
+                            <ul id="left-side" class="nav nav-pills nav-stacked">
                                 {% for x in group %}
-                                    <li><a href="/group/{{x['id']}}/{{current_group_active}}/">{{x['name']}}</a></li>
+                                    <li role="presentation" {{ 'class=active' if str(x['id'])== str(current_group) else '' }} ><a href="/group/{{x['id']}}/{{current_group_active}}/">{{x['name']}}</a></li>
                                 {% end %}
                             </ul>
                         </div>
+                        <div class="tablet mobile only col-xs-12">
+                            <div class="dropdown">
+                                {% set now_group = None %}
+                                {% for x in group %}
+                                    {% if str(x['id']) == str(current_group) %}
+                                        {% set now_group = x %}
+                                    {% end %}
+                                {% end %}
+                                <button class="btn btn-default btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    {% if now_group %}
+                                        {{ now_group['name'] }}
+                                    {% end %}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" style="width: 100%">
+                                    {% for x in group %}
+                                        <li><a href="/group/{{x['id']}}/{{current_group_active}}/">{{x['name']}}</a></li>
+                                    {% end %}
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-10" style="padding-top: 15px;">
-                {% block content %}
-                {% end %}
+                <div class="col-md-10" style="padding-top: 15px;">
+                    {% block content %}
+                    {% end %}
+                </div>
             </div>
         </div>
     </div>
-
-    </body>
     <footer class="footer">
     </footer>
+</body>
 </html>
