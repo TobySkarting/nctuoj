@@ -30,3 +30,17 @@ class ContestService(BaseService):
         
     def get_contest_list_count(self, data={}):
         required_args = ['group_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        res = self.rs.get('contest_list_count@%s' 
+                % (str(data['group_id'])))
+        if res: return (None, res)
+        sql = "SELECT COUNT(*) FROM contests as c "
+        if int(data['group_id']) == 1:
+            sql += "WHERE (c.group_id=%s OR c.visible = 2)"
+        else:
+            sql += "WHERE c.group_id=%s"
+        res, res_cnt = yield from self.db.execute(sql, (data['group_id'],))
+        self.rs.set('contest_list_count@%s'
+                % (str(data['group_id'])), res[0]['count'])
+        return (None, res[0]['count'])
