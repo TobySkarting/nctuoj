@@ -226,6 +226,8 @@ INSERT INTO submissions (user_id, problem_id, execute_type_id, length, file_name
 DROP TABLE IF EXISTS verdicts;
 CREATE TABLE verdicts(
     id              serial          NOT NULL    PRIMARY KEY,
+    title           varchar(255)    ,
+    description     text            ,
     execute_type_id integer         NOT NULL    DEFAULT 0,
     file_name       varchar(255)    NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second',now()),

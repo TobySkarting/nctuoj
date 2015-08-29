@@ -44,3 +44,4 @@ class ContestService(BaseService):
         self.rs.set('contest_list_count@%s'
                 % (str(data['group_id'])), res[0]['count'])
         return (None, res[0]['count'])
+
