@@ -3,6 +3,9 @@
 {% if map_group_power["admin_manage"] in current_group_power %}
     <a class="btn btn-default margin-bottom" href="/group/{{current_group}}/contests/0/edit/">New</a>
 {% end %}
+
+{% module Pagination(page) %}
+{{data}}
 <div class="panel panel-default">
     <table class="table table-hover table-striped">
         <thead>
@@ -14,6 +17,16 @@
                 <th>Register</th>
             </tr>
         </thead>
+        <tbody>
+            {% for x in data %}
+                <tr>
+                    <td>{{x['title']}}</td>
+                    <td>{{x['register_start']}}<br>{{x['register_end']}}</td>
+                    <td>{{x['start']}}<br>{{x['end']}}</td>
+
+                </tr>
+            {% end %}
+        </tbody>
     </table>
 </div>
 {% end %}

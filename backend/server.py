@@ -22,6 +22,7 @@ from service.submission import SubmissionService
 from service.bulletin import BulletinService
 from service.execute import ExecuteService
 from service.contest import ContestService
+from service.verdict import VerdictService
 
 ### api class from api.user import ApiUserSignupHandler
 from api.user import ApiUserSignHandler
@@ -158,6 +159,7 @@ if __name__ == '__main__':
         ('/executes/(\d+)/',                                            WebExecuteTypeHandler),
         ('/executes/(\d+)/(\w*)/',                                      WebExecuteTypeHandler),
         ('/verdicts/',                                                  WebVerdictTypesHandler),
+        ('/verdicts/(\d+)/',                                            WebVerdictTypeHandler),
         ('/verdicts/(\d+)/(\w*)/',                                      WebVerdictTypeHandler),
 
         ### user list only admin
@@ -180,6 +182,7 @@ if __name__ == '__main__':
     Service.Bulletin =      BulletinService(db, rs)
     Service.Execute =       ExecuteService(db, rs)
     Service.Contest =       ContestService(db, rs)
+    Service.Verdict =       ContestService(db, rs)
     print('Server Started')
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
