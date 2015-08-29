@@ -1,8 +1,8 @@
-from req import RequestHandler
+from req import WebRequestHandler
 from req import Service
 
 
-class Web404Handler(RequestHandler):
+class Web404Handler(WebRequestHandler):
     def get(self):
         self.write_error(404)
         return

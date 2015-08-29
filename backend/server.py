@@ -78,11 +78,11 @@ from web.user import WebUserHandler
 
 
 def sig_handler(sig, frame):
-    print('catch stop signal')
+    print('Catch Stop Signal')
     tornado.ioloop.IOLoop.instance().add_callback(shutdown)
 
 def shutdown():
-    print('stopping server')
+    print('Server Stopping')
     srv.stop()
     io_loop = tornado.ioloop.IOLoop.instance()
     deadline = time.time() + config.MAX_WAIT_SECOND_BEFORE_SHUTDOWN
@@ -93,12 +93,12 @@ def shutdown():
             io_loop.add_timeout(now + 1, stop_loop)
         else:
             io_loop.stop()
-            print('Shutdown')
+            print('Server Stopped')
     stop_loop()
 
 
-
 if __name__ == '__main__':
+    print('Server Starting')
     '''
     logging.basicConfig(level=logging.DEBUG,
             format='[%(asctime)s]: %(message)s',
@@ -112,17 +112,18 @@ if __name__ == '__main__':
     #        host=config.DBHOST)
     db = pg.AsyncPG(config.DBNAME, config.DBUSER, config.DBPASSWORD, host=config.DBHOST, dbtz='+8')
     rs = myredis.MyRedis(db=1)
+    rs.flushdb()
     ui_modules = {
             "Pagination": web.modules.Pagination,
             }
     app = tornado.web.Application([
-        ('/', WebIndexHandler),
-        ('/api/users/',                             ApiUsersHandler),
-        ('/api/users/(\d+)/',                       ApiUserHandler),
-        ('/api/users/(sign\w*)/',                   ApiUserSignHandler),
+        ('/',                                                           WebIndexHandler),
+        ('/api/users/',                                                 ApiUsersHandler),
+        ('/api/users/(\d+)/',                                           ApiUserHandler),
+        ('/api/users/(sign\w*)/',                                       ApiUserSignHandler),
         
-        ('/api/group/\d+/bulletins/',                       ApiBulletinsHandler),
-        ('/api/group/\d+/bulletins/(\d+)/',                 ApiBulletinHandler),
+        ('/api/group/\d+/bulletins/',                                   ApiBulletinsHandler),
+        ('/api/group/\d+/bulletins/(\d+)/',                             ApiBulletinHandler),
 
         ('/api/group/\d+/problems/',                                    ApiProblemsHandler),
         ('/api/group/\d+/problems/(\d+)/',                              ApiProblemHandler),
@@ -131,51 +132,59 @@ if __name__ == '__main__':
         ### /api/group/\d+/problems/(\d+)/(execute)/
         ### /api/group/\d+/problems/(\d+)/(tag)/
         ### /api/group/\d+/problems/(\d+)/(testdata)/
-        ('/api/group/\d+/problems/(\d+)/(\w*)/(\d+)/',             ApiProblemHandler),
+        ('/api/group/\d+/problems/(\d+)/(\w*)/(\d+)/',                  ApiProblemHandler),
         ### /api/group/\d+/problems/(\d+)/(testdata)/(\d+)/'
 
-        ('/api/executes/',                     ApiExecutesHandler),
-        ('/api/executes/(\d+)/',               ApiExecuteHandler),
+        ('/api/executes/',                                              ApiExecutesHandler),
+        ('/api/executes/(\d+)/',                                        ApiExecuteHandler),
 
-        ('/group/\d+/bulletins/',                   WebBulletinsHandler),
-        ('/group/\d+/bulletins/(\d+)/(\w*)/?',      WebBulletinHandler),
+        ('/group/\d+/bulletins/',                                       WebBulletinsHandler),
+        ('/group/\d+/bulletins/(\d+)/(\w*)/?',                          WebBulletinHandler),
 
-        ('/group/\d+/problems/',                        WebProblemsHandler),
-        ('/group/\d+/problems/(\d+)/',                  WebProblemHandler),
-        ('/group/\d+/problems/(\d+)/(\w*)/',                  WebProblemHandler),
-        ('/group/\d+/problems/(\d+)/(\w*)/edit/',       WebProblemEditHandler),
+        ('/group/\d+/problems/',                                        WebProblemsHandler),
+        ('/group/\d+/problems/(\d+)/',                                  WebProblemHandler),
+        ('/group/\d+/problems/(\d+)/(\w*)/',                            WebProblemHandler),
+        ('/group/\d+/problems/(\d+)/(\w*)/edit/',                       WebProblemEditHandler),
         ### /group/\d+/problems/\d+/basic/edit/
         ### /group/\d+/problems/\d+/tag/edit/
         ### /group/\d+/problems/\d+/execute/edit/
         ### /group/\d+/problems/\d+/testdata/edit/
-        ('/group/\d+/submissions/',                 WebSubmissionsHandler),
-        ('/group/\d+/submissions/(\d+)/',           WebSubmissionHandler),
+        ('/group/\d+/submissions/',                                     WebSubmissionsHandler),
+        ('/group/\d+/submissions/(\d+)/',                               WebSubmissionHandler),
 
-        ('/group/\d+/contests/',                    WebContestsHandler),
-        ('/group/\d+/contests/(\d+)/(\w*)/',        WebContestHandler),
+        ('/group/\d+/contests/',                                        WebContestsHandler),
+        ('/group/\d+/contests/(\d+)/(\w*)/',                            WebContestHandler),
         
+<<<<<<< HEAD
         ('/executes/',                          WebExecuteTypesHandler),
         ('/executes/(\d+)/',                    WebExecuteTypeHandler),
         ('/executes/(\d+)/(\w*)/',              WebExecuteTypeHandler),
         ('/verdicts/',                          WebVerdictTypesHandler),
         ('/verdicts/(\d+)/',                    WebVerdictTypeHandler),
         ('/verdicts/(\d+)/(\w*)/',              WebVerdictTypeHandler),
+=======
+        ('/executes/',                                                  WebExecuteTypesHandler),
+        ('/executes/(\d+)/',                                            WebExecuteTypeHandler),
+        ('/executes/(\d+)/(\w*)/',                                      WebExecuteTypeHandler),
+        ('/verdicts/',                                                  WebVerdictTypesHandler),
+        ('/verdicts/(\d+)/(\w*)/',                                      WebVerdictTypeHandler),
+>>>>>>> ebae0a824659075b6978d7fa963e8d562f300e9d
 
         ### user list only admin
-        ('/users/', WebUsersHandler),       
-        ('/user/', WebUserHandler),
-        ('/user/(sign\w*)/?', WebUserSignHandler),
-        ('/user/(\d+)/(\w*)/?', WebUserHandler),
+        ('/users/',                                                     WebUsersHandler),       
+        ('/user/',                                                      WebUserHandler),
+        ('/user/(sign\w*)/?',                                           WebUserSignHandler),
+        ('/user/(\d+)/(\w*)/?',                                         WebUserHandler),
 
 
-        ('/about/',                             WebAboutHandler),
+        ('/about/',                                                     WebAboutHandler),
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
-        ('/.*', Web404Handler)
+        ('/.*',                                                         Web404Handler)
         ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape', ui_modules = ui_modules)
-    rs.flushdb()
     global srv
     srv = tornado.httpserver.HTTPServer(app)
     srv.listen(config.PORT)
+<<<<<<< HEAD
     Service.User = UserService(db, rs)
     Service.Problem = ProblemService(db, rs)
     Service.Submission = SubmissionService(db, rs)
@@ -184,6 +193,15 @@ if __name__ == '__main__':
     Service.Contest = ContestService(db, rs)
     Service.Verdict = VerdictService(db, rs)
     print('start')
+=======
+    Service.User =          UserService(db, rs)
+    Service.Problem =       ProblemService(db, rs)
+    Service.Submission =    SubmissionService(db, rs)
+    Service.Bulletin =      BulletinService(db, rs)
+    Service.Execute =       ExecuteService(db, rs)
+    Service.Contest =       ContestService(db, rs)
+    print('Server Started')
+>>>>>>> ebae0a824659075b6978d7fa963e8d562f300e9d
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
     tornado.ioloop.IOLoop().instance().start()
