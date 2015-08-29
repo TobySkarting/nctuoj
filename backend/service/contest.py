@@ -20,10 +20,10 @@ class ContestService(BaseService):
             WHERE u.id=c.setter_user_id AND g.id=c.group_id AND
             """
         if int(data['group_id']) == 1:
-            sql += """ (c.group_id=%s OR c.visible=2) """
+            sql += " (c.group_id=%s OR c.visible=2) "
         else:
-            sql += """ (p.group_id=%s) """
-        sql += """ ORDER BY c.id limit %s OFFSET %s """
+            sql += " (p.group_id=%s) "
+        sql += " ORDER BY c.id limit %s OFFSET %s "
 
         res, res_cnt = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
         return (None, res)

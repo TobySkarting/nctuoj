@@ -1,4 +1,6 @@
 from service.base import BaseService
+from req import Service
+from map import map_default_file_name
 import shutil
 import os
 import config
@@ -54,17 +56,21 @@ class SubmissionService(BaseService):
         if data['id'] == 0:
             pass
         res, res_cnt = yield from self.db.execute("""
-        SELECT s.*, e.lang as execute_lang, e.description as execute_description, u.account as submitter, p.title as problem_name
+        SELECT s.*, e.lang as execute_lang, e.description as execute_description, u.account as submitter, p.title as problem_name, p.group_id as problem_group_id 
         FROM submissions as s, execute_types as e, users as u, problems as p
         WHERE s.id=%s AND e.id=s.execute_type_id AND u.id=s.user_id AND s.problem_id=p.id
         """, (data['id'],))
         if res_cnt == 0:
             return ('No Submission ID', None)
         res = res[0]
-        file_path = './../data/submissions/%s/%s' % (res['id'], res['file_name'])
-        with open(file_path) as f:
-            res['code'] = f.read()
-        res['code_line'] = len(open(file_path).readlines())
+        if int(data['account']['id']) == res['user_id']:
+            file_path = './../data/submissions/%s/%s' % (res['id'], res['file_name'])
+            with open(file_path) as f:
+                res['code'] = f.read()
+            res['code_line'] = len(open(file_path).readlines())
+        else:
+            res['code'] = ''
+            res['code_line'] = 0
         return (None, res)
 
     def post_submission(self, data):
@@ -78,12 +84,16 @@ class SubmissionService(BaseService):
         res, res_cnt = yield from self.db.execute("SELECT * FROM map_problem_execute WHERE problem_id=%s and execute_type_id=%s", (data['problem_id'], data['execute_type_id'],))
         if res_cnt == 0:
             return ('No execute type', None)
+        err, data['execute'] = yield from Service.Execute.get_execute({'id': data['execute_type_id']})
         ### get file name and length
         if data['code_file']:
             meta['file_name'] = data['code_file']['filename']
             meta['length'] = len(data['code_file']['body'])
         else:
-            meta['file_name'] = data['plain_file_name']
+            if data['plain_file_name'] != '':
+                meta['file_name'] = data['plain_file_name']
+            else:
+                meta['file_name'] = map_default_file_name[int(data['execute']['lang'])]
             meta['length'] = len(data['plain_code'])
         ### save to db
         sql, parma = self.gen_insert_sql("submissions", meta)
