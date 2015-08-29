@@ -1,6 +1,7 @@
 from service.base import BaseService
 from req import Service
 from map import map_default_file_name
+from map import map_group_power
 import shutil
 import os
 import config
@@ -63,14 +64,10 @@ class SubmissionService(BaseService):
         if res_cnt == 0:
             return ('No Submission ID', None)
         res = res[0]
-        if int(data['account']['id']) == res['user_id']:
-            file_path = './../data/submissions/%s/%s' % (res['id'], res['file_name'])
-            with open(file_path) as f:
-                res['code'] = f.read()
-            res['code_line'] = len(open(file_path).readlines())
-        else:
-            res['code'] = ''
-            res['code_line'] = 0
+        file_path = './../data/submissions/%s/%s' % (res['id'], res['file_name'])
+        with open(file_path) as f:
+            res['code'] = f.read()
+        res['code_line'] = len(open(file_path).readlines())
         return (None, res)
 
     def post_submission(self, data):

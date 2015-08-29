@@ -1,5 +1,6 @@
 from req import WebRequestHandler
 from req import Service
+from map import map_group_power
 import tornado
 import math
 
@@ -47,7 +48,7 @@ class WebProblemHandler(WebRequestHandler):
             return
         if int(meta['group_id'])==1 and int(data['visible']) == 2:
             pass
-        elif int(data['group_id']) == int(meta['group_id']) and (1 in self.current_group_power or int(data['visible']) != 0):
+        elif int(data['group_id']) == int(meta['group_id']) and (map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) != 0):
             pass
         else:
             self.write_error(403)

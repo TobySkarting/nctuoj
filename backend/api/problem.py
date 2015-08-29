@@ -1,5 +1,6 @@
 from req import ApiRequestHandler
 from req import Service
+from map import map_group_power
 import tornado
 
 
@@ -32,7 +33,7 @@ class ApiProblemHandler(ApiRequestHandler):
         return True
 
     def check_edit(self, meta):
-        if 1 not in self.current_group_power:
+        if map_group_power['admin_manage'] not in self.current_group_power:
             self.render(403, "Permission Denied")
             return False
         if int(meta['id']) != 0:
