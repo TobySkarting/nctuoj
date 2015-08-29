@@ -1,6 +1,5 @@
 import json
 import logging
-import msgpack
 import types
 import datetime
 import collections
@@ -35,12 +34,13 @@ class RequestHandler(tornado.web.RequestHandler):
 
         except tornado.web.HTTPError:
             self.res_json = False
+
     def log(self, msg):
         if not self.acct:
             id = 0
         else:
             id = self.acct['id']
-        msg = '<USER %d> '%id + str(msg)
+        msg = '<USER %d> %s' % (id, str(msg))
         logging.debug(msg)
 
     def get_args(self, name):

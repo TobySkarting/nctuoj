@@ -30,7 +30,7 @@ class FTP:
 
     def put(self, _from, _to):
         ssh = self.createSSHClient()
-        try: ssh.exec_command('mkdir -p ' + os.path.split(_to)[0])
+        try: ssh.exec_command('mkdir -p %s' % os.path.split(_to)[0])
         except: pass
         scp = SCPClient(ssh.get_transport())
         scp.put(_from, _to)
@@ -38,7 +38,7 @@ class FTP:
 
     def delete(self, _target):
         ssh = self.createSSHClient()
-        try: ssh.exec_command('rm -rf ' + _target)
+        try: ssh.exec_command('rm -rf %s' % _target)
         except: pass
 
 if __name__ == "__main__":

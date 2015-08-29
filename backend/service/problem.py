@@ -60,7 +60,6 @@ class ProblemService(BaseService):
 
         res = self.rs.get('problem@%s' % str(data['id']))
         if not res:
-           # return (None, res)
             sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
             res, res_cnt = yield from self.db.execute(sql, (data["id"],))
             if res_cnt == 0:
