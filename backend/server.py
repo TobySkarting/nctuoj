@@ -155,20 +155,12 @@ if __name__ == '__main__':
         ('/group/\d+/contests/',                                        WebContestsHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/',                            WebContestHandler),
         
-<<<<<<< HEAD
-        ('/executes/',                          WebExecuteTypesHandler),
-        ('/executes/(\d+)/',                    WebExecuteTypeHandler),
-        ('/executes/(\d+)/(\w*)/',              WebExecuteTypeHandler),
-        ('/verdicts/',                          WebVerdictTypesHandler),
-        ('/verdicts/(\d+)/',                    WebVerdictTypeHandler),
-        ('/verdicts/(\d+)/(\w*)/',              WebVerdictTypeHandler),
-=======
         ('/executes/',                                                  WebExecuteTypesHandler),
         ('/executes/(\d+)/',                                            WebExecuteTypeHandler),
         ('/executes/(\d+)/(\w*)/',                                      WebExecuteTypeHandler),
         ('/verdicts/',                                                  WebVerdictTypesHandler),
+        ('/verdicts/(\d+)/',                                            WebVerdictTypeHandler),
         ('/verdicts/(\d+)/(\w*)/',                                      WebVerdictTypeHandler),
->>>>>>> ebae0a824659075b6978d7fa963e8d562f300e9d
 
         ### user list only admin
         ('/users/',                                                     WebUsersHandler),       
@@ -184,24 +176,14 @@ if __name__ == '__main__':
     global srv
     srv = tornado.httpserver.HTTPServer(app)
     srv.listen(config.PORT)
-<<<<<<< HEAD
-    Service.User = UserService(db, rs)
-    Service.Problem = ProblemService(db, rs)
-    Service.Submission = SubmissionService(db, rs)
-    Service.Bulletin = BulletinService(db, rs)
-    Service.Execute = ExecuteService(db, rs)
-    Service.Contest = ContestService(db, rs)
-    Service.Verdict = VerdictService(db, rs)
-    print('start')
-=======
     Service.User =          UserService(db, rs)
     Service.Problem =       ProblemService(db, rs)
     Service.Submission =    SubmissionService(db, rs)
     Service.Bulletin =      BulletinService(db, rs)
     Service.Execute =       ExecuteService(db, rs)
     Service.Contest =       ContestService(db, rs)
+    Service.Verdict =       ContestService(db, rs)
     print('Server Started')
->>>>>>> ebae0a824659075b6978d7fa963e8d562f300e9d
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
     tornado.ioloop.IOLoop().instance().start()
