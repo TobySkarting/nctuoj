@@ -16,25 +16,25 @@ import signal
 import logging
 
 ### service class
-from service.user import UserService
-from service.problem import ProblemService
+from service.user       import UserService
+from service.problem    import ProblemService
 from service.submission import SubmissionService
-from service.bulletin import BulletinService
-from service.execute import ExecuteService
-from service.contest import ContestService
-from service.verdict import VerdictService
+from service.bulletin   import BulletinService
+from service.execute    import ExecuteService
+from service.contest    import ContestService
+from service.verdict    import VerdictService
 
 ### api class from api.user import ApiUserSignupHandler
-from api.user import ApiUserSignHandler
-from api.user import ApiUsersHandler
-from api.user import ApiUserHandler
-from api.bulletin import ApiBulletinsHandler
-from api.bulletin import ApiBulletinHandler
-from api.problem import ApiProblemsHandler
-from api.problem import ApiProblemHandler
-from api.execute import ApiExecutesHandler
-from api.execute import ApiExecuteHandler
-from api.time import ApiTimeHandler
+from api.user           import ApiUserSignHandler
+from api.user           import ApiUsersHandler
+from api.user           import ApiUserHandler
+from api.bulletin       import ApiBulletinsHandler
+from api.bulletin       import ApiBulletinHandler
+from api.problem        import ApiProblemsHandler
+from api.problem        import ApiProblemHandler
+from api.execute        import ApiExecutesHandler
+from api.execute        import ApiExecuteHandler
+from api.time           import ApiTimeHandler
 
 #from api.execute_type import ApiExecuteTypesHandler
 #from api.execute_type import ApiExecuteTypeHandler
@@ -43,34 +43,34 @@ from api.time import ApiTimeHandler
 ### web class
 import web.modules
 
-from web.err import Web404Handler
-from web.index import WebIndexHandler
-from web.bulletin import WebBulletinsHandler
-from web.bulletin import WebBulletinHandler
+from web.err            import Web404Handler
+from web.index          import WebIndexHandler
+from web.bulletin       import WebBulletinsHandler
+from web.bulletin       import WebBulletinHandler
 
-from web.problem import WebProblemsHandler
-from web.problem import WebProblemHandler
-from web.problem import WebProblemEditHandler
+from web.problem        import WebProblemsHandler
+from web.problem        import WebProblemHandler
+from web.problem        import WebProblemEditHandler
 
-from web.submission import WebSubmissionsHandler
-from web.submission import WebSubmissionHandler
-from web.contest import WebContestsHandler
-from web.contest import WebContestHandler
+from web.submission     import WebSubmissionsHandler
+from web.submission     import WebSubmissionHandler
+from web.contest        import WebContestsHandler
+from web.contest        import WebContestHandler
 
-from web.execute import WebExecuteTypesHandler
-from web.execute import WebExecuteTypeHandler
-from web.verdict import WebVerdictTypesHandler
-from web.verdict import WebVerdictTypeHandler
+from web.execute        import WebExecuteTypesHandler
+from web.execute        import WebExecuteTypeHandler
+from web.verdict        import WebVerdictTypesHandler
+from web.verdict        import WebVerdictTypeHandler
 
 
-from web.about import WebAboutHandler
+from web.about          import WebAboutHandler
 
 
 #from web.execute_type import WebExecuteTypesHandler
 
-from web.user import WebUsersHandler
-from web.user import WebUserSignHandler
-from web.user import WebUserHandler
+from web.user           import WebUsersHandler
+from web.user           import WebUserSignHandler
+from web.user           import WebUserHandler
 #from web.problem import WebProblemHandler
 #from web.problem import WebProblemListHandler
 
@@ -121,7 +121,7 @@ if __name__ == '__main__':
         ('/api/users/',                                                 ApiUsersHandler),
         ('/api/user/(\d+)/',                                            ApiUserHandler),
         ('/api/user/(sign\w*)/',                                        ApiUserSignHandler),
-        ('/api/user/(resettoken)/',                                       ApiUserSignHandler),
+        ('/api/user/(resettoken)/',                                     ApiUserSignHandler),
         
         ('/api/group/\d+/bulletins/',                                   ApiBulletinsHandler),
         ('/api/group/\d+/bulletins/(\d+)/',                             ApiBulletinHandler),
@@ -135,6 +135,7 @@ if __name__ == '__main__':
         ### /api/group/\d+/problems/(\d+)/(testdata)/
         ('/api/group/\d+/problems/(\d+)/(\w*)/(\d+)/',                  ApiProblemHandler),
         ### /api/group/\d+/problems/(\d+)/(testdata)/(\d+)/'
+        ('/api/time/',                                                  ApiTimeHandler),
 
         ('/api/executes/',                                              ApiExecutesHandler),
         ('/api/executes/(\d+)/',                                        ApiExecuteHandler),
@@ -172,8 +173,10 @@ if __name__ == '__main__':
 
         ('/about/',                                                     WebAboutHandler),
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
-        ('/.*',                                                         Web404Handler)
-        ], cookie_secret=config.COOKIE_SECRET, autoescape='xhtml_escape', ui_modules = ui_modules)
+        ('/.*',                                                         Web404Handler),
+        ],  cookie_secret = config.COOKIE_SECRET, 
+            autoescape =    'xhtml_escape', 
+            ui_modules =    ui_modules)
     global srv
     srv = tornado.httpserver.HTTPServer(app)
     srv.listen(config.PORT)

@@ -1,7 +1,10 @@
-from req import RequestHandler
+from req import ApiRequestHandler
 from req import Service
+import tornado
+import datetime
 
 
-class ApiTimeHandler(RequestHandler):
+class ApiTimeHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
     def get(self):
-        self.error(404)
+        self.render(msg={'datetime': datetime.datetime.now()})
