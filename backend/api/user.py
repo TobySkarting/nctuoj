@@ -25,10 +25,32 @@ class ApiUserSignHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def post(self, action):
         if action == 'signin':
-            pass
+            args = ['account', 'passwd']
+            meta = self.get_args(args)
+            err, id = yield from Service.User.SignIn(meta, self)
+            if err:
+                self.render(403, 'Wrong Password')
+            else:
+                self.render()
         elif action == 'signup':
-            pass
+            args = ['email', 'account', 'passwd', 'repasswd', 'school_id', 'student_id']
+            meta = self.get_args(args)
+            passwd = meta['passwd']
+            err, id = yield from Service.User.SignUp(meta)
+            if err: self.render(400, err)
+            else:
+                meta['passwd'] = passwd
+                err, id = yield from Service.User.SignIn(meta, self)
+                self.render()
         elif action == 'signout':
-            pass
+            Service.User.SignOut(self)
+            self.render()
+        elif action == 'resettoken':
+            args = ['passwd']
+            meta = self.get_args(args)
+            meta['account'] = self.account
+            err, token = yield from Service.User.ResetToken(meta)
+            if err: self.render(400, err)
+            self.render(msg=token)
         else:
-            self.error("404")
+            self.render(404)

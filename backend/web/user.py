@@ -47,7 +47,9 @@ class WebUserHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id=None, action=None):
         if not id: id = self.account["id"]
-        err, meta = yield from Service.User.get_user_advanced_info(id)
+        print('ID', id)
+        ###err, meta = yield from Service.User.get_user_advanced_info(id)
+        err, meta = yield from Service.User.get_user_basic_info(id)
         self.Render('./users/user.html', data=meta)
 
 class WebUserSignHandler(WebRequestHandler):
@@ -55,38 +57,16 @@ class WebUserSignHandler(WebRequestHandler):
     def get(self, action):
         print(action)
         if action == "signin":
+            if self.account['id'] != 0:
+                self.redirect('/')
             self.Render('./users/user_signin.html')
         elif action == "signout":
             Service.User.SignOut(self)
             self.redirect('/')
         elif action == "signup":
+            if self.account['id'] != 0:
+                self.redirect('/')
             self.Render('./users/user_signup.html')
         else:
             self.write_error(404)
 
-    @tornado.gen.coroutine
-    def post(self, action): 
-        if action == "signin":
-            args = ['account', 'passwd']
-            meta = self.get_args(args)
-            err, id = yield from Service.User.SignIn(meta, self)
-            if err:
-                self.Render('./users/user_signin.html')
-            else:
-                self.redirect('/')
-        elif action == "signout":
-            Service.User.SignOut(self)
-            self.redirect('/')
-        elif action == "signup":
-            args = ['email', 'account', 'passwd', 'repasswd', 'school_id', 'student_id']
-            meta = self.get_args(args)
-            passwd = meta['passwd']
-            err, id = yield from Service.User.SignUp(meta)
-            if err:
-                self.Render('./users/user_signup.html')
-            else:
-                meta['passwd'] = passwd
-                err, id = yield from Service.User.SignIn(meta, self)
-                self.redirect('/')
-        else:
-            self.write_error(404)

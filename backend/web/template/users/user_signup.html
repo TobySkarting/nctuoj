@@ -2,7 +2,7 @@
 {% block content %}
 
 <div class="col-sm-offset-2">
-    <form class="form-horizontal" method="post">
+    <form class="form-horizontal" action="/api/user/signup/" method="post">
         <div class="form-group">
             <label class="col-sm-4 control-label">Email</label>
             <div class="col-sm-4">
@@ -36,11 +36,32 @@
         <div class="form-group">
             <label class="col-sm-4 control-label">School</label>
             <div class="col-sm-4">
-                <input type="number" class="form-control" name="school_id">
+                <input type="number" min="0" class="form-control" name="school_id">
             </div>
         </div>
         
         <button class="col-sm-offset-4 btn btn-success" type="submit">SignUp</button>
     </form>
 </div>
+<script>
+$(document).ready(function(){
+    $("form").submit(function(){
+        form = $(this);
+        $.ajax({
+            url: form.attr("action"),
+            type: form.attr("method"),
+            data: form.serialize(),
+            dataType: "json",
+            success: function(msg){
+                if(msg['status'] == 200){
+                    location.href = "/";
+                } else {
+                    bootbox.alert(msg['msg'])
+                }
+            }
+        });
+        return false;
+    });
+});
+</script>
 {% end %}

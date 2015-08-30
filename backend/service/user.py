@@ -1,13 +1,21 @@
 from service.base import BaseService
 import hashlib
 import config
-
-def _hash(pwd):
-    hpwd = hashlib.sha512(str(pwd).encode()).hexdigest() + config.PASSWORD_KEY
-    hpwd = hashlib.md5(str(pwd).encode()).hexdigest()
-    return hpwd
+import time
+import random
 
 class UserService(BaseService):
+
+    def hash_pwd(self, pwd):
+        hpwd = hashlib.sha512(str(pwd).encode()).hexdigest() + config.PASSWORD_KEY
+        hpwd = hashlib.md5(str(pwd).encode()).hexdigest()
+        return hpwd
+
+    def gen_token(self, account):
+        token = "%s"%hashlib.md5(("%s@%s"%(account, str(time.time()))).encode()).hexdigest()
+        token = 'TOKEN@%s@'%account + ''.join( _ if random.random() < 0.5 else _.upper() for _ in token)
+        return token
+
     def __init__(self, db, rs):
         super().__init__(db, rs)
         UserService.inst = self
@@ -31,7 +39,7 @@ class UserService(BaseService):
         if res: return (None, res)
         res, res_cnt = yield from self.db.execute("SELECT * FROM users where id=%s", (id,))
         if res_cnt == 0:
-            return ('Eidnotexist', None)
+            return ('ID Not Exist', None)
         res = res[0]
         res.pop("passwd")
         self.rs.set("user_basic@%s" % str(id), res)
@@ -42,11 +50,18 @@ class UserService(BaseService):
         if not res:
             res, res_cnt = yield from self.db.execute("SELECT id FROM users WHERE token=%s", (token,))
             if res_cnt == 0:
-                return ('Etokennotexist', None)
+                return ('Token Not Exist', None)
             res = res[0]['id']
             self.rs.set("user_token@%s" % token, res)
         err, data = yield from self.get_user_basic_info(res)
-        return (err, data)
+        if err: return (err, None)
+        return (None, data)
+
+    def get_user_advance_info_by_id(self, id):
+        pass
+
+    def get_user_advance_info_by_token(self, token):
+        pass
 
     def get_user_group_info(self, id):
         res = self.rs.get('user_group@%s' % str(id))
@@ -97,13 +112,13 @@ class UserService(BaseService):
         res, res_cnt = yield from self.db.execute(sql+'WHERE account = %s;', (data['account'],))
         ### check account 
         if res_cnt == 0:
-            return ('Euser', None)
+            return ('User Not Exist', None)
         print('=========================')
         print(res)
         hpwd, id = res[0]["passwd"], res[0]["id"]
         ### check passwd
-        if _hash(data['passwd']) != hpwd:
-            return ('Epasswd', None)
+        if self.hash_pwd(data['passwd']) != hpwd:
+            return ('Wrong Password', None)
         req.set_secure_cookie('id', str(id))
         return (None, str(id))
 
@@ -121,19 +136,20 @@ class UserService(BaseService):
         if err: return (err, None)
         ### check data valadation
         if data['passwd'] != data['repasswd']:
-            return ('Econfirmpwd', None)
+            return ('Confirm Two Password', None)
 
         ### check conflict
         res, res_cnt = yield from self.db.execute('SELECT id FROM users ' 
                 'WHERE account = %s OR student_id = %s', 
                 (data['account'], data['student_id'],))
         if res_cnt != 0:
-            return ('Eexist', None)
+            return ('User Exist', None)
 
         ### gen hashed passwd
-        hpasswd = _hash(data['passwd'])
+        hpasswd = self.hash_pwd(data['passwd'])
         ### gen sql query
         data['passwd'] = hpasswd
+        data['token'] = self.gen_token(data['account'])
         data.pop('repasswd')
         sql, prama = self.gen_insert_sql('users', data)
         res, res_cnt = yield from self.db.execute(sql, prama)
@@ -141,8 +157,29 @@ class UserService(BaseService):
                 'WHERE account = %s',
                 (data['account'],))
         if res_cnt == 0:
-            return ('Ecreate', None)
+            return ('Something Wrong', None)
         id = res[0]["id"]
         self.rs.delete('user_list_count')
         return (None, str(id))
+
+    def ResetToken(self, data):
+        required_args = ['account', 'passwd']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        id = data['account']['id']
+        token = data['account']['token']
+        sql = self.gen_select_sql('users', ['account', 'passwd'])
+        res, res_cnt = yield from self.db.execute(sql + ' WHERE id = %s;', (id,))
+        if res_cnt == 0:
+            return ('ID Not Exist', None)
+        hpasswd = res[0]['passwd']
+        account = res[0]['account']
+        if self.hash_pwd(data['passwd']) != hpasswd:
+            return ('Passwd Error', None)
+        self.rs.delete("user_basic@%s" % id)
+        self.rs.delete("user_token@%s" % token)
+        token = self.gen_token(account)
+        sql, prama = self.gen_update_sql('users', {'token': token})
+        res, res_cnt = yield from self.db.execute(sql + ' WHERE id = %s;', prama + (id,))
+        return (None, token)
 

@@ -9,8 +9,8 @@ import tornado.web
 import tornado.websocket
 import datetime
 import re
-from map import map_power, map_group_power, map_lang, map_visible
-
+from map import *
+import config
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -91,7 +91,7 @@ class ApiRequestHandler(RequestHandler):
             else:
                 self.account = data
         if self.request.method != 'GET':
-            if self.account['id'] == 0:
+            if self.account['id'] == 0 and self.request.uri not in config.API_URI_WITHOUT_SIGNIN:
                 self.render(403, 'Permission Denied')
         id = self.account['id']
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
