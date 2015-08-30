@@ -15,7 +15,7 @@ Check:
     problem_edit
         in group and is admin
 
-    submission
+    submission(done)
         admin: all type in group
         not admin: visible in group and public
 

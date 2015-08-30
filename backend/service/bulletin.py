@@ -34,8 +34,8 @@ class BulletinService(BaseService):
             res['id'] = 0
             return (None, res)
 
-        sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND b.id=%s"
-        res, res_cnt = yield from self.db.execute(sql, (data["id"],))
+        sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND b.id=%s AND b.group_id=%s;"
+        res, res_cnt = yield from self.db.execute(sql, (data["id"], data['group_id'],))
         if res_cnt == 0:
             return ('Error bulletin id', None)
         res = res[0]
@@ -68,12 +68,12 @@ class BulletinService(BaseService):
             if err: return (err, None)
             data.pop('id')
             sql, parma = self.gen_update_sql("bulletins", data)
-            yield from self.db.execute("%s WHERE id = %s" % (sql, str(res['id'])), parma)
+            yield from self.db.execute("%s WHERE id=%%s AND group_id=%%s;"%sql, parma+(res['id'],res['group_id'],))
             return (None, None)
 
     def delete_bulletin(self, data={}):
         required_args = ['id', 'group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        yield from self.db.execute("DELETE FROM bulletins WHERE id=%s", (data['id'],))
+        yield from self.db.execute("DELETE FROM bulletins WHERE id=%s AND group_id=%s", (data['id'],data['group_id'],))
         return (None, None)

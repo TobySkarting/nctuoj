@@ -1,5 +1,6 @@
 from req import WebRequestHandler
 from req import Service
+from map import map_group_power
 import tornado
 import math
 
@@ -54,7 +55,7 @@ class WebBulletinHandler(WebRequestHandler):
             else: self.Render('./bulletins/bulletin.html', data=data)
         elif action == "edit":
             ### check power
-            if 1 not in self.current_group_power:
+            if map_group_power['admin_manage'] not in self.current_group_power:
                 self.write_error(403)
                 return
             err, data = yield from Service.Bulletin.get_bulletin(meta)

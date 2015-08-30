@@ -138,6 +138,7 @@ class ApiProblemHandler(ApiRequestHandler):
                     err, data = yield from Service.Problem.post_problem_testdata(meta)
                     if err: self.render(500, err)
                     else: self.render()
+            else: self.render(404)
 
     
     @tornado.gen.coroutine
@@ -160,3 +161,4 @@ class ApiProblemHandler(ApiRequestHandler):
                     err, data = yield from Service.Problem.delete_problem_testdata(meta)
                     if err: self.render(500, err)
                     else: self.render()
+            else: self.render(404)

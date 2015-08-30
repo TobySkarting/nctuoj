@@ -64,7 +64,7 @@ class WebProblemEditHandler(WebRequestHandler):
         meta = {}
         meta['id'] = id
         meta['group_id'] = self.current_group
-        if 1 not in self.current_group_power:
+        if map_group_power['admin_manage'] not in self.current_group_power:
             self.write_error(403)
             return
         err, data = yield from Service.Problem.get_problem(meta)
