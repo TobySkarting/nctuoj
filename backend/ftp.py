@@ -46,3 +46,5 @@ if __name__ == "__main__":
     action = sys.argv[1]
     if action.lower() == "upload":
         ftp.put(sys.argv[2], sys.argv[3])
+    elif action.lower() == "download":
+        ftp.get(sys.argv[2], sys.argv[3])

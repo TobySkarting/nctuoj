@@ -64,7 +64,14 @@ class SubmissionService(BaseService):
         if res_cnt == 0:
             return ('No Submission ID', None)
         res = res[0]
-        file_path = './../data/submissions/%s/%s' % (res['id'], res['file_name'])
+        download = True
+        if download:
+            folder = './../data/submissions/%s/' % str(res['id'])
+            remote_folder = './data/submissions/%s/' % str(res['id'])
+            file_path = '%s/%s' % (folder, res['file_name'])
+            remote_path = '%s/%s' % (remote_folder, res['file_name'])
+            yield from self.ftp.download(remote_path, local_path)
+
         with open(file_path) as f:
             res['code'] = f.read()
         res['code_line'] = len(open(file_path).readlines())
