@@ -2,6 +2,7 @@ from service.base import BaseService
 from req import Service
 from map import map_default_file_name
 from map import map_group_power
+import re
 import shutil
 import os
 import config
@@ -93,6 +94,8 @@ class SubmissionService(BaseService):
             meta['file_name'] = data['code_file']['filename']
             meta['length'] = len(data['code_file']['body'])
         else:
+            if re.match('[\w\.]+', data['plain_file_name']).group(0) != data['plain_file_name']:
+                data['plain_file_name'] = ''
             if data['plain_file_name'] != '':
                 meta['file_name'] = data['plain_file_name']
             else:
