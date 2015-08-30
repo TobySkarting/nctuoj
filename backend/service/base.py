@@ -7,11 +7,12 @@ class BaseService:
         class FTP():
             def upload(self, local, remote):
                 child = subprocess.Popen(['python3', 'ftp.py', 'upload', local, remote])
-                while child.poll() == None:
+                while child.poll() is None:
                     yield tornado.gen.Task(tornado.ioloop.IOLoop.instance().add_timeout, time.time() + 0.01)
+
             def download(self, remote, local):
                 child = subprocess.Popen(['python3', 'ftp.py', 'download', remote, local])
-                while child.poll() == None:
+                while child.poll() is None:
                     yield tornado.gen.Task(tornado.ioloop.IOLoop.instance().add_timeout, time.time() + 0.01)
         self.ftp = FTP()
         self.db = db
