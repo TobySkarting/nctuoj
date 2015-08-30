@@ -47,7 +47,7 @@ class ProblemService(BaseService):
         return (None, res[0]['count'])
 
     def get_problem(self, data={}):
-        required_args = ['id']
+        required_args = ['id', 'group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
 
@@ -99,6 +99,7 @@ class ProblemService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         err, data = yield from self.get_problem(data)
+        if err: return (err, None)
         self.reset_rs_problem_count(data['group_id'])
         yield from self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id']),))
         yield from self.db.execute("DELETE FROM testdata WHERE problem_id=%s", (int(data['id']),))
