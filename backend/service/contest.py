@@ -1,6 +1,7 @@
 from service.base import BaseService
 import os
 import config
+import datetime
 
 class ContestService(BaseService):
     def __init__(self, db, rs):
@@ -22,7 +23,7 @@ class ContestService(BaseService):
         if int(data['group_id']) == 1:
             sql += " (c.group_id=%s OR c.visible=2) "
         else:
-            sql += " (p.group_id=%s) "
+            sql += " (c.group_id=%s) "
         sql += " ORDER BY c.id limit %s OFFSET %s "
 
         res, res_cnt = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
@@ -45,3 +46,65 @@ class ContestService(BaseService):
                 % (str(data['group_id'])), res[0]['count'])
         return (None, res[0]['count'])
 
+    def get_contest(self, data={}):
+        required_args = ['id', 'group_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        ### new contest
+        if int(data['id']) == 0:
+            col = ['id', 'group_id', 'visible', 'title', 'description', 'setter_user_id', 'type']
+            res = { x: '' for x in col }
+            col = ['register_start', 'register_end', 'start', 'end']
+            res.update({ x: datetime.datetime.now() for x in col })
+            res['visible'] = 0
+            res['id'] = 0
+            return (None, res)
+        
+        res = self.rs.get('contest@%s'%str(data['id']))
+        if not res:
+            res, res_cnt = yield from self.db.execute('SELECT c.*, u.account as setter_user FROM contests as c, users as u WHERE p.setter_user_id=u.id AND p.id=%s AND p.group_id=%s;', (data['id'], data['group_id'],))
+            if res_cnt == 0:
+                return ('No Contest ID', None)
+            res = res[0]
+            self.rs.set('contest@%s'%str(data['id']), res)
+        err, res['problem'] = yield from self.get_contest_problem_list(data)
+        return (None, res)
+
+    def get_contest_problem_list(self, data={}):
+        required_args = ['id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        res = self.rs.get('contest@%s@problem'%str(data['id']))
+        if res: return (None, res)
+        res, res_cnt = yield from self.db.execute("""
+        SELECT p.* FROM 
+            map_contest_problem as p, 
+            (SELECT id FROM map_contest_problem WHERE contest_id=%s ORDER BY id) as p2 
+        WHERE p.id=p2.id;
+        """, (data['id'],))
+        self.rs.set('contest@%s@problem'%str(data['id']), res)
+        return (None, res)
+
+    def post_contest(self, data={}):
+        required_args = ['id', 'group_id', 'visible', 'setter_user_id', 'title', 'description', 'register_start', 'register_end', 'start', 'end', 'type']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        self.rs.delete('contest_list_count@%s' 
+                % (str(data['group_id'])))
+        if int(data['id']) == 0:
+            data.pop('id')
+            sql, param = self.gen_insert_sql('contests', data)
+            insert_id = (yield from self.db.execute(sql, param))[0][0]['id']
+            return (None, str(insert_id))
+        else:
+            err, res = yield from self.get_contest(data)
+            if err: return (err, None)
+            data.pop('id')
+            sql, param = self.gen_update_sql('contests', data)
+            yield from self.db.execute(sql+' WHERE id=%s AND group_id=%s;', param+(res['id'], res['group_id'],))
+            self.rs.delete('contest@%s'%str(res['id']))
+            return (None, None)
+
+
+    def delete_contest(self, data={}):
+        pass

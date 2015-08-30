@@ -255,14 +255,14 @@ CREATE TRIGGER contests_update_row BEFORE UPDATE ON contests FOR EACH ROW EXECUT
 CREATE INDEX ON contests (group_id);
 INSERT INTO contests (group_id, setter_user_id, title, description) values (1, 1, 'test', 'contest');
 
-DROP TABLE IF EXISTS map_contest_problem 
+DROP TABLE IF EXISTS map_contest_problem;
 CREATE TABLE map_contest_problem (
     id              serial          NOT NULL    PRIMARY KEY,
     contest_id      integer         NOT NULL,
     problem_id      integer         NOT NULL,
-    score           varchar(255)    NOT NULL,
+    score           integer         NOT NULL DEFAULT 100,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
-    updated_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER map_conteset_problem_update_row BEFORE UPDATE ON map_contest_problem FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON map_contest_problem (contest_id);

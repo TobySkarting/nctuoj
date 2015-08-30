@@ -60,8 +60,8 @@ class ProblemService(BaseService):
 
         res = self.rs.get('problem@%s' % str(data['id']))
         if not res:
-            sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
-            res, res_cnt = yield from self.db.execute(sql, (data["id"],))
+            sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s AND p.group_id=%s"
+            res, res_cnt = yield from self.db.execute(sql, (data["id"], data['group_id'],))
             if res_cnt == 0:
                 return ('No problem id', None)
             res = res[0]
@@ -137,7 +137,7 @@ class ProblemService(BaseService):
         if err: return (err, None)
         res = self.rs.get('problem@%s@testdata' % str(data['id']))
         if res: return (None, res)
-        res, res_cnt = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id'],))
+        res, res_cnt = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s ORDER BY id ASC) as t2 where t.id=t2.id;", (data['id'],))
         self.rs.set('problem@%s@testdata' % str(data['id']), res)
         return (None, res)
         
