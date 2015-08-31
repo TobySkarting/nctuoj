@@ -63,7 +63,7 @@ class ContestService(BaseService):
         
         res = self.rs.get('contest@%s'%str(data['id']))
         if not res:
-            res, res_cnt = yield from self.db.execute('SELECT c.*, u.account as setter_user FROM contests as c, users as u WHERE p.setter_user_id=u.id AND p.id=%s AND p.group_id=%s;', (data['id'], data['group_id'],))
+            res, res_cnt = yield from self.db.execute('SELECT c.*, u.account as setter_user FROM contests as c, users as u WHERE c.setter_user_id=u.id AND c.id=%s AND c.group_id=%s;', (data['id'], data['group_id'],))
             if res_cnt == 0:
                 return ('No Contest ID', None)
             res = res[0]
@@ -113,9 +113,9 @@ class ContestService(BaseService):
         err, res = yield from Service.Problem.get_problem({'id': data['problem_id'], 'group_id': data['group_id']})
         if err: return (err, None)
         self.rs.delete('contest@%s@problem'%str(data['contest_id']))
+        data['score'] = int(data['score']) if data['score'] != '' else 100
         if int(data['id']) == 0:
             data.pop('id')
-            data['score'] = int(data['score']) if data['score'] != '' else 100
             sql, param = self.gen_insert_sql('map_contest_problem', data)
             insert_id = (yield from self.db.execute(sql, param))[0][0]['id']
             return (None, str(insert_id))
@@ -140,4 +140,4 @@ class ContestService(BaseService):
         yield from self.db.execute('DELETE FROM map_contest_problem WHERE contest_id=%s;', (res['id'],))
         self.rs.delete('contest@%s'%str(res['id']))
         self.rs.delete('contest@%s@problem'%str(res['id']))
-        pass
+        return (None, None)

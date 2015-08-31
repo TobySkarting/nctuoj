@@ -44,9 +44,9 @@ class WebProblemHandler(WebRequestHandler):
         meta['group_id'] = self.current_group
         err, data = yield from Service.Problem.get_problem(meta)
         if err:
-            self.write_error(404)
+            self.write_error(500)
             return
-        if int(meta['group_id'])==1 and int(data['visible']) == 2:
+        if int(meta['group_id']) == 1 and int(data['visible']) == 2:
             pass
         elif int(data['group_id']) == int(meta['group_id']) and (map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) != 0):
             pass
@@ -57,6 +57,8 @@ class WebProblemHandler(WebRequestHandler):
             self.Render('./problems/problem.html', data=data)
         elif action == "submit":
             self.Render('./problems/problem_submit.html', data=data)
+        else:
+            self.write_error(404)
 
 class WebProblemEditHandler(WebRequestHandler):
     @tornado.gen.coroutine
