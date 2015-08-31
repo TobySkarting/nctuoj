@@ -10,9 +10,10 @@
     <table class="table table-hover table-striped">
         <thead>
             <tr>
+                <th>#</th>
                 <th>Title</th>
-                <th>Register<br>Time</th>
-                <th>Contest<br>Time</th>
+                <th>Register Time</th>
+                <th>Contest Time</th>
                 <th>Type</th>
                 <th>Register</th>
             </tr>
@@ -20,7 +21,19 @@
         <tbody>
             {% for x in data %}
                 <tr>
-                    <td>{{x['title']}}</td>
+                    <td>
+                        {% if (map_group_power['admin_manage'] in current_group_power) or int(x['visible']) %}
+                            <a href='/group/{{current_group}}/contests/{{x['id']}}/'>{{x['id']}}</a>
+                        {% else %}
+                            {{x['id']}}
+                        {% end %}
+                    </td>
+                    <td>
+                        {% if (map_group_power['admin_manage'] in current_group_power) or int(x['visible']) %}
+                            <a href='/group/{{current_group}}/problems/{{x['id']}}/'>{{x['title']}}</a>
+                        {% else %}
+                        {% end %}
+                    </td>
                     <td>{{x['register_start']}}<br>{{x['register_end']}}</td>
                     <td>{{x['start']}}<br>{{x['end']}}</td>
 

@@ -251,6 +251,7 @@ CREATE TABLE contests(
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
+ALTER SEQUENCE contests_id_seq RESTART WITH 1001;
 CREATE TRIGGER contests_update_row BEFORE UPDATE ON contests FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON contests (group_id);
 INSERT INTO contests (group_id, setter_user_id, title, description) values (1, 1, 'test', 'contest');
