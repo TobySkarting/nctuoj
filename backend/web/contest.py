@@ -2,6 +2,7 @@ from req import WebRequestHandler
 from req import Service
 import tornado
 import math
+from map import *
 
 
 class WebContestsHandler(WebRequestHandler):
@@ -37,6 +38,29 @@ class WebContestsHandler(WebRequestHandler):
         self.Render('./contests/contests.html', data=data, page=page)
 
 class WebContestHandler(WebRequestHandler):
+    def check_view(self, meta):
+        err, data = yield from Service.Contest.get_contest(meta)
+        if err:
+            self.write_error(500)
+            return False
+        print('WPOWER', self.current_group_power)
+        if int(data['group_id']) == 1 and int(data['visible']) == 2:
+            return True
+        if map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) != 0:
+            return True
+        self.write_error(403)
+        return False
+
+    @tornado.gen.coroutine        
     def get(self, id=None, action=None):
-        pass
+        meta = {}
+        meta['id'] = id
+        meta['group_id'] = self.current_group
+        if not (yield from self.check_view(meta)):
+            return
+        err, data = yield from Service.Contest.get_contest(meta)
+        if action == None:
+            self.Render('./contests/contest.html', data=data)
+        else:
+            self.write_error(404)
 

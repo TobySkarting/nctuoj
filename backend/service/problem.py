@@ -47,7 +47,7 @@ class ProblemService(BaseService):
         return (None, res[0]['count'])
 
     def get_problem(self, data={}):
-        required_args = ['id']
+        required_args = ['id', 'group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
 
@@ -60,8 +60,8 @@ class ProblemService(BaseService):
 
         res = self.rs.get('problem@%s' % str(data['id']))
         if not res:
-            sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
-            res, res_cnt = yield from self.db.execute(sql, (data["id"],))
+            sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s AND p.group_id=%s"
+            res, res_cnt = yield from self.db.execute(sql, (data["id"], data['group_id'],))
             if res_cnt == 0:
                 return ('No problem id', None)
             res = res[0]
@@ -99,6 +99,7 @@ class ProblemService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         err, data = yield from self.get_problem(data)
+        if err: return (err, None)
         self.reset_rs_problem_count(data['group_id'])
         yield from self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id']),))
         yield from self.db.execute("DELETE FROM testdata WHERE problem_id=%s", (int(data['id']),))
@@ -137,7 +138,7 @@ class ProblemService(BaseService):
         if err: return (err, None)
         res = self.rs.get('problem@%s@testdata' % str(data['id']))
         if res: return (None, res)
-        res, res_cnt = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC", (data['id'],))
+        res, res_cnt = yield from self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s ORDER BY id ASC) as t2 where t.id=t2.id;", (data['id'],))
         self.rs.set('problem@%s@testdata' % str(data['id']), res)
         return (None, res)
         

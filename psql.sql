@@ -260,7 +260,7 @@ CREATE TABLE map_contest_problem (
     id              serial          NOT NULL    PRIMARY KEY,
     contest_id      integer         NOT NULL,
     problem_id      integer         NOT NULL,
-    score           varchar(255)    NOT NULL,
+    score           integer         NOT NULL DEFAULT 100,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );

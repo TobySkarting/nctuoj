@@ -32,6 +32,8 @@ from api.bulletin       import ApiBulletinsHandler
 from api.bulletin       import ApiBulletinHandler
 from api.problem        import ApiProblemsHandler
 from api.problem        import ApiProblemHandler
+from api.contest        import ApiContestsHandler
+from api.contest        import ApiContestHandler
 from api.execute        import ApiExecutesHandler
 from api.execute        import ApiExecuteHandler
 from api.time           import ApiTimeHandler
@@ -135,6 +137,9 @@ if __name__ == '__main__':
         ### /api/group/\d+/problems/(\d+)/(testdata)/
         ('/api/group/\d+/problems/(\d+)/(\w*)/(\d+)/',                  ApiProblemHandler),
         ### /api/group/\d+/problems/(\d+)/(testdata)/(\d+)/'
+        ('/api/group/\d+/contests/',                                    ApiContestsHandler),
+        ('/api/group/\d+/contests/(\d+)/',                              ApiContestHandler),
+        ('/api/group/\d+/contests/(\d+)/(\w*)/',                        ApiContestHandler),
         ('/api/time/',                                                  ApiTimeHandler),
 
         ('/api/executes/',                                              ApiExecutesHandler),
@@ -155,6 +160,7 @@ if __name__ == '__main__':
         ('/group/\d+/submissions/(\d+)/',                               WebSubmissionHandler),
 
         ('/group/\d+/contests/',                                        WebContestsHandler),
+        ('/group/\d+/contests/(\d+)/',                                  WebContestHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/',                            WebContestHandler),
         
         ('/executes/',                                                  WebExecuteTypesHandler),
