@@ -227,13 +227,14 @@ DROP TABLE IF EXISTS verdicts;
 CREATE TABLE verdicts(
     id              serial          NOT NULL    PRIMARY KEY,
     title           varchar(255)    ,
-    description     text            ,
     execute_type_id integer         NOT NULL    DEFAULT 0,
     file_name       varchar(255)    NOT NULL,
+    setter_user_id  integer         NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER verdicts_update_row BEFORE UPDATE ON verdicts FOR EACH ROW EXECUTE PROCEDURE updated_row();
+INSERT INTO verdicts (title, execute_type_id, file_name, setter_user_id) VALUES ('Token By Character(Ignore Lines)', 2, 'main.cpp', 1);
 
 DROP TABLE IF EXISTS contests;
 CREATE TABLE contests(

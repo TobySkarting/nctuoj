@@ -8,7 +8,7 @@ class WebVerdictTypesHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self):
         err, data = yield from Service.Verdict.get_verdict_list()
-        self.Render('./verdict/verdicts.html', data=data)
+        self.Render('./verdicts/verdicts.html', data=data)
         pass
 
 class WebVerdictTypeHandler(WebRequestHandler):

@@ -1,0 +1,35 @@
+{% extends './../frame.html' %}
+{% block content %}
+
+<a class="btn btn-default" href="/executes/" style="margin-bottom: 12px;">Back to List</a>
+{% if map_power['execute_manage'] in account['power'] %}
+    <a class="btn btn-default" href="/executes/{{data['id']}}/edit/" style="margin-bottom: 12px;">Edit</a>
+{% end %}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Lang: {{map_lang[data['lang']]}}
+            </div>
+            <div class="panel-body">
+                {% raw data['description'] %}
+            </div>
+            <table class="table table-hover table-striped table-condensed">
+                <thead>
+                    <th>#</th>
+                    <th>Command</th>
+                </thead>
+                <tbody>
+                    {% for x in data['steps'] %}
+                        <tr>
+                            <td>{{x['step']}}</td>
+                            <td>{{x['command']}}</td>
+                        </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% end %}

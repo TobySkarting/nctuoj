@@ -1,0 +1,27 @@
+{% extends './../frame.html' %}
+{% block content %}
+{% if map_power['execute_manage'] in account['power'] %}
+    <a class="btn btn-default" href="/executes/0/edit/" style="margin-bottom: 12px;">New</a>
+{% end %}
+{{data}}
+<table class="table table-hover table-striped table-condensed">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>View</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for x in data %}
+            <tr>
+                <td>{{x['title']}}</td>
+                <td><a class='btn btn-xs btn-default'>View</a></td>
+                <td>{{x['created_at']}}</td>
+            </tr>
+        {% end %}
+    </tbody>
+</table>
+        
+
+{% end %}

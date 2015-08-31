@@ -192,7 +192,7 @@ if __name__ == '__main__':
     Service.Bulletin =      BulletinService(db, rs)
     Service.Execute =       ExecuteService(db, rs)
     Service.Contest =       ContestService(db, rs)
-    Service.Verdict =       ContestService(db, rs)
+    Service.Verdict =       VerdictService(db, rs)
     print('Server Started')
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)

@@ -10,7 +10,7 @@ class VerdictService(BaseService):
     def get_verdict_list(self, data={}):
         res = self.rs.get('verdict_list')
         if res: return (None, res)
-        sql = "SELECT v.*, u.account as setter_user FROM verdicts as e, users as u WHERE e.setter_user_id=u.id order by e.priority"
+        sql = "SELECT v.*, u.account as setter_user FROM verdicts as v, users as u WHERE v.setter_user_id=u.id"
         res, res_cnt = yield from self.db.execute(sql)
         self.rs.set('verdict_list', res)
         return (None, res)

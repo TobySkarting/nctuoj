@@ -1,0 +1,75 @@
+{% extends './../frame.html' %}
+{% block content %}
+{% if int(data['id']) == 0 %}
+    <a class="btn btn-default" href="/executes/" style="margin-bottom: 12px;">Back</a>
+{% else %}
+    <a class="btn btn-default" href="/executes/{{data['id']}}/" style="margin-bottom: 12px;">Back</a>
+{% end %}
+
+<form method="post" action="/api/executes/{{data['id']}}/">
+    <input type="hidden" name="token" value="{{account['token']}}">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="edit panel panel-default">
+                <div class="panel-heading">
+                    Lang: 
+                    <select class="select" name="lang">
+                        {% for x in map_lang %}
+                            <option value={{x}}>{{map_lang[x]}}</option>
+                        {% end %}
+                    </select>
+                </div>
+                <div class="panel-body edit"><textarea class="form-control" rows=5 name="description">{% raw data['description'] %}</textarea></div>
+                <table class="table table-hover table-striped table-condensed">
+                    <thead>
+                        <th class="col-md-8">Command</th>
+                        <th class="col-md-2">Delete</th>
+                    </thead>
+                    <tbody>
+                        {% for x in data['steps'] %}
+                            <tr>
+                                <td><input class="form-control" name="command[]" value="{{x['command']}}"></td>
+                                <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div</td>
+                            </tr>
+                        {% end %}
+                    </tbody>
+                </table>
+                <div onclick="$('tbody:not(.template)').append($('.execute.step.template').html());" class="btn btn-success">New</div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+<table class="hidden">
+    <tbody class="template execute step">
+        <tr>
+            <td><input class="form-control" name="command[]" value=""></td>
+            <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div></td>
+        </tr>
+    </tbody>
+</table>
+<script>
+$( document ).ready(function(){
+    $(".select").selectpicker();
+    $(".select").selectpicker('val', {{data['lang']}});
+    $("form").submit(function(){
+        form = $(this);
+        $.ajax({
+            url: form.attr("action"),
+            type: form.attr("method"),
+            data: form.serialize(),
+            dataType: "json",
+            success: function(msg){
+                if(msg['status'] == 200){
+                    location.href = '/executes/'+msg['msg']['id']+'/';
+                } else {
+                    bootbox.alert(msg['msg']);
+                }
+            }
+        });
+        return false;
+    });
+});
+</script>
+
+{% end %}
