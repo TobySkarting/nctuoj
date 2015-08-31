@@ -64,3 +64,7 @@ class WebContestHandler(WebRequestHandler):
         else:
             self.write_error(404)
 
+class WebContestEditHandler(WebRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, id, action=None):
+        pass
