@@ -157,6 +157,7 @@ if __name__ == '__main__':
         ### /group/\d+/problems/\d+/tag/edit/
         ### /group/\d+/problems/\d+/execute/edit/
         ### /group/\d+/problems/\d+/testdata/edit/
+
         ('/group/\d+/submissions/',                                     WebSubmissionsHandler),
         ('/group/\d+/submissions/(\d+)/',                               WebSubmissionHandler),
 
@@ -164,6 +165,7 @@ if __name__ == '__main__':
         ('/group/\d+/contests/(\d+)/',                                  WebContestHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/',                            WebContestHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/edit/',                       WebContestEditHandler),
+        ### TODO ('/group/\d+/contests/(\d+)/problems/(\d+)/',                   WebContestProblemHandler),
         
         ('/executes/',                                                  WebExecuteTypesHandler),
         ('/executes/(\d+)/',                                            WebExecuteTypeHandler),

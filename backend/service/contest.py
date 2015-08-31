@@ -78,10 +78,9 @@ class ContestService(BaseService):
         res = self.rs.get('contest@%s@problem'%str(data['id']))
         if res: return (None, res)
         res, res_cnt = yield from self.db.execute("""
-        SELECT p.* FROM 
-        map_contest_problem as p, 
-        (SELECT id FROM map_contest_problem WHERE contest_id=%s ORDER BY problem_id ASC) as p2  
-        WHERE p.id=p2.id;
+        SELECT p.id, p.title FROM 
+        map_contest_problem as m, problems as p
+        WHERE p.id=m.problem_id and m.contest_id=%s;
         """, (data['id'],))
         self.rs.set('contest@%s@problem'%str(data['id']), res)
         return (None, res)

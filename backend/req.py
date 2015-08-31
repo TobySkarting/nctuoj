@@ -159,6 +159,9 @@ class WebRequestHandler(RequestHandler):
         if not in_group and self.current_group != 0:
             self.write_error(403)
             return
+
+
+        ### To check in contest
         
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
