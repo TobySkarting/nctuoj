@@ -86,7 +86,7 @@ class ContestService(BaseService):
         return (None, res)
 
     def post_contest(self, data={}):
-        required_args = ['id', 'group_id', 'visible', 'setter_user_id', 'title', 'description', 'register_start', 'register_end', 'start', 'end', 'type']
+        required_args = ['id', 'group_id', 'setter_user_id', 'visible', 'title', 'description', 'register_start', 'register_end', 'start', 'end', 'type']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         self.rs.delete('contest_list_count@%s' 

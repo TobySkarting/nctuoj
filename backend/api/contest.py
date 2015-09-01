@@ -54,5 +54,27 @@ class ApiContestHandler(ApiRequestHandler):
 
 
     @tornado.gen.coroutine
-    def post(self, id, action=None):
+    def post(self, id):
+        check_meta = {}
+        check_meta['id'] = id
+        check_meta['group_id'] = self.current_group
+        if not (yield from self.check_edit(check_meta)):
+            return
+        args = ['visible', 'title', 'description', 'register_start', 'register_end', 'start', 'end', 'type']
+        meta = self.get_args(args)
+        meta['id'] = id
+        meta['group_id'] = self.current_group
+        meta['setter_user_id'] = self.account['id']
+        err, data = yield from Service.Contest.post_contest(meta)
+        if err: self.render(500, err)
+        else: self.render(200, data)
+
+class ApiContestProblemsHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, id):
+        pass
+
+class ApiContestProblemHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, contest_id, problem_id):
         pass
