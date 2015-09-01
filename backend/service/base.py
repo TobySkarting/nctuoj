@@ -32,10 +32,10 @@ class BaseService:
         data(dict)
         return sql(str), prama(tuple)
         '''
-        sql1 = ''.join( ' %s,'%col for col in data )[:-1]
+        sql1 = ''.join( ' "%s",'%col for col in data )[:-1]
         sql2 = (' %s,'*len(data))[:-1]
         prama = tuple( val for val in data.values() )
-        sql = 'INSERT INTO %s (%s) VALUES(%s) RETURNING id;' % (tablename, sql1, sql2)
+        sql = 'INSERT INTO "%s" (%s) VALUES(%s) RETURNING id;' % (tablename, sql1, sql2)
         return (sql, prama)
     
     def gen_update_sql(self, tablename, data):
@@ -44,9 +44,9 @@ class BaseService:
         data(dict)
         return sql(str), prama(tuple)
         '''
-        sql = ''.join(' %s = %%s,'%col for col in data)[:-1]
+        sql = ''.join(' "%s" = %%s,'%col for col in data)[:-1]
         prama = tuple( val for val in data.values() )
-        sql = 'UPDATE %s SET %s '%(tablename, sql)
+        sql = 'UPDATE "%s" SET %s '%(tablename, sql)
         return (sql, prama)
 
     def gen_select_sql(self, tablename, data):
@@ -55,6 +55,6 @@ class BaseService:
         data(list)
         return sql(str)
         '''
-        sql = ''.join(' %s,'%col for col in data)[:-1]
-        sql = 'SELECT %s FROM %s '%(sql, tablename)
+        sql = ''.join(' "%s",'%col for col in data)[:-1]
+        sql = 'SELECT "%s" FROM %s '%(sql, tablename)
         return sql
