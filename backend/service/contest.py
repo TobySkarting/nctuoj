@@ -72,18 +72,8 @@ class ContestService(BaseService):
         return (None, res)
 
     def get_contest_problem_list(self, data={}):
-        required_args = ['id']
-        err = self.check_required_args(required_args, data)
-        if err: return (err, None)
-        res = self.rs.get('contest@%s@problem'%str(data['id']))
-        if res: return (None, res)
-        res, res_cnt = yield from self.db.execute("""
-        SELECT p.id, p.title FROM 
-        map_contest_problem as m, problems as p
-        WHERE p.id=m.problem_id and m.contest_id=%s;
-        """, (data['id'],))
-        self.rs.set('contest@%s@problem'%str(data['id']), res)
-        return (None, res)
+        yield from self.db.execute('SELECT * FROM contests;')
+        return (None, None)
 
     def post_contest(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id', 'visible', 'title', 'description', 'register_start', 'register_end', 'start', 'end', 'type']
@@ -103,33 +93,10 @@ class ContestService(BaseService):
             sql, param = self.gen_update_sql('contests', data)
             yield from self.db.execute(sql+' WHERE id=%s AND group_id=%s;', param+(res['id'], res['group_id'],))
             self.rs.delete('contest@%s'%str(res['id']))
-            return (None, None)
+            return (None, res['id'])
 
     def post_contest_problem(self, data={}):
-        required_args = ['id', 'contest_id', 'problem_id', 'score']
-        err = self.check_required_args(required_args, data)
-        if err: return (err, None)
-        err, res = yield from Service.Problem.get_problem({'id': data['problem_id'], 'group_id': data['group_id']})
-        if err: return (err, None)
-        self.rs.delete('contest@%s@problem'%str(data['contest_id']))
-        data['score'] = int(data['score']) if data['score'] != '' else 100
-        if int(data['id']) == 0:
-            data.pop('id')
-            sql, param = self.gen_insert_sql('map_contest_problem', data)
-            insert_id = (yield from self.db.execute(sql, param))[0][0]['id']
-            return (None, str(insert_id))
-        else:
-            sql, param = self.gen_update_sql('map_contest_problem', data)
-            yield from self.db.execute(sql+' WHERE id=%s;', param+(data['id'],))
-            return (None, None)
-
-    def delete_contest_problem(self, data):
-        required_args = ['id', 'contest_id']
-        err = self.check_required_args(required_args, data)
-        if err: return (err, None)
-        self.rs.delete('contest@%s@problem'%str(data['contest_id']))
-        yield from self.db.execute('DELETE FROM map_contest_problem WHERE id=%s;', (data['id'],))
-        return (None, None)
+        pass
 
     def delete_contest(self, data={}):
         required_args = ['id', 'group_id']

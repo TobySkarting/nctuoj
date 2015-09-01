@@ -16,7 +16,7 @@ class ApiContestHandler(ApiRequestHandler):
     def check_view(self, meta):
         err, data = yield from Service.Contest.get_contest(meta)
         if err:
-            self.render(500, data)
+            self.render(500, err)
             return False
         if int(data['group_id']) == 1 and int(data['visible']) == 2:
             return True
@@ -34,7 +34,7 @@ class ApiContestHandler(ApiRequestHandler):
         if int(meta['id']) != 0:
             err, data = yield from Service.Contest.get_contest(meta)
             if err:
-                self.render(500, data)
+                self.render(500, err)
                 return False
         return True
 
@@ -68,6 +68,20 @@ class ApiContestHandler(ApiRequestHandler):
         err, data = yield from Service.Contest.post_contest(meta)
         if err: self.render(500, err)
         else: self.render(200, data)
+        return
+
+    @tornado.gen.coroutine
+    def delete(self, id):
+        check_meta = {}
+        check_meta['id'] = id
+        check_meta['group_id'] = self.current_group
+        if not (yield from self.check_edit(check_meta)):
+            return
+        meta = check_meta
+        err, res = yield from Service.Contest.delete_contest(meta)
+        if err: self.render(500, err)
+        else: self.render(200,)
+        return
 
 class ApiContestProblemsHandler(ApiRequestHandler):
     @tornado.gen.coroutine
