@@ -56,5 +56,5 @@ class BaseService:
         return sql(str)
         '''
         sql = ''.join(' "%s",'%col for col in data)[:-1]
-        sql = 'SELECT "%s" FROM %s '%(sql, tablename)
+        sql = 'SELECT %s FROM "%s" '%(sql, tablename)
         return sql
