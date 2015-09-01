@@ -35,7 +35,6 @@ from api.problem        import ApiProblemHandler
 from api.contest        import ApiContestsHandler
 from api.contest        import ApiContestHandler
 from api.contest        import ApiContestProblemsHandler
-from api.contest        import ApiContestProblemHandler
 from api.execute        import ApiExecutesHandler
 from api.execute        import ApiExecuteHandler
 from api.time           import ApiTimeHandler
@@ -145,7 +144,6 @@ if __name__ == '__main__':
         ### TODO
         ('/api/group/\d+/contests/(\d+)/',                              ApiContestHandler),
         ('/api/group/\d+/contests/(\d+)/problems/',                     ApiContestProblemsHandler),
-        ('/api/group/\d+/contests/(\d+)/problems/(\d+)/',               ApiContestProblemHandler),
         ('/api/time/',                                                  ApiTimeHandler),
 
         ('/api/executes/',                                              ApiExecutesHandler),

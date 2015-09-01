@@ -22,8 +22,6 @@ class ApiContestHandler(ApiRequestHandler):
             return True
         if map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) != 0:
             return True
-        print('POWER', self.current_group_power)
-        print('')
         self.render(403, 'Permission Denied')
         return False
 
@@ -84,11 +82,54 @@ class ApiContestHandler(ApiRequestHandler):
         return
 
 class ApiContestProblemsHandler(ApiRequestHandler):
+    def check_view(self, meta):
+        err, data = yield from Service.Contest.get_contest(meta)
+        if err:
+            self.render(500, err)
+            return False
+        if int(data['group_id']) == 1 and int(data['visible']) == 2:
+            return True
+        if map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) != 0:
+            return True
+        self.render(403, 'Permission Denied')
+        return False
+
+    def check_edit(self, meta):
+        if map_group_power['admin_manage'] not in self.current_group_power:
+            self.render(403, 'Permission Denied')
+            return False
+        if int(meta['id']) != 0:
+            err, data = yield from Service.Contest.get_contest(meta)
+            if err:
+                self.render(500, err)
+                return False
+        return True
     @tornado.gen.coroutine
     def get(self, id):
-        pass
+        meta = {}
+        meta['id'] = id
+        meta['group_id'] = self.current_group
+        if not (yield from self.check_view(meta)):
+            return
+        err, res = yield from Service.Contest.get_contest_problem_list(meta)
+        if err: self.render(500, err)
+        else: self.render(200, res)
+        return
 
-class ApiContestProblemHandler(ApiRequestHandler):
     @tornado.gen.coroutine
-    def get(self, contest_id, problem_id):
-        pass
+    def post(self, id):
+        print('POST')
+        check_meta = {}
+        check_meta['id'] = id
+        check_meta['group_id'] = self.current_group
+        if not (yield from self.check_edit(check_meta)):
+            return
+        args = ['problems[]', 'scores[]']
+        meta = self.get_args(args)
+        meta['id'] = id
+        meta['group_id'] = self.current_group
+        err, res = yield from Service.Contest.post_contest_problem(meta)
+        if err: self.render(500, err)
+        else: self.render(200, res)
+        return
+

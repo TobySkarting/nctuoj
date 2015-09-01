@@ -72,8 +72,10 @@ class ContestService(BaseService):
         return (None, res)
 
     def get_contest_problem_list(self, data={}):
-        res, res_cnt = yield from self.db.execute('SELECT p.id, p.title FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s;', (data['id'],))
-        print(res)
+        required_args = ['id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        res, res_cnt = yield from self.db.execute('SELECT p.id, p.title FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s ORDER BY m.id ASC;', (data['id'],))
         return (None, res)
 
     def post_contest(self, data={}):
@@ -97,7 +99,21 @@ class ContestService(BaseService):
             return (None, res['id'])
 
     def post_contest_problem(self, data={}):
-        pass
+        required_args = ['id', 'problems', 'scores']
+        err = self.check_required_args(required_args, data)
+        print('ERR', err)
+        if err: return (err, None)
+        self.rs.delete('contest@%sproblem'%str(data['id']))
+        yield from self.db.execute('DELETE FROM map_contest_problem WHERE contest_id=%s;', (data['id'],))
+        print('XXX', data['problems'], data['scores'])
+        for problem, score in zip(data['problems'], data['scores']):
+            meta = {}
+            meta['contest_id'] = data['id']
+            meta['problem_id'] = problem
+            meta['score'] = score
+            sql, param = self.gen_insert_sql('map_contest_problem', meta)
+            yield from self.db.execute(sql, param)
+        return (None, data['id'])
 
     def delete_contest(self, data={}):
         required_args = ['id', 'group_id']
