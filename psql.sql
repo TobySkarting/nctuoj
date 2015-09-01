@@ -262,7 +262,7 @@ CREATE TABLE map_contest_problem (
     id              serial          NOT NULL    PRIMARY KEY,
     contest_id      integer         NOT NULL,
     problem_id      integer         NOT NULL,
-    score           varchar(255)    NOT NULL,
+    score           varchar(255)    NOT NULL    DEFAULT '',
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
@@ -283,7 +283,4 @@ CREATE TRIGGER map_contest_user_update_row BEFORE UPDATE ON map_contest_user FOR
 CREATE INDEX ON map_contest_user (user_id);
 CREATE INDEX ON map_contest_user (contest_id);
 
-DROP TABLE IF EXISTS map_contest_submission;
-CREATE TABLE map_contest_submission (
-);
 

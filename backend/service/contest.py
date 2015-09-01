@@ -72,8 +72,9 @@ class ContestService(BaseService):
         return (None, res)
 
     def get_contest_problem_list(self, data={}):
-        yield from self.db.execute('SELECT * FROM contests;')
-        return (None, None)
+        res, res_cnt = yield from self.db.execute('SELECT p.id, p.title FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s;', (data['id'],))
+        print(res)
+        return (None, res)
 
     def post_contest(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id', 'visible', 'title', 'description', 'register_start', 'register_end', 'start', 'end', 'type']
