@@ -54,9 +54,9 @@ class ExecuteService(BaseService):
             sql, parma = self.gen_update_sql("execute_types", data)
             yield from self.db.execute("%s WHERE id = %s" % (sql, str(id)), parma)
         yield from self.db.execute("DELETE FROM execute_steps WHERE execute_type_id=%s", (id,))
-        for x in range(len(command)):
+        for x in command:
             meta = {}
-            meta['command'] = command[x]
+            meta['command'] = x
             meta['execute_type_id'] = id
             sql, parma = self.gen_insert_sql("execute_steps", meta)
             yield from self.db.execute(sql, parma)
