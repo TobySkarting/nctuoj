@@ -138,9 +138,11 @@ if __name__ == '__main__':
         ### /api/group/\d+/problems/(\d+)/(testdata)/
         ('/api/group/\d+/problems/(\d+)/(\w*)/(\d+)/',                  ApiProblemHandler),
         ### /api/group/\d+/problems/(\d+)/(testdata)/(\d+)/'
+
         ('/api/group/\d+/contests/',                                    ApiContestsHandler),
+        ### TODO
         ('/api/group/\d+/contests/(\d+)/',                              ApiContestHandler),
-        ('/api/group/\d+/contests/(\d+)/(\w*)/',                        ApiContestHandler),
+        #('/api/group/\d+/contests/(\d+)/problems/',                     ApiContestProblmesHandler),
         ('/api/time/',                                                  ApiTimeHandler),
 
         ('/api/executes/',                                              ApiExecutesHandler),
@@ -157,6 +159,7 @@ if __name__ == '__main__':
         ### /group/\d+/problems/\d+/tag/edit/
         ### /group/\d+/problems/\d+/execute/edit/
         ### /group/\d+/problems/\d+/testdata/edit/
+        ### /group/\d+/problems/\d+/submit/
 
         ('/group/\d+/submissions/',                                     WebSubmissionsHandler),
         ('/group/\d+/submissions/(\d+)/',                               WebSubmissionHandler),
@@ -164,8 +167,12 @@ if __name__ == '__main__':
         ('/group/\d+/contests/',                                        WebContestsHandler),
         ('/group/\d+/contests/(\d+)/',                                  WebContestHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/',                            WebContestHandler),
-        ('/group/\d+/contests/(\d+)/(\w*)/edit/',                       WebContestEditHandler),
-        ### TODO ('/group/\d+/contests/(\d+)/problems/(\d+)/',                   WebContestProblemHandler),
+        ### TODO
+        #('/group/\d+/contests/(\d+)/edit/',                             WebContestEditHandler),
+        #('/group/\d+/contests/(\d+)/problems/(\d+)/',                   WebContestProblemHandler),
+        #('/group/\d+/contests/(\d+)/submissions/',                      WebContestSubmissionsHandler),
+        #('/group/\d+/contests/(\d+)/submissions/(\d+)/',                WebContestSubmissionHandler),
+        #('/group/\d+/contests/(\d+)/rank/',                             WebContestRankHandler),
         
         ('/executes/',                                                  WebExecuteTypesHandler),
         ('/executes/(\d+)/',                                            WebExecuteTypeHandler),
