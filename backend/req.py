@@ -53,7 +53,7 @@ class RequestHandler(tornado.web.RequestHandler):
                     n = n[:-6]
                     meta[n] = self.request.files[n][0]
                 else:
-                    meta[n] = self.get_argument(n, None)
+                    meta[n] = self.get_argument(n)
             except:
                 meta[n] = None
                 print("get_args error: ", n)

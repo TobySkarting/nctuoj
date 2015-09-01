@@ -43,14 +43,14 @@ class ExecuteService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         command = data.pop('command')
+        print('COMMAND')
         id = None
         if int(data['id']) == 0:
             data.pop('id')
             sql, parma = self.gen_insert_sql("execute_types", data)
             id = (yield from self.db.execute(sql, parma))[0][0]['id']
         else:
-            id = data['id']
-            data.pop('id')
+            id = data.pop('id')
             sql, parma = self.gen_update_sql("execute_types", data)
             yield from self.db.execute("%s WHERE id = %s" % (sql, str(id)), parma)
         yield from self.db.execute("DELETE FROM execute_steps WHERE execute_type_id=%s", (id,))

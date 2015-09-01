@@ -87,8 +87,7 @@ class ProblemService(BaseService):
             return (None, insert_id)
         else:
             self.reset_rs_problem_count(data['group_id'])
-            id = data['id']
-            data.pop('id')
+            id = data.pop('id')
             self.rs.delete('problem@%s' % str(id))
             sql, parma = self.gen_update_sql("problems", data)
             yield from self.db.execute("%s WHERE id = %s" % (sql, id), parma)
