@@ -23,9 +23,9 @@ class ApiProblemHandler(ApiRequestHandler):
             self.render(500, err)
             return False
         else:
-            if int(meta['group_id']) == 1 and int(data['visible']) == 2:
-                pass
-            elif int(data['group_id']) == int(meta['group_id']) and (int(data['visible']) != 0 or 1 in self.current_group_power):
+            #if int(meta['group_id']) == 1 and int(data['visible']) == 2:
+            #    pass
+            if int(data['group_id']) == int(meta['group_id']) and (int(data['visible']) > 0 or map_group_power['admin_manage'] in self.current_group_power):
                 pass
             else:
                 self.render(403, "Permission Denied")

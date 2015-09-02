@@ -21,10 +21,10 @@ class ContestService(BaseService):
             FROM contests as c, users as u, groups as g
             WHERE u.id=c.setter_user_id AND g.id=c.group_id AND
             """
-        if int(data['group_id']) == 1:
-            sql += " (c.group_id=%s OR c.visible=2) "
-        else:
-            sql += " (c.group_id=%s) "
+        #if int(data['group_id']) == 1:
+        #    sql += " (c.group_id=%s OR c.visible=2) "
+        #else:
+        sql += " (c.group_id=%s) "
         sql += " ORDER BY c.id limit %s OFFSET %s "
 
         res, res_cnt = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
@@ -38,17 +38,17 @@ class ContestService(BaseService):
                 % (str(data['group_id'])))
         if res: return (None, res)
         sql = "SELECT COUNT(*) FROM contests as c "
-        if int(data['group_id']) == 1:
-            sql += "WHERE (c.group_id=%s OR c.visible = 2)"
-        else:
-            sql += "WHERE c.group_id=%s"
+        #if int(data['group_id']) == 1:
+        #    sql += "WHERE (c.group_id=%s OR c.visible = 2)"
+        #else:
+        sql += "WHERE c.group_id=%s"
         res, res_cnt = yield from self.db.execute(sql, (data['group_id'],))
         self.rs.set('contest_list_count@%s'
                 % (str(data['group_id'])), res[0]['count'])
         return (None, res[0]['count'])
 
     def get_contest(self, data={}):
-        required_args = ['id', 'group_id']
+        required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         ### new contest
@@ -63,7 +63,7 @@ class ContestService(BaseService):
         
         res = self.rs.get('contest@%s'%str(data['id']))
         if not res:
-            res, res_cnt = yield from self.db.execute('SELECT c.*, u.account as setter_user FROM contests as c, users as u WHERE c.setter_user_id=u.id AND c.id=%s AND c.group_id=%s;', (data['id'], data['group_id'],))
+            res, res_cnt = yield from self.db.execute('SELECT c.*, u.account as setter_user FROM contests as c, users as u WHERE c.setter_user_id=u.id AND c.id=%s;', (data['id'], ))
             if res_cnt == 0:
                 return ('No Contest ID', None)
             res = res[0]

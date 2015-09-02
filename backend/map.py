@@ -23,8 +23,7 @@ map_lang = {
 
 map_visible = {
     0: "Invisible",
-    1: "Visible In Group",
-    2: "Pulbic",
+    1: "Visible",
 }
 
 map_default_file_name = {

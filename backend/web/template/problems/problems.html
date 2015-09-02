@@ -26,7 +26,7 @@
             {% for x in data %}
                 <tr>
                     <td>
-                        {% if (map_group_power['admin_manage'] in current_group_power) or int(x['visible']) %}
+                        {% if (map_group_power['admin_manage'] in current_group_power) or int(x['visible']) > 0 %}
                             <a href='/group/{{current_group}}/problems/{{x['id']}}/'>{{x['id']}}</a>
                         {% else %}
                             {{x['id']}}

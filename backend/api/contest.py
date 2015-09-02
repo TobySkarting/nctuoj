@@ -18,9 +18,9 @@ class ApiContestHandler(ApiRequestHandler):
         if err:
             self.render(500, err)
             return False
-        if int(data['group_id']) == 1 and int(data['visible']) == 2:
-            return True
-        if map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) != 0:
+        #if int(data['group_id']) == 1 and int(data['visible']) == 2:
+        #    return True
+        if int(meta['group_id']) == int(data['group_id']) and (map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) > 0):
             return True
         self.render(403, 'Permission Denied')
         return False
@@ -33,6 +33,9 @@ class ApiContestHandler(ApiRequestHandler):
             err, data = yield from Service.Contest.get_contest(meta)
             if err:
                 self.render(500, err)
+                return False
+            if int(data['group_id']) != int(meta['group_id']):
+                self.render(403, 'Permission Denied')
                 return False
         return True
 
