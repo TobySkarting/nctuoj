@@ -29,6 +29,7 @@ CREATE TABLE users (
 CREATE TRIGGER users_updated_row BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE UNIQUE INDEX on users (token);
 INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '0', 'P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr');
+INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('user', 'ee11cbb19052e40b07aac0ca060c23ee', 'user@gmail.com', '0000000', '0', 'TOKEN@user@a35668De30ED26b0cff046EBFD108964');
 
 
 DROP TABLE IF EXISTS map_user_power;
@@ -56,8 +57,8 @@ CREATE TABLE groups (
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER groups_updated_row BEFORE UPDATE ON groups FOR EACH ROW EXECUTE PROCEDURE updated_row();
-INSERT INTO groups (name, description) VALUES ('Public', 'For Public');
-INSERT INTO groups (name, description) VALUES ('Normal', 'For Normal');
+INSERT INTO groups (name, description) VALUES ('Group1', 'For Group1');
+INSERT INTO groups (name, description) VALUES ('Group2', 'For Group2');
 
 DROP TABLE IF EXISTS map_group_user;
 CREATE TABLE map_group_user (
@@ -68,9 +69,10 @@ CREATE TABLE map_group_user (
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER map_group_user_updated_row BEFORE UPDATE ON map_group_user FOR EACH ROW EXECUTE PROCEDURE updated_row();
-INSERT INTO map_group_user (group_id, user_id) VALUES (1, 0);
+--INSERT INTO map_group_user (group_id, user_id) VALUES (1, 0);
 INSERT INTO map_group_user (group_id, user_id) VALUES (1, 1);
 INSERT INTO map_group_user (group_id, user_id) VALUES (2, 1);
+INSERT INTO map_group_user (group_id, user_id) VALUES (2, 2);
 
 DROP TABLE IF EXISTS map_group_user_power;
 CREATE TABLE map_group_user_power (
@@ -117,7 +119,7 @@ CREATE TABLE problems (
     source          text            ,
     group_id        integer         NOT NULL,
     setter_user_id  integer         NOT NULL,
-    visible         integer         NOT NULL DEFAULT 0,
+    visible         integer         NOT NULL DEFAULT 0 CHECK (visible = ANY('{0, 1}')),
     interactive     integer         NOT NULL DEFAULT 0,
     verdict_id      integer         DEFAULT 1,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
@@ -240,7 +242,7 @@ DROP TABLE IF EXISTS contests;
 CREATE TABLE contests(
     id              serial          NOT NULL    PRIMARY KEY,
     group_id        integer         NOT NULL,
-    visible         integer         NOT NULL    DEFAULT 0,
+    visible         integer         NOT NULL    DEFAULT 0 CHECK (visible = ANY('{0, 1}')),
     setter_user_id  integer         NOT NULL,
     title           varchar(255)    ,
     description     text            ,

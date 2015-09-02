@@ -4,3 +4,11 @@ Develop Rule
 2. 避免重新編號 會產生很多問題
 3. Service做資料檢查以及與DB互動 (不包括權限檢查)
 
+note:
+problem:
+    0 -> invisible
+    1 -> visible
+gorup:
+    -1 -> secret
+    0 -> not public
+    1 -> public
