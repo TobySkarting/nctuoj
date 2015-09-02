@@ -15,6 +15,9 @@
                 <th>Contest Time</th>
                 <th>Type</th>
                 <th>Register</th>
+                {% if 1 in current_group_power %}
+                    <th>Edit</th>
+                {% end %}
             </tr>
         </thead>
         <tbody>
@@ -35,6 +38,11 @@
                     </td>
                     <td>{{x['register_start']}}<br>{{x['register_end']}}</td>
                     <td>{{x['start']}}<br>{{x['end']}}</td>
+                    <td>Type</td>
+                    <td>Register</td>
+                    {% if 1 in current_group_power %}
+                        <th><a class="btn btn-xs btn-default">Edit</a></th>
+                    {% end %}
 
                 </tr>
             {% end %}
