@@ -12,9 +12,6 @@
             <tr>
                 <th>PID</th>
                 <th>Problem</th>
-                {% if int(current_group) == 1 %}
-                    <th>Group</th>
-                {% end %}
                 <th class="tablet computer only">Setter</th>
                 <th class="tablet computer only">Source</th>
                 {% if 1 in current_group_power %}
@@ -38,9 +35,6 @@
                         {% else %}
                         {% end %}
                     </td>
-                    {% if int(current_group) == 1 %}
-                        <td><a href='/group/{{x['group_id']}}/problems/'>{{x['group_name']}}</a></td>
-                    {% end %}
                     <td class="tablet computer only">
                         <a href='/users/{{x['setter_user_id']}}/'>{{x['setter_user']}}</a>
                     </td>
