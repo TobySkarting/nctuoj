@@ -68,3 +68,11 @@ class WebContestEditHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id, action=None):
         pass
+class WebContestProblemHandler(WebRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, contest_id, problem_id):
+        meta = {
+            'id': problem_id
+        }
+        err, data = yield from Service.Problem.get_problem(meta)
+        self.Render('./contests/contest_problem.html', data=data)

@@ -161,7 +161,6 @@ class WebRequestHandler(RequestHandler):
             return
 
 
-        ### To check in contest
         
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
