@@ -11,6 +11,7 @@ import datetime
 import re
 from map import *
 import config
+import markdown2 as markdown
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -116,6 +117,7 @@ class WebRequestHandler(RequestHandler):
         self.Render('./err/'+str(status_code)+'.html')
 
     def Render(self, templ, **kwargs):
+        kwargs['md'] = markdown.markdown
         kwargs['map_power'] = self.map_power
         kwargs['map_group_power'] = self.map_group_power
         kwargs['map_lang'] = self.map_lang
