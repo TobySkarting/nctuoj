@@ -1,0 +1,137 @@
+{% extends './../frame.html' %}
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="text-center">{{data['id']}}.{{data['title']}}</h2>
+    </div>
+</div>
+<div class="row margin-bottom">
+    <div class="col-md-2">
+        <a class="btn btn-default btn-block btn-sm" href="">Submit</a>
+    </div>
+    <div class="col-md-2">
+        <a class="btn btn-default btn-block btn-sm" href="">Submissions</a>
+    </div>
+    {% if map_group_power["admin_manage"] in current_group_power and int(current_group) == int(data['group_id']) %}
+        <div class="col-md-2">
+            <a class="btn btn-default btn-block btn-sm">Rejudge</a>
+        </div>
+    {% end %}
+    <div class="col-md-2">
+        <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/">Back to List</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Description</div>
+            <div class="panel-body">{% raw data['description'] %}</div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Input</div>
+            <div class="panel-body">{% raw data['input'] %}</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Output</div>
+            <div class="panel-body">{% raw data['output'] %}</div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Sample Input</div>
+            <div class="panel-body">{% raw data['sample_input'] %}</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Sample Output</div>
+            <div class="panel-body">{% raw data['sample_output'] %}</div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Hint</div>
+            <div class="panel-body">{% raw data['hint'] %}</div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Source</div>
+            <div class="panel-body">{% raw data['source'] %}</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Tag</div>
+            <div class="panel-body"></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Execute Type</div>
+            <table class="table table-hover table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Lang</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in data['execute'] %}
+                        <tr>
+                            <td>{{map_lang[x['lang']]}}</td>
+                            <td>{{x['description']}}</td>
+                        </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Testdata</div>
+            <table class="table table-hover table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Time Limit</th>
+                        <th>Memory Limit</th>
+                        <th>Output Limit</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for id in range(len(data['testdata'])) %}
+                        {% set x = data['testdata'][id] %}
+                        <tr>
+                            <td>{{id+1}}</td>
+                            <td>{{x['time_limit']}} msec</td>
+                            <td>{{x['memory_limit']}} Kb</td>
+                            <td>{{x['output_limit']}} Kb</td>
+                            <td>{{x['score']}}</td>
+                        </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% end %}
