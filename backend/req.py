@@ -97,6 +97,14 @@ class ApiRequestHandler(RequestHandler):
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
         err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
+
+        in_group = False
+        for x in self.group:
+            if x['id'] == self.current_group:
+                in_group = True
+        if not in_group and self.current_group != 0:
+            self.render(403, 'Permission Denied')
+            return
             
 
 class WebRequestHandler(RequestHandler):
