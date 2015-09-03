@@ -43,12 +43,7 @@ class WebContestHandler(WebRequestHandler):
         if err:
             self.write_error(500, err)
             return False
-<<<<<<< HEAD
         if map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) != 0:
-=======
-        print('WPOWER', self.current_group_power)
-        if int(meta['group_id']) == int(data['group_id']) and (map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) > 0):
->>>>>>> f543db65dbc8e3c27fee50b7cb30e8a0441d332e
             return True
         self.write_error(403)
         return False
