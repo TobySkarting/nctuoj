@@ -162,7 +162,7 @@ class WebRequestHandler(RequestHandler):
         err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
 
         """ if the user not in the group render(403) """
-        in_group = self.current_group in set(x['id'] for x in self.group)
+        in_group = self.current_group in (x['id'] for x in self.group)
         if not in_group and self.current_group != 0:
             self.write_error(403)
             return

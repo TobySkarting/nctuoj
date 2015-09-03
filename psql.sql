@@ -207,7 +207,7 @@ CREATE TABLE submissions(
     execute_type_id integer         NOT NULL,
     time_usage      integer         ,
     memory_usage    integer         ,
-    verdict         integer         NOT NULL    DEFAULT 0,
+    verdict_id      integer         NOT NULL    DEFAULT 0,
     score           integer         ,
     length          integer         NOT NULL,
     file_name       varchar(255)    NOT NULL,
