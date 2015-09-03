@@ -15,6 +15,16 @@ class ApiVerdictTypesHandler(ApiRequestHandler):
         pass
 
 class ApiVerdictTypeHandler(ApiRequestHandler):
+    def check_edit(self, meta):
+        if map_power['verdict_manage'] not in self.account['power']:
+            self.render(403, 'Permission Denied')
+            return False
+        err, data = yield from Service.Verdict.get_verdict(meta)
+        if err:
+            self.render(500, err)
+            return False
+        return True
+
     @tornado.gen.coroutine
     def get(self, id):
         meta = {}
@@ -29,4 +39,10 @@ class ApiVerdictTypeHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def delete(self, id):
-        pass
+        meta = {}
+        meta ['id'] = id
+        if not (yield from self.check_edit(meta)):
+            return
+        err, data = yield from Service.Verdict.delete_verdict(meta)
+        if err: self.render(500, err)
+        else: self.render(200, data)

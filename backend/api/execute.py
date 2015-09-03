@@ -3,13 +3,13 @@ from req import Service
 import tornado
 
 
-class ApiExecutesHandler(ApiRequestHandler):
+class ApiExecuteTypesHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self):
         err, data = yield from Service.Execute.get_execute_list()
         self.render(200, data)
 
-class ApiExecuteHandler(ApiRequestHandler):
+class ApiExecuteTypeHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
         pass

@@ -35,8 +35,10 @@ from api.problem        import ApiProblemHandler
 from api.contest        import ApiContestsHandler
 from api.contest        import ApiContestHandler
 from api.contest        import ApiContestProblemsHandler
-from api.execute        import ApiExecutesHandler
-from api.execute        import ApiExecuteHandler
+from api.execute        import ApiExecuteTypesHandler
+from api.execute        import ApiExecuteTypeHandler
+from api.verdict        import ApiVerdictTypesHandler
+from api.verdict        import ApiVerdictTypeHandler
 from api.time           import ApiTimeHandler
 
 #from api.execute_type import ApiExecuteTypesHandler
@@ -147,8 +149,10 @@ if __name__ == '__main__':
         ('/api/group/\d+/contests/(\d+)/problems/',                     ApiContestProblemsHandler),
         ('/api/time/',                                                  ApiTimeHandler),
 
-        ('/api/executes/',                                              ApiExecutesHandler),
-        ('/api/executes/(\d+)/',                                        ApiExecuteHandler),
+        ('/api/executes/',                                              ApiExecuteTypesHandler),
+        ('/api/executes/(\d+)/',                                        ApiExecuteTypeHandler),
+        ('/api/verdicts/',                                              ApiVerdictTypesHandler),
+        ('/api/verdicts/(\d+)/',                                        ApiVerdictTypeHandler),
 
         ('/group/\d+/bulletins/',                                       WebBulletinsHandler),
         ('/group/\d+/bulletins/(\d+)/(\w*)/?',                          WebBulletinHandler),
