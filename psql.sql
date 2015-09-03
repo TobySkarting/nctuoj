@@ -1,3 +1,19 @@
+DROP TABLE IF EXISTS map_user_power;
+DROP TABLE IF EXISTS map_group_user;
+DROP TABLE IF EXISTS map_group_user_power;
+DROP TABLE IF EXISTS map_problem_execute;
+DROP TABLE IF EXISTS map_contest_problem;
+DROP TABLE IF EXISTS map_contest_user;
+DROP TABLE IF EXISTS bulletins;
+DROP TABLE IF EXISTS submissions;
+DROP TABLE IF EXISTS contests;
+DROP TABLE IF EXISTS testdata;
+DROP TABLE IF EXISTS problems;
+DROP TABLE IF EXISTS verdicts;
+DROP TABLE IF EXISTS execute_steps;
+DROP TABLE IF EXISTS execute_types;
+DROP TABLE IF EXISTS groups;
+DROP TABLE IF EXISTS users;
 
 CREATE OR REPLACE FUNCTION updated_row() 
 RETURNS TRIGGER AS $$
@@ -105,33 +121,6 @@ CREATE INDEX ON bulletins (group_id);
 INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (1, 1, 'Public', 'New Group Public');
 INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (2, 1, 'Normal', 'New Group Normal');
 
-
-DROP TABLE IF EXISTS problems;
-CREATE TABLE problems (
-    id              serial          NOT NULL    PRIMARY KEY,
-    title           varchar(255)    ,
-    description     text            ,
-    input           text            ,
-    output          text            ,
-    sample_input    text            ,
-    sample_output   text            ,
-    hint            text            ,
-    source          text            ,
-    group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
-    setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
-    visible         integer         NOT NULL DEFAULT 0 CHECK (visible = ANY('{0, 1}')),
-    interactive     integer         NOT NULL DEFAULT 0,
-    verdict_id      integer         DEFAULT 1   REFERENCES verdicts(id) ON DELETE CASCADE,
-    created_at      timestamp       DEFAULT date_trunc('second',now()),
-    updated_at      timestamp       DEFAULT date_trunc('second',now())
-);
-ALTER SEQUENCE problems_id_seq RESTART WITH 10001;
-CREATE TRIGGER problems_updated_row BEFORE UPDATE ON problems FOR EACH ROW EXECUTE PROCEDURE updated_row();
-CREATE INDEX ON problems (visible);
-CREATE INDEX ON problems (group_id);
-INSERT INTO problems (group_id, setter_user_id) values (1, 1);
-INSERT INTO problems (group_id, setter_user_id) values (2, 1);
-
 DROP TABLE IF EXISTS execute_types;
 CREATE TABLE execute_types (
     id              serial          NOT NULL    PRIMARY KEY,
@@ -167,6 +156,45 @@ INSERT INTO execute_steps (execute_type_id, command) values (3, 'g++ -std=c++11 
 INSERT INTO execute_steps (execute_type_id, command) values (3, '__CHECK_CE__ ./a.out');
 INSERT INTO execute_steps (execute_type_id, command) values (3, './a.out');
 
+DROP TABLE IF EXISTS verdicts;
+CREATE TABLE verdicts(
+    id              serial          NOT NULL    PRIMARY KEY,
+    title           varchar(255)    ,
+    execute_type_id integer         NOT NULL    DEFAULT 0   REFERENCES execute_types(id)    ON DELETE CASCADE,
+    file_name       varchar(255)    NOT NULL,
+    setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER verdicts_update_row BEFORE UPDATE ON verdicts FOR EACH ROW EXECUTE PROCEDURE updated_row();
+INSERT INTO verdicts (title, execute_type_id, file_name, setter_user_id) VALUES ('Token By Character(Ignore Lines)', 2, 'main.cpp', 1);
+
+DROP TABLE IF EXISTS problems;
+CREATE TABLE problems (
+    id              serial          NOT NULL    PRIMARY KEY,
+    title           varchar(255)    ,
+    description     text            ,
+    input           text            ,
+    output          text            ,
+    sample_input    text            ,
+    sample_output   text            ,
+    hint            text            ,
+    source          text            ,
+    group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
+    setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
+    visible         integer         NOT NULL DEFAULT 0 CHECK (visible = ANY('{0, 1}')),
+    interactive     integer         NOT NULL DEFAULT 0,
+    verdict_id      integer         DEFAULT 1   REFERENCES verdicts(id) ON DELETE CASCADE,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+ALTER SEQUENCE problems_id_seq RESTART WITH 10001;
+CREATE TRIGGER problems_updated_row BEFORE UPDATE ON problems FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE INDEX ON problems (visible);
+CREATE INDEX ON problems (group_id);
+INSERT INTO problems (group_id, setter_user_id) values (1, 1);
+INSERT INTO problems (group_id, setter_user_id) values (2, 1);
+
 DROP TABLE IF EXISTS map_problem_execute;
 CREATE TABLE map_problem_execute (
     id              serial          NOT NULL    PRIMARY KEY,
@@ -183,6 +211,8 @@ INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 1);
 INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 2);
 INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 3);
 
+
+
 DROP TABLE IF EXISTS testdata;
 CREATE TABLE testdata(
     id              serial          NOT NULL    PRIMARY KEY,
@@ -196,15 +226,15 @@ CREATE TABLE testdata(
 );
 CREATE TRIGGER testdata_updated_row BEFORE UPDATE ON testdata FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON testdata (problem_id);
-INSERT INTO testdata (problem_id, score) values (1, 50);
-INSERT INTO testdata (problem_id, score) values (1, 50);
+INSERT INTO testdata (problem_id, score) values (10001, 50);
+INSERT INTO testdata (problem_id, score) values (10001, 50);
 
 DROP TABLE IF EXISTS submissions;
 CREATE TABLE submissions(
     id              serial          NOT NULL    PRIMARY KEY,
     user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     problem_id      integer         NOT NULL    REFERENCES problems(id) ON DELETE CASCADE,
-    execute_type_id integer         NOT NULL    REFERENCES execute_types(id)    ON DELETE CASCADE:,
+    execute_type_id integer         NOT NULL    REFERENCES execute_types(id)    ON DELETE CASCADE,
     time_usage      integer         ,
     memory_usage    integer         ,
     verdict_id      integer         NOT NULL    DEFAULT 1   REFERENCES verdicts(id) ON DELETE CASCADE,
@@ -222,21 +252,9 @@ CREATE INDEX ON submissions (memory_usage);
 CREATE INDEX ON submissions (time_usage);
 CREATE INDEX ON submissions (verdict_id);
 CREATE INDEX ON submissions (length);
-INSERT INTO submissions (user_id, problem_id, execute_type_id, length, file_name) VALUES (1, 1, 1, 100, 'xd.cpp');
+INSERT INTO submissions (user_id, problem_id, execute_type_id, length, file_name) VALUES (1, 10001, 1, 100, 'xd.cpp');
 
 
-DROP TABLE IF EXISTS verdicts;
-CREATE TABLE verdicts(
-    id              serial          NOT NULL    PRIMARY KEY,
-    title           varchar(255)    ,
-    execute_type_id integer         NOT NULL    DEFAULT 0   REFERENCES execute_types(id)    ON DELETE CASCADE,
-    file_name       varchar(255)    NOT NULL,
-    setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
-    created_at      timestamp       DEFAULT date_trunc('second',now()),
-    updated_at      timestamp       DEFAULT date_trunc('second',now())
-);
-CREATE TRIGGER verdicts_update_row BEFORE UPDATE ON verdicts FOR EACH ROW EXECUTE PROCEDURE updated_row();
-INSERT INTO verdicts (title, execute_type_id, file_name, setter_user_id) VALUES ('Token By Character(Ignore Lines)', 2, 'main.cpp', 1);
 
 DROP TABLE IF EXISTS contests;
 CREATE TABLE contests(
