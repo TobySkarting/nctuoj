@@ -12,3 +12,5 @@ gorup:
     -1 -> secret
     0 -> not public
     1 -> public
+
+when execute or verdict is deleted, the corresponding problems or submissions will also be deleted
