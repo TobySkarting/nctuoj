@@ -220,7 +220,7 @@ CREATE INDEX ON submissions (problem_id);
 CREATE INDEX ON submissions (execute_type_id);
 CREATE INDEX ON submissions (memory_usage);
 CREATE INDEX ON submissions (time_usage);
-CREATE INDEX ON submissions (verdict);
+CREATE INDEX ON submissions (verdict_id);
 CREATE INDEX ON submissions (length);
 INSERT INTO submissions (user_id, problem_id, execute_type_id, length, file_name) VALUES (1, 1, 1, 100, 'xd.cpp');
 
