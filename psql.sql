@@ -35,7 +35,7 @@ INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES 
 DROP TABLE IF EXISTS map_user_power;
 CREATE TABLE map_user_power (
     id              serial          NOT NULL    PRIMARY KEY,
-    user_id         integer         NOT NULL,
+    user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     power           integer         NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
@@ -63,8 +63,8 @@ INSERT INTO groups (name, description) VALUES ('Group2', 'For Group2');
 DROP TABLE IF EXISTS map_group_user;
 CREATE TABLE map_group_user (
     id              serial          NOT NULL    PRIMARY KEY,
-    group_id        integer         NOT NULL,
-    user_id         integer         NOT NULL,
+    group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
+    user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
@@ -77,8 +77,8 @@ INSERT INTO map_group_user (group_id, user_id) VALUES (1, 2);
 DROP TABLE IF EXISTS map_group_user_power;
 CREATE TABLE map_group_user_power (
     id              serial          NOT NULL    PRIMARY KEY,
-    group_id        integer         NOT NULL,
-    user_id         integer         NOT NULL,
+    group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
+    user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     power           integer         NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
@@ -93,8 +93,8 @@ INSERT INTO map_group_user_power (group_id, user_id, power) VALUES (1, 1, 1);
 DROP TABLE IF EXISTS bulletins;
 CREATE TABLE bulletins (
     id              serial          NOT NULL    PRIMARY KEY,
-    group_id        integer         NOT NULL,
-    setter_user_id  integer         NOT NULL,
+    group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
+    setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     title           varchar(255)    DEFAULT '',
     content         text            DEFAULT '',
     created_at      timestamp       DEFAULT date_trunc('second',now()),
@@ -117,11 +117,11 @@ CREATE TABLE problems (
     sample_output   text            ,
     hint            text            ,
     source          text            ,
-    group_id        integer         NOT NULL,
-    setter_user_id  integer         NOT NULL,
+    group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
+    setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     visible         integer         NOT NULL DEFAULT 0 CHECK (visible = ANY('{0, 1}')),
     interactive     integer         NOT NULL DEFAULT 0,
-    verdict_id      integer         DEFAULT 1,
+    verdict_id      integer         DEFAULT 1   REFERENCES verdicts(id) ON DELETE CASCADE,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
@@ -137,7 +137,7 @@ CREATE TABLE execute_types (
     id              serial          NOT NULL    PRIMARY KEY,
     description     varchar(255)    NOT NULL    DEFAULT '',
     lang            integer         NOT NULL,
-    setter_user_id  integer         NOT NULL,
+    setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     priority        integer         NOT NULL    DEFAULT 999,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
@@ -150,7 +150,7 @@ INSERT INTO execute_types (description, lang, setter_user_id, priority) values (
 DROP TABLE IF EXISTS execute_steps;
 CREATE TABLE execute_steps (
     id              serial          NOT NULL    PRIMARY KEY,
-    execute_type_id integer         NOT NULL,
+    execute_type_id integer         NOT NULL    REFERENCES execute_types(id)    ON DELETE CASCADE,
     command         varchar(255)    NOT NULL    DEFAULT '',
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
@@ -170,8 +170,8 @@ INSERT INTO execute_steps (execute_type_id, command) values (3, './a.out');
 DROP TABLE IF EXISTS map_problem_execute;
 CREATE TABLE map_problem_execute (
     id              serial          NOT NULL    PRIMARY KEY,
-    problem_id      integer         NOT NULL,
-    execute_type_id integer         NOT NULL,
+    problem_id      integer         NOT NULL    REFERENCES problems(id) ON DELETE CASCADE,
+    execute_type_id integer         NOT NULL    REFERENCES execute_types(id)    ON DELETE CASCADE,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
@@ -186,7 +186,7 @@ INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 3);
 DROP TABLE IF EXISTS testdata;
 CREATE TABLE testdata(
     id              serial          NOT NULL    PRIMARY KEY,
-    problem_id      integer         NOT NULL,
+    problem_id      integer         NOT NULL    REFERENCES problems(id) ON DELETE CASCADE,
     time_limit      integer         NOT NULL    DEFAULT 1000,
     memory_limit    integer         NOT NULL    DEFAULT 65536,
     output_limit    integer         NOT NULL    DEFAULT 65536,
@@ -202,12 +202,12 @@ INSERT INTO testdata (problem_id, score) values (1, 50);
 DROP TABLE IF EXISTS submissions;
 CREATE TABLE submissions(
     id              serial          NOT NULL    PRIMARY KEY,
-    user_id         integer         NOT NULL,
-    problem_id      integer         NOT NULL,
-    execute_type_id integer         NOT NULL,
+    user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
+    problem_id      integer         NOT NULL    REFERENCES problems(id) ON DELETE CASCADE,
+    execute_type_id integer         NOT NULL    REFERENCES execute_types(id)    ON DELETE CASCADE:,
     time_usage      integer         ,
     memory_usage    integer         ,
-    verdict_id      integer         NOT NULL    DEFAULT 0,
+    verdict_id      integer         NOT NULL    DEFAULT 1   REFERENCES verdicts(id) ON DELETE CASCADE,
     score           integer         ,
     length          integer         NOT NULL,
     file_name       varchar(255)    NOT NULL,
@@ -229,9 +229,9 @@ DROP TABLE IF EXISTS verdicts;
 CREATE TABLE verdicts(
     id              serial          NOT NULL    PRIMARY KEY,
     title           varchar(255)    ,
-    execute_type_id integer         NOT NULL    DEFAULT 0,
+    execute_type_id integer         NOT NULL    DEFAULT 0   REFERENCES execute_types(id)    ON DELETE CASCADE,
     file_name       varchar(255)    NOT NULL,
-    setter_user_id  integer         NOT NULL,
+    setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
@@ -241,9 +241,9 @@ INSERT INTO verdicts (title, execute_type_id, file_name, setter_user_id) VALUES 
 DROP TABLE IF EXISTS contests;
 CREATE TABLE contests(
     id              serial          NOT NULL    PRIMARY KEY,
-    group_id        integer         NOT NULL,
+    group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
     visible         integer         NOT NULL    DEFAULT 0 CHECK (visible = ANY('{0, 1}')),
-    setter_user_id  integer         NOT NULL,
+    setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     title           varchar(255)    ,
     description     text            ,
     register_start  timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
@@ -262,8 +262,8 @@ INSERT INTO contests (group_id, setter_user_id, title, description) values (1, 1
 DROP TABLE IF EXISTS map_contest_problem;
 CREATE TABLE map_contest_problem (
     id              serial          NOT NULL    PRIMARY KEY,
-    contest_id      integer         NOT NULL,
-    problem_id      integer         NOT NULL,
+    contest_id      integer         NOT NULL    REFERENCES contests(id) ON DELETE CASCADE,
+    problem_id      integer         NOT NULL    REFERENCES problems(id) ON DELETE CASCADE,
     score           varchar(255)    NOT NULL    DEFAULT '',
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
@@ -276,8 +276,8 @@ INSERT INTO map_contest_problem (contest_id, problem_id) VALUES (1001, 10001);
 DROP TABLE IF EXISTS map_contest_user;
 CREATE TABLE map_contest_user (
     id              serial          NOT NULL    PRIMARY KEY,
-    user_id         integer         NOT NULL,
-    contest_id      integer         NOT NULL,
+    user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
+    contest_id      integer         NOT NULL    REFERENCES contests(id) ON DELETE CASCADE,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
