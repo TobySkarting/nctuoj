@@ -214,6 +214,7 @@ CREATE TABLE submissions(
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
+ALTER SEQUENCE submissions_id_seq RESTART WITH 10001;
 CREATE TRIGGER submissions_updated_row BEFORE UPDATE ON submissions FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON submissions (user_id);
 CREATE INDEX ON submissions (problem_id);
@@ -222,7 +223,6 @@ CREATE INDEX ON submissions (memory_usage);
 CREATE INDEX ON submissions (time_usage);
 CREATE INDEX ON submissions (verdict);
 CREATE INDEX ON submissions (length);
-INSERT INTO submissions (user_id, problem_id, execute_type_id, length, file_name) VALUES (1, 1, 1, 100, 'xd.cpp');
 
 
 DROP TABLE IF EXISTS verdicts;
