@@ -30,13 +30,13 @@ $$ language 'plpgsql';
     -- );
 -- CREATE TRIGGER table_name_updated_at_column BEFORE UPDATE ON table_name FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column_column();
 
-DROP TABLE IF EXISTS users;
+--DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id              serial          NOT NULL    PRIMARY KEY,
     account         varchar(32)     NOT NULL,
     passwd          varchar(32)     NOT NULL,
     email           varchar(255)    NOT NULL,
-    student_id      varchar(255)    NOT NULL,
+    student_id      varchar(32)     NOT NULL,
     school_id       integer         NOT NULL,
     token           varchar(64)     NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second', now()),
@@ -44,11 +44,13 @@ CREATE TABLE users (
 );
 CREATE TRIGGER users_updated_row BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE UNIQUE INDEX on users (token);
+CREATE UNIQUE INDEX on users (account);
+CREATE UNIQUE INDEX on users (student_id);
 INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '0', 'P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr');
-INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('user', 'ee11cbb19052e40b07aac0ca060c23ee', 'user@gmail.com', '0000000', '0', 'TOKEN@user@a35668De30ED26b0cff046EBFD108964');
+INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('user', 'ee11cbb19052e40b07aac0ca060c23ee', 'user@gmail.com', '0000001', '0', 'TOKEN@user@a35668De30ED26b0cff046EBFD108964');
 
 
-DROP TABLE IF EXISTS map_user_power;
+--DROP TABLE IF EXISTS map_user_power;
 CREATE TABLE map_user_power (
     id              serial          NOT NULL    PRIMARY KEY,
     user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
@@ -64,7 +66,7 @@ INSERT INTO map_user_power (user_id, power) VALUES (1, 2);
 INSERT INTO map_user_power (user_id, power) VALUES (1, 3);
 INSERT INTO map_user_power (user_id, power) VALUES (1, 4);
 
-DROP TABLE IF EXISTS groups;
+--DROP TABLE IF EXISTS groups;
 CREATE TABLE groups (
     id              serial          NOT NULL    PRIMARY KEY,
     name            varchar(255)    NOT NULL,
@@ -76,7 +78,7 @@ CREATE TRIGGER groups_updated_row BEFORE UPDATE ON groups FOR EACH ROW EXECUTE P
 INSERT INTO groups (name, description) VALUES ('Group1', 'For Group1');
 INSERT INTO groups (name, description) VALUES ('Group2', 'For Group2');
 
-DROP TABLE IF EXISTS map_group_user;
+--DROP TABLE IF EXISTS map_group_user;
 CREATE TABLE map_group_user (
     id              serial          NOT NULL    PRIMARY KEY,
     group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
@@ -84,13 +86,15 @@ CREATE TABLE map_group_user (
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
+CREATE INDEX on map_group_user (group_id);
+CREATE INDEX on map_group_user (user_id);
 CREATE TRIGGER map_group_user_updated_row BEFORE UPDATE ON map_group_user FOR EACH ROW EXECUTE PROCEDURE updated_row();
 --INSERT INTO map_group_user (group_id, user_id) VALUES (1, 0);
 INSERT INTO map_group_user (group_id, user_id) VALUES (1, 1);
 INSERT INTO map_group_user (group_id, user_id) VALUES (2, 1);
 INSERT INTO map_group_user (group_id, user_id) VALUES (1, 2);
 
-DROP TABLE IF EXISTS map_group_user_power;
+--DROP TABLE IF EXISTS map_group_user_power;
 CREATE TABLE map_group_user_power (
     id              serial          NOT NULL    PRIMARY KEY,
     group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
@@ -106,7 +110,7 @@ CREATE INDEX ON map_group_user_power (power);
 CREATE UNIQUE INDEX ON map_group_user_power (group_id, user_id, power);
 INSERT INTO map_group_user_power (group_id, user_id, power) VALUES (1, 1, 1);
 
-DROP TABLE IF EXISTS bulletins;
+--DROP TABLE IF EXISTS bulletins;
 CREATE TABLE bulletins (
     id              serial          NOT NULL    PRIMARY KEY,
     group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
@@ -121,7 +125,7 @@ CREATE INDEX ON bulletins (group_id);
 INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (1, 1, 'Public', 'New Group Public');
 INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (2, 1, 'Normal', 'New Group Normal');
 
-DROP TABLE IF EXISTS execute_types;
+--DROP TABLE IF EXISTS execute_types;
 CREATE TABLE execute_types (
     id              serial          NOT NULL    PRIMARY KEY,
     description     varchar(255)    NOT NULL    DEFAULT '',
@@ -132,11 +136,12 @@ CREATE TABLE execute_types (
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER execute_types_updated_row BEFORE UPDATE ON execute_types FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE INDEX on execute_types (priority);
 INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C', 0, 1, 1);
 INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++', 1, 1, 3);
 INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++14', 1, 1, 2);
 
-DROP TABLE IF EXISTS execute_steps;
+--DROP TABLE IF EXISTS execute_steps;
 CREATE TABLE execute_steps (
     id              serial          NOT NULL    PRIMARY KEY,
     execute_type_id integer         NOT NULL    REFERENCES execute_types(id)    ON DELETE CASCADE,
@@ -156,7 +161,7 @@ INSERT INTO execute_steps (execute_type_id, command) values (3, 'g++ -std=c++11 
 INSERT INTO execute_steps (execute_type_id, command) values (3, '__CHECK_CE__ ./a.out');
 INSERT INTO execute_steps (execute_type_id, command) values (3, './a.out');
 
-DROP TABLE IF EXISTS verdicts;
+--DROP TABLE IF EXISTS verdicts;
 CREATE TABLE verdicts(
     id              serial          NOT NULL    PRIMARY KEY,
     title           varchar(255)    ,
@@ -169,7 +174,7 @@ CREATE TABLE verdicts(
 CREATE TRIGGER verdicts_update_row BEFORE UPDATE ON verdicts FOR EACH ROW EXECUTE PROCEDURE updated_row();
 INSERT INTO verdicts (title, execute_type_id, file_name, setter_user_id) VALUES ('Token By Character(Ignore Lines)', 2, 'main.cpp', 1);
 
-DROP TABLE IF EXISTS problems;
+--DROP TABLE IF EXISTS problems;
 CREATE TABLE problems (
     id              serial          NOT NULL    PRIMARY KEY,
     title           varchar(255)    ,
@@ -195,7 +200,7 @@ CREATE INDEX ON problems (group_id);
 INSERT INTO problems (group_id, setter_user_id) values (1, 1);
 INSERT INTO problems (group_id, setter_user_id) values (2, 1);
 
-DROP TABLE IF EXISTS map_problem_execute;
+--DROP TABLE IF EXISTS map_problem_execute;
 CREATE TABLE map_problem_execute (
     id              serial          NOT NULL    PRIMARY KEY,
     problem_id      integer         NOT NULL    REFERENCES problems(id) ON DELETE CASCADE,
@@ -213,7 +218,7 @@ INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 3);
 
 
 
-DROP TABLE IF EXISTS testdata;
+--DROP TABLE IF EXISTS testdata;
 CREATE TABLE testdata(
     id              serial          NOT NULL    PRIMARY KEY,
     problem_id      integer         NOT NULL    REFERENCES problems(id) ON DELETE CASCADE,
@@ -229,7 +234,7 @@ CREATE INDEX ON testdata (problem_id);
 INSERT INTO testdata (problem_id, score) values (10001, 50);
 INSERT INTO testdata (problem_id, score) values (10001, 50);
 
-DROP TABLE IF EXISTS submissions;
+--DROP TABLE IF EXISTS submissions;
 CREATE TABLE submissions(
     id              serial          NOT NULL    PRIMARY KEY,
     user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
@@ -256,7 +261,7 @@ INSERT INTO submissions (user_id, problem_id, execute_type_id, length, file_name
 
 
 
-DROP TABLE IF EXISTS contests;
+--DROP TABLE IF EXISTS contests;
 CREATE TABLE contests(
     id              serial          NOT NULL    PRIMARY KEY,
     group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
@@ -275,9 +280,10 @@ CREATE TABLE contests(
 ALTER SEQUENCE contests_id_seq RESTART WITH 1001;
 CREATE TRIGGER contests_update_row BEFORE UPDATE ON contests FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON contests (group_id);
+CREATE INDEX ON contests (visible);
 INSERT INTO contests (group_id, setter_user_id, title, description) values (1, 1, 'test', 'contest');
 
-DROP TABLE IF EXISTS map_contest_problem;
+--DROP TABLE IF EXISTS map_contest_problem;
 CREATE TABLE map_contest_problem (
     id              serial          NOT NULL    PRIMARY KEY,
     contest_id      integer         NOT NULL    REFERENCES contests(id) ON DELETE CASCADE,
@@ -291,7 +297,7 @@ CREATE INDEX ON map_contest_problem (contest_id);
 CREATE INDEX ON map_contest_problem (problem_id);
 INSERT INTO map_contest_problem (contest_id, problem_id) VALUES (1001, 10001);
 
-DROP TABLE IF EXISTS map_contest_user;
+--DROP TABLE IF EXISTS map_contest_user;
 CREATE TABLE map_contest_user (
     id              serial          NOT NULL    PRIMARY KEY,
     user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
