@@ -11,6 +11,7 @@ import datetime
 import re
 from map import *
 import config
+import markdown2 as markdown
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -112,10 +113,12 @@ class WebRequestHandler(RequestHandler):
         kwargs['httponly'] = True
         super().set_secure_cookie(name, value, expires_days, version, **kwargs)
 
-    def write_error(self, status_code, **kwargs):
-        self.Render('./err/'+str(status_code)+'.html')
+    def write_error(self, status_code, err=None, **kwargs):
+        kwargs['err'] = err
+        self.Render('./err/'+str(status_code)+'.html', **kwargs)
 
     def Render(self, templ, **kwargs):
+        kwargs['md'] = markdown.markdown
         kwargs['map_power'] = self.map_power
         kwargs['map_group_power'] = self.map_group_power
         kwargs['map_lang'] = self.map_lang
@@ -160,7 +163,7 @@ class WebRequestHandler(RequestHandler):
         err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
 
         """ if the user not in the group render(403) """
-        in_group = self.current_group in set(x['id'] for x in self.group)
+        in_group = self.current_group in (x['id'] for x in self.group)
         if not in_group and self.current_group != 0:
             self.write_error(403)
             return

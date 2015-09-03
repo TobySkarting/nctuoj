@@ -18,13 +18,13 @@ class WebSubmissionsHandler(WebRequestHandler):
         try:
             meta["page"] = int(meta["page"])
         except:
-            self.write_error(404)
+            self.write_error(500, 'Argument page error')
             return
         ### should in range
         err, count = yield from Service.Submission.get_submission_list_count(meta)
         page_count = max(math.ceil(count / meta['count']), 1)
         if int(meta['page']) < 1 or int(meta['page']) > page_count:
-            self.write_error(404)
+            self.write_error(500, 'Page out of range')
             return
         
         err, data = yield from Service.Submission.get_submission_list(meta)
@@ -43,5 +43,5 @@ class WebSubmissionHandler(WebRequestHandler):
     def get(self, id, action=None):
         err, data = yield from Service.Submission.get_submission({'id': id})
         if err:
-            self.write_error(404)
+            self.write_error(500, err)
         self.Render('./submissions/submission.html', data=data)

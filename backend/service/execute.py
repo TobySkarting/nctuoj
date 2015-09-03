@@ -10,7 +10,7 @@ class ExecuteService(BaseService):
     def get_execute_list(self, data={}):
         res = self.rs.get('execute_list')
         if res: return (None, res)
-        sql = "SELECT e.*, u.account as setter_user FROM execute_types as e, users as u WHERE e.setter_user_id=u.id order by e.priority"
+        sql = "SELECT e.*, u.account as setter_user FROM execute_types as e, users as u WHERE e.setter_user_id=u.id ORDER BY e.priority"
         res, res_cnt = yield from self.db.execute(sql)
         self.rs.set('execute_list', res)
         return (None, res)
@@ -27,6 +27,8 @@ class ExecuteService(BaseService):
             res['lang'] = 0
             res['description'] = ''
             return (None, res)
+        res = self.rs.get('execute@%s'%(str(data['id'])))
+        if res: return (None, res)
         sql = "SELECT e.*, u.account as setter_user FROM execute_types as e, users as u WHERE e.id=%s AND e.setter_user_id=u.id"
         res, res_cnt = yield from self.db.execute(sql, (data["id"]))
         if res_cnt == 0:
@@ -35,6 +37,7 @@ class ExecuteService(BaseService):
         res['steps'], res_cnt = yield from self.db.execute("SELECT execute_steps.* FROM execute_steps WHERE execute_type_id=%s ORDER BY id", (res['id'],))
         for x in range(len(res['steps'])):
             res['steps'][x]['step'] = x + 1
+        self.rs.set('execute@%s'%(str(data['id'])), res)
         return (None, res)
 
     def post_execute(self, data={}):
@@ -62,3 +65,16 @@ class ExecuteService(BaseService):
             yield from self.db.execute(sql, parma)
         return (None, id)
 
+    def delete_execute(self, data={}):
+        required_args = ['id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        yield from self.db.execute('DELETE FROM execute_types WHERE id=%s;', (data['id'],))
+        yield from self.db.execute('DELETE FROM execute_steps WHERE execute_type_id=%s;', (data['id'],))
+        yield from self.db.execute('DELETE FROM map_problem_execute WHERE execute_type_id=%s;', (data['id'],))
+        ### ???
+        yield from self.db.execute('DELETE FROM submissions WHERE execute_type_id=%s;', (data['id'],))
+        yield from self.db.execute('DELETE FROM verdicts WHERE execute_type_id=%s;', (data['id'],))
+        self.rs.delete('execute@%s'%(str(data['id'])))
+        self.rs.delete('execute_list')
+        return (None, str(data['id']))

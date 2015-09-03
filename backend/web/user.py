@@ -20,7 +20,7 @@ class WebUsersHandler(WebRequestHandler):
         try:
             meta["page"] = int(meta["page"])
         except:
-            self.redirect('/executes/')
+            self.redirect('/users/')
             return
         ### modify page in range (1, page_count)
         err, count = yield from Service.User.get_user_list_count()
@@ -47,15 +47,16 @@ class WebUserHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id=None, action=None):
         if not id: id = self.account["id"]
-        print('ID', id)
         ###err, meta = yield from Service.User.get_user_advanced_info(id)
         err, meta = yield from Service.User.get_user_basic_info(id)
+        if err:
+            self.write_error(500, err)
+            return
         self.Render('./users/user.html', data=meta)
 
 class WebUserSignHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, action):
-        print(action)
         if action == "signin":
             if self.account['id'] != 0:
                 self.redirect('/')

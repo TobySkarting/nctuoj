@@ -51,7 +51,7 @@ class WebBulletinHandler(WebRequestHandler):
         if action == "": action = "view"
         if action == "view":
             err, data = yield from Service.Bulletin.get_bulletin(meta)
-            if err: self.write_error(404)
+            if err: self.write_error(500, err)
             else: self.Render('./bulletins/bulletin.html', data=data)
         elif action == "edit":
             ### check power
@@ -59,7 +59,7 @@ class WebBulletinHandler(WebRequestHandler):
                 self.write_error(403)
                 return
             err, data = yield from Service.Bulletin.get_bulletin(meta)
-            if err: self.write_error(404)
+            if err: self.write_error(500, err)
             else: self.Render('./bulletins/bulletin_edit.html', data=data)
         else:
             self.write_error(404)
