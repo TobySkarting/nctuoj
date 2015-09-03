@@ -113,8 +113,9 @@ class WebRequestHandler(RequestHandler):
         kwargs['httponly'] = True
         super().set_secure_cookie(name, value, expires_days, version, **kwargs)
 
-    def write_error(self, status_code, **kwargs):
-        self.Render('./err/'+str(status_code)+'.html')
+    def write_error(self, status_code, err=None, **kwargs):
+        kwargs['err'] = err
+        self.Render('./err/'+str(status_code)+'.html', **kwargs)
 
     def Render(self, templ, **kwargs):
         kwargs['md'] = markdown.markdown

@@ -23,12 +23,8 @@ class SubmissionService(BaseService):
         SELECT s.*, u.account as user, e.lang
         FROM submissions as s, users as u, execute_types as e, problems as p
         WHERE p.id=s.problem_id AND u.id=s.user_id AND e.id=s.execute_type_id
-        """;
-        subsql = "(SELECT s.id FROM submissions as s, problems as p "
-        if int(data['group_id']) == 1:
-            sql += " AND (p.group_id=%s or p.visible=2) "
-        else:
-            sql += " AND p.group_id=%s  "
+        """
+        sql += " AND p.group_id=%s  "
         if data['problem_id']:
             sql += "AND problem_id=%s " % (int(data['problem_id']))
         if data['user_id']:
@@ -94,7 +90,7 @@ class SubmissionService(BaseService):
             meta['file_name'] = data['code_file']['filename']
             meta['length'] = len(data['code_file']['body'])
         else:
-            if re.match('[\w\.]+', data['plain_file_name']).group(0) != data['plain_file_name']:
+            if re.match('[\w\.]*', data['plain_file_name']).group(0) != data['plain_file_name']:
                 data['plain_file_name'] = ''
             if data['plain_file_name'] != '':
                 meta['file_name'] = data['plain_file_name']

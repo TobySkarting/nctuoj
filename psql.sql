@@ -72,7 +72,7 @@ CREATE TRIGGER map_group_user_updated_row BEFORE UPDATE ON map_group_user FOR EA
 --INSERT INTO map_group_user (group_id, user_id) VALUES (1, 0);
 INSERT INTO map_group_user (group_id, user_id) VALUES (1, 1);
 INSERT INTO map_group_user (group_id, user_id) VALUES (2, 1);
-INSERT INTO map_group_user (group_id, user_id) VALUES (2, 2);
+INSERT INTO map_group_user (group_id, user_id) VALUES (1, 2);
 
 DROP TABLE IF EXISTS map_group_user_power;
 CREATE TABLE map_group_user_power (
@@ -179,9 +179,9 @@ CREATE TRIGGER map_problem_execute_updated_row BEFORE UPDATE ON map_problem_exec
 CREATE INDEX ON map_problem_execute (problem_id);
 CREATE INDEX ON map_problem_execute (execute_type_id);
 CREATE UNIQUE INDEX ON map_problem_execute (problem_id, execute_type_id);
-INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (1, 1);
-INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (1, 2);
-INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (1, 3);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 1);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 2);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 3);
 
 DROP TABLE IF EXISTS testdata;
 CREATE TABLE testdata(

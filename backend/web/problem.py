@@ -19,13 +19,13 @@ class WebProblemsHandler(WebRequestHandler):
         try:
             meta["page"] = int(meta["page"])
         except:
-            self.write_error(404)
+            self.write_error(500, 'Argument page error')
             return
         ### should in range
         err, count = yield from Service.Problem.get_problem_list_count(meta)
         page_count = max(math.ceil(count / meta['count']), 1)
         if int(meta['page']) < 1 or int(meta['page']) > page_count:
-            self.write_error(404)
+            self.write_error(500, 'Page out of range')
             return
         ### get data
         err, data = yield from Service.Problem.get_problem_list(meta)
@@ -37,22 +37,24 @@ class WebProblemsHandler(WebRequestHandler):
         page['get'] = {}
         self.Render('./problems/problems.html', data=data, page=page)
 class WebProblemHandler(WebRequestHandler):
+    def check_view(self, meta={}):
+        err, data = yield from Service.Problem.get_problem(meta)
+        if err:
+            self.write_error(500, err)
+            return False
+        if int(data['group_id']) == int(meta['group_id']) and (map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) > 0):
+            return True
+        self.write_error(403)
+        return False
+
     @tornado.gen.coroutine
     def get(self, id, action = None):
         meta = {}
         meta['id'] = id
         meta['group_id'] = self.current_group
+        if not (yield from self.check_view(meta)):
+            return
         err, data = yield from Service.Problem.get_problem(meta)
-        if err:
-            self.write_error(500)
-            return
-        if int(meta['group_id']) == 1 and int(data['visible']) == 2:
-            pass
-        elif int(data['group_id']) == int(meta['group_id']) and (map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) != 0):
-            pass
-        else:
-            self.write_error(403)
-            return
         if action == None:
             self.Render('./problems/problem.html', data=data)
         elif action == "submit":
@@ -61,22 +63,24 @@ class WebProblemHandler(WebRequestHandler):
             self.write_error(404)
 
 class WebProblemEditHandler(WebRequestHandler):
+    def check_edit(self, meta={}):
+        err, data = yield from Service.Problem.get_problem(meta)
+        if int(meta['group_id']) == int(data['group_id']) and map_group_power['admin_manage'] not in self.current_group_power:
+            self.write_error(403)
+            return False
+        if err:
+            self.write_error(500, err)
+            return False
+        return True
+
     @tornado.gen.coroutine
     def get(self, id, action = None):
         meta = {}
         meta['id'] = id
         meta['group_id'] = self.current_group
-        if map_group_power['admin_manage'] not in self.current_group_power:
-            self.write_error(403)
+        if not (yield from self.check_edit(meta)):
             return
         err, data = yield from Service.Problem.get_problem(meta)
-        if err:
-            self.write_error(404)
-            return
-        elif int(id) != 0:
-            if int(data['group_id']) != int(meta['group_id']):
-                self.write_error(403)
-                return
 
         if not action: action = "basic"
         if action == "basic":
