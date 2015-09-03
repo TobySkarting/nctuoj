@@ -170,7 +170,7 @@ if __name__ == '__main__':
         ('/group/\d+/contests/(\d+)/',                                  WebContestHandler),
         ('/group/\d+/contests/(\d+)/(\w*)/',                            WebContestHandler),
         ### TODO
-        #('/group/\d+/contests/(\d+)/edit/',                             WebContestEditHandler),
+        ('/group/\d+/contests/(\d+)/edit/',                             WebContestEditHandler),
         ('/group/\d+/contests/(\d+)/problems/(\d+)/',                   WebContestProblemHandler),
         #('/group/\d+/contests/(\d+)/submissions/',                      WebContestSubmissionsHandler),
         #('/group/\d+/contests/(\d+)/submissions/(\d+)/',                WebContestSubmissionHandler),
