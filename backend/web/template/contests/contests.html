@@ -41,7 +41,7 @@
                     <td>Type</td>
                     <td>Register</td>
                     {% if map_group_power['admin_manage'] in current_group_power %}
-                        <th><a class="btn btn-xs btn-default">Edit</a></th>
+                        <th><a class="btn btn-xs btn-default" href="/group/{{current_group}}/contests/{{x['id']}}/edit/">Edit</a></th>
                     {% end %}
                 </tr>
             {% end %}

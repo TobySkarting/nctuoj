@@ -59,6 +59,7 @@ class ContestService(BaseService):
             res.update({ x: datetime.datetime.now() for x in col })
             res['visible'] = 0
             res['id'] = 0
+            res['problem'] = []
             return (None, res)
         
         res = self.rs.get('contest@%s'%str(data['id']))

@@ -41,7 +41,7 @@ class WebContestHandler(WebRequestHandler):
     def check_view(self, meta):
         err, data = yield from Service.Contest.get_contest(meta)
         if err:
-            self.write_error(500, err)
+            self.write_error(500)
             return False
         if map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) != 0:
             return True
@@ -56,15 +56,28 @@ class WebContestHandler(WebRequestHandler):
         if not (yield from self.check_view(meta)):
             return
         err, data = yield from Service.Contest.get_contest(meta)
-        if action == None:
-            self.Render('./contests/contest.html', data=data)
-        else:
-            self.write_error(404)
+        self.Render('./contests/contest.html', data=data)
 
 class WebContestEditHandler(WebRequestHandler):
+    def check_edit(self, meta):
+        err, data = yield from Service.Contest.get_contest(meta)
+        if err:
+            self.write_error(500)
+            return False
+        if map_group_power['admin_manage'] in self.current_group_power:
+            return True
+        return False
+
     @tornado.gen.coroutine
     def get(self, id, action=None):
-        pass
+        meta = {}
+        meta['id'] = id
+        meta['group_id'] = self.current_group
+        if not (yield from self.check_edit(meta)):
+            return
+        err, data = yield from Service.Contest.get_contest(meta)
+        self.Render('./contests/contest_edit.html', data=data)
+
 class WebContestProblemHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id, problem_id):
