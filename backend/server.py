@@ -155,7 +155,7 @@ if __name__ == '__main__':
         ('/api/verdicts/(\d+)/',                                        ApiVerdictTypeHandler),
 
         ('/group/\d+/bulletins/',                                       WebBulletinsHandler),
-        ('/group/\d+/bulletins/(\d+)/(\w*)/?',                          WebBulletinHandler),
+        ('/group/\d+/bulletins/(\d+)/(\w*)/',                           WebBulletinHandler),
 
         ('/group/\d+/problems/',                                        WebProblemsHandler),
         ('/group/\d+/problems/(\d+)/',                                  WebProblemHandler),
