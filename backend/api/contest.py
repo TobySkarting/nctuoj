@@ -81,7 +81,7 @@ class ApiContestHandler(ApiRequestHandler):
         meta = check_meta
         err, res = yield from Service.Contest.delete_contest(meta)
         if err: self.render(500, err)
-        else: self.render(200,)
+        else: self.render(200, res)
         return
 
 class ApiContestProblemsHandler(ApiRequestHandler):
