@@ -41,7 +41,7 @@
                         </script>
                     {% end %}
                 </div>
-                <div class="panel-body">{% raw x['content'] %}</div>
+                <div class="panel-body">{% raw md(x['content']) %}</div>
                 <div class="panel-footer">By {{x['setter_user']}} At {{x['created_at']}}</div>
             </div>
         </div>
