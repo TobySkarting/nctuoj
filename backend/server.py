@@ -32,6 +32,8 @@ from api.bulletin       import ApiBulletinsHandler
 from api.bulletin       import ApiBulletinHandler
 from api.problem        import ApiProblemsHandler
 from api.problem        import ApiProblemHandler
+from api.submission     import ApiSubmissionsHandler
+from api.submission     import ApiSubmissionHandler
 from api.contest        import ApiContestsHandler
 from api.contest        import ApiContestHandler
 from api.contest        import ApiContestProblemsHandler
@@ -142,6 +144,9 @@ if __name__ == '__main__':
         ### /api/group/\d+/problems/(\d+)/(testdata)/
         ('/api/group/\d+/problems/(\d+)/(\w*)/(\d+)/',                  ApiProblemHandler),
         ### /api/group/\d+/problems/(\d+)/(testdata)/(\d+)/'
+        ('/api/group/\d+/submissions/',                                 ApiSubmissionsHandler),
+        ('/api/group/\d+/submissions/(\d+)/',                           ApiSubmissionHandler),
+        ('/api/group/\d+/submissions/(\d+)/(\w*)/',                     ApiSubmissionHandler),
 
         ('/api/group/\d+/contests/',                                    ApiContestsHandler),
         ### TODO
@@ -189,6 +194,7 @@ if __name__ == '__main__':
         ### user list only admin
         ('/users/',                                                     WebUsersHandler),       
         ('/user/',                                                      WebUserHandler),
+        ('/users/(\d+)/',                                                WebUserHandler),
         ('/user/(sign\w*)/?',                                           WebUserSignHandler),
         ('/user/(\d+)/(\w*)/?',                                         WebUserHandler),
 

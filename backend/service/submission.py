@@ -51,7 +51,7 @@ class SubmissionService(BaseService):
 
     def get_submission(self, data):
         if data['id'] == 0:
-            pass
+            return ('No Submission ID', None)
 
         res = self.rs.get('submission@%s'%(str(data['id'])))
         if res: return (None, res)
@@ -74,7 +74,7 @@ class SubmissionService(BaseService):
         with open(file_path) as f:
             res['code'] = f.read()
         res['code_line'] = len(open(file_path).readlines())
-        self.rs.set('Submission@%s'%(str(data['id'])))
+        self.rs.set('submission@%s'%(str(data['id'])), res)
         return (None, res)
 
     def post_submission(self, data):
@@ -94,6 +94,8 @@ class SubmissionService(BaseService):
             meta['file_name'] = data['code_file']['filename']
             meta['length'] = len(data['code_file']['body'])
         else:
+            if data['plain_file_name'] is None:
+                data['plain_file_name'] = ''
             if re.match('[\w\.]*', data['plain_file_name']).group(0) != data['plain_file_name']:
                 data['plain_file_name'] = ''
             if data['plain_file_name'] != '':
@@ -122,4 +124,10 @@ class SubmissionService(BaseService):
         return (None, id) 
 
     def post_rejudge(self, data={}):
-        pass
+        required_args = ['id']
+        err =self.check_required_args(required_args, data)
+        if err: return (err, None)
+        yield from self.db.execute('COMMIT;')
+        ### TODO add submission_id into wait_submissions
+        print('REJUDGED')
+        return (None, str(data['id']))

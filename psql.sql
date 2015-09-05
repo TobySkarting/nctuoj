@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS map_problem_execute;
 DROP TABLE IF EXISTS map_contest_problem;
 DROP TABLE IF EXISTS map_contest_user;
 DROP TABLE IF EXISTS bulletins;
+DROP TABLE IF EXISTS wait_submissions;
 DROP TABLE IF EXISTS submissions;
 DROP TABLE IF EXISTS contests;
 DROP TABLE IF EXISTS testdata;
@@ -188,7 +189,7 @@ CREATE TABLE problems (
     group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
     setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     visible         integer         NOT NULL DEFAULT 0 CHECK (visible = ANY('{0, 1}')),
-    interactive     integer         NOT NULL DEFAULT 0,
+    interactive     integer         NOT NULL DEFAULT 0 CHECK (interactive = ANY('{0, 1}')),
     verdict_id      integer         DEFAULT 1   REFERENCES verdicts(id) ON DELETE CASCADE,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
@@ -310,4 +311,12 @@ CREATE TRIGGER map_contest_user_update_row BEFORE UPDATE ON map_contest_user FOR
 CREATE INDEX ON map_contest_user (user_id);
 CREATE INDEX ON map_contest_user (contest_id);
 
+CREATE TABLE wait_submissions (
+    id              serial          NOT NULL    PRIMARY KEY,
+    submission_id   integer         NOT NULL    REFERENCES submissions(id)  ON  DELETE  CASCADE,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER wait_submissions_update_row BEFORE UPDATE ON wait_submissions FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE INDEX ON wait_submissions(submission_id);
 

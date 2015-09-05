@@ -196,7 +196,8 @@ class ProblemService(BaseService):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        
-        n
-        res, res_cnt = self.db.execute('')
-        pass
+        res, res_cnt = self.db.execute('SELECT s.id FROM submissions as s WHERE s.problem_id=%s;', (data['id'],))
+        ### TODO add s.id in to wait_submissions
+        for x in res:
+            self.rs.delete('submission@%s'%(str(x['id'])))
+        return (None, str(data['id']))
