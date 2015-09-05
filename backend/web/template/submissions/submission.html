@@ -1,5 +1,20 @@
 {% extends './../frame.html' %}
 {% block content %}
+{% if map_group_power['admin_manage'] in current_group_power %}
+    <a class="btn btn-default" _href="/api/group/{{current_group}}/submissions/{{data['id']}}/rejudge/" style="margin-bottom: 12px;" onclick="rejudge_submission(this);">Rejudge</a>
+    <script>
+    function rejudge_submission(ele){
+        ele = $(ele);
+        $.post(ele.attr("_href"), {'token': '{{account['token']}}'}, function(msg){
+            if(msg['status'] == 200){
+                location.href = location.href;
+            }else{
+                bootbox.alert(msg['msg']);
+            }
+        }, "json");
+    }
+    </script>
+{% end %}
 <div class="row">
     <div class="col-md-12">
         <h2 class="text-center">#{{data['id']}}</h2>

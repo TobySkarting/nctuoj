@@ -94,6 +94,7 @@ class ApiRequestHandler(RequestHandler):
         if self.request.method != 'GET':
             if self.account['id'] == 0 and self.request.uri not in config.API_URI_WITHOUT_SIGNIN:
                 self.render(403, 'Permission Denied')
+                return
         id = self.account['id']
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
