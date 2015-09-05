@@ -9,3 +9,6 @@ DBPASSWORD=`cat $CONFIG | grep DBPASSWORD | awk '{print $3}' | sed "s/^'//g" | s
 export PGPASSWORD=${DBPASSWORD}
 ${PSQL} -h ${DBHOST} -d ${DBNAME} -U ${DBUSER} < ${PSQL_FILE}
 unset PGPASSWORD
+rm -rf ./data
+mkdir -p ./data/submissions
+mkdir -p ./data/testdata
