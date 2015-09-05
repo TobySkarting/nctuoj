@@ -2,7 +2,8 @@
 {% block content %}
 <div class="row">
     <div class="col-md-12">
-        <form action="/api/group/{{current_group}}/problems/{{data['id']}}/submit/">
+        <form action="/api/group/{{current_group}}/submissions/0/submit/">
+            <input type="hidden" name="id" value="{{data['id']}}">
             <input type="hidden" name="token" value="{{account['token']}}">
             <h1>{{data['id']}}.{{data['title']}}</h1>
             <div class="form-inline margin-bottom">

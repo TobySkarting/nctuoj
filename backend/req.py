@@ -11,7 +11,7 @@ import datetime
 import re
 from map import *
 import config
-import markdown2 as markdown
+import markdown as markdown
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):

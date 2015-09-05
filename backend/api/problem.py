@@ -95,7 +95,7 @@ class ApiProblemHandler(ApiRequestHandler):
         check_meta = {}
         check_meta['group_id'] = self.current_group
         check_meta['id'] = id
-
+        '''
         if action == "submit":
             if (yield from self.check_view(check_meta)):
                 args = ['execute_type_id', 'code_file[file]', 'plain_code', 'plain_file_name']
@@ -108,6 +108,7 @@ class ApiProblemHandler(ApiRequestHandler):
                 else:
                     self.render(200, data)
             return
+        '''
 
         if (yield from self.check_edit(check_meta)):
             ### /api/{{group_id}}/problems/{{problem_id}}/basic/
