@@ -18,7 +18,7 @@
         {% for x in data %}
             <tr>
                 <td>{{map_lang[x['lang']]}}</td>
-                <td>{{x['description']}}</td>
+                <td>{%raw md(x['description'])%}</td>
                 <td><a class="btn btn-default btn-xs" href="/executes/{{x['id']}}/">View</div></td>
                 <td><a href="/users/{{x['id']}}">{{x['setter_user']}}</a></td>
                 <td>{{x['priority']}}</td>

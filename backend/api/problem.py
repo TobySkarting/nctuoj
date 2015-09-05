@@ -142,11 +142,11 @@ class ApiProblemHandler(ApiRequestHandler):
             elif action == "rejudge":
                 meta = {}
                 meta['id'] = id
-                if (yield from self.check_edit(meta)):
-                    err, res = yield from Service.Problem.post_rejudge_problem(meta)
-                    if err: self.render(500, err)
-                    else: self.render()
+                err, res = yield from Service.Problem.post_rejudge_problem(meta)
+                if err: self.render(500, err)
+                else: self.render()
             else: self.render(404)
+        else: self.render(403, 'Permission Denied')
 
     
     @tornado.gen.coroutine

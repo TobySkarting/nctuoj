@@ -21,7 +21,7 @@
             <a class="btn btn-default btn-block btn-sm" onclick="delete_problem(this)" data-href="/api/group/{{current_group}}/problems/{{data['id']}}/basic/" data-method="delete">Delete</a> 
         </div>
         <div class="col-md-2">
-            <a class="btn btn-default btn-block btn-sm">Rejudge</a>
+            <a class="btn btn-default btn-block btn-sm" onclick="rejudge_problem(this);" >Rejudge</a>
         </div>
         <script>
         function delete_problem(ele){
@@ -38,12 +38,24 @@
                             if(msg['status'] == 200){
                                 location.href = '/group/{{current_group}}/problems/';
                             } else {
-                                alert(msg['msg']);
+                            bootbox.alert(msg['msg'], function(){});
                             }
                         }
                     });
                 }
             }); 
+        }
+        function rejudge_problem(ele){
+            form = $(ele);
+            $.post('/api/group/{{current_group}}/problems/{{data["id"]}}/rejudge/', 
+                {'token': '{{account['token']}}'},
+                function(msg){
+                if(msg['status'] == 200){
+                    location.href = location.href;
+                }else{
+                    bootbox.alert(msg['msg'], function(){});
+                }
+            }, "json");
         }
         </script>
     {% end %}
@@ -63,13 +75,13 @@
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Input</div>
-            <div class="panel-body">{% raw data['input'] %}</div>
+            <div class="panel-body">{% raw md(data['input']) %}</div>
         </div>
     </div>
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Output</div>
-            <div class="panel-body">{% raw data['output'] %}</div>
+            <div class="panel-body">{% raw md(data['output']) %}</div>
         </div>
     </div>
 </div>
@@ -91,7 +103,7 @@
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">Hint</div>
-            <div class="panel-body">{% raw data['hint'] %}</div>
+            <div class="panel-body">{% raw md(data['hint']) %}</div>
         </div>
     </div>
 </div>
@@ -99,7 +111,7 @@
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Source</div>
-            <div class="panel-body">{% raw data['source'] %}</div>
+            <div class="panel-body">{% raw md(data['source']) %}</div>
         </div>
     </div>
     <div class="col-md-6">
@@ -124,7 +136,7 @@
                     {% for x in data['execute'] %}
                         <tr>
                             <td>{{map_lang[x['lang']]}}</td>
-                            <td>{{x['description']}}</td>
+                            <td>{{raw md(x['description'])}}</td>
                         </tr>
                     {% end %}
                 </tbody>
