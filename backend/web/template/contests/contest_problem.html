@@ -26,7 +26,7 @@
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">Description</div>
-            <div class="panel-body">{% raw data['description'] %}</div>
+            <div class="panel-body">{% raw md(data['description']) %}</div>
         </div>
     </div>
 </div>
@@ -34,13 +34,13 @@
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Input</div>
-            <div class="panel-body">{% raw data['input'] %}</div>
+            <div class="panel-body">{% raw md(data['input']) %}</div>
         </div>
     </div>
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Output</div>
-            <div class="panel-body">{% raw data['output'] %}</div>
+            <div class="panel-body">{% raw md(data['output']) %}</div>
         </div>
     </div>
 </div>
@@ -62,7 +62,7 @@
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">Hint</div>
-            <div class="panel-body">{% raw data['hint'] %}</div>
+            <div class="panel-body">{% raw md(data['hint']) %}</div>
         </div>
     </div>
 </div>
@@ -70,7 +70,7 @@
     <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Source</div>
-            <div class="panel-body">{% raw data['source'] %}</div>
+            <div class="panel-body">{% raw md(data['source']) %}</div>
         </div>
     </div>
     <div class="col-md-6">
