@@ -1,39 +1,94 @@
 {% extends './../frame.html' %}
 {% block content %}
-<h1>Edit</h1>
-<div class="row">
-    <div class="col-md-12">
-        <h2 class="text-center">{{data['id']}}.{{data['title']}}</h2>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Description
-            </div>
-            <div class="panel-body">
-                <textarea>{{data['description']}}</textarea>
-            </div>
+<h1>Edit Contest.{{data['id']}}</h1>
+<form class="form">
+    <input type="hidden" name="token" value="{{account['token']}}">
+    <div class="row">
+        <div class="col-md-3 form-group">
+            <label class="control-label">Name</label>
+            <input class="form-control" type="text" name="title" value="{{data['title']}}">
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Problem
+        <div class="col-md-3 form-group">
+            <div>
+                <label class="control-label">Visible</label>
             </div>
-            <table class="table table-hover table-striped table-condensed">
-                {% for id in range(len(data['problem'])) %}
-                    {% set x = data['problem'][id] %}
-                    <tr>
-                        <td class="col-xs-2"><a href="/group/{{current_group}}/contests/{{data['id']}}/problems/{{x['id']}}/">p{{chr(id+65)}}.{{x['id']}} {{x['title']}}</a></td>
-                    </tr>
+            <select class="select" name="visible" data-width="100%">
+                {% for x in map_visible %}
+                    <option value={{x}}>{{map_visible[x]}}</option>
                 {% end %}
-            </table>
+            </select>
+        </div>
+        <div class="col-md-3 form-group">
+            <label class="control-label">Type</label>
+            <select class="select" name="type" data-width="100%">
+                {% for x in map_visible %}
+                    <option value={{x}}>{{map_visible[x]}}</option>
+                {% end %}
+            </select>
         </div>
     </div>
-</div>
+    <div class="row margin-bottom">
+        <div class="col-md-6">
+            <div class="form-contorl">
+                <label class="control-label">Register</label>
+                <div class="input-group" >
+                    <input type="text" class="datepicker form-control">
+                    <div class="input-group-addon">to</div>
+                    <input type="text" class="datepicker form-control">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-contorl">
+                <label class="control-label">Contest</label>
+                <div class="input-group" >
+                    <input type="text" class="datepicker form-control">
+                    <div class="input-group-addon">to</div>
+                    <input type="text" class="datepicker form-control">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Description
+                </div>
+                <div class="panel-body edit">
+                    <textarea class="form-control" rows=10>{{data['description']}}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<form class="form">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Problem
+                </div>
+                <table class="table table-hover table-striped table-condensed">
+                    {% for id in range(len(data['problem'])) %}
+                        {% set x = data['problem'][id] %}
+                        <tr>
+                            <td class="col-xs-2"><a href="/group/{{current_group}}/contests/{{data['id']}}/problems/{{x['id']}}/">p{{chr(id+65)}}.{{x['id']}} {{x['title']}}</a></td>
+                        </tr>
+                    {% end %}
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+$(document).ready(function(){
+    $(".select").selectpicker();
+    $("[name=visible]").selectpicker('val', {{data["visible"]}});
+    $('.datepicker').datepicker({
+        orientation: "bottom"
+    });
+});
+</script>
 
 {% end %}
