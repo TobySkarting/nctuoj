@@ -147,8 +147,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for id in range(len(data['testdata'])) %}
-                        {% set x = data['testdata'][id] %}
+                    {% for id, x in enumerate(data['testdata']) %}
                         <tr>
                             <td>{{id+1}}</td>
                             <td>{{x['time_limit']}} msec</td>

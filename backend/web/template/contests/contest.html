@@ -1,6 +1,8 @@
 {% extends './../frame.html' %}
 {% block content %}
-
+{% if map_group_power['admin_manage'] in current_group_power %}
+    <a class="btn btn-default" href="/group/{{current_group}}/contests/{{data['id']}}/edit/" style="margin-bottom: 12px;">Edit</a>
+{% end %}
 <div class="row">
     <div class="col-md-12">
         <h2 class="text-center">{{data['id']}}.{{data['title']}}</h2>

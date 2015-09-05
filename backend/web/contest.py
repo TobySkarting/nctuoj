@@ -66,6 +66,7 @@ class WebContestEditHandler(WebRequestHandler):
             return False
         if map_group_power['admin_manage'] in self.current_group_power:
             return True
+        self.write_error(403)
         return False
 
     @tornado.gen.coroutine

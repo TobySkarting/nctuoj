@@ -52,6 +52,9 @@ class SubmissionService(BaseService):
     def get_submission(self, data):
         if data['id'] == 0:
             pass
+
+        res = self.rs.get('submission@%s'%(str(data['id'])))
+        if res: return (None, res)
         res, res_cnt = yield from self.db.execute("""
         SELECT s.*, e.lang as execute_lang, e.description as execute_description, u.account as submitter, p.title as problem_name, p.group_id as problem_group_id 
         FROM submissions as s, execute_types as e, users as u, problems as p
@@ -71,6 +74,7 @@ class SubmissionService(BaseService):
         with open(file_path) as f:
             res['code'] = f.read()
         res['code_line'] = len(open(file_path).readlines())
+        self.rs.set('Submission@%s'%(str(data['id'])))
         return (None, res)
 
     def post_submission(self, data):
@@ -116,3 +120,6 @@ class SubmissionService(BaseService):
                 f.write(data['plain_code'].encode())
         yield from self.ftp.upload(file_path, remote_path)
         return (None, id) 
+
+    def post_rejudge(self, data={}):
+        pass

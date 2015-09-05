@@ -138,6 +138,13 @@ class ApiProblemHandler(ApiRequestHandler):
                     err, data = yield from Service.Problem.post_problem_testdata(meta)
                     if err: self.render(500, err)
                     else: self.render()
+            elif action == "rejudge":
+                meta = {}
+                meta['id'] = id
+                if (yield from self.check_edit(meta)):
+                    err, res = yield from Service.Problem.post_rejudge_problem(meta)
+                    if err: self.render(500, err)
+                    else: self.render()
             else: self.render(404)
 
     

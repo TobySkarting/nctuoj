@@ -191,3 +191,12 @@ class ProblemService(BaseService):
         yield from self.db.execute("DELETE FROM testdata WHERE id=%s", (data['testdata_id'],))
         self.rs.delete('problem@%s@testdata' % str(data['id']))
         return (None, None)
+
+    def post_rejudge_problem(self, data={}):
+        required_args = ['id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        
+        n
+        res, res_cnt = self.db.execute('')
+        pass
