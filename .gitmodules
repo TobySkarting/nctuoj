@@ -10,3 +10,6 @@
 [submodule "http/font-awesome"]
 	path = http/font-awesome
 	url = https://github.com/FortAwesome/Font-Awesome
+[submodule "http/bootstrap-datetimepicker"]
+	path = http/bootstrap-datetimepicker
+	url = https://github.com/Eonasdan/bootstrap-datetimepicker
