@@ -4,3 +4,12 @@
 [submodule "http/MathJax"]
 	path = http/MathJax
 	url = https://github.com/mathjax/MathJax
+[submodule "http/bootstrap-select"]
+	path = http/bootstrap-select
+	url = https://github.com/silviomoreto/bootstrap-select
+[submodule "http/bootstrap"]
+	path = http/bootstrap
+	url = https://github.com/twbs/bootstrap
+[submodule "http/font-awesome"]
+	path = http/font-awesome
+	url = https://github.com/FortAwesome/Font-Awesome
