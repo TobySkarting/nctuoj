@@ -1,5 +1,6 @@
 {% extends './../frame.html' %}
 {% block content %}
+{{data}}
 <h1>Edit Contest.{{data['id']}}</h1>
 <form class="form">
     <input type="hidden" name="token" value="{{account['token']}}">
@@ -32,9 +33,9 @@
             <div class="form-contorl">
                 <label class="control-label">Register</label>
                 <div class="input-group" >
-                    <input type="text" class="datepicker form-control">
+                    <input type="text" class="datetimepicker form-control" value="{{data['register_start']}}">
                     <div class="input-group-addon">to</div>
-                    <input type="text" class="datepicker form-control">
+                    <input type="text" class="datetimepicker form-control" value="{{data['register_end']}}">
                 </div>
             </div>
         </div>
@@ -42,9 +43,9 @@
             <div class="form-contorl">
                 <label class="control-label">Contest</label>
                 <div class="input-group" >
-                    <input type="text" class="datepicker form-control">
+                    <input type="text" class="datetimepicker form-control" value="{{data['start']}}">
                     <div class="input-group-addon">to</div>
-                    <input type="text" class="datepicker form-control">
+                    <input type="text" class="datetimepicker form-control" value="{{data['end']}}">
                 </div>
             </div>
         </div>
@@ -85,8 +86,10 @@
 $(document).ready(function(){
     $(".select").selectpicker();
     $("[name=visible]").selectpicker('val', {{data["visible"]}});
-    $('.datepicker').datepicker({
-        orientation: "bottom"
+    $('.datetimepicker').datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        keyboardNavigation: false,
+        minuteStep: 5
     });
 });
 </script>
