@@ -1,6 +1,3 @@
-[submodule "http/bootstrap-datetimepicker"]
-    path = http/bootstrap-datetimepicker
-    url = https://github.com/smalot/bootstrap-datetimepicker
 [submodule "http/MathJax"]
 	path = http/MathJax
 	url = https://github.com/mathjax/MathJax
