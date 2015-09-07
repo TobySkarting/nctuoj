@@ -2,7 +2,7 @@
 {% block content %}
 {{data}}
 <h1>Edit Contest.{{data['id']}}</h1>
-<form class="form" id="contest_content">
+<form class="form" id="contest_content" action="/api/group/{{current_group}}/contests/{{data['id']}}/" method="post">
     <input type="hidden" name="token" value="{{account['token']}}">
     <div class="row">
         <div class="col-md-3 form-group">
@@ -33,9 +33,9 @@
             <div class="form-contorl">
                 <label class="control-label">Register</label>
                 <div class="input-group" >
-                    <input type="text" class="datetimepicker form-control" value="{{data['register_start']}}">
+                    <input type="text" class="datetimepicker form-control" name="register_start" value="{{data['register_start']}}">
                     <div class="input-group-addon">to</div>
-                    <input type="text" class="datetimepicker form-control" value="{{data['register_end']}}">
+                    <input type="text" class="datetimepicker form-control" name="register_end" value="{{data['register_end']}}">
                 </div>
             </div>
         </div>
@@ -43,9 +43,9 @@
             <div class="form-contorl">
                 <label class="control-label">Contest</label>
                 <div class="input-group" >
-                    <input type="text" class="datetimepicker form-control" value="{{data['start']}}">
+                    <input type="text" class="datetimepicker form-control" name="start" value="{{data['start']}}">
                     <div class="input-group-addon">to</div>
-                    <input type="text" class="datetimepicker form-control" value="{{data['end']}}">
+                    <input type="text" class="datetimepicker form-control" name="end" value="{{data['end']}}">
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
                     Description
                 </div>
                 <div class="panel-body edit">
-                    <textarea class="form-control" rows=10>{{data['description']}}</textarea>
+                    <textarea class="form-control" rows=10 name="description">{{data['description']}}</textarea>
                 </div>
             </div>
         </div>
@@ -88,10 +88,23 @@ $(document).ready(function(){
     $(".select").selectpicker();
     $("[name=visible]").selectpicker('val', {{data["visible"]}});
     $('.datetimepicker').datetimepicker({
-        format: 'YYYY-MM-DD hh:mm:ss'
+        format: 'YYYY-MM-DD HH:mm:ss'
     });
     $("#contest_content").submit(function(){
-        alert("XD");
+        form = $(this);
+        $.ajax({
+            url: form.attr("action"),
+            type: form.attr("method"),
+            data: form.serialize(),
+            dataType: "json",
+            success: function(msg){
+                if(msg['status'] == 200){
+                    location.href = "/group/{{current_group}}/contests/" + msg['msg'] + "/";
+                } else {
+                    bootbox.alert(msg['msg']);
+                }
+            }
+        });
         return false;
     });
 });
