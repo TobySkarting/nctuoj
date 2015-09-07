@@ -35,8 +35,8 @@ class ExecuteService(BaseService):
             return ('Error execute id', None)
         res = res[0]
         res['steps'], res_cnt = yield from self.db.execute("SELECT execute_steps.* FROM execute_steps WHERE execute_type_id=%s ORDER BY id", (res['id'],))
-        for x in range(len(res['steps'])):
-            res['steps'][x]['step'] = x + 1
+        for id, x in enumerate(res['steps']):
+            x['step'] = id + 1
         self.rs.set('execute@%s'%(str(data['id'])), res)
         return (None, res)
 
@@ -46,7 +46,6 @@ class ExecuteService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         command = data.pop('command')
-        print('COMMAND')
         id = None
         if int(data['id']) == 0:
             data.pop('id')
@@ -70,11 +69,7 @@ class ExecuteService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         yield from self.db.execute('DELETE FROM execute_types WHERE id=%s;', (data['id'],))
-        yield from self.db.execute('DELETE FROM execute_steps WHERE execute_type_id=%s;', (data['id'],))
-        yield from self.db.execute('DELETE FROM map_problem_execute WHERE execute_type_id=%s;', (data['id'],))
         ### ???
-        yield from self.db.execute('DELETE FROM submissions WHERE execute_type_id=%s;', (data['id'],))
-        yield from self.db.execute('DELETE FROM verdicts WHERE execute_type_id=%s;', (data['id'],))
         self.rs.delete('execute@%s'%(str(data['id'])))
         self.rs.delete('execute_list')
         return (None, str(data['id']))

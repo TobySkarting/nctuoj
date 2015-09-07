@@ -32,8 +32,7 @@ function new_testdata(){
         </tr>
     </thead>
     <tbody>
-        {% for id in range(len(data['testdata'])) %}
-            {% set x = data['testdata'][id] %}
+        {% for id, x in enumerate(data['testdata']) %}
             <form class="form" action="/api/group/{{current_group}}/problems/{{data['id']}}/testdata/{{x['id']}}/">
                 <input type="hidden" name="token" value="{{account['token']}}">
                 <tr>
