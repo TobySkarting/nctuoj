@@ -88,9 +88,7 @@ $(document).ready(function(){
     $(".select").selectpicker();
     $("[name=visible]").selectpicker('val', {{data["visible"]}});
     $('.datetimepicker').datetimepicker({
-        format: 'yyyy-mm-dd hh:ii:ss',
-        keyboardNavigation: false,
-        minuteStep: 5
+        format: 'YYYY-MM-DD hh:mm:ss'
     });
     $("#contest_content").submit(function(){
         alert("XD");
