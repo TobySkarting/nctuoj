@@ -76,7 +76,7 @@ class ContestService(BaseService):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res, res_cnt = yield from self.db.execute('SELECT p.id, p.title FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s ORDER BY m.id ASC;', (data['id'],))
+        res, res_cnt = yield from self.db.execute('SELECT p.id, p.title, m.score FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s ORDER BY m.id ASC;', (data['id'],))
         return (None, res)
 
     def post_contest(self, data={}):
