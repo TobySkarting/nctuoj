@@ -204,6 +204,7 @@ if __name__ == '__main__':
         ('/(google4e9e359eaf9accab.html)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/.*',                                                         Web404Handler),
         ],  cookie_secret = config.COOKIE_SECRET, 
+            compress_response = True,
             autoescape =    'xhtml_escape', 
             ui_modules =    ui_modules)
     global srv
