@@ -21,9 +21,6 @@ class ContestService(BaseService):
             FROM contests as c, users as u, groups as g
             WHERE u.id=c.setter_user_id AND g.id=c.group_id AND
             """
-        #if int(data['group_id']) == 1:
-        #    sql += " (c.group_id=%s OR c.visible=2) "
-        #else:
         sql += " (c.group_id=%s) "
         sql += " ORDER BY c.id limit %s OFFSET %s "
 
@@ -37,11 +34,7 @@ class ContestService(BaseService):
         res = self.rs.get('contest_list_count@%s' 
                 % (str(data['group_id'])))
         if res: return (None, res)
-        sql = "SELECT COUNT(*) FROM contests as c "
-        #if int(data['group_id']) == 1:
-        #    sql += "WHERE (c.group_id=%s OR c.visible = 2)"
-        #else:
-        sql += "WHERE c.group_id=%s"
+        sql = "SELECT COUNT(*) FROM contests as c WHERE c.group_id=%s;"
         res, res_cnt = yield from self.db.execute(sql, (data['group_id'],))
         self.rs.set('contest_list_count@%s'
                 % (str(data['group_id'])), res[0]['count'])
@@ -102,11 +95,9 @@ class ContestService(BaseService):
     def post_contest_problem(self, data={}):
         required_args = ['id', 'problems', 'scores']
         err = self.check_required_args(required_args, data)
-        print('ERR', err)
         if err: return (err, None)
         self.rs.delete('contest@%sproblem'%str(data['id']))
         yield from self.db.execute('DELETE FROM map_contest_problem WHERE contest_id=%s;', (data['id'],))
-        print('XXX', data['problems'], data['scores'])
         for problem, score in zip(data['problems'], data['scores']):
             meta = {}
             meta['contest_id'] = data['id']
@@ -121,7 +112,6 @@ class ContestService(BaseService):
         err, res = yield from self.get_contest(data)
         if err: return (err, None)
         yield from self.db.execute('DELETE FROM contests WHERE id=%s;', (res['id'],))
-        yield from self.db.execute('DELETE FROM map_contest_problem WHERE contest_id=%s;', (res['id'],))
         self.rs.delete('contest@%s'%str(res['id']))
         self.rs.delete('contest@%s@problem'%str(res['id']))
         return (None, None)
