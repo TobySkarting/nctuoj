@@ -13,3 +13,6 @@
 [submodule "http/bootstrap-datetimepicker"]
 	path = http/bootstrap-datetimepicker
 	url = https://github.com/Eonasdan/bootstrap-datetimepicker
+[submodule "http/moment"]
+	path = http/moment
+	url = https://github.com/moment/moment/
