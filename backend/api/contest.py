@@ -101,6 +101,14 @@ class ApiContestProblemsHandler(ApiRequestHandler):
         if map_group_power['admin_manage'] not in self.current_group_power:
             self.render(403, 'Permission Denied')
             return False
+        for problem in meta['problems']:
+            err, data = yield from Service.Problem.get_problem({'id': problem})
+            if err:
+                self.render(500, err)
+                return False
+            if int(data['group_id']) != int(meta['group_id']):
+                self.render(403, 'Permission Denied')
+                return False
         if int(meta['id']) != 0:
             err, data = yield from Service.Contest.get_contest(meta)
             if err:
@@ -122,15 +130,16 @@ class ApiContestProblemsHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def post(self, id):
         print('POST')
-        check_meta = {}
-        check_meta['id'] = id
-        check_meta['group_id'] = self.current_group
-        if not (yield from self.check_edit(check_meta)):
-            return
         args = ['problems[]', 'scores[]']
         meta = self.get_args(args)
         meta['id'] = id
         meta['group_id'] = self.current_group
+        check_meta = {}
+        check_meta['id'] = id
+        check_meta['group_id'] = self.current_group
+        check_meta['problems'] = meta['problems']
+        if not (yield from self.check_edit(check_meta)):
+            return
         err, res = yield from Service.Contest.post_contest_problem(meta)
         if err: self.render(500, err)
         else: self.render(200, res)
