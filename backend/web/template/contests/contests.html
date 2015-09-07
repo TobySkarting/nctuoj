@@ -17,6 +17,7 @@
                 <th>Register</th>
                 {% if map_group_power['admin_manage'] in current_group_power %}
                     <th>Edit</th>
+                    <th>Delete</th>
                 {% end %}
             </tr>
         </thead>
@@ -41,7 +42,31 @@
                     <td>Type</td>
                     <td>Register</td>
                     {% if map_group_power['admin_manage'] in current_group_power %}
-                        <th><a class="btn btn-xs btn-default" href="/group/{{current_group}}/contests/{{x['id']}}/edit/">Edit</a></th>
+                        <td><a class="btn btn-xs btn-warning" href="/group/{{current_group}}/contests/{{x['id']}}/edit/">Edit</a></td>
+                        <td><div class="btn btn-xs btn-danger" onclick="delete_contest({{x['id']}});">Delete</div></td>
+                        <script>
+                            function delete_contest(id){
+                                bootbox.confirm("Do you want to delete this contest?", function(res){
+                                    if(res){
+                                        $.ajax({
+                                            url: '/api/group/{{current_group}}/contests/'+id+'/',
+                                            type: 'DELETE',
+                                            dataType: 'json',
+                                            data: {'token': '{{account['token']}}'},
+                                            success: function(msg){
+                                                if(msg['status'] == 200){
+                                                    bootbox.alert('Deleted', function(){
+                                                        location.href = '/group/{{current_group}}/contests/';
+                                                    });
+                                                }else{
+                                                    bootbox.alert(msg['msg']);
+                                                }
+                                            }
+                                        }); 
+                                    }
+                                });
+                            }
+                        </script>
                     {% end %}
                 </tr>
             {% end %}

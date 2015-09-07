@@ -1,6 +1,12 @@
 {% extends './../frame.html' %}
 {% block content %}
+{% if int(data['id']) != 0 %}
 <h1>Edit Contest.{{data['id']}}</h1>
+<a class="btn btn-default" href="/group/{{current_group}}/contests/{{data['id']}}/" style="margin-bottom: 12px;">Back</a>
+{% else %}
+<h1>New Contest</h1>
+<a class="btn btn-default" href="/group/{{current_group}}/contests/" style="margin-bottom: 12px;">Back</a>
+{% end %}
 <form class="form" id="contest_content" action="/api/group/{{current_group}}/contests/{{data['id']}}/" method="post">
     <input type="hidden" name="token" value="{{account['token']}}">
     <div class="row">
@@ -80,8 +86,7 @@
                             <th>Delete</th>
                         </thead-->
                         <tbody>
-                            {% for id in range(len(data['problem'])) %}
-                                {% set x = data['problem'][id] %}
+                            {% for id, x in enumerate(data['problem']) %}
                                 <tr>
                                     <td class="col-xs-2"><input name="problems[]" type="number" class="form-control" value="{{x['id']}}"></td>
                                     <td class="col-xs-8"><input name="scores[]" class="form-control" value="{{x['score']}}"></td>
