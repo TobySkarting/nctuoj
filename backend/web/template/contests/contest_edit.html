@@ -2,7 +2,7 @@
 {% block content %}
 {{data}}
 <h1>Edit Contest.{{data['id']}}</h1>
-<form class="form">
+<form class="form" id="contest_content">
     <input type="hidden" name="token" value="{{account['token']}}">
     <div class="row">
         <div class="col-md-3 form-group">
@@ -62,6 +62,7 @@
             </div>
         </div>
     </div>
+    <button type="submit" class="btn btn-success">Submit</button>
 </form>
 <form class="form">
     <div class="row">
@@ -90,6 +91,10 @@ $(document).ready(function(){
         format: 'yyyy-mm-dd hh:ii:ss',
         keyboardNavigation: false,
         minuteStep: 5
+    });
+    $("#contest_content").submit(function(){
+        alert("XD");
+        return false;
     });
 });
 </script>
