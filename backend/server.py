@@ -205,6 +205,7 @@ if __name__ == '__main__':
         ('/.*',                                                         Web404Handler),
         ],  cookie_secret = config.COOKIE_SECRET, 
             compress_response = True,
+            debug = config.DEBUG,
             autoescape =    'xhtml_escape', 
             ui_modules =    ui_modules)
     global srv
