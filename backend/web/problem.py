@@ -64,6 +64,8 @@ class WebProblemHandler(WebRequestHandler):
 
 class WebProblemEditHandler(WebRequestHandler):
     def check_edit(self, meta={}):
+        if int(meta['id']) == 0:
+            return True
         err, data = yield from Service.Problem.get_problem(meta)
         if int(meta['group_id']) == int(data['group_id']) and map_group_power['admin_manage'] not in self.current_group_power:
             self.write_error(403)
