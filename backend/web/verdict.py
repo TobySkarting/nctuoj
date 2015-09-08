@@ -28,6 +28,7 @@ class WebVerdictTypeHandler(WebRequestHandler):
                 self.write_error(403)
                 return
             err, data = yield from Service.Verdict.get_verdict(meta)
+            err, data['execute_types'] = yield from Service.Execute.get_execute_list()
             if err: self.write_error(500, err)
             else: self.Render('./verdicts/verdict_edit.html', data=data)
         else:
