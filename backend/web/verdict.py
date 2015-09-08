@@ -21,7 +21,7 @@ class WebVerdictTypeHandler(WebRequestHandler):
         if action == "view":
             err, data = yield from Service.Verdict.get_verdict(meta)
             if err: self.write_error(500, err)
-            else: self.Render('./verdict/verdict.html', data=data)
+            else: self.Render('./verdicts/verdict.html', data=data)
         elif action == "edit":
             ### check power
             if map_power['verdict_manage'] not in self.account['power']:
@@ -29,6 +29,6 @@ class WebVerdictTypeHandler(WebRequestHandler):
                 return
             err, data = yield from Service.Verdict.get_verdict(meta)
             if err: self.write_error(500, err)
-            else: self.Render('./verdict/verdict.html', data=data)
+            else: self.Render('./verdicts/verdict_edit.html', data=data)
         else:
             self.write_error(404)
