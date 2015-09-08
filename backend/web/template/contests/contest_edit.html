@@ -107,7 +107,7 @@
             <tr>
                 <td class="col-xs-2"><input name="problems[]" type="number" class="form-control"></td>
                 <td class="col-xs-8"><input name="scores[]" class="form-control"></td>
-                <td class="col-xs-2"><a class="btn btn-danger btn-block">Delete</a></td>
+                <td class="col-xs-2"><a class="btn btn-danger btn-block" onclick="$(this).parent().parent().remove();">Delete</a></td>
             </tr>
         </tbody>
     </table>
