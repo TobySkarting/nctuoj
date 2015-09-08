@@ -10,8 +10,8 @@ class ContestService(BaseService):
         ContestService.inst = self
 
     def get_current_contest(self):
-        res, res_cnt = yield from self.db.execute('SELECT id FROM contests WHERE start<=%s AND %s<=end;', (datetime.datetime.now(), datetime.datetime.now(), ))
-        return (None, set(x['id'] for x in res))
+        res, res_cnt = yield from self.db.execute('SELECT id FROM contests WHERE start<=%s AND %s<="end";', (datetime.datetime.now(), datetime.datetime.now(), ))
+        return (None, list(set(int(x['id']) for x in res)))
 
     def get_contest_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
@@ -120,7 +120,7 @@ class ContestService(BaseService):
         err, res = yield from self.get_contest(data)
         if err: return (err, None)
         end = res['end']
-        res, res_cnt = yield from self.db.execute('SELECT s.* FROM submissions as s, (SELECT m.user_id FROM map_contest_user as m WHERE m.contest_id=%s) as u WHERE s.user_id=u.user_id AND %s<=s.created_at AND s.created_id<=%s ORDER BY s.id ASC;', (res['id'], res['start'], res['end'],))
+        res, res_cnt = yield from self.db.execute('SELECT s.* FROM submissions as s, (SELECT m.user_id FROM map_contest_user as m WHERE m.contest_id=%s) as u WHERE s.user_id=u.user_id AND %s<=s.created_at AND s.created_at<=%s ORDER BY s.id ASC;', (res['id'], res['start'], res['end'],))
         if datetime.datetime.now() > end:
             self.rs.set('contest@%ssubmission'%(str(data['id'])), res)
         return (None, res)
