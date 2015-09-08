@@ -100,6 +100,8 @@ class ApiRequestHandler(RequestHandler):
                 self.render(403, 'Permission Denied')
                 return
         id = self.account['id']
+        self.registered_contest = yield from Service.User.get_user_contest(id)
+        err, self.current_contest = yield from Service.User.get_user_current_contest(id)
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
         err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
@@ -132,6 +134,7 @@ class WebRequestHandler(RequestHandler):
         kwargs['title'] = kwargs["title"] + " | NCTUOJ" if "title" in kwargs else "NCTUOJ"
         kwargs['group'] = self.group
         kwargs['current_contest'] = self.current_contest
+        kwargs['registered_contest'] = self.registered_contest
         kwargs['current_group'] = self.current_group
         kwargs['current_group_power'] = self.current_group_power
         kwargs['current_group_active'] = self.current_group_active
@@ -164,6 +167,7 @@ class WebRequestHandler(RequestHandler):
         if id == 0:
             self.account['token'] = ""
         self.account["id"] = id
+        self.registered_contest = yield from Service.User.get_user_contest(id)
         err, self.current_contest = yield from Service.User.get_user_current_contest(id)
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)

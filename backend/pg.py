@@ -294,12 +294,15 @@ class AsyncPG:
 
         self._ioloop.add_callback(self._dispatch,fd,0)
 
-    def execute(self, sql, prama=()):
+    def execute(self, sql, param=()):
         cur = yield self.cursor()
-        try: yield cur.execute(sql, prama)
+        yield cur.execute(sql ,param)
+        '''
+        try: yield cur.execute(sql, param)
         except psycopg2.Error as e:
             print(e.pgcode, e.pgerror, e.diag.severity, e.diag.message_primary)
             return (None, None)
+        '''
         res = None
         try: res = cur.fetchall()
         except: pass

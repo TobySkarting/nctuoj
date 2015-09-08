@@ -125,6 +125,30 @@ class ContestService(BaseService):
             self.rs.set('contest@%ssubmission'%(str(data['id'])), res)
         return (None, res)
 
+    def register(self, data={}):
+        required_args = ['id', 'user_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        err, res = yield from Service.User.get_user_contest(data['user_id']) 
+        if err: return (err, None)
+        if int(data['user_id']) in res:
+            return ('You have registered', None)
+        yield from self.db.execute('INSERT INTO map_contest_user (contest_id, user_id) VALUES(%s, %s);', (data['id'], data['user_id'],))
+        return (None, str(data['id']))
+
+    def unregister(self, data={}):
+        required_args = ['id', 'user_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        err, res = yield from Service.User.get_user_contest(data['user_id']) 
+        if err: return (err, None)
+        if int(data['user_id']) not in res:
+            return ('You have not registered yet', None)
+        yield from self.db.execute('DELETE FROM map_contest_user WHERE contest_id=%s AND user_id=%s;', (data['id'], data['user_id'],))
+        return (None, str(data['id']))
+        pass
+
+
     def delete_contest(self, data={}):
         required_args = ['id', 'group_id']
         err, res = yield from self.get_contest(data)
