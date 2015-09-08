@@ -75,6 +75,7 @@ class VerdictService(BaseService):
             with open(file_path, 'wb+') as f:
                 f.write(code_file['body'])
             yield from self.ftp.upload(file_path, remote_path)
+        self.rs.delete('verdict@%s'%(str(id)))
         return (None, str(id))
 
     def delete_verdict(self, data={}):
