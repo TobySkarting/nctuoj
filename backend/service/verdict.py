@@ -1,4 +1,5 @@
 from service.base import BaseService
+from req import Service
 import os
 import config
 
