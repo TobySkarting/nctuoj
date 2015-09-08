@@ -13,6 +13,10 @@ from map import *
 import config
 import markdown as markdown
 
+def md(s):
+    if s is None: s = ''
+    return markdown.markdown(s)
+
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
@@ -119,7 +123,7 @@ class WebRequestHandler(RequestHandler):
         self.Render('./err/'+str(status_code)+'.html', **kwargs)
 
     def Render(self, templ, **kwargs):
-        kwargs['md'] = markdown.markdown
+        kwargs['md'] = md
         kwargs['map_power'] = self.map_power
         kwargs['map_group_power'] = self.map_group_power
         kwargs['map_lang'] = self.map_lang

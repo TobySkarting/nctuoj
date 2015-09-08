@@ -80,6 +80,7 @@ class UserService(BaseService):
 
     def post_user_power(self, id, power):
         err, current_power = yield from self.get_user_power_info(id)
+        self.rs.delete('user_power@%s'%(str(id)))
         if int(power) in current_power:
             yield from self.db.execute("DELETE FROM map_user_power WHERE user_id=%s and power=%s", (id, power,))
         else:
@@ -154,8 +155,7 @@ class UserService(BaseService):
         sql, prama = self.gen_insert_sql('users', data)
         res, res_cnt = yield from self.db.execute(sql, prama)
         res, res_cnt = yield from self.db.execute('SELECT id FROM users '
-                'WHERE account = %s',
-                (data['account'],))
+                'WHERE account = %s', (data['account'],))
         if res_cnt == 0:
             return ('Something Wrong', None)
         id = res[0]["id"]

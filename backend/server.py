@@ -128,7 +128,7 @@ if __name__ == '__main__':
     app = tornado.web.Application([
         ('/',                                                           WebIndexHandler),
         ('/api/users/',                                                 ApiUsersHandler),
-        ('/api/user/(\d+)/',                                            ApiUserHandler),
+        ('/api/users/(\d+)/',                                            ApiUserHandler),
         ('/api/user/(sign\w*)/',                                        ApiUserSignHandler),
         ('/api/user/(resettoken)/',                                     ApiUserSignHandler),
         

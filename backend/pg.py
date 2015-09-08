@@ -296,7 +296,10 @@ class AsyncPG:
 
     def execute(self, sql, prama=()):
         cur = yield self.cursor()
-        yield cur.execute(sql, prama)
+        try: yield cur.execute(sql, prama)
+        except psycopg2.Error as e:
+            print(e.pgcode, e.pgerror, e.diag.severity, e.diag.message_primary)
+            return (None, None)
         res = None
         try: res = cur.fetchall()
         except: pass

@@ -53,7 +53,8 @@ function update(id, power_type){
     $.ajax({
         url: '/api/users/'+id+'/',
         type: "POST",
-        data: {'power': power_type,
+        data: {
+            'power': power_type,
             'token': "{{account['token']}}"
         },
         dataType: "json",

@@ -25,9 +25,9 @@ class SubmissionService(BaseService):
         WHERE p.id=s.problem_id AND u.id=s.user_id AND e.id=s.execute_type_id
         """
         sql += " AND p.group_id=%s  "
-        if data['problem_id']:
+        if 'problem_id' in data and data['problem_id']:
             sql += "AND problem_id=%s " % (int(data['problem_id']))
-        if data['user_id']:
+        if 'user_id' in data and data['user_id']:
             sql += "AND user_id=%s " % (int(data['user_id']))
         sql += " ORDER BY s.id DESC LIMIT %s OFFSET %s"
         
@@ -37,9 +37,9 @@ class SubmissionService(BaseService):
     def get_submission_list_count(self, data):
         subsql = "SELECT count(*) FROM submissions as s "
         cond = " WHERE "
-        if data['problem_id']:
+        if 'problem_id' in data and data['problem_id']:
             cond += "problem_id=%s AND " % (int(data['problem_id']))
-        if data['user_id']:
+        if 'user_id' in data and data['user_id']:
             cond += "user_id=%s AND " % (int(data['user_id']))
         if cond == " WHERE ":
             cond = ""
@@ -50,8 +50,8 @@ class SubmissionService(BaseService):
         return (None, res[0]['count'])
 
     def get_submission(self, data):
-        if data['id'] == 0:
-            return ('No Submission ID', None)
+        #if int(data['id']) == 0:
+            #return ('No Submission ID', None)
 
         res = self.rs.get('submission@%s'%(str(data['id'])))
         if res: return (None, res)
@@ -121,13 +121,13 @@ class SubmissionService(BaseService):
             else:
                 f.write(data['plain_code'].encode())
         yield from self.ftp.upload(file_path, remote_path)
+        yield from self.db.execute('INSET INTO wait_submissions (submission_id) VALUES(%s);', (id,))
         return (None, id) 
 
     def post_rejudge(self, data={}):
         required_args = ['id']
         err =self.check_required_args(required_args, data)
         if err: return (err, None)
-        yield from self.db.execute('COMMIT;')
-        ### TODO add submission_id into wait_submissions
+        yield from self.db.execute('INSET INTO wait_submissions (submission_id) VALUES(%s);', (data['id'],))
         print('REJUDGED')
         return (None, str(data['id']))

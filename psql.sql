@@ -259,6 +259,7 @@ CREATE INDEX ON submissions (memory_usage);
 CREATE INDEX ON submissions (time_usage);
 CREATE INDEX ON submissions (verdict_id);
 CREATE INDEX ON submissions (length);
+CREATE INDEX ON submissions (created_at);
 INSERT INTO submissions (user_id, problem_id, execute_type_id, length, file_name) VALUES (1, 10001, 1, 100, 'xd.cpp');
 
 
@@ -318,5 +319,5 @@ CREATE TABLE wait_submissions (
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER wait_submissions_update_row BEFORE UPDATE ON wait_submissions FOR EACH ROW EXECUTE PROCEDURE updated_row();
-CREATE INDEX ON wait_submissions(submission_id);
+CREATE UNIQUE INDEX ON wait_submissions(submission_id);
 

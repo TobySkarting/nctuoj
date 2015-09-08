@@ -13,6 +13,7 @@ class ApiUserHandler(ApiRequestHandler):
     def post(self, id):
         args = ['basic_info', 'power']
         meta = self.get_args(args)
+        print('META', meta)
         if meta['power']:
             if self.map_power['user_manage'] not in self.account['power']:
                 self.render(403, "Permission Denied")
