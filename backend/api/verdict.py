@@ -35,7 +35,17 @@ class ApiVerdictTypeHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def post(self, id):
-        pass
+        meta = {}
+        meta['id'] = id
+        if not (yield from self.check_edit(meta)):
+            return
+        args = ['title', 'code_file[file]', 'execute_type_id']
+        meta = self.get_args(args)
+        meta['id'] = id
+        meta['setter_user_id'] = self.account['id']
+        err, res = yield from Service.Verdict.post_verdict(meta)
+        if err: self.render(500, err)
+        else: self.render(200, res)
 
     @tornado.gen.coroutine
     def delete(self, id):
