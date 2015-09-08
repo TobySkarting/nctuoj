@@ -1,4 +1,5 @@
 from service.base import BaseService
+import os
 import config
 
 class VerdictService(BaseService):
@@ -26,6 +27,17 @@ class VerdictService(BaseService):
         if res_cnt == 0:
             return ('No Verdict ID', None)
         res = res[0]
+
+        folder = './../data/verdicts/%s/' % str(res['id'])
+        file_path = '%s/%s' % (folder, res['file_name'])
+        if not os.path.isfile(file_path):
+            remote_folder = './data/verdicts/%s/' % str(res['id'])
+            remote_path = '%s/%s' % (remote_folder, res['file_name'])
+            yield from self.ftp.download(remote_path, file_path)
+
+        with open(file_path) as f:
+            res['code'] = f.read()
+        res['code_line'] = len(open(file_path).readlines())
         self.rs.set('verdict@%s'%(str(data['id'])), res)
         return (None, res)
 
