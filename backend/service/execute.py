@@ -30,7 +30,7 @@ class ExecuteService(BaseService):
         res = self.rs.get('execute@%s'%(str(data['id'])))
         if res: return (None, res)
         sql = "SELECT e.*, u.account as setter_user FROM execute_types as e, users as u WHERE e.id=%s AND e.setter_user_id=u.id"
-        res, res_cnt = yield from self.db.execute(sql, (data["id"]))
+        res, res_cnt = yield from self.db.execute(sql, (data["id"], ))
         if res_cnt == 0:
             return ('Error execute id', None)
         res = res[0]
