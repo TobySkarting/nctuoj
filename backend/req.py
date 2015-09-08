@@ -131,6 +131,7 @@ class WebRequestHandler(RequestHandler):
         kwargs['account'] = self.account
         kwargs['title'] = kwargs["title"] + " | NCTUOJ" if "title" in kwargs else "NCTUOJ"
         kwargs['group'] = self.group
+        kwargs['current_contest'] = self.current_contest
         kwargs['current_group'] = self.current_group
         kwargs['current_group_power'] = self.current_group_power
         kwargs['current_group_active'] = self.current_group_active
@@ -160,9 +161,10 @@ class WebRequestHandler(RequestHandler):
         except:
             id = 0
             self.clear_cookie('id')
-        if id==0:
+        if id == 0:
             self.account['token'] = ""
         self.account["id"] = id
+        err, self.current_contest = yield from Service.User.get_user_current_contest(id)
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
         err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
@@ -172,6 +174,11 @@ class WebRequestHandler(RequestHandler):
         if not in_group and self.current_group != 0:
             self.write_error(403)
             return
+        
+        if self.current_contest:
+            if re.search(r'/group/\d+/contests/(\w*)/', self.request.uri) is None:
+                self.redirect('/group/%s/contests/%s/'%(str(self.current_contest['group_id']), str(self.current_contest['id'])))
+
 
 
         

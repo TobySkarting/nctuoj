@@ -3,6 +3,7 @@ import hashlib
 import config
 import time
 import random
+import datetime
 
 class UserService(BaseService):
 
@@ -96,6 +97,23 @@ class UserService(BaseService):
 
     def modify(self, data={}):
         pass
+
+    def get_user_contest(self, data={}):
+        required_args = ['id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        res = self.rs.get('user@%scontest'%(str(data['id'])))
+        if res: return (None, res)
+        res, res_cnt = yield from self.db.execute('SELECT id FROM map_contest_user WHERE user_id=%s;', (data['id'],))
+        res = set(x['id'] for x in res)
+        return (None, res)
+
+    def get_user_current_contest(self, id):
+        res, res_cnt = yield from self.db.execute('SELECT c.* FROM map_contest_user as m, contests as c WHERE m.user_id=%s AND m.contest_id=c.id AND c.start<=%s AND %s<=c.end;', (id, datetime.datetime.now(), datetime.datetime.now(),))
+        if res_cnt == 0:
+            return (None, None)
+        else:
+            return (None, res[0])
 
     def SignIn(self, data, req): #need to set cookie
         '''

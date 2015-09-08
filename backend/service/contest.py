@@ -9,6 +9,10 @@ class ContestService(BaseService):
         super().__init__(db, rs)
         ContestService.inst = self
 
+    def get_current_contest(self):
+        res, res_cnt = yield from self.db.execute('SELECT id FROM contests WHERE start<=%s AND %s<=end;', (datetime.datetime.now(), datetime.datetime.now(), ))
+        return (None, set(x['id'] for x in res))
+
     def get_contest_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
         err = self.check_required_args(required_args, data)

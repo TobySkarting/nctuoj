@@ -34,8 +34,6 @@ class VerdictService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         yield from self.db.execute('DELETE FROM verdicts WHERE id=%s;', (data['id'],))
-        yield from self.db.execute('DELETE FROM submissions WHERE verdict_id=%s;', (data['id'],))
-        yield from self.db.execute('DELETE FROM problems WHERE verdict_id=%s;', (data['id'],))
         self.rs.delete('verdict_list')
         self.rs.delete('verdict@%s'%(str(data['id'])))
         return (None, str(data['id']))

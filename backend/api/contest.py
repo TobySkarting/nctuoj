@@ -104,10 +104,10 @@ class ApiContestProblemsHandler(ApiRequestHandler):
         for problem in meta['problems']:
             err, data = yield from Service.Problem.get_problem({'id': problem})
             if err:
-                self.render(500, err)
+                self.render(500, err+' ID: %s'%(str(problem)))
                 return False
             if int(data['group_id']) != int(meta['group_id']):
-                self.render(403, 'Permission Denied')
+                self.render(403, 'Permission Denied ID: %s'%(str(problem)))
                 return False
         if int(meta['id']) != 0:
             err, data = yield from Service.Contest.get_contest(meta)
