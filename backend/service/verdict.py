@@ -27,6 +27,7 @@ class VerdictService(BaseService):
         if res_cnt == 0:
             return ('No Verdict ID', None)
         res = res[0]
+        err, res['execute_type'] = yield from Service.Execute.get_execute({'id': res['execute_type_id']})
 
         folder = './../data/verdicts/%s/' % str(res['id'])
         file_path = '%s/%s' % (folder, res['file_name'])
