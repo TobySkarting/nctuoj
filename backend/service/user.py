@@ -98,13 +98,10 @@ class UserService(BaseService):
     def modify(self, data={}):
         pass
 
-    def get_user_contest(self, data={}):
-        required_args = ['id']
-        err = self.check_required_args(required_args, data)
-        if err: return (err, None)
-        res = self.rs.get('user@%scontest'%(str(data['id'])))
-        if res: return (None, res)
-        res, res_cnt = yield from self.db.execute('SELECT id FROM map_contest_user WHERE user_id=%s;', (data['id'],))
+    def get_user_contest(self, id):
+        #res = self.rs.get('user@%scontest'%(str(id)))
+        #if res: return (None, res)
+        res, res_cnt = yield from self.db.execute('SELECT id FROM map_contest_user WHERE user_id=%s;', (id,))
         res = set(x['id'] for x in res)
         return (None, res)
 

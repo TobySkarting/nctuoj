@@ -53,20 +53,39 @@ class ApiContestHandler(ApiRequestHandler):
 
 
     @tornado.gen.coroutine
-    def post(self, id):
+    def post(self, id, action=None):
         check_meta = {}
         check_meta['id'] = id
         check_meta['group_id'] = self.current_group
-        if not (yield from self.check_edit(check_meta)):
-            return
-        args = ['visible', 'title', 'description', 'register_start', 'register_end', 'start', 'end', 'type']
-        meta = self.get_args(args)
-        meta['id'] = id
-        meta['group_id'] = self.current_group
-        meta['setter_user_id'] = self.account['id']
-        err, data = yield from Service.Contest.post_contest(meta)
-        if err: self.render(500, err)
-        else: self.render(200, data)
+        if action == None:
+            if not (yield from self.check_edit(check_meta)):
+                return
+            args = ['visible', 'title', 'description', 'register_start', 'register_end', 'start', 'end', 'type']
+            meta = self.get_args(args)
+            meta['id'] = id
+            meta['group_id'] = self.current_group
+            meta['setter_user_id'] = self.account['id']
+            err, data = yield from Service.Contest.post_contest(meta)
+            if err: self.render(500, err)
+            else: self.render(200, data)
+        elif action == 'register':
+            if not (yield from self.check_view(check_meta)):
+                return
+            meta = check_meta
+            meta['user_id'] = self.account['id']
+            err, res = yield from Service.Contest.register(meta)
+            if err: self.render(500, err)
+            else: self.render(200, res)
+        elif action == 'unregister':
+            if not (yield from self.check_view(check_meta)):
+                return
+            meta = check_meta
+            meta['user_id'] = self.account['id']
+            err, res = yield from Service.Contest.unregister(meta)
+            if err: self.render(500, err)
+            else: self.render(200, res)
+        else:
+            self.render(404, 'Permission Denied')
         return
 
     @tornado.gen.coroutine
@@ -127,7 +146,6 @@ class ApiContestProblemsHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def post(self, id):
-        print('POST')
         args = ['problems[]', 'scores[]']
         meta = self.get_args(args)
         meta['id'] = id

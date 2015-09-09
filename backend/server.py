@@ -153,7 +153,8 @@ if __name__ == '__main__':
         ### TODO
         ('/api/group/\d+/contests/(\d+)/',                              ApiContestHandler),
         ('/api/group/\d+/contests/(\d+)/problems/',                     ApiContestProblemsHandler),
-        ('/api/group/\d+/contests/(\d+)/submissions/',                 ApiContestSubmissionsHandler),
+        ('/api/group/\d+/contests/(\d+)/submissions/',                  ApiContestSubmissionsHandler),
+        ('/api/group/\d+/contests/(\d+)/(\w+)/',                        ApiContestHandler),
         ('/api/time/',                                                  ApiTimeHandler),
 
         ('/api/executes/',                                              ApiExecuteTypesHandler),

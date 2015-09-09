@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS execute_steps;
 DROP TABLE IF EXISTS execute_types;
 DROP TABLE IF EXISTS groups;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS schools;
 
 CREATE OR REPLACE FUNCTION updated_row() 
 RETURNS TRIGGER AS $$
@@ -32,13 +33,22 @@ $$ language 'plpgsql';
 -- CREATE TRIGGER table_name_updated_at_column BEFORE UPDATE ON table_name FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column_column();
 
 --DROP TABLE IF EXISTS users;
+CREATE TABLE schools(
+    id              serial          NOT NULL    PRIMARY KEY,
+    name            varchar(255)    NOT NULL,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER schools_update_row BEFORE UPDATE ON schools FOR EACH ROW EXECUTE PROCEDURE updated_row();
+INSERT INTO schools (name) VALUES('NCTU');
+
 CREATE TABLE users (
     id              serial          NOT NULL    PRIMARY KEY,
     account         varchar(32)     NOT NULL,
     passwd          varchar(32)     NOT NULL,
     email           varchar(255)    NOT NULL,
     student_id      varchar(32)     NOT NULL,
-    school_id       integer         NOT NULL,
+    school_id       integer         NOT NULL    REFERENCES schools(id)  ON DELETE CASCADE,
     token           varchar(64)     NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second', now()),
     updated_at      timestamp       DEFAULT date_trunc('second', now())
@@ -47,8 +57,8 @@ CREATE TRIGGER users_updated_row BEFORE UPDATE ON users FOR EACH ROW EXECUTE PRO
 CREATE UNIQUE INDEX on users (token);
 CREATE UNIQUE INDEX on users (account);
 CREATE UNIQUE INDEX on users (student_id);
-INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '0', 'P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr');
-INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('user', 'ee11cbb19052e40b07aac0ca060c23ee', 'user@gmail.com', '0000001', '0', 'TOKEN@user@a35668De30ED26b0cff046EBFD108964');
+INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '1', 'P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr');
+INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('user', 'ee11cbb19052e40b07aac0ca060c23ee', 'user@gmail.com', '0000001', '1', 'TOKEN@user@a35668De30ED26b0cff046EBFD108964');
 
 
 --DROP TABLE IF EXISTS map_user_power;
@@ -320,4 +330,3 @@ CREATE TABLE wait_submissions (
 );
 CREATE TRIGGER wait_submissions_update_row BEFORE UPDATE ON wait_submissions FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE UNIQUE INDEX ON wait_submissions(submission_id);
-
