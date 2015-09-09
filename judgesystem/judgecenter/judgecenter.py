@@ -1,3 +1,4 @@
+### http://www.binarytides.com/python-socket-server-code-example/
 import socket
 import config
 import psycopg2
@@ -18,10 +19,24 @@ class Judgecenter:
         self.s.listen(config.judgecenter_listen)
         self.pool = [sys.stdin, self.s]   
 
+        self.client = {}
+
+    class CLIENT():
+        def __init__(self):
+            self.type = 0
+
 
     def run(self):
         while(1):
-            pass
+            read_sockets,write_sockets,error_sockets = select.select(self.pool,[],[])
+            for sock in read_sockets:
+                if sock == self.s:
+                    sockfd, addr = sock.accept()
+                    self.pool.append(sockfd)
+                    self.client[sockfd] = CLIENT()
+                    print("client (%s, %s) connected" % addr)
+                else:
+                    pass
 
 if __name__ == "__main__":
     judgecenter = Judgecenter()
