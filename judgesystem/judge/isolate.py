@@ -13,7 +13,7 @@ class Sandbox:
             meta["meta"] = ''                   #--meta
             meta["mem_limit"] = 65535           #--mem
             meta['proc_limit'] = 1              #--processes
-            meta['time_limit'] = 1000      #--time
+            meta['time_limit'] = 1              #--time
             meta['fsize_limit'] = 65535         #--fsize
             self._meta = meta
 
@@ -38,6 +38,7 @@ class Sandbox:
         if self._opt['cgroup']: cmd += '--cg '
         cmd += '--init'
         sp.call(cmd, shell=True)
+        sp.call('cp /usr/bin/g++ /tmp/box/%s/box/'%(str(self._box_id)), shell=True)
 
     def delete_box(self):
         cmd = self._isolate + ' --box-id=%s --cleanup'%(str(self._box_id)) 
@@ -62,22 +63,17 @@ class Sandbox:
         cmd += '--run -- %s'%exec_cmd
         return sp.call(cmd, shell=True)
         
-
-class Judge:
-    def __init__(self, isolate):
-        self._isolate = isolate
-
-s = Sandbox(1, './isolate/isolate')
-s.set_options(proc_limit=4, meta='meta', errput='err', mem_limit=65535*20)
-s.init_box()
-sp.call('cp /bin/echo /tmp/box/1/box/', shell=True)
-sp.call('cp /bin/cat /tmp/box/1/box/', shell=True)
-sp.call('cp /bin/ls /tmp/box/1/box/', shell=True)
-sp.call('cp ./test.cpp /tmp/box/1/box/', shell=True)
-sp.call('cp /usr/bin/g++ /tmp/box/1/box/', shell=True)
-print(s.exec_box("g++ test.cpp"))
-print(s.exec_box("ls ."))
-s.set_options(proc_limit=2)
-print(s.exec_box("./a.out"))
-sp.call('cat /tmp/box/1/box/err', shell=True)
-s.delete_box()
+if __name__ == "__main__":
+    s = Sandbox(1, './isolate/isolate')
+    s.set_options(proc_limit=4, meta='meta', errput='err', mem_limit=65535*20)
+    s.init_box()
+    sp.call('cp /bin/echo /tmp/box/1/box/', shell=True)
+    sp.call('cp /bin/cat /tmp/box/1/box/', shell=True)
+    sp.call('cp /bin/ls /tmp/box/1/box/', shell=True)
+    sp.call('cp ./test.cpp /tmp/box/1/box/', shell=True)
+    print(s.exec_box("g++ test.cpp"))
+    print(s.exec_box("ls ."))
+    s.set_options(proc_limit=2)
+    print(s.exec_box("./a.out"))
+    sp.call('cat /tmp/box/1/box/err', shell=True)
+    s.delete_box()
