@@ -2,5 +2,10 @@ db_host = ""
 db_user = ""
 db_dbname = ""
 db_password = ""
-ftp_host = ""
+ftp_server = ""
+ftp_port = 22
+ftp_user = ""
+ftp_password = ""
+judgecenter_port = 3118
+judgecenter_listen = 10
 

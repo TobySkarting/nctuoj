@@ -6,7 +6,7 @@ import ftp
 import sys
 
 
-class Judgecenter:
+class JudgeCenter:
     def __init__(self):
         self.db = psycopg2.connect( host=config.db_host, dbname=config.db_dbname, user=config.db_user, password=config.db_password) 
         self.ftp = ftp.FTP(config.ftp_server, config.ftp_port, config.ftp_user, config.ftp_password)
@@ -28,16 +28,18 @@ class Judgecenter:
 
     def run(self):
         while(1):
-            read_sockets,write_sockets,error_sockets = select.select(self.pool,[],[])
+            read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [])
             for sock in read_sockets:
                 if sock == self.s:
                     sockfd, addr = sock.accept()
                     self.pool.append(sockfd)
                     self.client[sockfd] = CLIENT()
                     print("client (%s, %s) connected" % addr)
+                elif sock == sys.stdin:
+                    data = input()
                 else:
-                    pass
+                    data = sock.recv(self.recv_buffer_len)
 
 if __name__ == "__main__":
-    judgecenter = Judgecenter()
+    judgecenter = JudgeCenter()
     judgecenter.run()
