@@ -2,6 +2,7 @@ import socket
 import config
 import psycopg2
 import ftp
+import sys
 
 
 class Judgecenter:
@@ -13,7 +14,7 @@ class Judgecenter:
 
         self.recv_buffer_len = 1024
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.bind('localhost', config.judgecenter_port)
+        self.s.bind(('localhost', config.judgecenter_port))
         self.s.listen(config.judgecenter_listen)
         self.pool = [sys.stdin, self.s]   
 

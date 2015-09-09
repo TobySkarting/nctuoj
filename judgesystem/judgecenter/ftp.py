@@ -10,7 +10,7 @@ class FTP:
         self.port = port
         self.user = user
         self.password = password
-        createSSHClient()
+        self.createSSHClient()
 
     def createSSHClient(self):
         self.client = paramiko.SSHClient()
