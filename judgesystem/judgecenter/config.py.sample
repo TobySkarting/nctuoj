@@ -6,6 +6,7 @@ ftp_server = ""
 ftp_port = 22
 ftp_user = ""
 ftp_password = ""
+judgecenter_host = ""
 judgecenter_port = 3118
 judgecenter_listen = 10
 
