@@ -14,7 +14,7 @@ class ApiSubmissionHandler(ApiRequestHandler):
         if err:
             self.render(500, err)
             return False
-        if int(meta['group_id']) == int(data['group_id']) and (map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) > 0):
+        if int(meta['group_id']) == int(data['group_id']) and (map_group_power['submission_manage'] in self.current_group_power or int(data['visible']) > 0):
             return True
         self.render(403, 'Permission Denied')
         return False
@@ -28,7 +28,7 @@ class ApiSubmissionHandler(ApiRequestHandler):
         if err:
             self.render(500, err)
             return False
-        if int(meta['group_id']) == int(data['group_id']) and map_group_power['admin_manage'] in self.current_group_power:
+        if int(meta['group_id']) == int(data['group_id']) and map_group_power['submission_manage'] in self.current_group_power:
             return True
         self.render(403, 'Permission Denied')
         return False

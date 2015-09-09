@@ -43,7 +43,7 @@ class WebContestHandler(WebRequestHandler):
         if err:
             self.write_error(500)
             return False
-        if map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) != 0:
+        if map_group_power['contest_manage'] in self.current_group_power or int(data['visible']) != 0:
             return True
         self.write_error(403)
         return False
@@ -64,7 +64,7 @@ class WebContestEditHandler(WebRequestHandler):
         if err:
             self.write_error(500)
             return False
-        if map_group_power['admin_manage'] in self.current_group_power:
+        if map_group_power['contest_manage'] in self.current_group_power:
             return True
         self.write_error(403)
         return False

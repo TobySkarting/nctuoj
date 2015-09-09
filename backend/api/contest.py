@@ -18,13 +18,13 @@ class ApiContestHandler(ApiRequestHandler):
         if err:
             self.render(500, err)
             return False
-        if int(meta['group_id']) == int(data['group_id']) and (map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) > 0):
+        if int(meta['group_id']) == int(data['group_id']) and (map_group_power['contest_manage'] in self.current_group_power or int(data['visible']) > 0):
             return True
         self.render(403, 'Permission Denied')
         return False
 
     def check_edit(self, meta):
-        if map_group_power['admin_manage'] not in self.current_group_power:
+        if map_group_power['contest_manage'] not in self.current_group_power:
             self.render(403, 'Permission Denied')
             return False
         if int(meta['id']) != 0:
@@ -109,13 +109,13 @@ class ApiContestProblemsHandler(ApiRequestHandler):
             return False
         if int(data['group_id']) == 1 and int(data['visible']) == 2:
             return True
-        if map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) != 0:
+        if map_group_power['contest_manage'] in self.current_group_power or int(data['visible']) != 0:
             return True
         self.render(403, 'Permission Denied')
         return False
 
     def check_edit(self, meta):
-        if map_group_power['admin_manage'] not in self.current_group_power:
+        if map_group_power['contest_manage'] not in self.current_group_power:
             self.render(403, 'Permission Denied')
             return False
         for problem in meta['problems']:
@@ -168,7 +168,7 @@ class ApiContestSubmissionsHandler(ApiRequestHandler):
         if err:
             self.render(500, err)
             return False
-        if int(meta['group_id']) == int(data['group_id']) and (map_group_power['admin_manage'] in self.current_group_power or (int(meta['id']) in current_contest and int(self.current_contest['id']) in current_contest)):
+        if int(meta['group_id']) == int(data['group_id']) and (map_group_power['contest_manage'] in self.current_group_power or (int(meta['id']) in current_contest and int(self.current_contest['id']) in current_contest)):
             return True
         self.render(403, 'Permission Denied')
         return False

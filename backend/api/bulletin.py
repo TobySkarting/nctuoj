@@ -17,7 +17,7 @@ class ApiBulletinsHandler(ApiRequestHandler):
 
 class ApiBulletinHandler(ApiRequestHandler):
     def check(self, meta):
-        if map_group_power['admin_manage'] not in self.current_group_power:
+        if map_group_power['bulletin_manage'] not in self.current_group_power:
             self.render(403, "Permission Denied")
             return False
         if int(meta['id']) != 0:

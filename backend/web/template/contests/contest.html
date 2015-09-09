@@ -2,7 +2,7 @@
 {% block content %}
 <div class="margin-bottom">
     <a class="btn btn-default" href="/group/{{current_group}}/contests/">Back</a>
-    {% if map_group_power['admin_manage'] in current_group_power %}
+    {% if map_group_power['contest_manage'] in current_group_power %}
         <a class="btn btn-default" href="/group/{{current_group}}/contests/{{data['id']}}/edit/">Edit</a>
         <div class="btn btn-danger" onclick="delete_contest({{data['id']}});">Delete</div>
         <script>

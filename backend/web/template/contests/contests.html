@@ -1,6 +1,6 @@
 {% extends './../frame.html' %}
 {% block content %}
-{% if map_group_power["admin_manage"] in current_group_power %}
+{% if map_group_power["contest_manage"] in current_group_power %}
     <a class="btn btn-default margin-bottom" href="/group/{{current_group}}/contests/0/edit/">New</a>
 {% end %}
 
@@ -15,7 +15,7 @@
                 <th>Contest Time</th>
                 <th>Type</th>
                 <th>Register</th>
-                {% if map_group_power['admin_manage'] in current_group_power %}
+                {% if map_group_power['contest_manage'] in current_group_power %}
                     <th>Edit</th>
                     <th>Delete</th>
                 {% end %}
@@ -25,14 +25,14 @@
             {% for x in data %}
                 <tr>
                     <td>
-                        {% if (map_group_power['admin_manage'] in current_group_power) or int(x['visible']) %}
+                        {% if (map_group_power['contest_manage'] in current_group_power) or int(x['visible']) %}
                             <a href='/group/{{current_group}}/contests/{{x['id']}}/'>{{x['id']}}</a>
                         {% else %}
                             {{x['id']}}
                         {% end %}
                     </td>
                     <td>
-                        {% if (map_group_power['admin_manage'] in current_group_power) or int(x['visible']) %}
+                        {% if (map_group_power['contest_manage'] in current_group_power) or int(x['visible']) %}
                             <a href='/group/{{current_group}}/contests/{{x['id']}}/'>{{x['title']}}</a>
                         {% else %}
                         {% end %}
@@ -41,7 +41,7 @@
                     <td>{{x['start']}}<br>{{x['end']}}</td>
                     <td>Type</td>
                     <td>Register</td>
-                    {% if map_group_power['admin_manage'] in current_group_power %}
+                    {% if map_group_power['contest_manage'] in current_group_power %}
                         <td><a class="btn btn-xs btn-warning" href="/group/{{current_group}}/contests/{{x['id']}}/edit/">Edit</a></td>
                         <td><div class="btn btn-xs btn-danger" onclick="delete_contest({{x['id']}});">Delete</div></td>
                         <script>

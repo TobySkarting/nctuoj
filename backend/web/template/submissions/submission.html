@@ -1,6 +1,6 @@
 {% extends './../frame.html' %}
 {% block content %}
-{% if map_group_power['admin_manage'] in current_group_power %}
+{% if map_group_power['submission_manage'] in current_group_power %}
     <a class="btn btn-default" _href="/api/group/{{current_group}}/submissions/{{data['id']}}/rejudge/" style="margin-bottom: 12px;" onclick="rejudge_submission(this);">Rejudge</a>
     <script>
     function rejudge_submission(ele){
@@ -72,7 +72,7 @@
             <div class="col-xs-4">
                 Compiler
             </div>
-            {% if data['user_id'] == account['id'] and map_group_power['admin_manage'] in current_group_power %}
+            {% if data['user_id'] == account['id'] and map_group_power['submission_manage'] in current_group_power %}
             <div class="col-xs-4">
                 Execute Type
             </div>
@@ -91,7 +91,7 @@
             <div class="col-xs-4">
                {{map_lang[data['execute_lang']]}}
             </div>
-            {% if data['user_id'] == account['id'] and map_group_power['admin_manage'] in current_group_power %}
+            {% if data['user_id'] == account['id'] and map_group_power['submission_manage'] in current_group_power %}
             <div class="col-xs-4">
                 {{data['execute_description']}}
             </div>
@@ -106,7 +106,7 @@
         </div>
     </div>
 </div>
-{% if data['user_id'] == account['id'] or map_group_power['admin_manage'] in current_group_power %}
+{% if data['user_id'] == account['id'] or map_group_power['submission_manage'] in current_group_power %}
 <div class="form">
     <div class="row">
         <div class="col-md-12">
