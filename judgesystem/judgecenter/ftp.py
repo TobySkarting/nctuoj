@@ -10,33 +10,30 @@ class FTP:
         self.port = port
         self.user = user
         self.password = password
+        createSSHClient()
 
     def createSSHClient(self):
-        client = paramiko.SSHClient()
-        client.load_system_host_keys()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(self.server, self.port, self.user, self.password)
-        return client
+        self.client = paramiko.SSHClient()
+        self.client.load_system_host_keys()
+        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.client.connect(self.server, self.port, self.user, self.password)
     
     def get(self, _from, _to):
-        ssh = self.createSSHClient()
-        scp = SCPClient(ssh.get_transport())
+        scp = SCPClient(slef.client.get_transport())
         try: os.makedirs(os.path.split(_to)[0])
         except: pass
         scp.get(_from, _to)
         scp.close()
 
     def put(self, _from, _to):
-        ssh = self.createSSHClient()
         try: ssh.exec_command('mkdir -p %s' % os.path.split(_to)[0])
         except: pass
-        scp = SCPClient(ssh.get_transport())
+        scp = SCPClient(self.client.get_transport())
         scp.put(_from, _to)
         scp.close()
 
     def delete(self, _target):
-        ssh = self.createSSHClient()
-        try: ssh.exec_command('rm -rf %s' % _target)
+        try: self.client.exec_command('rm -rf %s' % _target)
         except: pass
 
 if __name__ == "__main__":

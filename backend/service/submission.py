@@ -121,7 +121,7 @@ class SubmissionService(BaseService):
             else:
                 f.write(data['plain_code'].encode())
         yield from self.ftp.upload(file_path, remote_path)
-        yield from self.db.execute('INSET INTO wait_submissions (submission_id) VALUES(%s);', (id,))
+        yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (id,))
         return (None, id) 
 
     def post_rejudge(self, data={}):
