@@ -1,0 +1,6 @@
+db_host = ""
+db_user = ""
+db_dbname = ""
+db_password = ""
+ftp_host = ""
+
