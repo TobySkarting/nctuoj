@@ -1,7 +1,7 @@
 {% extends './../frame.html' %}
 {% block content %}
 
-{% if map_group_power["admin_manage"] in current_group_power %}
+{% if map_group_power["problem_manage"] in current_group_power %}
     <a class="btn btn-default margin-bottom" href="/group/{{current_group}}/problems/0/basic/edit/">New</a>
 {% end %}
 
@@ -14,7 +14,7 @@
                 <th>Problem</th>
                 <th class="tablet computer only">Setter</th>
                 <th class="tablet computer only">Source</th>
-                {% if map_group_power['admin_manage'] in current_group_power %}
+                {% if map_group_power['problem_manage'] in current_group_power %}
                     <th>Visible</th>
                 {% end %}
             </tr>
@@ -23,14 +23,14 @@
             {% for x in data %}
                 <tr>
                     <td>
-                        {% if (map_group_power['admin_manage'] in current_group_power) or int(x['visible']) > 0 %}
+                        {% if (map_group_power['problem_manage'] in current_group_power) or int(x['visible']) > 0 %}
                             <a href='/group/{{current_group}}/problems/{{x['id']}}/'>{{x['id']}}</a>
                         {% else %}
                             {{x['id']}}
                         {% end %}
                     </td>
                     <td>
-                        {% if (map_group_power['admin_manage'] in current_group_power) or int(x['visible']) > 0 %}
+                        {% if (map_group_power['problem_manage'] in current_group_power) or int(x['visible']) > 0 %}
                             <a href='/group/{{current_group}}/problems/{{x['id']}}/'>{{x['title']}}</a>
                         {% else %}
                         {% end %}
@@ -39,11 +39,11 @@
                         <a href='/users/{{x['setter_user_id']}}/'>{{x['setter_user']}}</a>
                     </td>
                     <td class="tablet computer only">
-                        {% if (map_group_power['admin_manage'] in current_group_power) or int(x['visible']) > 0%}
+                        {% if (map_group_power['problem_manage'] in current_group_power) or int(x['visible']) > 0%}
                             {{x['source']}}
                         {% end %}
                     </td>
-                    {% if map_group_power['admin_manage'] in current_group_power %}
+                    {% if map_group_power['problem_manage'] in current_group_power %}
                         <td>
                             {{map_visible[x['visible']]}}
                         </td>

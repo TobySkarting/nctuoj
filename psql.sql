@@ -120,6 +120,10 @@ CREATE INDEX ON map_group_user_power (user_id);
 CREATE INDEX ON map_group_user_power (power);
 CREATE UNIQUE INDEX ON map_group_user_power (group_id, user_id, power);
 INSERT INTO map_group_user_power (group_id, user_id, power) VALUES (1, 1, 1);
+INSERT INTO map_group_user_power (group_id, user_id, power) VALUES (1, 1, 2);
+INSERT INTO map_group_user_power (group_id, user_id, power) VALUES (1, 1, 3);
+INSERT INTO map_group_user_power (group_id, user_id, power) VALUES (1, 1, 4);
+INSERT INTO map_group_user_power (group_id, user_id, power) VALUES (1, 1, 5);
 
 --DROP TABLE IF EXISTS bulletins;
 CREATE TABLE bulletins (

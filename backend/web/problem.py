@@ -42,7 +42,7 @@ class WebProblemHandler(WebRequestHandler):
         if err:
             self.write_error(500, err)
             return False
-        if int(data['group_id']) == int(meta['group_id']) and (map_group_power['admin_manage'] in self.current_group_power or int(data['visible']) > 0):
+        if int(data['group_id']) == int(meta['group_id']) and (map_group_power['problem_manage'] in self.current_group_power or int(data['visible']) > 0):
             return True
         self.write_error(403)
         return False
@@ -67,7 +67,7 @@ class WebProblemEditHandler(WebRequestHandler):
         if int(meta['id']) == 0:
             return True
         err, data = yield from Service.Problem.get_problem(meta)
-        if int(meta['group_id']) == int(data['group_id']) and map_group_power['admin_manage'] not in self.current_group_power:
+        if int(meta['group_id']) == int(data['group_id']) and map_group_power['problem_manage'] not in self.current_group_power:
             self.write_error(403)
             return False
         if err:
@@ -79,7 +79,7 @@ class WebProblemEditHandler(WebRequestHandler):
     def get(self, id, action = None):
         meta = {}
         meta['id'] = id
-        if map_group_power['admin_manage'] not in self.current_group_power:
+        if map_group_power['problem_manage'] not in self.current_group_power:
             self.write_error(403)
         meta['group_id'] = self.current_group
         if not (yield from self.check_edit(meta)):

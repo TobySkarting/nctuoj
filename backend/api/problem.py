@@ -25,7 +25,7 @@ class ApiProblemHandler(ApiRequestHandler):
         else:
             #if int(meta['group_id']) == 1 and int(data['visible']) == 2:
             #    pass
-            if int(data['group_id']) == int(meta['group_id']) and (int(data['visible']) > 0 or map_group_power['admin_manage'] in self.current_group_power):
+            if int(data['group_id']) == int(meta['group_id']) and (int(data['visible']) > 0 or map_group_power['problem_manage'] in self.current_group_power):
                 pass
             else:
                 self.render(403, "Permission Denied")
@@ -33,7 +33,7 @@ class ApiProblemHandler(ApiRequestHandler):
         return True
 
     def check_edit(self, meta):
-        if map_group_power['admin_manage'] not in self.current_group_power:
+        if map_group_power['problem_manage'] not in self.current_group_power:
             self.render(403, "Permission Denied")
             return False
         if int(meta['id']) != 0:

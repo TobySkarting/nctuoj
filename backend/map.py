@@ -6,7 +6,11 @@ map_power = {
 }
 
 map_group_power = {
-    "admin_manage": 1,      #add admin for group
+    'group_manage': 1,
+    "bulletin_manage": 2,      #add admin for group
+    'problem_manage': 3,
+    'submission_manage': 4,
+    'contest_manage': 5,
 }
 
 map_lang = {
