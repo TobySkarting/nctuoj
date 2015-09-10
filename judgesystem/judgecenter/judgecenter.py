@@ -41,8 +41,7 @@ class JudgeCenter:
         try:
             data = sock.recv(self.recv_buffer_len).decode()
             if data == '':
-                self.close_socket(sock)
-                return None
+                raise socket.error
             res = json.loads(data)
         except socket.error:
             res = None
@@ -107,7 +106,7 @@ class JudgeCenter:
     def sock_send_submission(self, sock, submission_id):
         self.send(sock, {'cmd': 'judge', 'msg': {'submission_id': submission_id}})
 
-    def SockHandler(self, sock):
+    def ReadSockHandler(self, sock):
         client = self.client[sock]
         msg = self.receive(sock)
         if msg is None: return
@@ -136,6 +135,20 @@ class JudgeCenter:
             print("error")
             self.close_socket(sock)
 
+    def WriteSockHandler(self, sock):
+        client = self.client[sock]
+        if client.type == map_sock_type['unauth']:
+            pass
+        elif client.type == map_sock_type['undefined']:
+            pass
+        elif client.type == map_sock_type['judge']:
+            pass
+        elif client.type == map_sock_type['web']:
+            pass
+        else:
+            print('error')
+            self.close_socket(sock)
+
     def run(self):
         while True:
             if len(self.submission_queue) == 0:
@@ -151,9 +164,9 @@ class JudgeCenter:
                 elif sock == sys.stdin:
                     self.CommandHandler(input())
                 else:
-                    self.SockHandler(sock)
+                    self.ReadSockHandler(sock)
             for sock in write_sockets:
-                pass
+                self.SockHandler(sock)
 
 if __name__ == "__main__":
     judgecenter = JudgeCenter()
