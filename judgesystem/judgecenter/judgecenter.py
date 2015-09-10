@@ -19,9 +19,11 @@ class JudgeCenter:
 
         self.recv_buffer_len = 1024
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.bind((config.judgecenter_host, config.judgecenter_port))
         self.s.listen(config.judgecenter_listen)
-        self.pool = [sys.stdin, self.s]   
+        self.pool = [sys.stdin, self.s]
+        self.client_pool = []
         self.recv_buffer_len = 1024
         self.submission_queue = []
 
@@ -37,19 +39,28 @@ class JudgeCenter:
        
     def receive(self, sock):
         try:
-            res = json.loads(sock.recv(self.recv_buffer_len), encoding='utf-8')
+            data = sock.recv(self.recv_buffer_len).decode()
+            if data == '':
+                self.close_socket(sock)
+                return None
+            res = json.loads(data)
         except socket.error:
             res = None
             self.close_socket(sock)
-        except TypeError:
+        except:
             res = None
             print('receive msg error')
+        if res and ('cmd' not in res or 'msg' not in res):
+            res = None
         return res
+
+    def check_submission_meta(self, msg):
+        pass
     
     def send(self, sock, msg):
         try: sock.send(json.dumps(msg))
         except socket.error: self.close_socket(sock)
-        except TypeError: print('send msg error')
+        except: print('send msg error')
 
     def get_submission(self):
         cur = self.cursor()
@@ -64,8 +75,10 @@ class JudgeCenter:
         print(cmd)
 
     def close_socket(self, sock):
-        self.client[sock].close()
+        sock.close()
         self.client.pop(sock)
+        self.pool.remove(sock)
+        self.client_pool.remove(sock)
 
     def sock_auth_token(self, sock, token):
         cur = self.curosr()
@@ -97,6 +110,7 @@ class JudgeCenter:
     def SockHandler(self, sock):
         client = self.client[sock]
         msg = self.receive(sock)
+        if msg is None: return
         if msg['cmd'] == 'type' and msg['msg'] == None:
             self.sock_send_type(sock)
         elif client.type == map_sock_type['unauth']:
@@ -114,6 +128,8 @@ class JudgeCenter:
         elif client.type == map_sock_type['judge']:   # judge
             if msg['cmd'] == 'judged':
                 self.sock_update_submission(sock, msg['msg'])
+            else:
+                print('unkown cmd')
         elif client.type == map_sock_type['web']:   # web
             pass
         else:
@@ -124,17 +140,20 @@ class JudgeCenter:
         while True:
             if len(self.submission_queue) == 0:
                 self.get_submission()
-            read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [])
+            read_sockets, write_sockets, error_sockets = select.select(self.pool, self.client_pool, [])
             for sock in read_sockets:
                 if sock == self.s:
                     sockfd, addr = sock.accept()
                     self.pool.append(sockfd)
+                    self.client_pool.append(sockfd)
                     self.client[sockfd] = self.CLIENT(addr)
                     print("client (%s, %s) connected" % addr)
                 elif sock == sys.stdin:
                     self.CommandHandler(input())
                 else:
                     self.SockHandler(sock)
+            for sock in write_sockets:
+                pass
 
 if __name__ == "__main__":
     judgecenter = JudgeCenter()
