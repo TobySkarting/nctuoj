@@ -1,5 +1,6 @@
 ### http://www.binarytides.com/python-socket-server-code-example/
 import socket
+import select
 import config
 import psycopg2
 import ftp
@@ -9,7 +10,7 @@ import sys
 class JudgeCenter:
     def __init__(self):
         self.db = psycopg2.connect( host=config.db_host, dbname=config.db_dbname, user=config.db_user, password=config.db_password) 
-        self.ftp = ftp.FTP(config.ftp_server, config.ftp_port, config.ftp_user, config.ftp_password)
+        # self.ftp = ftp.FTP(config.ftp_server, config.ftp_port, config.ftp_user, config.ftp_password)
 
 
 
@@ -33,10 +34,11 @@ class JudgeCenter:
                 if sock == self.s:
                     sockfd, addr = sock.accept()
                     self.pool.append(sockfd)
-                    self.client[sockfd] = CLIENT()
+                    self.client[sockfd] = self.CLIENT()
                     print("client (%s, %s) connected" % addr)
                 elif sock == sys.stdin:
                     data = input()
+                    print(data)
                 else:
                     data = sock.recv(self.recv_buffer_len)
 
