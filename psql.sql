@@ -334,3 +334,14 @@ CREATE TABLE wait_submissions (
 );
 CREATE TRIGGER wait_submissions_update_row BEFORE UPDATE ON wait_submissions FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE UNIQUE INDEX ON wait_submissions(submission_id);
+
+CREATE TABLE judge_token (
+    id              serial          NOT NULL    PRIMARY KEY,
+    addr            varchar(31)     DEFAULT '',
+    description     varchar(255)    DEFAULT '',
+    token           varchar(255)    NOT NULL,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER judge_token_update_row BEFORE UPDATE ON judge_token FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE UNIQUE INDEX ON judge_token(token);
