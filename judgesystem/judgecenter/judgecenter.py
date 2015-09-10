@@ -69,9 +69,13 @@ class JudgeCenter:
         return True
     
     def send(self, sock, msg):
+        print(type(msg), msg, json.dumps(msg))
+        sock.send(json.dumps(msg).encode())
+        '''
         try: sock.send(json.dumps(msg))
         except socket.error: self.close_socket(sock)
         except: print('send msg error')
+        '''
 
     def get_submission(self):
         cur = self.cursor()
@@ -80,7 +84,6 @@ class JudgeCenter:
         for x in cur:
             self.submission_queue.append(x['submission_id'])
             delete_cur.execute("DELETE FROM wait_submissions WHERE id=%s", (x['id'],))
-        print(self.submission_queue)
 
     def CommandHandler(self, cmd):
         print(cmd)
@@ -110,7 +113,7 @@ class JudgeCenter:
             return False
 
     def sock_send_type(self, sock):
-        self.send(sock, {'type': int(self.client[sock].type!=-1)})
+        self.send(sock, {'cmd': 'type', 'msg': int(self.client[sock].type!=-1)})
 
     def sock_update_submission(self, sock, msg):
         pass
@@ -121,8 +124,9 @@ class JudgeCenter:
     def ReadSockHandler(self, sock):
         client = self.client[sock]
         msg = self.receive(sock)
+        print(msg)
         if msg is None: return
-        if msg['cmd'] == 'type' and msg['msg'] == None:
+        if msg['cmd'] == 'type' and msg['msg'] == '':
             self.sock_send_type(sock)
         elif client.type == map_sock_type['unauth']:
             if msg['cmd'] == 'token':
@@ -135,8 +139,7 @@ class JudgeCenter:
                 self.sock_set_type(sock, msg['msg'])
                 self.sock_send_type(sock)
             else:
-                print('undefined')
-        elif client.type == map_sock_type['judge']:   # judge
+                print('undefined' client.type == map_sock_type['judge']:   # judge
             if msg['cmd'] == 'judged':
                 self.sock_update_submission(sock, msg['msg'])
             else:
@@ -182,6 +185,4 @@ class JudgeCenter:
 
 if __name__ == "__main__":
     judgecenter = JudgeCenter()
-    judgecenter.get_submission()
-    judgecenter.get_submission()
     judgecenter.run()
