@@ -345,3 +345,4 @@ CREATE TABLE judge_token (
 );
 CREATE TRIGGER judge_token_update_row BEFORE UPDATE ON judge_token FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE UNIQUE INDEX ON judge_token(token);
+INSERT INTO judge_token (token) VALUES('TOKEN');
