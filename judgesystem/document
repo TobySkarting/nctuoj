@@ -15,7 +15,7 @@ cmd (from judgecenter):
 cmd (from judge)"
     judged: { // return meta of submission
         submission_id: integer,
-        testdata: [
+        testdatas: [
             {
                 id: integer,
                 time: integer,

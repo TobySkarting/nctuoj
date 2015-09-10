@@ -54,7 +54,19 @@ class JudgeCenter:
         return res
 
     def check_submission_meta(self, msg):
-        pass
+        if 'submission_id' not in msg or 'testdatas' not in msg:
+            return False
+        for testdata in msg['testdatas']:
+            if 'id' not in testdata or 'time' not in testdata or 'memory' not in testdata or 'verdict' not in testdata:
+                return False
+            try:
+                testdata['id'] = int(testdata['id'])
+                testdata['time'] = int(testdata['time'])
+                testdata['memory'] = int(testdata['memory'])
+                testdata['verdict'] = int(testdata['verdict'])
+            except:
+                return False
+        return True
     
     def send(self, sock, msg):
         try: sock.send(json.dumps(msg))
@@ -166,7 +178,7 @@ class JudgeCenter:
                 else:
                     self.ReadSockHandler(sock)
             for sock in write_sockets:
-                self.SockHandler(sock)
+                self.WriteSockHandler(sock)
 
 if __name__ == "__main__":
     judgecenter = JudgeCenter()
