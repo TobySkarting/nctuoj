@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS map_contest_problem;
 DROP TABLE IF EXISTS map_contest_user;
 DROP TABLE IF EXISTS bulletins;
 DROP TABLE IF EXISTS wait_submissions;
+DROP TABLE IF EXISTS map_submission_testdata;
 DROP TABLE IF EXISTS submissions;
 DROP TABLE IF EXISTS contests;
 DROP TABLE IF EXISTS testdata;
@@ -249,6 +250,23 @@ CREATE INDEX ON testdata (problem_id);
 INSERT INTO testdata (problem_id, score) values (10001, 50);
 INSERT INTO testdata (problem_id, score) values (10001, 50);
 
+CREATE TABLE map_verdict_string (
+    id              serial          NOT NULL    PRIMARY KEY,
+    abbreviation    varchar(15)     NOT NULL,
+    description     varchar(31)     NOT NULL,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER map_verdict_testdata_updated_row BEFORE UPDATE ON map_verdict_testdata FOR EACH ROW EXECUTE PROCEDURE updated_row();
+INSERT INTO map_verdict_string (abbreviation,description) VALUES('Pending', 'In Queue');
+INSERT INTO map_verdict_string (abbreviation,description) VALUES('SE', 'System Error');
+INSERT INTO map_verdict_string (abbreviation,description) VALUES('RE', 'Runtime Error');
+INSERT INTO map_verdict_string (abbreviation,description) VALUES('MLE', 'Memory Limit Exceed');
+INSERT INTO map_verdict_string (abbreviation,description) VALUES('TLE', 'Time Limit Exceed');
+INSERT INTO map_verdict_string (abbreviation,description) VALUES('WA', 'Wrong Answer');
+INSERT INTO map_verdict_string (abbreviation,description) VALUES('AC', 'Accepted');
+
+
 --DROP TABLE IF EXISTS submissions;
 CREATE TABLE submissions(
     id              serial          NOT NULL    PRIMARY KEY,
@@ -257,7 +275,7 @@ CREATE TABLE submissions(
     execute_type_id integer         NOT NULL    REFERENCES execute_types(id)    ON DELETE CASCADE,
     time_usage      integer         ,
     memory_usage    integer         ,
-    verdict         integer         NOT NULL    DEFAULT -1,
+    verdict         integer         NOT NULL    DEFAULT 7   REFERENCES map_verdict_string(id)   ON DELETE CASCADE,
     score           integer         ,
     length          integer         NOT NULL,
     file_name       varchar(255)    NOT NULL,
@@ -278,7 +296,18 @@ INSERT INTO submissions (user_id, problem_id, execute_type_id, length, file_name
 
 CREATE TABLE map_submission_testdata (
     id              serial          NOT NULL    PRIMARY KEY,
+    submission_id   integer         NOT NULL    REFERENCES submissions(id)  ON DELETE CASCADE,
+    time            integer         DEFAULT 0,
+    memory          integer         DEFAULT 0,
+    verdict         integer         DEFAULT 7   REFERENCES map_verdict_string(id)   ON DELETE CASCADE,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
+CREATE TRIGGER map_submission_testdata_updated_row BEFORE UPDATE ON map_submission_testdata FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE INDEX ON map_submission_testdata(submission_id);
+CREATE INDEX ON map_submission_testdata(time);
+CREATE INDEX ON map_submission_testdata(memory);
+CREATE INDEX ON map_submission_testdata(verdict);
 
 --DROP TABLE IF EXISTS contests;
 CREATE TABLE contests(

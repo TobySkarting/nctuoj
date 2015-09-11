@@ -59,8 +59,8 @@ class Judge:
     def send_token(self):
         self.send(self.s, {'cmd': 'token', 'msg': 'TOKEN'})
 
-    def send_type(self, token):
-        self.send(self.s, {'cmd': 'type', 'msg': token})
+    def send_type(self, type):
+        self.send(self.s, {'cmd': 'type', 'msg': type})
 
     def CommandHandler(self, cmd):
         cmd = cmd.split()
