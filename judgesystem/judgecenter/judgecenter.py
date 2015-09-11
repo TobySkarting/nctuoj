@@ -99,6 +99,10 @@ class JudgeCenter:
 
     def CommandHandler(self, cmd):
         print(cmd)
+        if cmd.lower() == "exit":
+            for sock in self.client:
+                close_socket(sock)
+            sys.exit()
 
     def close_socket(self, sock):
         sock.close()
