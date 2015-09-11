@@ -7,6 +7,7 @@ import psycopg2.extras
 import ftp
 import sys
 import json
+import time
 from map import *
 
 SOCK_AVAILABLE_CMD = ['token', 'type', 'judged']
@@ -20,12 +21,13 @@ class JudgeCenter:
         self.recv_buffer_len = 1024
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.s.setblocking(0)
         self.s.bind((config.judgecenter_host, config.judgecenter_port))
         self.s.listen(config.judgecenter_listen)
         self.pool = [sys.stdin, self.s]
         self.client_pool = []
         self.recv_buffer_len = 1024
-        self.submission_queue = [1,2,3,4]
+        self.submission_queue = []
 
         self.client = {}
 
@@ -56,9 +58,9 @@ class JudgeCenter:
         return res
 
     def check_submission_meta(self, msg):
-        if 'submission_id' not in msg or 'testdatas' not in msg:
+        if 'submission_id' not in msg or 'testdata' not in msg:
             return False
-        for testdata in msg['testdatas']:
+        for testdata in msg['testdata']:
             if 'id' not in testdata or 'time' not in testdata or 'memory' not in testdata or 'verdict' not in testdata:
                 return False
             try:
@@ -66,14 +68,26 @@ class JudgeCenter:
                 testdata['time'] = int(testdata['time'])
                 testdata['memory'] = int(testdata['memory'])
                 testdata['verdict'] = int(testdata['verdict'])
-            except:
+            except Exception as e:
                 return False
         return True
+
+    def gen_submission_meta(self, submission_id):
+        res = {}
+        res['cmd'] = 'judge'
+        msg = res['msg'] = {}
+        msg['submission_id'] = submission_id
+        cur = self.cursor()
+        cur.execute('SELECT problem_id, verdict_id, execute_type_id FROM submissions as s WHERE s.id=%s;', (submission_id,))
+        msg.update(cur.fetchone())
+        cur.execute('SELECT id, time_limit as time, memory_limit as memory FROM testdata WHERE problem_id=%s;', (msg['problem_id'],))
+        msg['testdata'] = [dict(x) for x in cur]
+        return res
     
     def send(self, sock, msg):
         try: sock.send((json.dumps(msg)+'\r\n').encode())
         except socket.error: self.close_socket(sock)
-        except: print('send msg error')
+        except Exception as e: print(e, 'send msg error')
 
     def get_submission(self):
         cur = self.cursor()
@@ -81,7 +95,7 @@ class JudgeCenter:
         cur.execute("SELECT * FROM wait_submissions")
         for x in cur:
             self.submission_queue.append(x['submission_id'])
-            delete_cur.execute("DELETE FROM wait_submissions WHERE id=%s", (x['id'],))
+            #delete_cur.execute("DELETE FROM wait_submissions WHERE id=%s", (x['id'],))
 
     def CommandHandler(self, cmd):
         print(cmd)
@@ -114,15 +128,20 @@ class JudgeCenter:
         self.send(sock, {'cmd': 'type', 'msg': self.client[sock].type})
 
     def sock_update_submission(self, sock, msg):
-        pass
+        if not self.check_submission_meta(msg):
+            return
+        cur = self.cursor()
+        cur.execute('DELETE FROM wait_submissions WHERE submission_id=%s;', (msg['submission_id'],))
+        msg['score'] = sum(int(x['score']) for x in msg['testdata'])
 
     def sock_send_submission(self, sock, submission_id):
-        self.send(sock, {'cmd': 'judge', 'msg': {'submission_id': submission_id}})
+        msg = self.gen_submission_meta(submission_id)
+        self.send(sock, msg)
 
     def ReadSockHandler(self, sock):
         client = self.client[sock]
         msg = self.receive(sock)
-        print(msg)
+        print('READ: ', msg, client.type)
         if msg is None: return
         if msg['cmd'] == 'type' and msg['msg'] == '':
             self.sock_send_type(sock)
@@ -171,8 +190,7 @@ class JudgeCenter:
         while True:
             if len(self.submission_queue) == 0:
                 self.get_submission()
-            read_sockets, write_sockets, error_sockets = select.select(self.pool, self.client_pool, [])
-            print(write_sockets)
+            read_sockets, write_sockets, error_sockets = select.select(self.pool, self.client_pool, [], 0)
             for sock in read_sockets:
                 if sock == self.s:
                     sockfd, addr = sock.accept()

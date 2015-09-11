@@ -6,7 +6,16 @@ json: {
 
 cmd (from judgecenter):
     judge: { // send submission
-        submission_id: integer
+        submission_id: integer,
+        verdict_id: integer,
+        execute_type_id: integer,
+        testdata: [
+            {
+                id: integer,
+                time: integer,
+                memory: integer,
+            },
+        ]
     }
     type: // return type
         integer
@@ -15,7 +24,7 @@ cmd (from judgecenter):
 cmd (from judge):
     judged: { // return meta of submission
         submission_id: integer,
-        testdatas: [
+        testdata: [
             {
                 id: integer,
                 time: integer,

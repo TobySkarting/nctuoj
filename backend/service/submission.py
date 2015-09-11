@@ -128,6 +128,6 @@ class SubmissionService(BaseService):
         required_args = ['id']
         err =self.check_required_args(required_args, data)
         if err: return (err, None)
-        yield from self.db.execute('INSET INTO wait_submissions (submission_id) VALUES(%s);', (data['id'],))
+        yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (data['id'],))
         print('REJUDGED')
         return (None, str(data['id']))

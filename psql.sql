@@ -257,7 +257,7 @@ CREATE TABLE submissions(
     execute_type_id integer         NOT NULL    REFERENCES execute_types(id)    ON DELETE CASCADE,
     time_usage      integer         ,
     memory_usage    integer         ,
-    verdict_id      integer         NOT NULL    DEFAULT 1   REFERENCES verdicts(id) ON DELETE CASCADE,
+    verdict         integer         NOT NULL    DEFAULT -1,
     score           integer         ,
     length          integer         NOT NULL,
     file_name       varchar(255)    NOT NULL,
@@ -271,12 +271,14 @@ CREATE INDEX ON submissions (problem_id);
 CREATE INDEX ON submissions (execute_type_id);
 CREATE INDEX ON submissions (memory_usage);
 CREATE INDEX ON submissions (time_usage);
-CREATE INDEX ON submissions (verdict_id);
+CREATE INDEX ON submissions (verdict);
 CREATE INDEX ON submissions (length);
 CREATE INDEX ON submissions (created_at);
 INSERT INTO submissions (user_id, problem_id, execute_type_id, length, file_name) VALUES (1, 10001, 1, 100, 'xd.cpp');
 
-
+CREATE TABLE map_submission_testdata (
+    id              serial          NOT NULL    PRIMARY KEY,
+);
 
 --DROP TABLE IF EXISTS contests;
 CREATE TABLE contests(

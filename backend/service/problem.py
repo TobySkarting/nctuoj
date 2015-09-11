@@ -198,6 +198,6 @@ class ProblemService(BaseService):
         if err: return (err, None)
         res, res_cnt = yield from self.db.execute('SELECT s.id FROM submissions as s WHERE s.problem_id=%s;', (data['id'],))
         for x in res:
-            yield from self.db.execute('INSET INTO wait_submissions (submission_id) VALUES(%s);', (x['id'],))
+            yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (x['id'],))
             self.rs.delete('submission@%s'%(str(x['id'])))
         return (None, str(data['id']))
