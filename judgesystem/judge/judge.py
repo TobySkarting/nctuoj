@@ -9,7 +9,7 @@ import sys
 import time
 
 
-test = [(json.dumps({'cmd': 'token', 'msg': 'TOKEN'})+'\r\n').encode(),(json.dumps({'cmd': 'type', 'msg': 1})+'\r\n').encode()]
+#test = [(json.dumps({'cmd': 'token', 'msg': 'TOKEN'})+'\r\n').encode(),(json.dumps({'cmd': 'type', 'msg': 1})+'\r\n').encode()]
 
 class Judge:
     def __init__(self):
@@ -18,12 +18,9 @@ class Judge:
         self.s.setblocking(0)
         self.pool = [sys.stdin, self.s]
         self.recv_buffer_len = 1024
-        #self.s.send(test.pop(0))
-        #print(self.s.recv(1024))
-        #self.s.send(test.pop(0))
-        #print(self.s.recv(1024))
 
-    def receive(self, sock):
+    def receive(self):
+        sock = self.s
         try:
             data = sock.recv(self.recv_buffer_len).decode()
             if data == '':
@@ -39,8 +36,8 @@ class Judge:
             res = None
         return res
 
-    def SockHandler(self, sock):
-        msg = self.receive(sock)
+    def SockHandler(self):
+        msg = self.receive()
         if msg is None: return
         if msg['cmd'] == 'judge':
             print(msg['msg'])
@@ -51,9 +48,9 @@ class Judge:
         else:
             print(msg)
 
-    def send(self, sock, msg):
-        try: sock.send((json.dumps(msg)+'\r\n').encode())
-        except socket.error: self.close_socket(sock)
+    def send(self, msg):
+        try: self.s.send((json.dumps(msg)+'\r\n').encode())
+        except socket.error: self.close_socket(self.s)
         except Exception as e: print(e, 'send msg error')
 
     def send_token(self):
@@ -62,7 +59,8 @@ class Judge:
     def send_type(self, type):
         self.send(self.s, {'cmd': 'type', 'msg': type})
 
-    def CommandHandler(self, cmd):
+    def CommandHandler(self):
+        cmd = input()
         cmd = cmd.split()
         if cmd[0] == 'token':
             self.send_token()
@@ -71,12 +69,12 @@ class Judge:
 
     def run(self):
         while True:
-            read_sockets, write_sockets, error_sockets = select.select(self.pool, [self.s,], [], 0)
+            read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [])
             for sock in read_sockets:
                 if sock == sys.stdin:
-                    self.CommandHandler(input())
+                    self.CommandHandler()
                 else:
-                    self.SockHandler(sock)
+                    self.SockHandler()
 
 
 if __name__ == "__main__":
