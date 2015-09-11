@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS judge_token;
 DROP TABLE IF EXISTS map_user_power;
 DROP TABLE IF EXISTS map_group_user;
 DROP TABLE IF EXISTS map_group_user_power;
@@ -8,6 +9,7 @@ DROP TABLE IF EXISTS bulletins;
 DROP TABLE IF EXISTS wait_submissions;
 DROP TABLE IF EXISTS map_submission_testdata;
 DROP TABLE IF EXISTS submissions;
+DROP TABLE IF EXISTS map_verdict_string;
 DROP TABLE IF EXISTS contests;
 DROP TABLE IF EXISTS testdata;
 DROP TABLE IF EXISTS problems;
@@ -257,7 +259,7 @@ CREATE TABLE map_verdict_string (
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
-CREATE TRIGGER map_verdict_testdata_updated_row BEFORE UPDATE ON map_verdict_testdata FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE TRIGGER map_verdict_string_updated_row BEFORE UPDATE ON map_verdict_string FOR EACH ROW EXECUTE PROCEDURE updated_row();
 INSERT INTO map_verdict_string (abbreviation,description) VALUES('Pending', 'In Queue');
 INSERT INTO map_verdict_string (abbreviation,description) VALUES('SE', 'System Error');
 INSERT INTO map_verdict_string (abbreviation,description) VALUES('RE', 'Runtime Error');
@@ -296,6 +298,7 @@ INSERT INTO submissions (user_id, problem_id, execute_type_id, length, file_name
 
 CREATE TABLE map_submission_testdata (
     id              serial          NOT NULL    PRIMARY KEY,
+    testdata_id     integer         NOT NULL    REFERENCES testdata(id)     ON DELETE CASCADE,
     submission_id   integer         NOT NULL    REFERENCES submissions(id)  ON DELETE CASCADE,
     time            integer         DEFAULT 0,
     memory          integer         DEFAULT 0,

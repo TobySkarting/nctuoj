@@ -21,7 +21,7 @@ class JudgeCenter:
         self.recv_buffer_len = 1024
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.setblocking(0)
+        #self.s.setblocking(0)
         self.s.bind((config.judgecenter_host, config.judgecenter_port))
         self.s.listen(config.judgecenter_listen)
         self.pool = [sys.stdin, self.s]
@@ -78,9 +78,9 @@ class JudgeCenter:
         msg = res['msg'] = {}
         msg['submission_id'] = submission_id
         cur = self.cursor()
-        cur.execute('SELECT problem_id, verdict_id, execute_type_id FROM submissions as s WHERE s.id=%s;', (submission_id,))
+        cur.execute('SELECT s.problem_id, p.verdict_id, s.execute_type_id FROM submissions as s, problems as p WHERE s.id=%s;', (submission_id,))
         msg.update(cur.fetchone())
-        cur.execute('SELECT id, time_limit as time, memory_limit as memory FROM testdata WHERE problem_id=%s;', (msg['problem_id'],))
+        cur.execute('SELECT id, time_limit as time, memory_limit as memory, score FROM testdata WHERE problem_id=%s;', (msg['problem_id'],))
         msg['testdata'] = [dict(x) for x in cur]
         return res
     
@@ -194,7 +194,7 @@ class JudgeCenter:
         while True:
             if len(self.submission_queue) == 0:
                 self.get_submission()
-            read_sockets, write_sockets, error_sockets = select.select(self.pool, self.client_pool, [], 0)
+            read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [], 0)
             for sock in read_sockets:
                 if sock == self.s:
                     sockfd, addr = sock.accept()
@@ -206,7 +206,7 @@ class JudgeCenter:
                     self.CommandHandler(input())
                 else:
                     self.ReadSockHandler(sock)
-            for sock in write_sockets:
+            for sock in self.client_pool:
                 self.WriteSockHandler(sock)
 
 if __name__ == "__main__":

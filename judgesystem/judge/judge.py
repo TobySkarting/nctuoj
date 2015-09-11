@@ -28,7 +28,8 @@ class Judge:
             res = json.loads(data)
         except socket.error:
             res = None
-            #self.close_socket(sock)
+            self.s.close()
+            sys.exit(1)
         except Exception as e:
             res = None
             print(e, 'receive msg error')
@@ -44,7 +45,7 @@ class Judge:
             time.sleep(2)
             for testdata in msg['msg']['testdata']:
                 testdata['verdict'] = 0
-            sock.send((json.dumps({"cmd":"judged", "msg":msg['msg']})+'\r\n').encode())
+            self.send({"cmd":"judged", "msg":msg['msg']})
         else:
             print(msg)
 
@@ -54,10 +55,10 @@ class Judge:
         except Exception as e: print(e, 'send msg error')
 
     def send_token(self):
-        self.send(self.s, {'cmd': 'token', 'msg': 'TOKEN'})
+        self.send({'cmd': 'token', 'msg': 'TOKEN'})
 
     def send_type(self, type):
-        self.send(self.s, {'cmd': 'type', 'msg': type})
+        self.send({'cmd': 'type', 'msg': type})
 
     def CommandHandler(self):
         cmd = input()
