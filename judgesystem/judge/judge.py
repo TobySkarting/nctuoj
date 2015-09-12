@@ -37,15 +37,21 @@ class Judge:
             res = None
         return res
 
+    def judge(self, msg):
+        for testdata in msg['testdata']:
+            testdata['verdict'] = 7
+            testdata['time_usage'] = testdata['time_limit']/2
+            testdata['memory_usage'] = testdata['memory_limit']/2
+        return msg
+
     def SockHandler(self):
         msg = self.receive()
         if msg is None: return
         if msg['cmd'] == 'judge':
             print(msg['msg'])
-            time.sleep(2)
-            for testdata in msg['msg']['testdata']:
-                testdata['verdict'] = 0
-            self.send({"cmd":"judged", "msg":msg['msg']})
+            time.sleep(1)
+            msg = self.judge(msg['msg'])
+            self.send({"cmd":"judged", "msg":msg})
         else:
             print(msg)
 

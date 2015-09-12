@@ -277,7 +277,7 @@ CREATE TABLE submissions(
     execute_type_id integer         NOT NULL    REFERENCES execute_types(id)    ON DELETE CASCADE,
     time_usage      integer         ,
     memory_usage    integer         ,
-    verdict         integer         NOT NULL    DEFAULT 7   REFERENCES map_verdict_string(id)   ON DELETE CASCADE,
+    verdict         integer         NOT NULL    DEFAULT 1   REFERENCES map_verdict_string(id)   ON DELETE CASCADE,
     score           integer         ,
     length          integer         NOT NULL,
     file_name       varchar(255)    NOT NULL,
@@ -300,16 +300,16 @@ CREATE TABLE map_submission_testdata (
     id              serial          NOT NULL    PRIMARY KEY,
     testdata_id     integer         NOT NULL    REFERENCES testdata(id)     ON DELETE CASCADE,
     submission_id   integer         NOT NULL    REFERENCES submissions(id)  ON DELETE CASCADE,
-    time            integer         DEFAULT 0,
-    memory          integer         DEFAULT 0,
-    verdict         integer         DEFAULT 7   REFERENCES map_verdict_string(id)   ON DELETE CASCADE,
+    time_usage      integer         DEFAULT 0,
+    memory_usage    integer         DEFAULT 0,
+    verdict         integer         DEFAULT 1   REFERENCES map_verdict_string(id)   ON DELETE CASCADE,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER map_submission_testdata_updated_row BEFORE UPDATE ON map_submission_testdata FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON map_submission_testdata(submission_id);
-CREATE INDEX ON map_submission_testdata(time);
-CREATE INDEX ON map_submission_testdata(memory);
+CREATE INDEX ON map_submission_testdata(time_usage);
+CREATE INDEX ON map_submission_testdata(memory_usage);
 CREATE INDEX ON map_submission_testdata(verdict);
 
 --DROP TABLE IF EXISTS contests;

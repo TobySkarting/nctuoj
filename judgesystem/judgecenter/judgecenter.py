@@ -8,12 +8,14 @@ import ftp
 import sys
 import json
 import time
+from myredis import MyRedis
 from map import *
 
 SOCK_AVAILABLE_CMD = ['token', 'type', 'judged']
 
 class JudgeCenter:
     def __init__(self):
+        self.rs = MyRedis(host=config.redis_host, port=config.redis_port, db=config.redis_db)
         self.db = psycopg2.connect( host=config.db_host, dbname=config.db_dbname, user=config.db_user, password=config.db_password) 
         self.db.autocommit = True
         # self.ftp = ftp.FTP(config.ftp_server, config.ftp_port, config.ftp_user, config.ftp_password)
@@ -61,12 +63,12 @@ class JudgeCenter:
         if 'submission_id' not in msg or 'testdata' not in msg:
             return False
         for testdata in msg['testdata']:
-            if 'id' not in testdata or 'time' not in testdata or 'memory' not in testdata or 'verdict' not in testdata:
+            if 'id' not in testdata or 'time_usage' not in testdata or 'memory_usage' not in testdata or 'verdict' not in testdata:
                 return False
             try:
                 testdata['id'] = int(testdata['id'])
-                testdata['time'] = int(testdata['time'])
-                testdata['memory'] = int(testdata['memory'])
+                testdata['time_usage'] = int(testdata['time_usage'])
+                testdata['memory_usage'] = int(testdata['memory_usage'])
                 testdata['verdict'] = int(testdata['verdict'])
             except Exception as e:
                 return False
@@ -80,7 +82,7 @@ class JudgeCenter:
         cur = self.cursor()
         cur.execute('SELECT s.problem_id, p.verdict_id, s.execute_type_id FROM submissions as s, problems as p WHERE s.id=%s;', (submission_id,))
         msg.update(cur.fetchone())
-        cur.execute('SELECT id, time_limit as time, memory_limit as memory, score FROM testdata WHERE problem_id=%s;', (msg['problem_id'],))
+        cur.execute('SELECT id, time_limit, memory_limit, score FROM testdata WHERE problem_id=%s;', (msg['problem_id'],))
         msg['testdata'] = [dict(x) for x in cur]
         return res
     
@@ -136,7 +138,14 @@ class JudgeCenter:
             return
         cur = self.cursor()
         cur.execute('DELETE FROM wait_submissions WHERE submission_id=%s;', (msg['submission_id'],))
-        msg['score'] = sum(int(x['score']) for x in msg['testdata'])
+        msg['score'] = sum(int(x['score']) if x['verdict']==7 else 0 for x in msg['testdata'])
+        msg['memory_usage'] = sum(int(x['memory_usage']) for x in msg['testdata'])
+        msg['time_usage'] = sum(int(x['time_usage']) for x in msg['testdata'])
+        msg['verdict'] = min(int(x['verdict']) for x in msg['testdata'])
+        for testdata in msg['testdata']:
+            cur.execute('UPDATE map_submission_testdata SET memory_usage=%s, time_usage=%s, verdict=%s WHERE submission_id=%s AND testdata_id=%s;', (testdata['memory_usage'], testdata['time_usage'], testdata['verdict'], msg['submission_id'], testdata['id'],))
+        cur.execute('UPDATE submissions SET memory_usage=%s, time_usage=%s, score=%s, verdict=%s WHERE id=%s;', (msg['memory_usage'], msg['time_usage'], msg['score'], msg['verdict'], msg['submission_id'],))
+        self.rs.delete('submission@%s'%(str(msg['submission_id'])))
 
     def sock_send_submission(self, sock, submission_id):
         msg = self.gen_submission_meta(submission_id)
