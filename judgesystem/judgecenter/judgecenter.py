@@ -1,8 +1,7 @@
 ### http://www.binarytides.com/python-socket-server-code-example/
 import socket
 import select
-import config
-import psycopg2
+import config import psycopg2
 import psycopg2.extras
 import ftp
 import sys
@@ -115,8 +114,8 @@ class JudgeCenter:
     def CommandHandler(self, cmd):
         print(cmd)
         if cmd.lower() == "exit":
-            for sock in self.client:
-                self.close_socket(sock)
+            while self.client != []:
+                self.close_socket(self.client.pop())
             sys.exit()
 
     def close_socket(self, sock):
@@ -151,7 +150,7 @@ class JudgeCenter:
             return
         cur = self.cursor()
         cur.execute('DELETE FROM wait_submissions WHERE submission_id=%s;', (msg['submission_id'],))
-        msg['score'] = sum(int(x['score']) if x['verdict']==7 else 0 for x in msg['testdata'])
+        msg['score'] = sum(int(x['score']) if int(x['verdict'])==7 else 0 for x in msg['testdata'])
         msg['memory_usage'] = sum(int(x['memory_usage']) for x in msg['testdata'])
         msg['time_usage'] = sum(int(x['time_usage']) for x in msg['testdata'])
         msg['verdict'] = min(int(x['verdict']) for x in msg['testdata'])

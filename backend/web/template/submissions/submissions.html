@@ -27,7 +27,7 @@
                             <td>{{x['memory_usage'] if x['memory_usage'] else "--"}}</td>
                             <td></td>
                             <td><a href="/executes/{{x['execute_type_id']}}/">{{map_lang[x['lang']]}}</a></td>
-                            <td>{{x['score'] if x['score'] else '--' }}</td>
+                            <td>{{x['score'] if x['score'] != None else '--' }}</td>
                             <td>{{x['created_at']}}</td>
                         </tr>
                     {% end %}
