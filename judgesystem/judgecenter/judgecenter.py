@@ -121,9 +121,7 @@ class JudgeCenter:
 
     def close_socket(self, sock):
         sock.close()
-        self.client.pop(sock)
         self.pool.remove(sock)
-        self.client_pool.remove(sock)
 
     def sock_auth_token(self, sock, token):
         cur = self.cursor()
