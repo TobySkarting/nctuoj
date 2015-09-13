@@ -115,8 +115,8 @@ class JudgeCenter:
     def CommandHandler(self, cmd):
         print(cmd)
         if cmd.lower() == "exit":
-            while self.client != []:
-                close_socket(self.client.pop())
+            while len(self.client):
+                self.close_socket(self.client[0])
             sys.exit()
 
     def close_socket(self, sock):
