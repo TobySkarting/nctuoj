@@ -132,6 +132,9 @@ class SubmissionService(BaseService):
         required_args = ['id']
         err =self.check_required_args(required_args, data)
         if err: return (err, None)
+        self.rs.delete('submission@%s'%(str(data['id'])))
         yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (data['id'],))
-        print('REJUDGED')
+        yield from self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s WHERE id=%s;', (None, None, None, data['id']))
+        yield from self.db.execute('UPDATE map_submission_testdata SET time_usage=%s, memory_usage=%s WHERE submission_id=%s;', (None, None, data['id']))
+        print(data['id'])
         return (None, str(data['id']))

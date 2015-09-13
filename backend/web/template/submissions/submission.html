@@ -62,7 +62,7 @@
                 {{data['verdict']}}
             </div>
             <div class="col-xs-2">
-                {{data['score'] if data['score'] else '--'}}
+                {{data['score'] if data['score'] != None else '--'}}
             </div>
         </div>
     </div>

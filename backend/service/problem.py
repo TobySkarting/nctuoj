@@ -198,6 +198,8 @@ class ProblemService(BaseService):
         if err: return (err, None)
         res, res_cnt = yield from self.db.execute('SELECT s.id FROM submissions as s WHERE s.problem_id=%s;', (data['id'],))
         for x in res:
+            yield from self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s WHERE id=%s;', (None, None, None, x['id']))
+            yield from self.db.execute('UPDATE map_submission_testdata SET time_usage=%s, memory_usage=%s WHERE submission_id=%s;', (None, None, x['id']))
             yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (x['id'],))
             self.rs.delete('submission@%s'%(str(x['id'])))
         return (None, str(data['id']))
