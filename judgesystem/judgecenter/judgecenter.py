@@ -116,11 +116,12 @@ class JudgeCenter:
         print(cmd)
         if cmd.lower() == "exit":
             while len(self.client_pool):
-                self.close_socket(self.client_pool.pop())
+                self.close_socket(self.client_pool[0])
             sys.exit()
 
     def close_socket(self, sock):
         sock.close()
+        self.client_pool.remove(sock)
         self.pool.remove(sock)
 
     def sock_auth_token(self, sock, token):
