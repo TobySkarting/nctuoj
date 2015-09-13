@@ -1,7 +1,8 @@
 ### http://www.binarytides.com/python-socket-server-code-example/
 import socket
 import select
-import config import psycopg2
+import config
+import psycopg2
 import psycopg2.extras
 import ftp
 import sys
@@ -114,15 +115,16 @@ class JudgeCenter:
     def CommandHandler(self, cmd):
         print(cmd)
         if cmd.lower() == "exit":
+            print(self.client)
             while self.client != []:
-                self.close_socket(self.client.pop())
+                print(len(self.client))
+                #self.close_socket(self.client.pop())
+                print(self.client.pop())
             sys.exit()
 
     def close_socket(self, sock):
         sock.close()
-        self.client.pop(sock)
         self.pool.remove(sock)
-        self.client_pool.remove(sock)
 
     def sock_auth_token(self, sock, token):
         cur = self.cursor()
