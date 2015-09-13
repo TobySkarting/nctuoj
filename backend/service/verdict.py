@@ -22,6 +22,11 @@ class VerdictService(BaseService):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        if int(data['id']) == 0:
+            col = ['id', 'title', 'execute_type_id', 'execute_type_id', 'file_name', 'setter_user_id']
+            res = {x: '' for x in col}
+            res['id'] = 0
+            return (None, res)
         res = self.rs.get('verdict@%s'%str(data['id']))
         if res: return (None, res)
         res, res_cnt = yield from self.db.execute('SELECT v.*, u.account as setter_user FROM verdicts as v, users as u WHERE v.id=%s AND v.setter_user_id=u.id;', (data['id'],))
@@ -52,11 +57,11 @@ class VerdictService(BaseService):
         if int(data['id']) == 0:
             if data['code_file'] is None:
                 return ('No code file', None)
-            data['file_name'] = data['code_file']['file_name']
+            data['file_name'] = data['code_file']['filename']
             code_file = data.pop('code_file')
             data.pop('id')
             sql, param = self.gen_insert_sql('verdicts', data)
-            id, res_cnt = yield from self.db.execute(sql, param)
+            id = (yield from self.db.execute(sql, param))[0][0]['id']
         else:
             code_file = data.pop('code_file')
             if code_file: data['file_name'] = code_file['filename']
@@ -77,6 +82,7 @@ class VerdictService(BaseService):
                 f.write(code_file['body'])
             yield from self.ftp.upload(file_path, remote_path)
         self.rs.delete('verdict@%s'%(str(id)))
+        self.rs.delete('verdict_list')
         return (None, str(id))
 
     def delete_verdict(self, data={}):

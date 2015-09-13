@@ -3,6 +3,7 @@ from scp import SCPClient
 import os
 import datetime
 import sys
+import config
 
 class FTP:
     def __init__(self, server, port, user, password):
@@ -10,7 +11,7 @@ class FTP:
         self.port = port
         self.user = user
         self.password = password
-        createSSHClient()
+        self.createSSHClient()
 
     def createSSHClient(self):
         self.client = paramiko.SSHClient()
@@ -19,15 +20,15 @@ class FTP:
         self.client.connect(self.server, self.port, self.user, self.password)
     
     def get(self, _from, _to):
-        scp = SCPClient(slef.client.get_transport())
+        scp = SCPClient(self.client.get_transport())
         try: os.makedirs(os.path.split(_to)[0])
         except: pass
         scp.get(_from, _to)
         scp.close()
 
     def put(self, _from, _to):
-        try: ssh.exec_command('mkdir -p %s' % os.path.split(_to)[0])
-        except: pass
+        try: self.client.exec_command('mkdir -p %s' % os.path.split(_to)[0])
+        except Exception as e: print(e)
         scp = SCPClient(self.client.get_transport())
         scp.put(_from, _to)
         scp.close()
@@ -37,12 +38,9 @@ class FTP:
         except: pass
 
 if __name__ == "__main__":
-    pass
-"""
     ftp = FTP(config.FTPSERVER, config.FTPPORT, config.FTPUSER, config.FTPPASSWD)
     action = sys.argv[1]
     if action.lower() == "upload":
         ftp.put(sys.argv[2], sys.argv[3])
     elif action.lower() == "download":
         ftp.get(sys.argv[2], sys.argv[3])
-"""

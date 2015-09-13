@@ -19,10 +19,10 @@ class FTP:
         self.client.connect(self.server, self.port, self.user, self.password)
     
     def get(self, _from, _to):
-        scp = SCPClient(slef.client.get_transport())
+        scp = SCPClient(self.client.get_transport())
         try: os.makedirs(os.path.split(_to)[0])
         except: pass
-        scp.get(_from, _to)
+        scp.get(_from, _to, recursive=True)
         scp.close()
 
     def put(self, _from, _to):

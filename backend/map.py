@@ -40,6 +40,6 @@ map_default_file_name = {
     5: 'main.go',
     6: 'main.pl',
     7: 'main.js',
-    8: 'main.hs'.
+    8: 'main.hs',
     9: 'main.rb',
 }

@@ -10,8 +10,17 @@ import json
 import time
 from myredis import MyRedis
 from map import *
+import datetime
 
 SOCK_AVAILABLE_CMD = ['token', 'type', 'judged']
+class DatetimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        elif isinstance(obj, datetime.date):
+            return obj.strftime('%Y-%m-%d')
+        else:
+            return json.JSONEncoder.default(self, obj)
 
 class JudgeCenter:
     def __init__(self):
@@ -82,12 +91,16 @@ class JudgeCenter:
         cur = self.cursor()
         cur.execute('SELECT s.problem_id, p.verdict_id, s.execute_type_id FROM submissions as s, problems as p WHERE s.id=%s;', (submission_id,))
         msg.update(cur.fetchone())
+        cur.execute('SELECT * FROM execute_types WHERE id=%s;', (msg['execute_type_id'],))
+        msg['execute_type'] = cur.fetchone()
+        cur.execute('SELECT * FROM execute_steps WHERE execute_type_id=%s ORDER BY id;', (msg['execute_type_id'],))
+        msg['execute_steps'] = [dict(x) for x in cur]
         cur.execute('SELECT id, time_limit, memory_limit, score FROM testdata WHERE problem_id=%s;', (msg['problem_id'],))
         msg['testdata'] = [dict(x) for x in cur]
         return res
     
     def send(self, sock, msg):
-        try: sock.send((json.dumps(msg)+'\r\n').encode())
+        try: sock.send((json.dumps(msg, cls=DatetimeEncoder)+'\r\n').encode())
         except socket.error: self.close_socket(sock)
         except Exception as e: print(e, 'send msg error')
 

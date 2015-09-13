@@ -2,17 +2,26 @@ import socket
 import select
 import config
 import psycopg2
-import ftp
+from ftp import FTP
 import select
 import json
 import sys
 import time
+import shutil
+import datetime
 
-
-#test = [(json.dumps({'cmd': 'token', 'msg': 'TOKEN'})+'\r\n').encode(),(json.dumps({'cmd': 'type', 'msg': 1})+'\r\n').encode()]
+class DatetimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        elif isinstance(obj, datetime.date):
+            return obj.strftime('%Y-%m-%d')
+        else:
+            return json.JSONEncoder.default(self, obj)
 
 class Judge:
     def __init__(self):
+        self.ftp = FTP(config.ftp_server, config.ftp_port, config.ftp_user, config.ftp_password)
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect((config.judgecenter_host, config.judgecenter_port))
         self.s.setblocking(0)
@@ -37,7 +46,25 @@ class Judge:
             res = None
         return res
 
+    def get_testdata(self,testdata):
+        for x in testdata:
+            remote_path = './data/testdata/%s/'%(str(x['id']))
+            file_path = '../../data/testdata/%s/'%(str(x['id']))
+            try: shutil.rmtree(file_path)
+            except: pass
+            self.ftp.get(remote_path, file_path)
+
+    def get_submission(self, submission_id):
+        remote_path = './data/submissions/%s/'%(str(submission_id))
+        file_path = '../../data/submissions/%s/'%(str(submission_id))
+        try: shutil.rmtree(file_path)
+        except: pass
+        self.ftp.get(remote_path, file_path)
+
+
     def judge(self, msg):
+        self.get_testdata(msg['testdata'])
+        self.get_submission(msg['submission_id'])
         for testdata in msg['testdata']:
             testdata['verdict'] = 7
             testdata['time_usage'] = testdata['time_limit']/2
@@ -56,7 +83,7 @@ class Judge:
             print(msg)
 
     def send(self, msg):
-        try: self.s.send((json.dumps(msg)+'\r\n').encode())
+        try: self.s.send((json.dumps(msg, cls=DatetimeEncoder)+'\r\n').encode())
         except socket.error: self.close_socket(self.s)
         except Exception as e: print(e, 'send msg error')
 

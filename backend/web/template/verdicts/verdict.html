@@ -5,6 +5,9 @@
         <h2 class="text-center">Verdict. #{{data['id']}}</h2>
     </div>
 </div>
+{% if map_power['verdict_manage'] in account['power'] %}
+    <a class="btn btn-default" href="/verdicts/{{data['id']}}/edit/" style="margin-bottom: 12px;">Edit</a>
+{% end %}
 <h3>Type:{{data['title']}}</h3>
 <h3>Setter:{{data['setter_user']}}</h3>
 <div class="row">
