@@ -116,7 +116,7 @@ class JudgeCenter:
         print(cmd)
         if cmd.lower() == "exit":
             for sock in self.client:
-                close_socket(sock)
+                self.close_socket(sock)
             sys.exit()
 
     def close_socket(self, sock):
