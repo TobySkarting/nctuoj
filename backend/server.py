@@ -72,6 +72,7 @@ from web.execute        import WebExecuteTypeHandler
 from web.verdict        import WebVerdictTypesHandler
 from web.verdict        import WebVerdictTypeHandler
 
+from web.manage         import WebManageHandler
 
 from web.about          import WebAboutHandler
 
@@ -186,6 +187,9 @@ if __name__ == '__main__':
         #('/group/\d+/contests/(\d+)/submissions/',                      WebContestSubmissionsHandler),
         #('/group/\d+/contests/(\d+)/submissions/(\d+)/',                WebContestSubmissionHandler),
         #('/group/\d+/contests/(\d+)/rank/',                             WebContestRankHandler),
+
+
+        ('/group/\d+/manage/',                                          WebManageHandler),
         
         ('/executes/',                                                  WebExecuteTypesHandler),
         ('/executes/(\d+)/',                                            WebExecuteTypeHandler),

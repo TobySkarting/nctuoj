@@ -100,6 +100,8 @@ class Judge:
             self.send_token()
         elif cmd[0] == 'type':
             self.send_type(int(cmd[1]))
+        elif cmd[0].lower() == 'exit':
+            sys.exit(0)
 
     def run(self):
         while True:
