@@ -23,6 +23,8 @@ from service.bulletin   import BulletinService
 from service.execute    import ExecuteService
 from service.contest    import ContestService
 from service.verdict    import VerdictService
+from service.group      import GroupService
+
 
 ### api class from api.user import ApiUserSignupHandler
 from api.user           import ApiUserSignHandler
@@ -42,6 +44,7 @@ from api.execute        import ApiExecuteTypesHandler
 from api.execute        import ApiExecuteTypeHandler
 from api.verdict        import ApiVerdictTypesHandler
 from api.verdict        import ApiVerdictTypeHandler
+from api.group          import ApiGroupHandler
 from api.time           import ApiTimeHandler
 
 #from api.execute_type import ApiExecuteTypesHandler
@@ -72,7 +75,7 @@ from web.execute        import WebExecuteTypeHandler
 from web.verdict        import WebVerdictTypesHandler
 from web.verdict        import WebVerdictTypeHandler
 
-from web.manage         import WebManageHandler
+from web.group          import WebGroupHandler
 
 from web.about          import WebAboutHandler
 
@@ -130,10 +133,11 @@ if __name__ == '__main__':
     app = tornado.web.Application([
         ('/',                                                           WebIndexHandler),
         ('/api/users/',                                                 ApiUsersHandler),
-        ('/api/users/(\d+)/',                                            ApiUserHandler),
+        ('/api/users/(\d+)/',                                           ApiUserHandler),
         ('/api/user/(sign\w*)/',                                        ApiUserSignHandler),
         ('/api/user/(resettoken)/',                                     ApiUserSignHandler),
         
+        ('/api/group/(\d+)/',                                           ApiGroupHandler),
         ('/api/group/\d+/bulletins/',                                   ApiBulletinsHandler),
         ('/api/group/\d+/bulletins/(\d+)/',                             ApiBulletinHandler),
 
@@ -163,6 +167,7 @@ if __name__ == '__main__':
         ('/api/verdicts/',                                              ApiVerdictTypesHandler),
         ('/api/verdicts/(\d+)/',                                        ApiVerdictTypeHandler),
 
+        ('/group/(\d+)/',                                               WebGroupHandler),
         ('/group/\d+/bulletins/',                                       WebBulletinsHandler),
         ('/group/\d+/bulletins/(\d+)/(\w*)/',                           WebBulletinHandler),
 
@@ -189,7 +194,6 @@ if __name__ == '__main__':
         #('/group/\d+/contests/(\d+)/rank/',                             WebContestRankHandler),
 
 
-        ('/group/\d+/manage/',                                          WebManageHandler),
         
         ('/executes/',                                                  WebExecuteTypesHandler),
         ('/executes/(\d+)/',                                            WebExecuteTypeHandler),
@@ -225,6 +229,7 @@ if __name__ == '__main__':
     Service.Execute =       ExecuteService(db, rs)
     Service.Contest =       ContestService(db, rs)
     Service.Verdict =       VerdictService(db, rs)
+    Service.Group =         GroupService(db, rs)
     print('Server Started')
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
