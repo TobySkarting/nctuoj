@@ -102,6 +102,7 @@ CREATE TABLE map_group_user (
 );
 CREATE INDEX on map_group_user (group_id);
 CREATE INDEX on map_group_user (user_id);
+CREATE UNIQUE INDEX ON map_group_user(group_id, user_id);
 CREATE TRIGGER map_group_user_updated_row BEFORE UPDATE ON map_group_user FOR EACH ROW EXECUTE PROCEDURE updated_row();
 --INSERT INTO map_group_user (group_id, user_id) VALUES (1, 0);
 INSERT INTO map_group_user (group_id, user_id) VALUES (1, 1);

@@ -100,16 +100,13 @@ class ApiRequestHandler(RequestHandler):
                 self.render(403, 'Permission Denied')
                 return
         id = self.account['id']
-        self.registered_contest = yield from Service.User.get_user_contest(id)
+        err, self.registered_contest = yield from Service.User.get_user_contest(id)
         err, self.current_contest = yield from Service.User.get_user_current_contest(id)
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
         err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
 
-        in_group = False
-        for x in self.group:
-            if x['id'] == self.current_group:
-                in_group = True
+        in_group = self.current_group in (x['id'] for x in self.group)
         if not in_group and self.current_group != 0:
             self.render(403, 'Permission Denied')
             return
@@ -152,7 +149,6 @@ class WebRequestHandler(RequestHandler):
             self.current_group_active = "bulletins"
 
         self.account = {}
-        self.group = {}
         try:
             id = int(self.get_secure_cookie('id').decode())
             err, data = yield from Service.User.get_user_basic_info(id)
@@ -167,7 +163,7 @@ class WebRequestHandler(RequestHandler):
         if id == 0:
             self.account['token'] = ""
         self.account["id"] = id
-        self.registered_contest = yield from Service.User.get_user_contest(id)
+        err, self.registered_contest = yield from Service.User.get_user_contest(id)
         err, self.current_contest = yield from Service.User.get_user_current_contest(id)
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
