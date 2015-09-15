@@ -5,7 +5,7 @@ import tornado
 class WebGroupHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
-        pass
+        self.Render('group/group.html')
 
     @tornado.gen.coroutine
     def post(self, id):

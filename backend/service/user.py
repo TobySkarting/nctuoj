@@ -43,6 +43,7 @@ class UserService(BaseService):
             return ('ID Not Exist', None)
         res = res[0]
         res.pop("passwd")
+        err, res['power'] = yield from self.get_user_power_info(id)
         self.rs.set("user_basic@%s" % str(id), res)
         return (None, res)
 
@@ -75,7 +76,7 @@ class UserService(BaseService):
         res = self.rs.get('user_power@%s' % str(id))
         if res: return (None, res)
         res, res_cnt = yield from self.db.execute("SELECT power from map_user_power WHERE user_id=%s", (id,))
-        power = { x['power'] for x in res }
+        power = list({ x['power'] for x in res })
         self.rs.set('user_power@%s' % str(id), power)
         return (None, power)
 
@@ -91,9 +92,16 @@ class UserService(BaseService):
         res = self.rs.get('user_group_power@%s@%s' % (str(uid), str(gid)))
         if res: return (None, res)
         res, res_cnt = yield from self.db.execute("SELECT power from map_group_user_power where user_id=%s AND group_id=%s", (uid, gid,))
-        power = { x['power'] for x in res }
+        power = list({ x['power'] for x in res })
         self.rs.set('user_group_power@%s@%s' % (str(uid), str(gid)), power)
         return (None, power)
+
+    def post_user_group_power(self, uid, gid, power):
+        current_power = yield from self.get_user_group_power_info(uid, gid)
+        if int(power) in current_power:
+            yield from self.db.execute('DELETE FROM map_group_user_power WHERE user_id=%s AND group_id=%s AND power=%s;', (uid, gid, power,))
+        else:
+            yield from self.db.execute('INSERT INTO map_group_user_power (user_id, group_id, power) VALUES(%s, %s, %s);', (uid, gid, power))
 
     def modify(self, data={}):
         pass
@@ -125,8 +133,9 @@ class UserService(BaseService):
         ### get hashed passwd
         col = ['passwd', 'id']
         sql = self.gen_select_sql('users', col)
-        res, res_cnt = yield from self.db.execute(sql+'WHERE account = %s;', (data['account'],))
+        res, res_cnt = yield from self.db.execute(sql+' WHERE account = %s;', (data['account'],))
         ### check account 
+        print('RESCNT', res_cnt)
         if res_cnt == 0:
             return ('User Not Exist', None)
         print('=========================')
