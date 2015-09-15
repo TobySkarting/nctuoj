@@ -49,14 +49,14 @@ class Judge:
     def get_testdata(self,testdata):
         for x in testdata:
             remote_path = './data/testdata/%s/'%(str(x['id']))
-            file_path = '../../data/testdata/%s/'%(str(x['id']))
+            file_path = '%s/testdata/%s/'%(config.store_folder, str(x['id']))
             try: shutil.rmtree(file_path)
             except: pass
             self.ftp.get(remote_path, file_path)
 
     def get_submission(self, submission_id):
         remote_path = './data/submissions/%s/'%(str(submission_id))
-        file_path = '../../data/submissions/%s/'%(str(submission_id))
+        file_path = '%s/submissions/%s/'%(config.store_folder, str(submission_id))
         try: shutil.rmtree(file_path)
         except: pass
         self.ftp.get(remote_path, file_path)
