@@ -159,6 +159,9 @@ class JudgeCenter:
         cur.execute('UPDATE submissions SET memory_usage=%s, time_usage=%s, score=%s, verdict=%s WHERE id=%s;', (msg['memory_usage'], msg['time_usage'], msg['score'], msg['verdict'], msg['submission_id'],))
         self.rs.delete('submission@%s'%(str(msg['submission_id'])))
 
+    def sock_update_submission_testdata(self, sock, msg):
+        pass
+
     def sock_send_submission(self, sock, submission_id):
         msg = self.gen_submission_meta(submission_id)
         self.send(sock, msg)
@@ -186,6 +189,8 @@ class JudgeCenter:
             if msg['cmd'] == 'judged':
                 self.sock_update_submission(sock, msg['msg'])
                 client.lock = 0
+            elif msg['cmd'] == 'judged_testdata':
+                pass
             else:
                 print('unkown cmd')
         elif client.type == map_sock_type['web']:   # web
@@ -210,12 +215,15 @@ class JudgeCenter:
         else:
             print('error')
             self.close_socket(sock)
-
+    def insert_submission(self):
+        cur = self.cursor()
+        cur.execute("INSERT INTO wait_submissions (submission_id) VALUES (10002);")
+        
     def run(self):
         while True:
             if len(self.submission_queue) == 0:
                 self.get_submission()
-            read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [], 0)
+            read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [])
             for sock in read_sockets:
                 if sock == self.s:
                     sockfd, addr = sock.accept()
@@ -232,4 +240,5 @@ class JudgeCenter:
 
 if __name__ == "__main__":
     judgecenter = JudgeCenter()
+    judgecenter.insert_submission()
     judgecenter.run()
