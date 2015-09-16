@@ -115,4 +115,6 @@ class Judge:
 
 if __name__ == "__main__":
     judge = Judge()
+    judge.send_token()
+    judge.send_type(1)
     judge.run()

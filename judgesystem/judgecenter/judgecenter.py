@@ -1,4 +1,5 @@
 ### http://www.binarytides.com/python-socket-server-code-example/
+import os
 import socket
 import select
 import config
@@ -118,6 +119,12 @@ class JudgeCenter:
             while len(self.client_pool):
                 self.close_socket(self.client_pool[0])
             sys.exit()
+        elif cmd.lower() == "insert":
+            self.insert_submission()
+        elif cmd.lower() == "restart":
+            os.execv("/usr/bin/python3", ("python3", __file__,))
+        else:
+            print("Unkown commnad: ", cmd)
 
     def close_socket(self, sock):
         sock.close()
@@ -240,5 +247,5 @@ class JudgeCenter:
 
 if __name__ == "__main__":
     judgecenter = JudgeCenter()
-    judgecenter.insert_submission()
+    #judgecenter.insert_submission()
     judgecenter.run()
