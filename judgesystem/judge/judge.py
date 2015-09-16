@@ -24,7 +24,7 @@ class Judge:
         self.ftp = FTP(config.ftp_server, config.ftp_port, config.ftp_user, config.ftp_password)
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect((config.judgecenter_host, config.judgecenter_port))
-        self.s.setblocking(0)
+        #self.s.setblocking(0)
         self.pool = [sys.stdin, self.s]
         self.recv_buffer_len = 1024
 
@@ -32,6 +32,7 @@ class Judge:
         sock = self.s
         try:
             data = sock.recv(self.recv_buffer_len).decode()
+            print(data)
             if data == '':
                 raise socket.error
             res = json.loads(data)
@@ -88,9 +89,11 @@ class Judge:
         except Exception as e: print(e, 'send msg error')
 
     def send_token(self):
+        print("send token")
         self.send({'cmd': 'token', 'msg': 'TOKEN'})
-
+        
     def send_type(self, type):
+        print("send type")
         self.send({'cmd': 'type', 'msg': type})
 
     def CommandHandler(self):
