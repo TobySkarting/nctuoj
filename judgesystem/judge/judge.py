@@ -83,7 +83,7 @@ class Judge:
             print(msg)
 
     def send(self, msg):
-        try: self.s.send((json.dumps(msg, cls=DatetimeEncoder)+'\r\n').encode())
+        try: self.s.sendall((json.dumps(msg, cls=DatetimeEncoder)+'\r\n').encode())
         except socket.error: self.close_socket(self.s)
         except Exception as e: print(e, 'send msg error')
 
