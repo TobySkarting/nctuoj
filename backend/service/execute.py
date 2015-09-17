@@ -64,6 +64,33 @@ class ExecuteService(BaseService):
             yield from self.db.execute(sql, parma)
         return (None, id)
 
+    def post_execute_priority(self, data={}):
+        required_args = ['priority']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        priority = data['priority']
+        err, execute_list = yield from self.get_execute_list()
+        execute_list = [x['id'] for x in execute_list]
+        max_priority = len(execute_list)
+        for execute in execute_list:
+            execute = int(execute)
+            if execute not in priority:
+                return ('priority of execute_type.%s not found'%(str(execute)), None)
+        id = list(priority.keys())
+        for execute in priority:
+            execute = int(execute)
+            if execute not in execute_list:
+                return ('execute_type.%s not exist'%(str(execute)), None)
+            if execute > max_priority:
+                return ('priority of execute_type.%s error'%(str(execute)), None)
+            if id.count(execute) > 1:
+                return ('priority can not duplicate', None)
+        for id, pri in priority.items():
+            yield from self.db.execute('UPDATE execute_types SET priority=%s WHERE id=%s;', (pri, id,))
+            self.rs.delete('execute@%s'%(str(id)))
+        self.rs.delete('execute_list')
+        return (None, None)
+
     def delete_execute(self, data={}):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
