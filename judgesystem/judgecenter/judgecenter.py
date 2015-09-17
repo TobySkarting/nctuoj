@@ -30,7 +30,7 @@ class JudgeCenter:
         self.db.autocommit = True
         # self.ftp = ftp.FTP(config.ftp_server, config.ftp_port, config.ftp_user, config.ftp_password)
 
-        self.recv_buffer_len = 1024
+        self.recv_buffer_len = 4
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         #self.s.setblocking(0)
@@ -38,7 +38,6 @@ class JudgeCenter:
         self.s.listen(config.judgecenter_listen)
         self.pool = [sys.stdin, self.s]
         self.client_pool = []
-        self.recv_buffer_len = 1024
         self.submission_queue = []
 
         self.client = {}
@@ -53,20 +52,25 @@ class JudgeCenter:
             self.lock = 0
        
     def receive(self, sock):
-        try:
-            data = sock.recv(self.recv_buffer_len).decode()
-            if data == '':
-                raise socket.error
-            res = json.loads(data)
-        except socket.error:
-            res = None
-            self.close_socket(sock)
-        except Exception as e:
-            res = None
-            print(data, type(data))
-            print(e, 'receive msg error')
-        if res and ('cmd' not in res or 'msg' not in res):
-            res = None
+        data = ""
+        sock.setblocking(0)
+        while True:
+            try:
+                tmp = sock.recv(self.recv_buffer_len)
+                data += tmp.decode()
+            except Exception as e:
+                #print(e)
+                break
+
+
+        data = data.split("\r\n")
+        res = []
+        for x in data:
+            if len(x):
+                try:
+                    res.append(json.loads(x))
+                except:
+                    print("err: %s" % x)
         return res
 
     def check_submission_meta(self, msg):
@@ -176,6 +180,9 @@ class JudgeCenter:
     def ReadSockHandler(self, sock):
         client = self.client[sock]
         msg = self.receive(sock)
+        for x in msg:
+            print(x['msg'])
+        return
         print('READ: ', msg, client.type)
         if msg is None: return
         if msg['cmd'] == 'type' and msg['msg'] == '':
