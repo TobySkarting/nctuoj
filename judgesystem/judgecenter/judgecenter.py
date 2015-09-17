@@ -58,9 +58,6 @@ class JudgeCenter:
         while True:
             try:
                 tmp = sock.recv(self.recv_buffer_len)
-            except socket.error:
-                self.close_socket(sock)
-                break
             except Exception as e:
                 err = e.args[0]
                 if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
