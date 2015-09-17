@@ -165,6 +165,7 @@ if __name__ == '__main__':
         ('/api/time/',                                                  ApiTimeHandler),
 
         ('/api/executes/',                                              ApiExecuteTypesHandler),
+        ('/api/executes/priority/',                                     ApiExecuteTypesHandler),
         ('/api/executes/(\d+)/',                                        ApiExecuteTypeHandler),
         ('/api/verdicts/',                                              ApiVerdictTypesHandler),
         ('/api/verdicts/(\d+)/',                                        ApiVerdictTypeHandler),
