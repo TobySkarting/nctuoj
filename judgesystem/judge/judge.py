@@ -50,14 +50,16 @@ class Judge:
     def get_testdata(self,testdata):
         for x in testdata:
             remote_path = './data/testdata/%s/'%(str(x['id']))
-            file_path = '%s/testdata/%s/'%(config.store_folder, str(x['id']))
+            file_path = '%s/testdata/'%(config.store_folder)
             try: shutil.rmtree(file_path)
             except: pass
             self.ftp.get(remote_path, file_path)
 
     def get_submission(self, submission_id):
+        print(submission_id)
         remote_path = './data/submissions/%s/'%(str(submission_id))
-        file_path = '%s/submissions/%s/'%(config.store_folder, str(submission_id))
+        file_path = '%s/submissions/'%(config.store_folder)
+        shutil.rmtree(file_path)
         try: shutil.rmtree(file_path)
         except: pass
         self.ftp.get(remote_path, file_path)
@@ -76,8 +78,6 @@ class Judge:
         msg = self.receive()
         if msg is None: return
         if msg['cmd'] == 'judge':
-            print(msg['msg'])
-            time.sleep(1)
             msg = self.judge(msg['msg'])
             self.send({"cmd":"judged", "msg":msg})
         else:

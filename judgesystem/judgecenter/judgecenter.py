@@ -64,13 +64,17 @@ class JudgeCenter:
                     print("No data available")
                     break
                 else:
+                    print("GGGG")
                     self.close_socket(sock)
-                    break
+                    return []
             else:
                 data += tmp.decode()
+                if len(data)==0:
+                    print("QQQQQGGGG")
+                    self.close_socket(sock)
+                    return []
 
 
-        print("recv data: %s" % data)
         data = data.split("\r\n")
         res = []
         for x in data:
@@ -142,6 +146,7 @@ class JudgeCenter:
     def close_socket(self, sock):
         self.pool.remove(sock)
         sock.close()
+        self.client_pool.remove(sock)
 
     def sock_auth_token(self, sock, token):
         cur = self.cursor()
@@ -216,7 +221,6 @@ class JudgeCenter:
                 pass
             else:
                 print("error")
-                self.close_socket(sock)
         print("do all thing well")
 
     def WriteSockHandler(self, sock):
@@ -238,13 +242,13 @@ class JudgeCenter:
     def insert_submission(self, submission_id):
         cur = self.cursor()
         cur.execute("INSERT INTO wait_submissions (submission_id) VALUES (%s);", (submission_id,))
+        print("succ insert %s"%str(submission_id))
         
     def run(self):
         while True:
-            print("GOGOGO")
             if len(self.submission_queue) == 0:
                 self.get_submission()
-            read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [])
+            read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [], 0.1)
             for sock in read_sockets:
                 if sock == self.s:
                     sockfd, addr = sock.accept()
@@ -255,7 +259,6 @@ class JudgeCenter:
                 elif sock == sys.stdin:
                     self.CommandHandler(input())
                 else:
-                    print("holy shit")
                     self.ReadSockHandler(sock)
             for sock in self.client_pool:
                 self.WriteSockHandler(sock)
