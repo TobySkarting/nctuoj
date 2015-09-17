@@ -37,7 +37,7 @@ class Judge:
                 raise socket.error
             res = json.loads(data)
         except socket.error:
-            res = None
+            res = []
             self.s.close()
             sys.exit(1)
         except Exception as e:
@@ -108,6 +108,7 @@ class Judge:
 
     def run(self):
         while True:
+            print("RUN")
             read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [])
             for sock in read_sockets:
                 if sock == sys.stdin:

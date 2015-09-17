@@ -12,6 +12,7 @@ import time
 from myredis import MyRedis
 from map import *
 import datetime
+import errno
 
 SOCK_AVAILABLE_CMD = ['token', 'type', 'judged']
 class DatetimeEncoder(json.JSONEncoder):
@@ -57,12 +58,22 @@ class JudgeCenter:
         while True:
             try:
                 tmp = sock.recv(self.recv_buffer_len)
-                data += tmp.decode()
-            except Exception as e:
-                print(e)
+            except socket.error:
+                self.close_socket(sock)
                 break
+            except Exception as e:
+                err = e.args[0]
+                if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
+                    print("No data available")
+                    break
+                else:
+                    self.close_socket(sock)
+                    break
+            else:
+                data += tmp.decode()
 
 
+        print("recv data: %s" % data)
         data = data.split("\r\n")
         res = []
         for x in data:
@@ -132,9 +143,8 @@ class JudgeCenter:
             print("Unkown commnad: ", param)
 
     def close_socket(self, sock):
-        sock.close()
-        self.client_pool.remove(sock)
         self.pool.remove(sock)
+        sock.close()
 
     def sock_auth_token(self, sock, token):
         cur = self.cursor()
@@ -235,7 +245,6 @@ class JudgeCenter:
     def run(self):
         while True:
             print("GOGOGO")
-            print(self.pool)
             if len(self.submission_queue) == 0:
                 self.get_submission()
             read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [])
@@ -249,6 +258,7 @@ class JudgeCenter:
                 elif sock == sys.stdin:
                     self.CommandHandler(input())
                 else:
+                    print("holy shit")
                     self.ReadSockHandler(sock)
             for sock in self.client_pool:
                 self.WriteSockHandler(sock)
