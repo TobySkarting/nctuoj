@@ -143,13 +143,9 @@ class Judge:
         cmd = input()
         param = cmd.lower().split(' ')
         cmd = param[0]
-        if cmd[0] == 'token':
-            self.send_token()
-        elif cmd[0] == 'type':
-            self.send_type(int(cmd[1]))
-        elif cmd == "restart":
+        if cmd == "restart":
             self.restart()
-        elif cmd[0].lower() == 'exit':
+        elif cmd.lower() == 'exit':
             sys.exit(0)
 
     def run(self):
@@ -164,6 +160,13 @@ class Judge:
 
 if __name__ == "__main__":
     print("====start====")
+    if(os.getuid() != 0):
+        print("This program need root! Do you want to run it as root?(Y/N)")
+        x = input().lower()
+        if x == "y":
+            os.execv("/usr/bin/sudo", ("sudo", "python3", __file__,))
+        else:
+            sys.exit(0)
     print(os.getcwd())
     judge = Judge()
     judge.send_token()
