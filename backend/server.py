@@ -19,6 +19,7 @@ import logging
 from service.user       import UserService
 from service.problem    import ProblemService
 from service.submission import SubmissionService
+from service.testdata   import TestdataSerivce
 from service.bulletin   import BulletinService
 from service.execute    import ExecuteService
 from service.contest    import ContestService
@@ -228,6 +229,7 @@ if __name__ == '__main__':
     Service.User =          UserService(db, rs)
     Service.Problem =       ProblemService(db, rs)
     Service.Submission =    SubmissionService(db, rs)
+    Service.Testdata =      TestdataSerivce(db, rs)
     Service.Bulletin =      BulletinService(db, rs)
     Service.Execute =       ExecuteService(db, rs)
     Service.Contest =       ContestService(db, rs)
