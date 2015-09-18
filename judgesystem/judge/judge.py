@@ -82,7 +82,7 @@ class Judge:
 
     def get_submission(self, submission_id):
         remote_path = './data/submissions/%s/'%(str(submission_id))
-        file_path = '%s/submissions/'%(config.store_folder)
+        file_path = '%s/submissions/%s/'%(config.store_folder,str(submission_id))
         try: shutil.rmtree(file_path)
         except: pass
         self.ftp.get(remote_path, file_path)
@@ -99,8 +99,8 @@ class Judge:
         submission_file = "%s/submissions/%s/%s"%(config.store_folder, msg['submission_id'], msg['file_name'])
         sandbox_file = "/tmp/box/%s/box/"%(os.getpid())
         print(submission_file)
-        sp.call("sudo cat %s"%(submission_file))
-        sp.call("cp %s %s"%(submission_file, sandbox_file))
+        sp.call("cat %s"%(submission_file), shell=True)
+        sp.call("cp %s %s"%(submission_file, sandbox_file), shell=True)
         s.exec_box("/usr/bin/env ls")
         ### All of thing except last
 
