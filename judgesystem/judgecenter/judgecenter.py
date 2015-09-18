@@ -61,16 +61,13 @@ class JudgeCenter:
             except Exception as e:
                 err = e.args[0]
                 if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
-                    print("No data available")
                     break
                 else:
-                    print("GGGG")
                     self.close_socket(sock)
                     return []
             else:
                 data += tmp.decode()
                 if len(data)==0:
-                    print("QQQQQGGGG")
                     self.close_socket(sock)
                     return []
 

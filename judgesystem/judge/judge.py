@@ -9,6 +9,7 @@ import sys
 import time
 import shutil
 import datetime
+import errno
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -30,21 +31,33 @@ class Judge:
 
     def receive(self):
         sock = self.s
-        try:
-            data = sock.recv(self.recv_buffer_len).decode()
-            print(data)
-            if data == '':
-                raise socket.error
-            res = json.loads(data)
-        except socket.error:
-            res = []
-            self.s.close()
-            sys.exit(1)
-        except Exception as e:
-            res = None
-            print(e, 'receive msg error')
-        if res and ('cmd' not in res or 'msg' not in res):
-            res = None
+        data = ""
+        sock.setblocking(0)
+        while True:
+            try:
+                tmp = sock.recv(self.recv_buffer_len)
+            except Exception as e:
+                err = e.args[0]
+                if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
+                    break
+                else:
+                    self.close_socket(sock)
+                    return []
+            else:
+                data += tmp.decode()
+                if len(data)==0:
+                    self.close_socket(sock)
+                    return []
+
+
+        data = data.split("\r\n")
+        res = []
+        for x in data:
+            if len(x):
+                try:
+                    res.append(json.loads(x))
+                except:
+                    print("err: %s" % x)
         return res
 
     def get_testdata(self,testdata):
@@ -56,7 +69,6 @@ class Judge:
             self.ftp.get(remote_path, file_path)
 
     def get_submission(self, submission_id):
-        print(submission_id)
         remote_path = './data/submissions/%s/'%(str(submission_id))
         file_path = '%s/submissions/'%(config.store_folder)
         shutil.rmtree(file_path)
@@ -72,16 +84,17 @@ class Judge:
             testdata['verdict'] = 7
             testdata['time_usage'] = testdata['time_limit']/2
             testdata['memory_usage'] = testdata['memory_limit']/2
-        return msg
+            self.send({"cmd":"judged_testdata", "msg":msg})
+        self.send({"cmd":"judged", "msg":msg})
 
     def SockHandler(self):
-        msg = self.receive()
-        if msg is None: return
-        if msg['cmd'] == 'judge':
-            msg = self.judge(msg['msg'])
-            self.send({"cmd":"judged", "msg":msg})
-        else:
-            print(msg)
+        MSGS = self.receive()
+        for msg in MSGS:
+            if len(msg)==0: continue
+            if msg['cmd'] == 'judge':
+                self.judge(msg['msg'])
+            else:
+                print(msg)
 
     def send(self, msg):
         try: self.s.sendall((json.dumps(msg, cls=DatetimeEncoder)+'\r\n').encode())
@@ -108,7 +121,6 @@ class Judge:
 
     def run(self):
         while True:
-            print("RUN")
             read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [])
             for sock in read_sockets:
                 if sock == sys.stdin:

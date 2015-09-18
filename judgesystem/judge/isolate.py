@@ -39,6 +39,8 @@ class Sandbox:
         cmd += '--init'
         sp.call(cmd, shell=True)
         sp.call('cp /usr/bin/g++ /tmp/box/%s/box/'%(str(self._box_id)), shell=True)
+        sp.call('cp /usr/bin/python3 /tmp/box/%s/box/'%(str(self._box_id)), shell=True)
+        sp.call('cp /usr/bin/python2 /tmp/box/%s/box/'%(str(self._box_id)), shell=True)
 
     def delete_box(self):
         cmd = self._isolate + ' --box-id=%s --cleanup'%(str(self._box_id)) 
@@ -72,8 +74,8 @@ if __name__ == "__main__":
     sp.call('cp /bin/cat /tmp/box/1/box/', shell=True)
     sp.call('cp /bin/ls /tmp/box/1/box/', shell=True)
     #print(s.exec_box("g++ test.cpp"))
-    print(s.exec_box("/usr/bin/env ls"))
     s.set_options(proc_limit=2)
+    s.exec_box("python3 hello.py")
     #print(s.exec_box("./a.out"))
     sp.call('cat /tmp/box/1/box/err', shell=True)
     s.delete_box()
