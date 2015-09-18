@@ -1,4 +1,5 @@
 import socket
+import os
 import select
 import config
 import psycopg2
@@ -10,6 +11,7 @@ import time
 import shutil
 import datetime
 import errno
+import time
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -24,7 +26,17 @@ class Judge:
     def __init__(self):
         self.ftp = FTP(config.ftp_server, config.ftp_port, config.ftp_user, config.ftp_password)
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect((config.judgecenter_host, config.judgecenter_port))
+        times = 0
+        delay = [5, 10, 30, 60, 300]
+        while True:
+            try:
+                self.s.connect((config.judgecenter_host, config.judgecenter_port))
+                break
+            except:
+                print("Cannot connect to judgecenter. Retry after %s second." % delay[times])
+                time.sleep(delay[times])
+                times = min(times+1, 4)
+
         #self.s.setblocking(0)
         self.pool = [sys.stdin, self.s]
         self.recv_buffer_len = 1024
@@ -41,13 +53,11 @@ class Judge:
                 if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
                     break
                 else:
-                    self.close_socket(sock)
                     return []
             else:
                 data += tmp.decode()
                 if len(data)==0:
-                    self.close_socket(sock)
-                    return []
+                    self.restart()
 
 
         data = data.split("\r\n")
@@ -78,6 +88,7 @@ class Judge:
 
 
     def judge(self, msg):
+        print(msg)
         self.get_testdata(msg['testdata'])
         self.get_submission(msg['submission_id'])
         for testdata in msg['testdata']:
@@ -96,6 +107,9 @@ class Judge:
             else:
                 print(msg)
 
+    def restart(self):
+        os.execv("/usr/bin/python3", ("python3", __file__,))
+
     def send(self, msg):
         try: self.s.sendall((json.dumps(msg, cls=DatetimeEncoder)+'\r\n').encode())
         except socket.error: self.close_socket(self.s)
@@ -111,11 +125,14 @@ class Judge:
 
     def CommandHandler(self):
         cmd = input()
-        cmd = cmd.split()
+        param = cmd.lower().split(' ')
+        cmd = param[0]
         if cmd[0] == 'token':
             self.send_token()
         elif cmd[0] == 'type':
             self.send_type(int(cmd[1]))
+        elif cmd == "restart":
+            self.restart()
         elif cmd[0].lower() == 'exit':
             sys.exit(0)
 
@@ -130,6 +147,7 @@ class Judge:
 
 
 if __name__ == "__main__":
+    print("====start====")
     judge = Judge()
     judge.send_token()
     judge.send_type(1)

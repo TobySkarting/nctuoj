@@ -124,7 +124,7 @@ class JudgeCenter:
         cur.execute("SELECT * FROM wait_submissions")
         for x in cur:
             self.submission_queue.append(x['submission_id'])
-            #delete_cur.execute("DELETE FROM wait_submissions WHERE id=%s", (x['id'],))
+            delete_cur.execute("DELETE FROM wait_submissions WHERE id=%s", (x['id'],))
 
     def CommandHandler(self, cmd):
         param = cmd.lower().split(' ')
@@ -170,7 +170,6 @@ class JudgeCenter:
         if not self.check_submission_meta(msg):
             return
         cur = self.cursor()
-        cur.execute('DELETE FROM wait_submissions WHERE submission_id=%s;', (msg['submission_id'],))
         msg['score'] = sum(int(x['score']) if int(x['verdict'])==7 else 0 for x in msg['testdata'])
         msg['memory_usage'] = sum(int(x['memory_usage']) for x in msg['testdata'])
         msg['time_usage'] = sum(int(x['time_usage']) for x in msg['testdata'])
@@ -218,7 +217,6 @@ class JudgeCenter:
                 pass
             else:
                 print("error")
-        print("do all thing well")
 
     def WriteSockHandler(self, sock):
         if sock not in self.client: return
@@ -243,8 +241,7 @@ class JudgeCenter:
         
     def run(self):
         while True:
-            if len(self.submission_queue) == 0:
-                self.get_submission()
+            self.get_submission()
             read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [], 0.1)
             for sock in read_sockets:
                 if sock == self.s:
