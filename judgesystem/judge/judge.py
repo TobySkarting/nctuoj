@@ -99,7 +99,7 @@ class Judge:
         submission_file = "%s/submissions/%s/%s"%(config.store_folder, msg['submission_id'], msg['file_name'])
         sandbox_file = "/tmp/box/%s/box/"%(os.getpid())
         print(submission_file)
-        sp.call("cat %s"%(submission_file))
+        sp.call("sudo cat %s"%(submission_file))
         sp.call("cp %s %s"%(submission_file, sandbox_file))
         s.exec_box("/usr/bin/env ls")
         ### All of thing except last
@@ -110,7 +110,7 @@ class Judge:
             testdata['verdict'] = 7
             testdata['time_usage'] = testdata['time_limit']/2
             testdata['memory_usage'] = testdata['memory_limit']/2
-            self.send({"cmd":"judged_testdata", "msg":msg})
+            #self.send({"cmd":"judged_testdata", "msg":msg})
         self.send({"cmd":"judged", "msg":msg})
         s.delete_box()
 
@@ -167,7 +167,6 @@ if __name__ == "__main__":
             os.execv("/usr/bin/sudo", ("sudo", "python3", __file__,))
         else:
             sys.exit(0)
-    print(os.getcwd())
     judge = Judge()
     judge.send_token()
     judge.send_type(1)
