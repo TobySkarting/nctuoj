@@ -67,6 +67,7 @@ class ContestService(BaseService):
             res = res[0]
             self.rs.set('contest@%s'%str(data['id']), res)
         err, res['problem'] = yield from self.get_contest_problem_list(data)
+        err, res['user'] = yield from self.get_contest_user(data)
         return (None, res)
 
     def get_contest_problem_list(self, data={}):
@@ -134,6 +135,7 @@ class ContestService(BaseService):
         if int(data['user_id']) in res:
             return ('You have registered', None)
         yield from self.db.execute('INSERT INTO map_contest_user (contest_id, user_id) VALUES(%s, %s);', (data['id'], data['user_id'],))
+        self.rs.delete('contest@%s@user'%(str(data['id'])))
         return (None, str(data['id']))
 
     def unregister(self, data={}):
@@ -145,9 +147,8 @@ class ContestService(BaseService):
         if int(data['user_id']) not in res:
             return ('You have not registered yet', None)
         yield from self.db.execute('DELETE FROM map_contest_user WHERE contest_id=%s AND user_id=%s;', (data['id'], data['user_id'],))
+        self.rs.delete('contest@%s@user'%(str(data['id'])))
         return (None, str(data['id']))
-        pass
-
 
     def delete_contest(self, data={}):
         required_args = ['id', 'group_id']
@@ -157,3 +158,21 @@ class ContestService(BaseService):
         self.rs.delete('contest@%s'%str(res['id']))
         self.rs.delete('contest@%s@problem'%str(res['id']))
         return (None, None)
+
+    def get_contest_user(self, data={}):
+        required_args = ['id']
+        err = self.check_required_args(required_args , data)
+        if err: return (err, None)
+        res = self.rs.get('contest@%s@user'%(str(data['id'])))
+        if res: return (None, res)
+        res, res_cnt = yield from self.db.execute('SELECT * FROM map_contest_user WHERE contest_id=%s;', (data['id'],))
+        self.rs.set('contest@%s@user'%(str(data['id'])), res)
+        return (None, res)
+
+    def get_contest_scoreboard(self, data={}):
+        required_args = ['id']
+        err = self.check_required_args(required_args , data)
+        if err: return (err, None)
+        err, data = yield from self.get_contest(data)
+
+
