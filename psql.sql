@@ -276,8 +276,6 @@ CREATE TABLE testdata(
 );
 CREATE TRIGGER testdata_updated_row BEFORE UPDATE ON testdata FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON testdata (problem_id);
-INSERT INTO testdata (problem_id, score) values (10001, 50);
-INSERT INTO testdata (problem_id, score) values (10001, 50);
 
 CREATE TABLE map_verdict_string (
     id              serial          NOT NULL    PRIMARY KEY,

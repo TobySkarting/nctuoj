@@ -2,10 +2,12 @@
 {% block content %}
 
 {% include 'problem_edit_title.html' %}
-<a class="btn btn-default margin-bottom" onclick="new_testdata();">New</a>
+<a class="btn btn-default margin-bottom new_testdata" onclick="new_testdata();">New</a>
 <script>
 function new_testdata(){
+    $(".new_testdata").prop("disabled", true);
     $.post("/api/group/{{current_group}}/problems/{{data['id']}}/testdata/0/", {'token': '{{account['token']}}' }, function(msg){
+        $(".new_testdata").prop("disabled", false);
         if(msg['status'] == 200){
             location.href = location.href;
         } else {
