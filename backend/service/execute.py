@@ -62,6 +62,7 @@ class ExecuteService(BaseService):
             meta['execute_type_id'] = id
             sql, parma = self.gen_insert_sql("execute_steps", meta)
             yield from self.db.execute(sql, parma)
+        self.rs.delete('execute@%s'%(str(id)))
         return (None, id)
 
     def post_execute_priority(self, data={}):
