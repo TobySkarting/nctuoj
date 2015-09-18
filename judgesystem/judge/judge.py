@@ -110,7 +110,7 @@ class Judge:
             testdata['verdict'] = 7
             testdata['time_usage'] = testdata['time_limit']/2
             testdata['memory_usage'] = testdata['memory_limit']/2
-            self.send({"cmd":"judged_testdata", "msg":msg})
+            #self.send({"cmd":"judged_testdata", "msg":msg})
         self.send({"cmd":"judged", "msg":msg})
         s.delete_box()
 
@@ -167,7 +167,6 @@ if __name__ == "__main__":
             os.execv("/usr/bin/sudo", ("sudo", "python3", __file__,))
         else:
             sys.exit(0)
-    print(os.getcwd())
     judge = Judge()
     judge.send_token()
     judge.send_type(1)
