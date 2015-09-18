@@ -99,8 +99,8 @@ class Judge:
         submission_file = "%s/submissions/%s/%s"%(config.store_folder, msg['submission_id'], msg['file_name'])
         sandbox_file = "/tmp/box/%s/box/"%(os.getpid())
         print(submission_file)
-        sp.call("cat %s"%(submission_file), shell=True)
-        sp.call("cp %s %s"%(submission_file, sandbox_file), shell=True)
+        sp.call(["cat", submission_file])
+        sp.call(["cp", submission_file, sandbox_file])
         s.exec_box("/usr/bin/env ls")
         ### All of thing except last
 
