@@ -255,6 +255,7 @@ class JudgeCenter:
                     self.client_pool.append(sockfd)
                     self.client[sockfd] = self.CLIENT(addr)
                     print("client (%s, %s) connected" % addr)
+                    self.insert_submission(10002)
                 elif sock == sys.stdin:
                     self.CommandHandler(input())
                 else:
