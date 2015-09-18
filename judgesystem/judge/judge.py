@@ -82,7 +82,7 @@ class Judge:
 
     def get_submission(self, submission_id):
         remote_path = './data/submissions/%s/'%(str(submission_id))
-        file_path = '%s/submissions/%s/'%(config.store_folder,str(submission_id))
+        file_path = '%s/submissions/'%(config.store_folder)
         try: shutil.rmtree(file_path)
         except: pass
         self.ftp.get(remote_path, file_path)
