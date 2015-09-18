@@ -123,7 +123,8 @@ class JudgeCenter:
         delete_cur = self.cursor()
         cur.execute("SELECT * FROM wait_submissions")
         for x in cur:
-            self.submission_queue.append(x['submission_id'])
+            if x['submission_id'] not in self.submission_queue:
+                self.submission_queue.append(x['submission_id'])
             delete_cur.execute("DELETE FROM wait_submissions WHERE id=%s", (x['id'],))
 
     def CommandHandler(self, cmd):
@@ -237,8 +238,11 @@ class JudgeCenter:
 
     def insert_submission(self, submission_id):
         cur = self.cursor()
-        cur.execute("INSERT INTO wait_submissions (submission_id) VALUES (%s);", (submission_id,))
-        print("succ insert %s"%str(submission_id))
+        try:
+            cur.execute("INSERT INTO wait_submissions (submission_id) VALUES (%s);", (submission_id,))
+            print("succ insert %s"%str(submission_id))
+        except:
+            print("insert failed")
         
     def run(self):
         while True:
