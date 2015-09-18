@@ -3,8 +3,8 @@ import os
 import config
 
 class ProblemService(BaseService):
-    def __init__(self, db, rs):
-        super().__init__(db, rs)
+    def __init__(self, db, rs, ftp):
+        super().__init__(db, rs, ftp)
         ProblemService.inst = self
 
     def get_problem_list(self, data={}):

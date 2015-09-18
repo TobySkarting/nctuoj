@@ -5,8 +5,8 @@ import config
 import datetime
 
 class ContestService(BaseService):
-    def __init__(self, db, rs):
-        super().__init__(db, rs)
+    def __init__(self, db, rs, ftp):
+        super().__init__(db, rs, ftp)
         ContestService.inst = self
 
     def get_current_contest(self):

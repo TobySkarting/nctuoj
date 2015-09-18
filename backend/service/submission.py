@@ -11,8 +11,8 @@ import time
 import tornado
 
 class SubmissionService(BaseService):
-    def __init__(self, db, rs):
-        super().__init__(db, rs)
+    def __init__(self, db, rs, ftp):
+        super().__init__(db, rs, ftp)
         SubmissionService.inst = self
     
     def get_submission_list(self, data):
@@ -124,6 +124,7 @@ class SubmissionService(BaseService):
                 f.write(data['code_file']['body'])
             else:
                 f.write(data['plain_code'].encode())
+        yield from self.ftp.delete(remote_folder)
         yield from self.ftp.upload(file_path, remote_path)
         yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (id,))
         return (None, id) 

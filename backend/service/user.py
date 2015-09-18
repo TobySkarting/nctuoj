@@ -6,6 +6,9 @@ import random
 import datetime
 
 class UserService(BaseService):
+    def __init__(self, db, rs, ftp):
+        super().__init__(db, rs, ftp)
+        UserService.inst = self
 
     def hash_pwd(self, pwd):
         hpwd = hashlib.sha512(str(pwd).encode()).hexdigest() + config.PASSWORD_KEY
@@ -17,9 +20,6 @@ class UserService(BaseService):
         token = 'TOKEN@%s@'%account + ''.join( _ if random.random() < 0.5 else _.upper() for _ in token)
         return token
 
-    def __init__(self, db, rs):
-        super().__init__(db, rs)
-        UserService.inst = self
 
     def get_user_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
