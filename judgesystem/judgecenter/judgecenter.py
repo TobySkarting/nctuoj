@@ -70,8 +70,6 @@ class JudgeCenter:
                 if len(data)==0:
                     self.close_socket(sock)
                     return []
-
-
         data = data.split("\r\n")
         res = []
         for x in data:
@@ -109,7 +107,7 @@ class JudgeCenter:
         msg['execute_type'] = cur.fetchone()
         cur.execute('SELECT * FROM execute_steps WHERE execute_type_id=%s ORDER BY id;', (msg['execute_type_id'],))
         msg['execute_steps'] = [dict(x) for x in cur]
-        cur.execute('SELECT id, time_limit, memory_limit, score FROM testdata WHERE problem_id=%s;', (msg['problem_id'],))
+        cur.execute('SELECT id, time_limit, memory_limit, score FROM testdata WHERE problem_id=%s ORDER BY id;', (msg['problem_id'],))
         msg['testdata'] = [dict(x) for x in cur]
         return res
     
@@ -207,11 +205,11 @@ class JudgeCenter:
                 else:
                     print('undefined')
             elif client.type == map_sock_type['judge']:   # judge
-                if msg['cmd'] == 'judged':
+                if msg['cmd'] == 'judged_testdata':
+                    pass
+                elif msg['cmd'] == 'judged':
                     self.sock_update_submission(sock, msg['msg'])
                     client.lock = 0
-                elif msg['cmd'] == 'judged_testdata':
-                    pass
                 else:
                     print('unkown cmd')
             elif client.type == map_sock_type['web']:   # web
@@ -255,7 +253,7 @@ class JudgeCenter:
                     self.client_pool.append(sockfd)
                     self.client[sockfd] = self.CLIENT(addr)
                     print("client (%s, %s) connected" % addr)
-                    self.insert_submission(10002)
+                    self.insert_submission(10003)
                 elif sock == sys.stdin:
                     self.CommandHandler(input())
                 else:
