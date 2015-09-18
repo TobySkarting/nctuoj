@@ -14,6 +14,7 @@ import errno
 import time
 from isolate import Sandbox
 import subprocess as sp
+import re
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -92,27 +93,46 @@ class Judge:
         print(msg)
         self.get_testdata(msg['testdata'])
         self.get_submission(msg['submission_id'])
-        s = Sandbox(os.getpid(), './isolate')
-        s.set_options(proc_limit=4, meta='meta', errput='err', mem_limit=65535*20)
-        s.init_box()
-        ### move submission file to isolate
-        submission_file = "%s/submissions/%s/%s"%(config.store_folder, msg['submission_id'], msg['file_name'])
-        sandbox_file = "/tmp/box/%s/box/"%(os.getpid())
-        print(submission_file)
-        sp.call("cat %s"%(submission_file), shell=True)
-        sp.call("cp %s %s"%(submission_file, sandbox_file), shell=True)
-        s.exec_box("/usr/bin/env ls")
-        ### All of thing except last
-
-
-        ### for the last
         for testdata in msg['testdata']:
+            print(testdata)
+            sandbox = Sandbox(os.getpid(), './isolate')
+            sandbox.set_options(proc_limit=4, mem_limit=65535*20, time_limit=5 )
+            sandbox.init_box()
+            sandbox_folder = "/tmp/box/%s/box/"%(os.getpid())
+            ### move submission file to isolate
+            submission_file = "%s/submissions/%s/%s"%(config.store_folder, msg['submission_id'], msg['file_name'])
+            sp.call("cp %s %s"%(submission_file, sandbox_folder), shell=True)
+            ### setting meta file
+            meta = "%s/meta" % sandbox_folder
+            sandbox.set_options(meta=meta)
+            ### setting input
+            #sandbox.set_options(input="%s/testdata/%s/input"%(config.store_folder,testdata['id']))
+            ### setting output
+            output = "output"
+            errput = "errput"
+            sandbox.set_options(output=output)
+            sandbox.set_options(errput=errput)
+            #for step in range(len(msg['execute_steps'])-1):
+            for step in range(len(msg['execute_steps'])):
+                x = msg['execute_steps'][step]
+                print("==========")
+                command = x['command']
+                command = command.replace("__FILE__", msg['file_name'])
+                print("cmd: ", command)
+                sandbox.exec_box("/usr/bin/env %s" % command)
+                print("=====meta====")
+                sp.call("cat %s"%meta, shell=True)
+                print("=====output====")
+                sp.call("cat %s/output"%sandbox_folder, shell=True)
+                print("=====errput====")
+                sp.call("cat %s/errput"%sandbox_folder, shell=True)
+                print("======end=====")
             testdata['verdict'] = 7
             testdata['time_usage'] = testdata['time_limit']/2
             testdata['memory_usage'] = testdata['memory_limit']/2
             #self.send({"cmd":"judged_testdata", "msg":msg})
         self.send({"cmd":"judged", "msg":msg})
-        s.delete_box()
+        sandbox.delete_box()
 
     def SockHandler(self):
         MSGS = self.receive()

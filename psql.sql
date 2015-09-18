@@ -157,8 +157,25 @@ CREATE TABLE execute_types (
 CREATE TRIGGER execute_types_updated_row BEFORE UPDATE ON execute_types FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX on execute_types (priority);
 INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C', 0, 1, 1);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++', 1, 1, 3);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++14', 1, 1, 2);
+INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++', 1, 1, 2);
+INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++11', 1, 1, 3);
+INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Java', 2, 1, 4);
+INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Python2', 3, 1, 5);
+INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Python3', 4, 1, 6);
+INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Go', 5, 1, 7);
+--map_lang = {
+--0: "C",
+--1: "C++",
+--2: "Java",
+--3: "Python2",
+--4: "Python3",
+--5: "Go",
+--6: "Perl",
+--7: "Javascript",
+--8: "Haskell",
+--9: "ruby",
+--}
+
 
 --DROP TABLE IF EXISTS execute_steps;
 CREATE TABLE execute_steps (
@@ -171,14 +188,23 @@ CREATE TABLE execute_steps (
 CREATE TRIGGER execute_steps_updated_row BEFORE UPDATE ON execute_steps FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON execute_steps (execute_type_id);
 INSERT INTO execute_steps (execute_type_id, command) values (1, 'gcc __FILE__');
-INSERT INTO execute_steps (execute_type_id, command) values (1, '__CHECK_CE__ ./a.out');
 INSERT INTO execute_steps (execute_type_id, command) values (1, './a.out');
 INSERT INTO execute_steps (execute_type_id, command) values (2, 'g++ __FILE__');
-INSERT INTO execute_steps (execute_type_id, command) values (2, '__CHECK_CE__ ./a.out');
 INSERT INTO execute_steps (execute_type_id, command) values (2, './a.out');
 INSERT INTO execute_steps (execute_type_id, command) values (3, 'g++ -std=c++11  __FILE__');
-INSERT INTO execute_steps (execute_type_id, command) values (3, '__CHECK_CE__ ./a.out');
 INSERT INTO execute_steps (execute_type_id, command) values (3, './a.out');
+INSERT INTO execute_steps (execute_type_id, command) values (5, 'python2 -m py_compile __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (5, 'python2 __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (6, 'python3 -m py_compile __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (6, 'python3 __FILE__');
+
+--INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C', 0, 1, 1);
+--INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++', 1, 1, 2);
+--INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++11', 1, 1, 3);
+--INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Java', 2, 1, 4);
+--INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Python2', 3, 1, 5);
+--INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Python3', 4, 1, 6);
+--INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Go', 5, 1, 7);
 
 --DROP TABLE IF EXISTS verdicts;
 CREATE TABLE verdicts(
@@ -295,7 +321,6 @@ CREATE INDEX ON submissions (time_usage);
 CREATE INDEX ON submissions (verdict);
 CREATE INDEX ON submissions (length);
 CREATE INDEX ON submissions (created_at);
-INSERT INTO submissions (user_id, problem_id, execute_type_id, length, file_name) VALUES (1, 10001, 1, 100, 'xd.cpp');
 
 CREATE TABLE map_submission_testdata (
     id              serial          NOT NULL    PRIMARY KEY,
