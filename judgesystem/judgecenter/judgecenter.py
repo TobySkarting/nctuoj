@@ -103,7 +103,7 @@ class JudgeCenter:
         msg = res['msg'] = {}
         msg['submission_id'] = submission_id
         cur = self.cursor()
-        cur.execute('SELECT s.problem_id, p.verdict_id, s.execute_type_id FROM submissions as s, problems as p WHERE s.id=%s;', (submission_id,))
+        cur.execute('SELECT s.problem_id, p.verdict_id, s.execute_type_id, s.file_name FROM submissions as s, problems as p WHERE s.id=%s;', (submission_id,))
         msg.update(cur.fetchone())
         cur.execute('SELECT * FROM execute_types WHERE id=%s;', (msg['execute_type_id'],))
         msg['execute_type'] = cur.fetchone()
@@ -234,6 +234,7 @@ class JudgeCenter:
         else:
             print('error')
             self.close_socket(sock)
+
     def insert_submission(self, submission_id):
         cur = self.cursor()
         cur.execute("INSERT INTO wait_submissions (submission_id) VALUES (%s);", (submission_id,))

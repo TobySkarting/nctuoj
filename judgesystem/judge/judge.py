@@ -12,6 +12,8 @@ import shutil
 import datetime
 import errno
 import time
+from isolate import Sandbox
+import subprocess as sp
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -81,7 +83,6 @@ class Judge:
     def get_submission(self, submission_id):
         remote_path = './data/submissions/%s/'%(str(submission_id))
         file_path = '%s/submissions/'%(config.store_folder)
-        shutil.rmtree(file_path)
         try: shutil.rmtree(file_path)
         except: pass
         self.ftp.get(remote_path, file_path)
@@ -91,12 +92,27 @@ class Judge:
         print(msg)
         self.get_testdata(msg['testdata'])
         self.get_submission(msg['submission_id'])
+        s = Sandbox(os.getpid(), './isolate')
+        s.set_options(proc_limit=4, meta='meta', errput='err', mem_limit=65535*20)
+        s.init_box()
+        ### move submission file to isolate
+        submission_file = "%s/submissions/%s/%s"%(config.store_folder, msg['submission_id'], msg['file_name'])
+        sandbox_file = "/tmp/box/%s/box/"%(os.getpid())
+        print(submission_file)
+        sp.call("cat %s"%(submission_file))
+        sp.call("cp %s %s"%(submission_file, sandbox_file))
+        s.exec_box("/usr/bin/env ls")
+        ### All of thing except last
+
+
+        ### for the last
         for testdata in msg['testdata']:
             testdata['verdict'] = 7
             testdata['time_usage'] = testdata['time_limit']/2
             testdata['memory_usage'] = testdata['memory_limit']/2
             self.send({"cmd":"judged_testdata", "msg":msg})
         self.send({"cmd":"judged", "msg":msg})
+        s.delete_box()
 
     def SockHandler(self):
         MSGS = self.receive()
@@ -148,6 +164,7 @@ class Judge:
 
 if __name__ == "__main__":
     print("====start====")
+    print(os.getcwd())
     judge = Judge()
     judge.send_token()
     judge.send_type(1)
