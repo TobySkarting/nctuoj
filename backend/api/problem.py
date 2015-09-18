@@ -7,12 +7,8 @@ import tornado
 class ApiProblemsHandler(ApiRequestHandler):
     def get(self):
         pass
-
-    
     def post(self):
         pass
-
-    
     def delete(self):
         pass
 
@@ -23,8 +19,6 @@ class ApiProblemHandler(ApiRequestHandler):
             self.render(500, err)
             return False
         else:
-            #if int(meta['group_id']) == 1 and int(data['visible']) == 2:
-            #    pass
             if int(data['group_id']) == int(meta['group_id']) and (int(data['visible']) > 0 or map_group_power['problem_manage'] in self.current_group_power):
                 pass
             else:
@@ -95,20 +89,6 @@ class ApiProblemHandler(ApiRequestHandler):
         check_meta = {}
         check_meta['group_id'] = self.current_group
         check_meta['id'] = id
-        '''
-        if action == "submit":
-            if (yield from self.check_view(check_meta)):
-                args = ['execute_type_id', 'code_file[file]', 'plain_code', 'plain_file_name']
-                meta = self.get_args(args)
-                meta['user_id'] = self.account['id']
-                meta['problem_id'] = id
-                err, data = yield from Service.Submission.post_submission(meta)
-                if err:
-                    self.render(500, err)
-                else:
-                    self.render(200, data)
-            return
-        '''
 
         if (yield from self.check_edit(check_meta)):
             ### /api/{{group_id}}/problems/{{problem_id}}/basic/

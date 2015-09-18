@@ -74,20 +74,39 @@ class Judge:
         return res
 
     def get_testdata(self,testdata):
+        print("************get testdata*************")
+        print(testdata)
         for x in testdata:
+            print(x)
             remote_path = './data/testdata/%s/'%(str(x['id']))
             file_path = '%s/testdata/'%(config.store_folder)
-            try: shutil.rmtree(file_path)
+            try: shutil.rmtree("%s/%s"%(file_path,str(x['id'])))
             except: pass
             self.ftp.get(remote_path, file_path)
 
     def get_submission(self, submission_id):
         remote_path = './data/submissions/%s/'%(str(submission_id))
         file_path = '%s/submissions/'%(config.store_folder)
-        try: shutil.rmtree(file_path)
+        try: shutil.rmtree("%s/%s"%(file_path,str(submission_id)))
         except: pass
         self.ftp.get(remote_path, file_path)
 
+
+    def read_meta(self, file_path):
+        res = {
+            "status": "AC",
+            "time": 0,
+            "memory": 0,
+        }
+        f = open(file_path).readlines()
+        print(f)
+        for x in f:
+            x = x.strip('\n').split(":")
+            if x[0] == "status":
+                res['status'] = x[1]
+            print(x)
+        print(res)
+        return res
 
     def judge(self, msg):
         print(msg)
@@ -105,34 +124,29 @@ class Judge:
             ### setting meta file
             meta = "%s/meta" % sandbox_folder
             sandbox.set_options(meta=meta)
-            ### setting input
-            #sandbox.set_options(input="%s/testdata/%s/input"%(config.store_folder,testdata['id']))
-            ### setting output
-            output = "output"
-            errput = "errput"
-            sandbox.set_options(output=output)
-            sandbox.set_options(errput=errput)
-            #for step in range(len(msg['execute_steps'])-1):
+            sandbox.set_options(output="output", errput="errput")
             for step in range(len(msg['execute_steps'])):
+                isexec = step == len(msg['execute_steps']) - 1
+                if isexec:
+                    testdata_file = "%s/testdata/%s/input"%(config.store_folder, testdata['id'])
+                    sp.call("cp %s %s"%(testdata_file, sandbox_folder), shell=True)
+                    sandbox.set_options(input="input")
                 x = msg['execute_steps'][step]
                 print("==========")
                 command = x['command']
                 command = command.replace("__FILE__", msg['file_name'])
                 print("cmd: ", command)
                 sandbox.exec_box("/usr/bin/env %s" % command)
-                print("=====meta====")
-                sp.call("cat %s"%meta, shell=True)
-                print("=====output====")
-                sp.call("cat %s/output"%sandbox_folder, shell=True)
-                print("=====errput====")
-                sp.call("cat %s/errput"%sandbox_folder, shell=True)
-                print("======end=====")
-            testdata['verdict'] = 7
-            testdata['time_usage'] = testdata['time_limit']/2
-            testdata['memory_usage'] = testdata['memory_limit']/2
+                print(meta)
+                res = self.read_meta(meta)
+                if not isexec:
+                    pass
+                else:
+                    pass
             #self.send({"cmd":"judged_testdata", "msg":msg})
+            ### upload something to ftp
+            sandbox.delete_box()
         self.send({"cmd":"judged", "msg":msg})
-        sandbox.delete_box()
 
     def SockHandler(self):
         MSGS = self.receive()

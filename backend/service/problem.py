@@ -156,8 +156,20 @@ class ProblemService(BaseService):
         if err: return (err, None)
         self.rs.delete('problem@%s@testdata' % str(data['id']))
         if int(data['testdata_id']) == 0:
-            id, cnt = yield from self.db.execute("INSERT INTO testdata (problem_id) VALUES (%s) RETURNING id;", (data['id'],))
+            res, cnt = yield from self.db.execute("INSERT INTO testdata (problem_id) VALUES (%s) RETURNING id;", (data['id'],))
+            id = res[0]['id']
             print('ID', id)
+            folder = "../data/testdata/%s/" % id
+            remote_folder = "./data/testdata/%s/" % id
+            try: os.makedirs(folder)
+            except: pass
+            for x in ['input', 'output']:
+                file_path = "%s/%s" % (folder, x)
+                with open(file_path, 'wb+') as f:
+                    f.write(''.encode())
+                remote_path = "%s/%s" % (remote_folder, x)
+                print(file_path, remote_path)
+                yield from self.ftp.upload(file_path, remote_path)
             return (None, id)
         else:
             required_args = ['time_limit', 'memory_limit', 'output_limit', 'score']
