@@ -5,29 +5,26 @@ import os
 import datetime
 import sys
 import config
-
-def check_pid(pid):
-    try:
-        os.kill(pid, 0)
-    except OSError:
-        return False
-    else:
-        return True
+import tornado
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
 
 class FTP:
+    executor = ThreadPoolExecutor(2)
     def __init__(self, server, port, user, password):
         self.server = server
         self.port = port
         self.user = user
         self.password = password
         self.createSSHClient()
-
+    
     def createSSHClient(self):
         self.client = paramiko.SSHClient()
         self.client.load_system_host_keys()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.client.connect(self.server, self.port, self.user, self.password)
     
+    @run_on_executor
     def get(self, _from, _to):
         scp = SCPClient(self.client.get_transport())
         try: os.makedirs(os.path.split(_to)[0])
@@ -35,6 +32,7 @@ class FTP:
         scp.get(_from, _to)
         scp.close()
 
+    @run_on_executor
     def put(self, _from, _to):
         try: self.client.exec_command('mkdir -p %s' % os.path.split(_to)[0])
         except Exception as e: print(e)
@@ -42,28 +40,11 @@ class FTP:
         scp.put(_from, _to)
         scp.close()
 
+    @run_on_executor
     def delete(self, _target):
         try: self.client.exec_command('rm -rf %s' % _target)
         except: pass
 
-    def upload(self, local, remote):
-        self.put(local, remote)
-    def download(self, remote, local):
-        self.get(remote, local)
-
-    """
-    def upload(self, local, remote):
-        p = multiprocessing.Process(target=self.put, args=(local, remote,))
-        p.start()
-        while p.exitcode == None:
-            yield tornado.gen.Task(tornado.ioloop.IOLoop.instance().add_timeout, time.time() + 0.01)
-
-    def download(self, remote, local):
-        p = multiprocessing.Process(target=self.put, args=(get, remote,))
-        p.start()
-        while p.exitcode == None:
-            yield tornado.gen.Task(tornado.ioloop.IOLoop.instance().add_timeout, time.time() + 0.01)
-    """
 
 if __name__ == "__main__":
     """

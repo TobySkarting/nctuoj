@@ -1,6 +1,7 @@
 from service.base import BaseService
 import os
 import config
+import subprocess as sp
 
 class ProblemService(BaseService):
     def __init__(self, db, rs, ftp):
@@ -169,7 +170,7 @@ class ProblemService(BaseService):
                     f.write(''.encode())
                 remote_path = "%s/%s" % (remote_folder, x)
                 print(file_path, remote_path)
-                self.ftp.upload(file_path, remote_path)
+                yield self.ftp.put(file_path, remote_path)
             return (None, id)
         else:
             required_args = ['time_limit', 'memory_limit', 'output_limit', 'score']
@@ -180,8 +181,10 @@ class ProblemService(BaseService):
             yield from self.db.execute("%s WHERE id=%s" % (sql, data['testdata_id']), parma)
 
             """ create folder """
-            folder = "../data/testdata/%s/" % data['testdata_id']
-            remote_folder = "./data/testdata/%s/" % data['testdata_id']
+            folder = "../data/testdata/%s" % data['testdata_id']
+            print('FOLDER ', folder)
+            sp.call(['ls', folder])
+            remote_folder = "./data/testdata/%s" % data['testdata_id']
             try: os.makedirs(folder)
             except: pass
 
@@ -192,7 +195,7 @@ class ProblemService(BaseService):
                     with open(file_path, 'wb+') as f:
                         f.write(data[x]['body'])
                     remote_path = "%s/%s" % (remote_folder, x)
-                    self.ftp.upload(file_path, remote_path)
+                    yield self.ftp.put(file_path, remote_path)
             return (None, data['testdata_id'])
 
     
