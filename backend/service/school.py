@@ -3,7 +3,7 @@ from service.base import BaseService
 
 class SchoolService(BaseService):
     def __init__(self, db, rs, ftp):
-        super().__init__(self, db, rs, ftp)
+        super().__init__(db, rs, ftp)
         SchoolService.inst = self
 
     def get_school_list(self):

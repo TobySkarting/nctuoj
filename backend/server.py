@@ -20,6 +20,7 @@ import logging
 from service.user       import UserService
 from service.problem    import ProblemService
 from service.submission import SubmissionService
+from service.testdata   import TestdataSerivce
 from service.bulletin   import BulletinService
 from service.execute    import ExecuteService
 from service.contest    import ContestService
