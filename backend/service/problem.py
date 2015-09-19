@@ -169,7 +169,7 @@ class ProblemService(BaseService):
                     f.write(''.encode())
                 remote_path = "%s/%s" % (remote_folder, x)
                 print(file_path, remote_path)
-                yield from self.ftp.upload(file_path, remote_path)
+                self.ftp.upload(file_path, remote_path)
             return (None, id)
         else:
             required_args = ['time_limit', 'memory_limit', 'output_limit', 'score']
@@ -192,7 +192,7 @@ class ProblemService(BaseService):
                     with open(file_path, 'wb+') as f:
                         f.write(data[x]['body'])
                     remote_path = "%s/%s" % (remote_folder, x)
-                    yield from self.ftp.upload(file_path, remote_path)
+                    self.ftp.upload(file_path, remote_path)
             return (None, data['testdata_id'])
 
     

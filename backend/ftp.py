@@ -1,10 +1,18 @@
 import paramiko, sys
+import time
 from scp import SCPClient
 import os
 import datetime
 import sys
 import config
-import tornado
+
+def check_pid(pid):
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    else:
+        return True
 
 class FTP:
     def __init__(self, server, port, user, password):
@@ -37,6 +45,25 @@ class FTP:
     def delete(self, _target):
         try: self.client.exec_command('rm -rf %s' % _target)
         except: pass
+
+    def upload(self, local, remote):
+        self.put(local, remote)
+    def download(self, remote, local):
+        self.get(remote, local)
+
+    """
+    def upload(self, local, remote):
+        p = multiprocessing.Process(target=self.put, args=(local, remote,))
+        p.start()
+        while p.exitcode == None:
+            yield tornado.gen.Task(tornado.ioloop.IOLoop.instance().add_timeout, time.time() + 0.01)
+
+    def download(self, remote, local):
+        p = multiprocessing.Process(target=self.put, args=(get, remote,))
+        p.start()
+        while p.exitcode == None:
+            yield tornado.gen.Task(tornado.ioloop.IOLoop.instance().add_timeout, time.time() + 0.01)
+    """
 
 if __name__ == "__main__":
     """
