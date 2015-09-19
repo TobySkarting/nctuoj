@@ -177,6 +177,7 @@ class ContestService(BaseService):
         if res[0]['count'] == 0: ### not submit yet
             res = {}
             res['score'] = None
+            res['verdict'] = 0
             res['submitted'] = 0
             res['penalty'] = 0
             return (None, res)
@@ -191,6 +192,40 @@ class ContestService(BaseService):
         return (None, res)
 
     def get_contest_scoreboard(self, data={}):
+        '''
+        res = {
+            'score': {
+                'user': [
+                    {
+                        'id': integer,
+                        'total': {
+                            'penalty': integer,
+                            'ac_submitted': integer,
+                            'submitted': integer,
+                            'score': integer,
+                        }
+                        'problem': {
+                            problem_id(integer): {
+                                'score': integer,
+                                'verdict': integer,
+                                'penalty': integer,
+                                'submitted': integer
+                            } 
+                        }
+                    } 
+                ]
+                'problem': {
+                    problem_id(integer): {
+                        'total': {
+                            'score': integer
+                            'submitted': integer,
+                            'ac_submitted': integer,
+                        }
+                    }
+                }
+            }
+        }
+        '''
         required_args = ['id']
         err = self.check_required_args(required_args , data)
         if err: return (err, None)
@@ -198,9 +233,26 @@ class ContestService(BaseService):
         if err: return (err, None)
         res = {}
         score = res['score'] = {}
+        user_score = score['user'] = {}
+        for user in data['user']:
+            user_score[int(user['id'])] = {}
+            user_problem = user_score[int(user['id'])]['problem'] = {}
+            for problem in data['problem']:
+                err, user_problem[int(problem['id'])] = yield from self.get_contest_user_problem_score(dict(problem).update({'user_id': user['id'], 'problem_id': problem['id']}))
+            user_total = user_score['total'] = {}
+            user_total['submitted'] = sum(x['submitted'] for x in user_problem.values())
+            user_total['score'] = sum(x['score'] or 0 for x in user_problem.values())
+            user_total['penalty'] = sum(x['penalty'] for x in user_problem.values())
+            user_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['verdict']==7 else 0), user_problem.values(), 0)
+
+        problem_score = score['problem'] = {}
         for problem in data['problem']:
-            score[problem['id']] = {}
-            for user in data['user']:
-                err, score[problem['id']][user['id']] = yield from self.get_contest_user_problem_score(dict(problem).update({'user_id': user['id'], 'problem_id': problem['id']}))
+            problem_total = problem_score[int(problem['id'])] = {}
+            problem_total['score'] = sum(x['problem'][int(problem['id'])]['score'] or 0 for x in user_score.values())
+            problem_total['submitted'] = sum(x['problem'][int(problem['id'])]['submitted'] for x in user_score.values())
+            problem_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['problem'][int(problem['id'])]['verdict']==7 else 0), user_score.values(), 0)
+
+
+
 
 
