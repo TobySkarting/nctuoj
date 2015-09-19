@@ -1,6 +1,7 @@
 import paramiko, sys
 from scp import SCPClient
 import os
+import time
 import datetime
 import sys
 
@@ -37,12 +38,11 @@ class FTP:
         except: pass
 
 if __name__ == "__main__":
+    ftp = FTP("localhost", 22, "nctuojftp", "nctuojftp")
+    print("sleep")
+    time.sleep(100)
+    ftp.put("./meta", "./")
+
+
+
     pass
-"""
-    ftp = FTP(config.FTPSERVER, config.FTPPORT, config.FTPUSER, config.FTPPASSWD)
-    action = sys.argv[1]
-    if action.lower() == "upload":
-        ftp.put(sys.argv[2], sys.argv[3])
-    elif action.lower() == "download":
-        ftp.get(sys.argv[2], sys.argv[3])
-"""
