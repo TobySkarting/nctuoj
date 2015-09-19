@@ -5,8 +5,8 @@ import config
 import datetime
 
 class ContestService(BaseService):
-    def __init__(self, db, rs):
-        super().__init__(db, rs)
+    def __init__(self, db, rs, ftp):
+        super().__init__(db, rs, ftp)
         ContestService.inst = self
 
     def get_current_contest(self):
@@ -74,7 +74,7 @@ class ContestService(BaseService):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res, res_cnt = yield from self.db.execute('SELECT p.id, p.title, m.score FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s ORDER BY m.id ASC;', (data['id'],))
+        res, res_cnt = yield from self.db.execute('SELECT p.id, p.title, m.score, m.penalty FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s ORDER BY m.id ASC;', (data['id'],))
         return (None, res)
 
     def post_contest(self, data={}):
@@ -169,10 +169,38 @@ class ContestService(BaseService):
         self.rs.set('contest@%s@user'%(str(data['id'])), res)
         return (None, res)
 
+    def get_contest_user_problem_score(self, data={}):
+        required_args = ['user_id', 'problem', 'start', 'end']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        res, res_cnt = yield from self.db.execute('SELECT COUNT(*) FROM submissions WHERE user_id=%s AND problem_id=%s AND %s<=created_at AND created_at<=%s;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
+        if res[0]['count'] == 0: ### not submit yet
+            res = {}
+            res['score'] = None
+            res['submitted'] = 0
+            res['penalty'] = 0
+            return (None, res)
+        res, res_cnt = yield from self.db.execute('SELECT * FROM submissions WHERE user_id=%s AND problem_id=%s AND %s<=created_at AND created_at<=%s AND verdict=7 ORDER BY id LIMIT 1;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
+        if res_cnt != 0:
+            data['end'] = min(data['end'], res[0]['created_at'])
+        res, res_cnt = yield from self.db.execute('SELECT MAX(s.verdict) as verdict, COUNT(*) as submitted, MAX(s.score) as score FROM submissions as s WHERE user_id=%s AND problem_id=%s AND %s<=created_at AND created_at<=%s;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
+        res = res[0]
+        res['penalty'] = (res['submitted']-1) * data['problem']['penalty']  
+        if score != '':
+            pass
+        return (None, res)
+
     def get_contest_scoreboard(self, data={}):
         required_args = ['id']
         err = self.check_required_args(required_args , data)
         if err: return (err, None)
         err, data = yield from self.get_contest(data)
+        if err: return (err, None)
+        res = {}
+        score = res['score'] = {}
+        for problem in data['problem']:
+            score[problem['id']] = {}
+            for user in data['user']:
+                err, score[problem['id']][user['id']] = yield from self.get_contest_user_problem_score(dict(problem).update({'user_id': user['id'], 'problem_id': problem['id']}))
 
 

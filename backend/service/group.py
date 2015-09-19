@@ -3,8 +3,8 @@ from req import Service
 import config
 
 class GroupService(BaseService):
-    def __init__(self, db, rs):
-        super().__init__(db, rs)
+    def __init__(self, db, rs, ftp):
+        super().__init__(db, rs, ftp)
 
         GroupService.inst = self
 

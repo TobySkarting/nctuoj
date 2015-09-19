@@ -4,8 +4,8 @@ import os
 import config
 
 class VerdictService(BaseService):
-    def __init__(self, db, rs):
-        super().__init__(db, rs)
+    def __init__(self, db, rs, ftp):
+        super().__init__(db, rs, ftp)
 
         VerdictService.inst = self
 

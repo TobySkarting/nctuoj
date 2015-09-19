@@ -4,6 +4,7 @@ import os
 import datetime
 import sys
 import config
+import tornado
 
 class FTP:
     def __init__(self, server, port, user, password):
@@ -38,9 +39,12 @@ class FTP:
         except: pass
 
 if __name__ == "__main__":
+    """
     ftp = FTP(config.FTPSERVER, config.FTPPORT, config.FTPUSER, config.FTPPASSWD)
     action = sys.argv[1]
     if action.lower() == "upload":
         ftp.put(sys.argv[2], sys.argv[3])
     elif action.lower() == "download":
         ftp.get(sys.argv[2], sys.argv[3])
+    """
+    pass

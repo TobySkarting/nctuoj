@@ -3,7 +3,8 @@ import time
 import subprocess
 import config
 class BaseService:
-    def __init__(self, db, rs):
+    def __init__(self, db, rs, ftp):
+        """
         class FTP():
             def upload(self, local, remote):
                 child = subprocess.Popen(['python3', 'ftp.py', 'upload', local, remote])
@@ -14,7 +15,8 @@ class BaseService:
                 child = subprocess.Popen(['python3', 'ftp.py', 'download', remote, local])
                 while child.poll() is None:
                     yield tornado.gen.Task(tornado.ioloop.IOLoop.instance().add_timeout, time.time() + 0.01)
-        self.ftp = FTP()
+        """
+        self.ftp = ftp
         self.db = db
         self.rs = rs
 
