@@ -175,7 +175,10 @@ class JudgeCenter:
 
     def sock_update_submission_testdata(self, msg):
         cur = self.cursor()
-        #cur.execute("INSERT INTO map_submission_testdata (submission_id, testdata_id, verdict) VALUES 
+        cur.execute("INSERT INTO map_submission_testdata (submission_id, testdata_id, verdict) VALUES (%s, %s, %s) RETURNING id", (msg['submission_id'], msg['testdata_id'], msg['verdict'],))
+        x = cur.fetchone()
+        if 'time_usage' in msg:
+            cur.execute("UPDATE map_submission_testdata SET time_usage=%s, memory_usage=%s WHERE id=%s", (msg['time_usage'],msg['memory_usage'],x[0],))
         pass
 
     def sock_send_submission(self, sock, submission_id):
@@ -241,6 +244,9 @@ class JudgeCenter:
             print("insert failed")
         
     def run(self):
+        cur = self.cursor()
+        cur.execute("SELECT * FROM map_verdict_string")
+        map_verdict_string = [dict(x) for x in cur]
         while True:
             self.get_submission()
             read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [], 0.1)
@@ -250,6 +256,10 @@ class JudgeCenter:
                     self.pool.append(sockfd)
                     self.client_pool.append(sockfd)
                     self.client[sockfd] = self.CLIENT(addr)
+                    self.send(sockfd, {
+                        "cmd": "map_verdict_string",
+                        "msg": map_verdict_string
+                    })
                     print("client (%s, %s) connected" % addr)
                 elif sock == sys.stdin:
                     self.CommandHandler(input())

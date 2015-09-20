@@ -107,6 +107,28 @@
         </div>
     </div>
 </div>
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Time</th>
+            <th>Memory</th>
+            <th>Verdict</th>
+            <th>Score</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for id, x in enumerate(data['testdata']) %}
+            <tr>
+                <td>{{id+1}}</td>
+                <td>{{x['time_usage']}}</td>
+                <td>{{x['memory_usage']}}</td>
+                <td>{{x['verdict']}}</td>
+                <td></td>
+            </tr>
+        {% end %}
+    </tbody>
+</table>
 {% if data['user_id'] == account['id'] or map_group_power['submission_manage'] in current_group_power %}
 <div class="form">
     <div class="row">

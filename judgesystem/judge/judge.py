@@ -102,16 +102,17 @@ class Judge:
             if x[0] == "status":
                 res['status'] = x[1]
             elif x[0] == "time":
-                res["time"] = float(x[1])
+                res["time"] = int(1000*float(x[1]))
             elif x[0] == "max-rss":
-                res["memory"] = float(x[1])
+                res["memory"] = int(x[1])
             elif x[0] == "exitcode":
                 res['exitcode'] = int(x[1])
             else:
                 res[x[0]] = x[1]
-        ### TO => TLE
-
-        print(res)
+        if res['status'] == "TO":
+            res['status'] = "TLE"
+        if res['status'] == "SG":
+            res['status'] = "RE" 
         return res
 
 
@@ -139,6 +140,27 @@ class Judge:
                 return (res, sandbox)
         return (res, sandbox)
 
+    def send_judged_testdata(self, res, testdata, msg):
+        self.send({
+            'cmd': 'judged_testdata',
+            'msg': {
+                'submission_id': msg['submission_id'],
+                'testdata_id': testdata['id'],
+                'status': res['status'],
+                'verdict': self.map_verdict_string[res['status']],
+                'time_usage': res['time'],
+                'memory_usage': res['memory']
+            }
+        })
+
+    def verdict(self, file_a, file_b):
+        a = open(file_a, "r").readlines()
+        b = open(file_b, "r").readlines()
+        print(a)
+        print(b)
+        print(a==b)
+        return "WA" if a != b else "AC"
+
     def exec(self, sandbox, testdata, msg):
         run_cmd = msg['execute_steps'][-1]['command']
         run_cmd = run_cmd.replace("__FILE__", msg['file_name'])
@@ -150,9 +172,11 @@ class Judge:
         sandbox.set_options(**sandbox.options)
         sandbox.exec_box("/usr/bin/env %s" % run_cmd)
         res = self.read_meta(sandbox.options['meta'])
-        if res['status'] != "AC":
-            ### something error
-            return res
+        if res['memory'] > testdata['memory_limit']:
+            res['status'] == "MLE"
+        if res['status'] == "AC":
+            res['status'] = self.verdict("%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(sandbox.folder))
+        self.send_judged_testdata(res, testdata, msg)
         return res
 
 
@@ -171,7 +195,8 @@ class Judge:
                         'msg': {
                             'submission_id': msg['submission_id'],
                             'testdata_id': testdata['id'],
-                            'status': 'CE'
+                            'status': 'CE',
+                            'verdict': self.map_verdict_string['CE']
                         }
                     })
                 self.send({"cmd":"judged", "msg":""})
@@ -194,6 +219,11 @@ class Judge:
             if len(msg)==0: continue
             if msg['cmd'] == 'judge':
                 self.judge(msg['msg'])
+            elif msg['cmd'] == 'map_verdict_string':
+                self.map_verdict_string = {}
+                for x in msg['msg']:
+                    self.map_verdict_string[x['abbreviation']] = int(x['id'])
+                print(self.map_verdict_string)
             else:
                 print(msg)
 
