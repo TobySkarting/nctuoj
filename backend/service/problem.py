@@ -68,7 +68,7 @@ class ProblemService(BaseService):
                 return ('No problem id', None)
             res = res[0]
             self.rs.set('problem@%s' % str(data['id']), res)
-        err, res['execute'] = yield from self.get_problem_execute(data)
+        err, res['execute'] = yield from Service.Execute.get_problem_execute({'problem_id': data['id']})
         err, res['testdata'] = yield from Service.Testdata.get_testdata_list_by_problem({'problem_id': data['id']})
         return (None, res)
 
@@ -106,27 +106,6 @@ class ProblemService(BaseService):
         self.rs.delete('problem@%s' % str(data['id']))
         self.rs.delete('problem@%s@execute' % str(data['id']))
         return (None, None)
-
-    def get_problem_execute(self, data={}):
-        required_args = ['id']
-        err = self.check_required_args(required_args, data)
-        if err: return (err, None)
-        res = self.rs.get('problem@%s@execute' % str(data['id']))
-        if res: return (None, res)
-        res, res_cnt = yield from self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['id'],))
-        self.rs.set('problem@%s@execute' % str(data['id']), res)
-        return (None, res)
-
-    def post_problem_execute(self, data={}):
-        yield from self.delete_problem_execute(data)
-        if data['execute']:
-            for x in data['execute']:
-                yield from self.db.execute("INSERT INTO map_problem_execute (execute_type_id, problem_id) values (%s, %s)", (x, data['id']))
-        return (None, None)
-
-    def delete_problem_execute(self, data={}):
-        self.rs.delete('problem@%s@execute' % str(data['id']))
-        yield from self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['id'],))
     
     def post_rejudge_problem(self, data={}):
         required_args = ['id']

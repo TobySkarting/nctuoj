@@ -85,8 +85,8 @@ class ApiProblemHandler(ApiRequestHandler):
                 args = ['execute[]']
                 meta = self.get_args(args)
                 meta['group_id'] = self.current_group
-                meta['id'] = id
-                err, data = yield from Service.Problem.post_problem_execute(meta)
+                meta['problem_id'] = id
+                err, data = yield from Service.Execute.post_problem_execute(meta)
                 if err: self.render(500, err)
                 else: self.render()
             elif action == "rejudge":

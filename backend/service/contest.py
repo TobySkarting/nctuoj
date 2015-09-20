@@ -185,7 +185,7 @@ class ContestService(BaseService):
         res, res_cnt = yield from self.db.execute('SELECT * FROM submissions WHERE user_id=%s AND problem_id=%s AND %s<=created_at AND created_at<=%s AND verdict=7 ORDER BY id LIMIT 1;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
         if res_cnt != 0:
             data['end'] = min(data['end'], res[0]['created_at'])
-        res, res_cnt = yield from self.db.execute('SELECT MAX(s.verdict) as verdict, COUNT(*) as submitted, MAX(s.score) as score FROM submissions as s WHERE user_id=%s AND problem_id=%s AND %s<=created_at AND created_at<=%s;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
+        res, res_cnt = yield from self.db.execute('SELECT verdict, COUNT(*) as submitted, MAX(s.score) as score FROM (SELECT FROM submissions WHERE s.user_id=%s AND s.problem_id=%s AND %s<=s.created_at AND s.created_at<=%s) as s, (SELECT m.id FROM map_verdict_string as m WHERE m.priority=(SELECT MAX(m.priority) FROM map_verdict_string as m WHERE m.id=s.verdict)) as verdict;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
         res = res[0]
         res['penalty'] = (res['submitted']-1) * data['problem']['penalty']  
         if score != '':
@@ -208,7 +208,6 @@ class ContestService(BaseService):
                         'problem': {
                             problem_id(integer): {
                                 'score': integer,
-                                'verdict': integer,
                                 'penalty': integer,
                                 'submitted': integer
                             } 
@@ -242,7 +241,7 @@ class ContestService(BaseService):
         res['start'] = start
         res['end'] = end
         user_score = score['user'] = []
-        map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_map()
+        map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
         for user in data['user']:
             user_meta = {}
             user_meta['id'] = int(user['id'])

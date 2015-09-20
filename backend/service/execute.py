@@ -101,3 +101,31 @@ class ExecuteService(BaseService):
         self.rs.delete('execute@%s'%(str(data['id'])))
         self.rs.delete('execute_list')
         return (None, str(data['id']))
+
+    def get_problem_execute(self, data={}):
+        required_args = ['problem_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        res = self.rs.get('execute@problem@%s'%str(data['problem_id']))
+        if res: return (None, res)
+        res, res_cnt = yield from self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['problem_id'],))
+        self.rs.set('execute@problem@%s' % str(data['problem_id']), res)
+        return (None, res)
+
+    def post_problem_execute(self, data={}):
+        required_args = ['problem_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        yield from self.delete_problem_execute(data)
+        if data['execute']:
+            for x in data['execute']:
+                yield from self.db.execute("INSERT INTO map_problem_execute (execute_type_id, problem_id) values (%s, %s)", (x, data['problem_id']))
+        return (None, data['problem_id'])
+
+    def delete_problem_execute(self, data={}):
+        required_args = ['problem_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        self.rs.delete('execute@problem@%s' % str(data['problem_id']))
+        yield from self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['problem_id'],))
+        return (None, None)

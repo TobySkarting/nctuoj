@@ -12,6 +12,8 @@ DROP TABLE IF EXISTS submissions;
 DROP TABLE IF EXISTS map_verdict_string;
 DROP TABLE IF EXISTS contests;
 DROP TABLE IF EXISTS testdata;
+DROP TABLE IF EXISTS map_problem_tag;
+DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS problems;
 DROP TABLE IF EXISTS verdicts;
 DROP TABLE IF EXISTS execute_steps;
@@ -403,6 +405,29 @@ CREATE TABLE wait_submissions (
 );
 CREATE TRIGGER wait_submissions_update_row BEFORE UPDATE ON wait_submissions FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE UNIQUE INDEX ON wait_submissions(submission_id);
+
+CREATE TABLE tags (
+    id              serial          NOT NULL     PRIMARY KEY,
+    tag             varchar(31)     NOT NULL,
+    description     varchar(255)    NOT NULL,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER tags_update_row BEFORE UPDATE ON tags FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE INDEX ON tags(tag);
+INSERT INTO tags (tag) VALUES('DP');
+INSERT INTO tags (tag) VALUES('String');
+
+CREATE TABLE map_problem_tag (
+    id              serial          NOT NULL        PRIMARY KEY,
+    problem_id      integer         NOT NULL        REFERENCES problems(id)     ON DELETE CASCADE,
+    tag_id          integer         NOT NULL        REFERENCES tags(id)         ON DELETE CASCADE,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER map_problem_tag_update_row BEFORE UPDATE ON map_problem_tag FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE INDEX ON map_problem_tag (problem_id);
+CREATE INDEX ON map_problem_tag (tag_id);
 
 CREATE TABLE judge_token (
     id              serial          NOT NULL    PRIMARY KEY,
