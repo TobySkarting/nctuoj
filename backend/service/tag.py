@@ -48,11 +48,16 @@ class TagService(BaseService):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        self.rs.delete('tag@%s'%(str(data['id'])))
         yield from self.db.execute('DELETE FROM tags WHERE id=%s', (data['id'],))
         return (None, None)
 
     def post_problem_tag(self, data={}):
-        pass
+        required_args = ['id', 'problem_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        yield from self.db.execute('INSERT INTO map_problem_tag (tag_id, problem_id) VALUES(%s, %s);', (data['id'], data['problem_id']))
+        return (None, None)
 
     def get_problem_tag(self, data={}):
         required_args = ['problem_id']
