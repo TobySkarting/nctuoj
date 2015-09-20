@@ -242,6 +242,7 @@ class ContestService(BaseService):
         res['start'] = start
         res['end'] = end
         user_score = score['user'] = []
+        map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_map()
         for user in data['user']:
             user_meta = {}
             user_meta['id'] = int(user['id'])
@@ -258,7 +259,7 @@ class ContestService(BaseService):
             user_total['submitted'] = sum(x['submitted'] for x in user_problem.values())
             user_total['score'] = sum(x['score'] or 0 for x in user_problem.values())
             user_total['penalty'] = sum(x['penalty'] for x in user_problem.values())
-            user_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['verdict']==7 else 0), user_problem.values(), 0)
+            user_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['verdict']==map_string_verdict['AC'] else 0), user_problem.values(), 0)
             user_score.append(user_meta)
 
         problem_score = score['problem'] = {}

@@ -270,7 +270,6 @@ CREATE TABLE testdata(
     problem_id      integer         NOT NULL    REFERENCES problems(id) ON DELETE CASCADE,
     time_limit      integer         NOT NULL    DEFAULT 1000,
     memory_limit    integer         NOT NULL    DEFAULT 65536,
-    output_limit    integer         NOT NULL    DEFAULT 65536,
     output_limit    integer         NOT NULL    DEFAULT 64,
     score           integer         NOT NULL    DEFAULT 0,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
@@ -293,7 +292,7 @@ INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('Pendi
 INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('SE', 'System Error', 2);
 INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('CE', 'Compile Error', 3);
 INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('RE', 'Runtime Error', 4);
-INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('MLE', 'Memory Limit Exceed', 5)
+INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('MLE', 'Memory Limit Exceed', 5);
 INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('TLE', 'Time Limit Exceed', 6);
 INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('OLE', 'Output Limit Exceed', 7);
 INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('WA', 'Wrong Answer', 8);
