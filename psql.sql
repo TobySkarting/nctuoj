@@ -275,6 +275,7 @@ CREATE TABLE testdata(
     time_limit      integer         NOT NULL    DEFAULT 1000,
     memory_limit    integer         NOT NULL    DEFAULT 65536,
     output_limit    integer         NOT NULL    DEFAULT 65536,
+    output_limit    integer         NOT NULL    DEFAULT 64,
     score           integer         NOT NULL    DEFAULT 0,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
@@ -286,17 +287,21 @@ CREATE TABLE map_verdict_string (
     id              serial          NOT NULL    PRIMARY KEY,
     abbreviation    varchar(15)     NOT NULL,
     description     varchar(31)     NOT NULL,
+    priority        integer         NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER map_verdict_string_updated_row BEFORE UPDATE ON map_verdict_string FOR EACH ROW EXECUTE PROCEDURE updated_row();
-INSERT INTO map_verdict_string (abbreviation,description) VALUES('Pending', 'In Queue');
-INSERT INTO map_verdict_string (abbreviation,description) VALUES('SE', 'System Error');
-INSERT INTO map_verdict_string (abbreviation,description) VALUES('RE', 'Runtime Error');
-INSERT INTO map_verdict_string (abbreviation,description) VALUES('MLE', 'Memory Limit Exceed');
-INSERT INTO map_verdict_string (abbreviation,description) VALUES('TLE', 'Time Limit Exceed');
-INSERT INTO map_verdict_string (abbreviation,description) VALUES('WA', 'Wrong Answer');
-INSERT INTO map_verdict_string (abbreviation,description) VALUES('AC', 'Accepted');
+CREATE INDEX ON map_verdict_string(priority);
+INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('Pending', 'In Queue', 1);
+INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('SE', 'System Error', 2);
+INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('CE', 'Compile Error', 3);
+INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('RE', 'Runtime Error', 4);
+INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('MLE', 'Memory Limit Exceed', 5)
+INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('TLE', 'Time Limit Exceed', 6);
+INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('OLE', 'Output Limit Exceed', 7);
+INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('WA', 'Wrong Answer', 8);
+INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('AC', 'Accepted', 9);
 
 
 --DROP TABLE IF EXISTS submissions;

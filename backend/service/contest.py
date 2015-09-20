@@ -239,6 +239,8 @@ class ContestService(BaseService):
         res = {}
         score = res['score'] = {}
         res['contest'] = data
+        res['start'] = start
+        res['end'] = end
         user_score = score['user'] = []
         for user in data['user']:
             user_meta = {}

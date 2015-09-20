@@ -6,7 +6,7 @@
 <script>
 function new_testdata(){
     $(".new_testdata").prop("disabled", true);
-    $.post("/api/group/{{current_group}}/problems/{{data['id']}}/testdata/0/", {'token': '{{account['token']}}' }, function(msg){
+    $.post("/api/group/{{current_group}}/testdata/0/", {'token': '{{account['token']}}', 'problem_id': '{{data["id"]}}' }, function(msg){
         $(".new_testdata").prop("disabled", false);
         if(msg['status'] == 200){
             location.href = location.href;
@@ -35,7 +35,8 @@ function new_testdata(){
     </thead>
     <tbody>
         {% for id, x in enumerate(data['testdata']) %}
-            <form class="form" action="/api/group/{{current_group}}/problems/{{data['id']}}/testdata/{{x['id']}}/">
+            <form class="form" action="/api/group/{{current_group}}/testdata/{{x['id']}}/">
+                <input type="hidden" name="problem_id" value="{{data['id']}}">
                 <input type="hidden" name="token" value="{{account['token']}}">
                 <tr>
                     <td>{{id+1}}</td>
