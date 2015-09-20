@@ -429,6 +429,7 @@ CREATE TABLE map_problem_tag (
 CREATE TRIGGER map_problem_tag_update_row BEFORE UPDATE ON map_problem_tag FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON map_problem_tag (problem_id);
 CREATE INDEX ON map_problem_tag (tag_id);
+CREATE UNIQUE INDEX ON map_problem_tag (problem_id,tag_id);
 
 CREATE TABLE judge_token (
     id              serial          NOT NULL    PRIMARY KEY,
