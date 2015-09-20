@@ -26,6 +26,7 @@ from service.execute    import ExecuteService
 from service.contest    import ContestService
 from service.verdict    import VerdictService
 from service.group      import GroupService
+from service.verdictstring import VerdictStringService
 
 
 ### api class from api.user import ApiUserSignupHandler
@@ -92,6 +93,7 @@ from web.user           import WebUserSignHandler
 from web.user           import WebUserHandler
 #from web.problem import WebProblemHandler
 #from web.problem import WebProblemListHandler
+
 
 
 
@@ -241,6 +243,7 @@ if __name__ == '__main__':
     Service.Contest =       ContestService(db, rs, ftp)
     Service.Verdict =       VerdictService(db, rs, ftp)
     Service.Group =         GroupService(db, rs, ftp)
+    Service.VerdictString = VerdictStringService(db, rs, ftp)
     print('Server Started')
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
