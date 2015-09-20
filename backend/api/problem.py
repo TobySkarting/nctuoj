@@ -40,17 +40,6 @@ class ApiProblemHandler(ApiRequestHandler):
                 return False
         return True
 
-    def check_testdata(self, meta):
-        if int(meta['testdata_id']) != 0:
-            err, data = yield from Service.Problem.get_problem_testdata(meta)
-            if err:
-                self.render(500, err)
-                return False
-            if int(data['problem_id']) != int(meta['id']):
-                self.render(403, 'Permission Denied')
-                return False
-        return True
-
     @tornado.gen.coroutine
     def get(self, id, action=None, sub_id=None):
         meta = {}
@@ -70,16 +59,6 @@ class ApiProblemHandler(ApiRequestHandler):
             self.render(200, data)
         elif action == "tag":
             pass
-        elif action == "testdata":
-            if sub_id == None:
-                err, data = yield from Service.Problem.get_problem_testdata_list(meta)
-                if err: self.render(500, err)
-                else: self.render(200, data)
-            else:
-                meta['testdata_id'] = sub_id
-                err, data = yield from Service.Problem.get_problem_testdata(meta)
-                if err: self.render(500, err)
-                else: self.render()
         else:
             self.render(404)
         
@@ -110,15 +89,6 @@ class ApiProblemHandler(ApiRequestHandler):
                 err, data = yield from Service.Problem.post_problem_execute(meta)
                 if err: self.render(500, err)
                 else: self.render()
-            elif action == "testdata":
-                args = ['score', 'time_limit', 'memory_limit', 'output_limit', 'input[file]', 'output[file]']
-                meta = self.get_args(args)
-                meta['testdata_id'] = sub_id
-                meta['id'] = id
-                if (yield from self.check_testdata(meta)):
-                    err, data = yield from Service.Problem.post_problem_testdata(meta)
-                    if err: self.render(500, err)
-                    else: self.render()
             elif action == "rejudge":
                 meta = {}
                 meta['id'] = id
@@ -141,12 +111,4 @@ class ApiProblemHandler(ApiRequestHandler):
                 err, data = yield from Service.Problem.delete_problem(meta)
                 if err: self.render(500, err)
                 else: self.render()
-            elif action == "testdata":
-                meta = {}
-                meta['testdata_id'] = sub_id
-                meta['id'] = id
-                if (yield from self.check_testdata(meta)):
-                    err, data = yield from Service.Problem.delete_problem_testdata(meta)
-                    if err: self.render(500, err)
-                    else: self.render()
             else: self.render(404)

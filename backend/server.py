@@ -20,6 +20,7 @@ import logging
 from service.user       import UserService
 from service.problem    import ProblemService
 from service.submission import SubmissionService
+from service.testdata   import TestdataSerivce
 from service.bulletin   import BulletinService
 from service.execute    import ExecuteService
 from service.contest    import ContestService
@@ -37,6 +38,7 @@ from api.problem        import ApiProblemsHandler
 from api.problem        import ApiProblemHandler
 from api.submission     import ApiSubmissionsHandler
 from api.submission     import ApiSubmissionHandler
+from api.testdata       import ApiTestdataHandler
 from api.contest        import ApiContestsHandler
 from api.contest        import ApiContestHandler
 from api.contest        import ApiContestProblemsHandler
@@ -155,6 +157,7 @@ if __name__ == '__main__':
         ### /api/group/\d+/problems/(\d+)/(testdata)/
         ('/api/group/\d+/problems/(\d+)/(\w*)/(\d+)/',                  ApiProblemHandler),
         ### /api/group/\d+/problems/(\d+)/(testdata)/(\d+)/'
+        ('/api/group/\d+/testdata/(\d+)/',                              ApiTestdataHandler),
         ('/api/group/\d+/submissions/',                                 ApiSubmissionsHandler),
         ('/api/group/\d+/submissions/(\d+)/',                           ApiSubmissionHandler),
         ('/api/group/\d+/submissions/(\d+)/(\w*)/',                     ApiSubmissionHandler),
@@ -232,6 +235,7 @@ if __name__ == '__main__':
     Service.User =          UserService(db, rs, ftp)
     Service.Problem =       ProblemService(db, rs, ftp)
     Service.Submission =    SubmissionService(db, rs, ftp)
+    Service.Testdata =      TestdataSerivce(db, rs, ftp)
     Service.Bulletin =      BulletinService(db, rs, ftp)
     Service.Execute =       ExecuteService(db, rs, ftp)
     Service.Contest =       ContestService(db, rs, ftp)
