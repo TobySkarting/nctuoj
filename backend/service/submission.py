@@ -53,8 +53,8 @@ class SubmissionService(BaseService):
         #if int(data['id']) == 0:
             #return ('No Submission ID', None)
 
-        res = self.rs.get('submission@%s'%(str(data['id'])))
-        if res: return (None, res)
+        #res = self.rs.get('submission@%s'%(str(data['id'])))
+        #if res: return (None, res)
         res, res_cnt = yield from self.db.execute("""
         SELECT s.*, e.lang as execute_lang, e.description as execute_description, u.account as submitter, p.title as problem_name, p.group_id as problem_group_id, v.abbreviation as verdict_abbreviation, v.description as verdict_description  
         FROM submissions as s, execute_types as e, users as u, problems as p, map_verdict_string as v 
@@ -75,7 +75,7 @@ class SubmissionService(BaseService):
         with open(file_path) as f:
             res['code'] = f.read()
         res['code_line'] = len(open(file_path).readlines())
-        self.rs.set('submission@%s'%(str(data['id'])), res)
+        #self.rs.set('submission@%s'%(str(data['id'])), res)
         return (None, res)
 
     def post_submission(self, data):
@@ -136,6 +136,6 @@ class SubmissionService(BaseService):
         self.rs.delete('submission@%s'%(str(data['id'])))
         yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (data['id'],))
         yield from self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s WHERE id=%s;', (None, None, None, data['id']))
-        yield from self.db.execute('UPDATE map_submission_testdata SET time_usage=%s, memory_usage=%s WHERE submission_id=%s;', (None, None, data['id']))
+        yield from self.db.execute('DDELETE map_submission_testdata WHERE submission_id=%s;', (data['id'],))
         print(data['id'])
         return (None, str(data['id']))

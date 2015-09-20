@@ -145,7 +145,7 @@ class ContestService(BaseService):
         if err: return (err, None)
         err, res = yield from Service.User.get_user_contest(data['user_id']) 
         if err: return (err, None)
-        if int(data['user_id']) not in res:
+        if int(data['id']) not in res:
             return ('You have not registered yet', None)
         yield from self.db.execute('DELETE FROM map_contest_user WHERE contest_id=%s AND user_id=%s;', (data['id'], data['user_id'],))
         self.rs.delete('contest@%s@user'%(str(data['id'])))

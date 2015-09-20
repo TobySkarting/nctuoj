@@ -109,8 +109,8 @@ class UserService(BaseService):
     def get_user_contest(self, id):
         #res = self.rs.get('user@%scontest'%(str(id)))
         #if res: return (None, res)
-        res, res_cnt = yield from self.db.execute('SELECT id FROM map_contest_user WHERE user_id=%s;', (id,))
-        res = set(x['id'] for x in res)
+        res, res_cnt = yield from self.db.execute('SELECT contest_id FROM map_contest_user WHERE user_id=%s;', (id,))
+        res = set(x['contest_id'] for x in res)
         return (None, res)
 
     def get_user_current_contest(self, id):

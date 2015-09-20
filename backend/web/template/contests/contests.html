@@ -40,7 +40,12 @@
                     <td>{{x['register_start']}}<br>{{x['register_end']}}</td>
                     <td>{{x['start']}}<br>{{x['end']}}</td>
                     <td>Type</td>
-                    <td>Register</td>
+                    {{registered_contest}}
+                    {% if int(x['id']) not in registered_contest %}
+                    <td><div class="btn btn-xs btn-default" onclick="register({{x['id']}})">Register</div></td>
+                    {% else %}
+                    <td><div class="btn btn-xs btn-default" onclick="unregister({{x['id']}})">Registered</div></td>
+                    {% end %}
                     {% if map_group_power['contest_manage'] in current_group_power %}
                         <td><a class="btn btn-xs btn-warning" href="/group/{{current_group}}/contests/{{x['id']}}/edit/">Edit</a></td>
                         <td><div class="btn btn-xs btn-danger" onclick="delete_contest({{x['id']}});">Delete</div></td>
@@ -73,4 +78,28 @@
         </tbody>
     </table>
 </div>
+<script>
+    function register(contest_id){
+        data = Object();
+        data.token = '{{account['token']}}';
+        $.post('/api/group/{{current_group}}/contests/'+contest_id+'/register/', data, function(msg){
+            if(msg['status'] == 200){
+                bootbox.alert('Successfully registered', function(){location.href=location.href;});
+            }else{
+                bootbox.alert(msg['msg']);
+            }
+        }, "json");
+    }
+    function unregister(contest_id){
+        data = Object();
+        data.token = '{{account['token']}}';
+        $.post('/api/group/{{current_group}}/contests/'+contest_id+'/unregister/', data, function(msg){
+            if(msg['status'] == 200){
+                bootbox.alert('Successfully unregistered', function(){location.href=location.href;});
+            }else{
+                bootbox.alert(msg['msg']);
+            }
+        }, "json");
+    }
+</script>
 {% end %}

@@ -52,6 +52,8 @@ from api.verdict        import ApiVerdictTypeHandler
 from api.group          import ApiGroupHandler
 from api.group          import ApiGroupUserHandler
 from api.time           import ApiTimeHandler
+from api.tag            import ApiTagsHandler
+from api.tag            import ApiTagHandler
 
 #from api.execute_type import ApiExecuteTypesHandler
 #from api.execute_type import ApiExecuteTypeHandler
@@ -178,6 +180,8 @@ if __name__ == '__main__':
         ('/api/executes/(\d+)/',                                        ApiExecuteTypeHandler),
         ('/api/verdicts/',                                              ApiVerdictTypesHandler),
         ('/api/verdicts/(\d+)/',                                        ApiVerdictTypeHandler),
+        ('/api/tags/',                                                  ApiTagsHandler),
+        ('/api/tags/(\d+)/',                                            ApiTagHandler),
 
         ('/group/(\d+)/',                                               WebGroupHandler),
         ('/group/\d+/bulletins/',                                       WebBulletinsHandler),
