@@ -337,6 +337,7 @@ CREATE TABLE map_submission_testdata (
     submission_id   integer         NOT NULL    REFERENCES submissions(id)  ON DELETE CASCADE,
     time_usage      integer,
     memory_usage    integer,
+    score           integer,
     verdict         integer         DEFAULT 1   REFERENCES map_verdict_string(id)   ON DELETE CASCADE,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())

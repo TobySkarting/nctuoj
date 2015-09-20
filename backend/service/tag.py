@@ -51,4 +51,15 @@ class TagService(BaseService):
         yield from self.db.execute('DELETE FROM tags WHERE id=%s', (data['id'],))
         return (None, None)
 
-    
+    def post_problem_tag(self, data={}):
+        pass
+
+    def get_problem_tag(self, data={}):
+        required_args = ['problem_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        res = self.rs.get('tag@problem@%s'%(str(data['problem_id'])))
+        if res: return (None, res)
+        res, res_cnt = yield from self.db.execute('SELECT t.* FROM tags as t, map_problem_tag as m WHERE m.tsg_id=t.id AND m.problem_if=%s;', (data['problem_id'],))
+        self.rs.set('tag@problem@%s'%(str(data['problem_id'])), res)
+        return (None, res)

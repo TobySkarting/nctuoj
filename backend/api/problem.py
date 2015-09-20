@@ -95,6 +95,8 @@ class ApiProblemHandler(ApiRequestHandler):
                 err, res = yield from Service.Problem.post_rejudge_problem(meta)
                 if err: self.render(500, err)
                 else: self.render()
+            elif action == 'tag':
+                pass
             else: self.render(404)
         else: self.render(403, 'Permission Denied')
 
