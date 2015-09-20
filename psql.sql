@@ -261,6 +261,10 @@ CREATE UNIQUE INDEX ON map_problem_execute (problem_id, execute_type_id);
 INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 1);
 INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 2);
 INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 3);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 4);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 5);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 6);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 7);
 
 
 

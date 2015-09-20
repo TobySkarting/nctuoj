@@ -57,11 +57,13 @@ class Sandbox:
         if self._opt['mem_limit']: cmd += '--cg-mem=%s '%(str(self._opt['mem_limit']))
         if self._opt['proc_limit']: cmd += '--processes=%s '%(str(self._opt['proc_limit']))
         if self._opt['time_limit']: cmd += '--time=%s '%(str(self._opt['time_limit']))
-        if self._opt['time_limit']: cmd += '--wall-time=%s '%(str(self._opt['time_limit']*2))
+        if self._opt['time_limit']: cmd += '--wall-time=%s '%(str(self._opt['time_limit']*1.3))
         if self._opt['fsize_limit']: cmd += '--fsize=%s '%(str(self._opt['fsize_limit']))
         cmd += '--extra-time=0.2 '
         cmd += '--run -- %s'%exec_cmd
-        return sp.call(cmd, shell=True)
+        print("Run: ", exec_cmd)
+        return sp.call(cmd, shell=True, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+
         
 if __name__ == "__main__":
     s = Sandbox(1, './isolate')

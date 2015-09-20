@@ -68,6 +68,9 @@ class JudgeCenter:
             else:
                 data += tmp.decode()
                 if len(data)==0:
+                    client = self.client[sock]
+                    if client.lock != 0:
+                        self.submission_queue.append(client.lock)
                     self.close_socket(sock)
                     return []
         data = data.split("\r\n")
@@ -165,20 +168,14 @@ class JudgeCenter:
     def sock_send_type(self, sock):
         self.send(sock, {'cmd': 'type', 'msg': self.client[sock].type})
 
-    def sock_update_submission(self, sock, msg):
+    def sock_update_submission(self, id):
+        return 
         if not self.check_submission_meta(msg):
             return
-        cur = self.cursor()
-        msg['score'] = sum(int(x['score']) if int(x['verdict'])==7 else 0 for x in msg['testdata'])
-        msg['memory_usage'] = sum(int(x['memory_usage']) for x in msg['testdata'])
-        msg['time_usage'] = sum(int(x['time_usage']) for x in msg['testdata'])
-        msg['verdict'] = min(int(x['verdict']) for x in msg['testdata'])
-        for testdata in msg['testdata']:
-            cur.execute('UPDATE map_submission_testdata SET memory_usage=%s, time_usage=%s, verdict=%s WHERE submission_id=%s AND testdata_id=%s;', (testdata['memory_usage'], testdata['time_usage'], testdata['verdict'], msg['submission_id'], testdata['id'],))
-        cur.execute('UPDATE submissions SET memory_usage=%s, time_usage=%s, score=%s, verdict=%s WHERE id=%s;', (msg['memory_usage'], msg['time_usage'], msg['score'], msg['verdict'], msg['submission_id'],))
-        self.rs.delete('submission@%s'%(str(msg['submission_id'])))
 
-    def sock_update_submission_testdata(self, sock, msg):
+    def sock_update_submission_testdata(self, msg):
+        cur = self.cursor()
+        #cur.execute("INSERT INTO map_submission_testdata (submission_id, testdata_id, verdict) VALUES 
         pass
 
     def sock_send_submission(self, sock, submission_id):
@@ -206,9 +203,9 @@ class JudgeCenter:
                     print('undefined')
             elif client.type == map_sock_type['judge']:   # judge
                 if msg['cmd'] == 'judged_testdata':
-                    pass
+                    self.sock_update_submission_testdata(msg['msg'])
                 elif msg['cmd'] == 'judged':
-                    self.sock_update_submission(sock, msg['msg'])
+                    self.sock_update_submission(client.lock)
                     client.lock = 0
                 else:
                     print('unkown cmd')
@@ -226,8 +223,9 @@ class JudgeCenter:
             pass
         elif client.type == map_sock_type['judge']:
             if len(self.submission_queue) and client.lock == 0:
-                self.sock_send_submission(sock, self.submission_queue.pop(0))
-                client.lock = 1
+                id = self.submission_queue.pop(0)
+                self.sock_send_submission(sock, id)
+                client.lock = id
         elif client.type == map_sock_type['web']:
             pass
         else:
@@ -253,7 +251,6 @@ class JudgeCenter:
                     self.client_pool.append(sockfd)
                     self.client[sockfd] = self.CLIENT(addr)
                     print("client (%s, %s) connected" % addr)
-                    self.insert_submission(10003)
                 elif sock == sys.stdin:
                     self.CommandHandler(input())
                 else:
