@@ -3,6 +3,7 @@ from req import Service
 import os
 import config
 import datetime
+from functools import reduce
 
 class ContestService(BaseService):
     def __init__(self, db, rs, ftp):
@@ -224,33 +225,48 @@ class ContestService(BaseService):
                     }
                 }
             }
+            'contest': contest_info(dict)
         }
         '''
         required_args = ['id']
         err = self.check_required_args(required_args , data)
         if err: return (err, None)
+        start, end = data['start'], data['end']
         err, data = yield from self.get_contest(data)
+        start = start or data['start']
+        end = end or data['end']
         if err: return (err, None)
         res = {}
         score = res['score'] = {}
-        user_score = score['user'] = {}
+        res['contest'] = data
+        user_score = score['user'] = []
         for user in data['user']:
-            user_score[int(user['id'])] = {}
-            user_problem = user_score[int(user['id'])]['problem'] = {}
+            user_meta = {}
+            user_meta['id'] = int(user['id'])
+            user_problem = user_meta['problem'] = {}
             for problem in data['problem']:
-                err, user_problem[int(problem['id'])] = yield from self.get_contest_user_problem_score(dict(problem).update({'user_id': user['id'], 'problem_id': problem['id']}))
-            user_total = user_score['total'] = {}
+                problem_meta = {}
+                problem_meta['problem'] = problem
+                problem_meta['start'] = start
+                problem_meta['end'] = end
+                problem_meta['user_id'] = user['id']
+                err, user_problem[int(problem['id'])] = yield from self.get_contest_user_problem_score(problem_meta)
+                if err: return (err, None)
+            user_total = user_meta['total'] = {}
             user_total['submitted'] = sum(x['submitted'] for x in user_problem.values())
             user_total['score'] = sum(x['score'] or 0 for x in user_problem.values())
             user_total['penalty'] = sum(x['penalty'] for x in user_problem.values())
             user_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['verdict']==7 else 0), user_problem.values(), 0)
+            user_score.append(user_meta)
 
         problem_score = score['problem'] = {}
         for problem in data['problem']:
             problem_total = problem_score[int(problem['id'])] = {}
-            problem_total['score'] = sum(x['problem'][int(problem['id'])]['score'] or 0 for x in user_score.values())
-            problem_total['submitted'] = sum(x['problem'][int(problem['id'])]['submitted'] for x in user_score.values())
-            problem_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['problem'][int(problem['id'])]['verdict']==7 else 0), user_score.values(), 0)
+            problem_total['score'] = sum(x['problem'][int(problem['id'])]['score'] or 0 for x in user_score)
+            problem_total['submitted'] = sum(x['problem'][int(problem['id'])]['submitted'] for x in user_score)
+            problem_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['problem'][int(problem['id'])]['verdict']==7 else 0), user_score, 0)
+        
+        return (None, res)
 
 
 

@@ -183,3 +183,13 @@ class ApiContestSubmissionsHandler(ApiRequestHandler):
         err, data = yield from Service.Contest.get_contest_submission(meta)
         if err: self.render(500, err)
         else: self.render(200, data)
+
+class ApiContestScoreboardHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, id):
+        args = ['start', 'end']
+        meta = self.get_args(args)
+        meta['id'] = id
+        err, data = yield from Service.Contest.get_contest_scoreboard(meta)
+        if err: self.render(500, err)
+        else: self.render(200, data)

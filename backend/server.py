@@ -41,6 +41,7 @@ from api.contest        import ApiContestsHandler
 from api.contest        import ApiContestHandler
 from api.contest        import ApiContestProblemsHandler
 from api.contest        import ApiContestSubmissionsHandler
+from api.contest        import ApiContestScoreboardHandler
 from api.execute        import ApiExecuteTypesHandler
 from api.execute        import ApiExecuteTypeHandler
 from api.verdict        import ApiVerdictTypesHandler
@@ -163,6 +164,7 @@ if __name__ == '__main__':
         ('/api/group/\d+/contests/(\d+)/',                              ApiContestHandler),
         ('/api/group/\d+/contests/(\d+)/problems/',                     ApiContestProblemsHandler),
         ('/api/group/\d+/contests/(\d+)/submissions/',                  ApiContestSubmissionsHandler),
+        ('/api/group/\d+/contests/(\d+)/scoreboard/',                   ApiContestScoreboardHandler),
         ('/api/group/\d+/contests/(\d+)/(\w+)/',                        ApiContestHandler),
         ('/api/time/',                                                  ApiTimeHandler),
 

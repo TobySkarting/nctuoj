@@ -10,7 +10,7 @@ from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
 
 class FTP:
-    executor = ThreadPoolExecutor(2)
+    executor = ThreadPoolExecutor(config.FTP_THREADPOOL_SIZE)
     def __init__(self, server, port, user, password):
         self.server = server
         self.port = port
@@ -45,14 +45,3 @@ class FTP:
         try: self.client.exec_command('rm -rf %s' % _target)
         except: pass
 
-
-if __name__ == "__main__":
-    """
-    ftp = FTP(config.FTPSERVER, config.FTPPORT, config.FTPUSER, config.FTPPASSWD)
-    action = sys.argv[1]
-    if action.lower() == "upload":
-        ftp.put(sys.argv[2], sys.argv[3])
-    elif action.lower() == "download":
-        ftp.get(sys.argv[2], sys.argv[3])
-    """
-    pass
