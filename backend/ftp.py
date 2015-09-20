@@ -1,4 +1,5 @@
 import paramiko, sys
+import time
 from scp import SCPClient
 import os
 import datetime
@@ -39,9 +40,11 @@ class FTP:
         scp.put(_from, _to)
         scp.close()
 
+    @run_on_executor
     def delete(self, _target):
         try: self.client.exec_command('rm -rf %s' % _target)
         except: pass
+
 
 if __name__ == "__main__":
     """

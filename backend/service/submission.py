@@ -70,7 +70,7 @@ class SubmissionService(BaseService):
         if not os.path.isfile(file_path):
             remote_folder = './data/submissions/%s/' % str(res['id'])
             remote_path = '%s/%s' % (remote_folder, res['file_name'])
-            yield from self.ftp.download(remote_path, file_path)
+            yield self.ftp.get(remote_path, file_path)
 
         with open(file_path) as f:
             res['code'] = f.read()
@@ -124,8 +124,8 @@ class SubmissionService(BaseService):
                 f.write(data['code_file']['body'])
             else:
                 f.write(data['plain_code'].encode())
-        yield from self.ftp.delete(remote_folder)
-        yield from self.ftp.upload(file_path, remote_path)
+        yield self.ftp.delete(remote_folder)
+        yield self.ftp.put(file_path, remote_path)
         yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (id,))
         return (None, id) 
 
