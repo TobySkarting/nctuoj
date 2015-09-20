@@ -81,10 +81,11 @@ function new_testdata(){
 <script>
 function delete_testdata(id){
     $.ajax({
-        url: "/api/group/{{current_group}}/problems/{{data['id']}}/testdata/"+id+"/",
+        url: "/api/group/{{current_group}}/testdata/"+id+"/",
         type: "delete",
         data: {
-            "token": "{{account['token']}}"
+            "token": "{{account['token']}}",
+            "problem_id": "{{data['id']}}",
         },
         dataType:"json",
         success: function(msg){

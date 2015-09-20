@@ -11,7 +11,7 @@ class TagService(BaseService):
     def get_tag_list(self):
         res = self.rs.get('tag_list')
         if res: return (None, res)
-        res, res_cnt = self.db.execute('SELECT * FROM tags;')
+        res, res_cnt = yield from self.db.execute('SELECT * FROM tags;')
         self.rs.set('tag_list', res)
         return (None, res)
 

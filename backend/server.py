@@ -26,6 +26,7 @@ from service.execute    import ExecuteService
 from service.contest    import ContestService
 from service.verdict    import VerdictService
 from service.group      import GroupService
+from service.tag        import TagService
 from service.verdictstring import VerdictStringService
 
 
@@ -247,6 +248,7 @@ if __name__ == '__main__':
     Service.Contest =       ContestService(db, rs, ftp)
     Service.Verdict =       VerdictService(db, rs, ftp)
     Service.Group =         GroupService(db, rs, ftp)
+    Service.Tags =          TagService(db, rs, ftp)
     Service.VerdictString = VerdictStringService(db, rs, ftp)
     print('Server Started')
     signal.signal(signal.SIGTERM, sig_handler)

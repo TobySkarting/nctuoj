@@ -65,6 +65,7 @@ class ApiTestdataHandler(ApiRequestHandler):
     def delete(self, id):
         args = ['problem_id']
         meta = self.get_args(args)
+        meta['group_id'] = self.current_group
         meta['id'] = id
         if not (yield from self.check_edit(meta)):
             return 
