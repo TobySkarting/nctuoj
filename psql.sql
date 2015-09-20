@@ -409,7 +409,7 @@ CREATE UNIQUE INDEX ON wait_submissions(submission_id);
 CREATE TABLE tags (
     id              serial          NOT NULL     PRIMARY KEY,
     tag             varchar(31)     NOT NULL,
-    description     varchar(255)    NOT NULL,
+    description     varchar(255)    DEFAULT '',
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
