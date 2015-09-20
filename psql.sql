@@ -365,6 +365,7 @@ CREATE TABLE map_contest_problem (
     contest_id      integer         NOT NULL    REFERENCES contests(id) ON DELETE CASCADE,
     problem_id      integer         NOT NULL    REFERENCES problems(id) ON DELETE CASCADE,
     score           varchar(255)    NOT NULL    DEFAULT '',
+    penalty         integer         NOT NULL    DEFAULT 20,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
