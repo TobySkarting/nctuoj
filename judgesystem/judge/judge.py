@@ -74,10 +74,7 @@ class Judge:
         return res
 
     def get_testdata(self,testdata):
-        print("************get testdata*************")
-        print(testdata)
         for x in testdata:
-            print(x)
             remote_path = './data/testdata/%s/'%(str(x['id']))
             file_path = '%s/testdata/'%(config.store_folder)
             try: shutil.rmtree("%s/%s"%(file_path,str(x['id'])))
@@ -97,56 +94,99 @@ class Judge:
             "status": "AC",
             "time": 0,
             "memory": 0,
+            "exitcode": 0,
         }
         f = open(file_path).readlines()
-        print(f)
         for x in f:
             x = x.strip('\n').split(":")
             if x[0] == "status":
                 res['status'] = x[1]
-            print(x)
+            elif x[0] == "time":
+                res["time"] = float(x[1])
+            elif x[0] == "max-rss":
+                res["memory"] = float(x[1])
+            elif x[0] == "exitcode":
+                res['exitcode'] = int(x[1])
+            else:
+                res[x[0]] = x[1]
+        ### TO => TLE
+
         print(res)
         return res
+
+
+    def compile(self, msg):
+        sandbox = Sandbox(os.getpid(), './isolate')
+        sandbox.folder = "/tmp/box/%s/box/"%(os.getpid())
+        print("Box: ", sandbox.folder)
+        sandbox.options = {
+            "proc_limit": 4,
+            "meta": "%s/meta"%(sandbox.folder),
+            "output": "output",
+            "errput": "errput",
+            "mem_limit": 262144,
+            "time_limit": 3,
+        }
+        sandbox.init_box()
+        sandbox.set_options(**sandbox.options)
+        sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], sandbox.folder), shell=True)
+        for step in range(len(msg['execute_steps']) - 1):
+            run_cmd = msg['execute_steps'][step]['command']
+            run_cmd = run_cmd.replace("__FILE__", msg['file_name'])
+            sandbox.exec_box("/usr/bin/env %s" % run_cmd)
+            res = self.read_meta(sandbox.options['meta'])
+            if res['exitcode'] != 0:
+                return (res, sandbox)
+        return (res, sandbox)
+
+    def exec(self, sandbox, testdata, msg):
+        run_cmd = msg['execute_steps'][-1]['command']
+        run_cmd = run_cmd.replace("__FILE__", msg['file_name'])
+        sp.call("cp %s/testdata/%s/input %s"%(config.store_folder, testdata['id'], sandbox.folder), shell=True)
+        sandbox.options['input'] = "input"
+        sandbox.options['time_limit'] = testdata['time_limit'] / 1000
+        sandbox.options['mem_limit'] = testdata['memory_limit']
+        sandbox.options['fsize_limit'] = 65536
+        sandbox.set_options(**sandbox.options)
+        sandbox.exec_box("/usr/bin/env %s" % run_cmd)
+        res = self.read_meta(sandbox.options['meta'])
+        if res['status'] != "AC":
+            ### something error
+            return res
+        return res
+
 
     def judge(self, msg):
         print(msg)
         self.get_testdata(msg['testdata'])
         self.get_submission(msg['submission_id'])
-        for testdata in msg['testdata']:
-            print(testdata)
-            sandbox = Sandbox(os.getpid(), './isolate')
-            sandbox.set_options(proc_limit=4, mem_limit=65535*20, time_limit=5 )
-            sandbox.init_box()
-            sandbox_folder = "/tmp/box/%s/box/"%(os.getpid())
-            ### move submission file to isolate
-            submission_file = "%s/submissions/%s/%s"%(config.store_folder, msg['submission_id'], msg['file_name'])
-            sp.call("cp %s %s"%(submission_file, sandbox_folder), shell=True)
-            ### setting meta file
-            meta = "%s/meta" % sandbox_folder
-            sandbox.set_options(meta=meta)
-            sandbox.set_options(output="output", errput="errput")
-            for step in range(len(msg['execute_steps'])):
-                isexec = step == len(msg['execute_steps']) - 1
-                if isexec:
-                    testdata_file = "%s/testdata/%s/input"%(config.store_folder, testdata['id'])
-                    sp.call("cp %s %s"%(testdata_file, sandbox_folder), shell=True)
-                    sandbox.set_options(input="input")
-                x = msg['execute_steps'][step]
-                print("==========")
-                command = x['command']
-                command = command.replace("__FILE__", msg['file_name'])
-                print("cmd: ", command)
-                sandbox.exec_box("/usr/bin/env %s" % command)
-                print(meta)
-                res = self.read_meta(meta)
-                if not isexec:
-                    pass
-                else:
-                    pass
-            #self.send({"cmd":"judged_testdata", "msg":msg})
-            ### upload something to ftp
+
+        if msg['execute_type']['recompile'] == 0:
+            print("Don't compile everytime!")
+            res, sandbox = self.compile(msg)
+            if res['status'] != "AC":
+                for testdata in msg['testdata']:
+                    self.send({
+                        'cmd': 'judged_testdata',
+                        'msg': {
+                            'submission_id': msg['submission_id'],
+                            'testdata_id': testdata['id'],
+                            'status': 'CE'
+                        }
+                    })
+                self.send({"cmd":"judged", "msg":""})
+                sandbox.delete_box()
+                return
+            for testdata in msg['testdata']:
+                res = self.exec(sandbox, testdata, msg)
             sandbox.delete_box()
-        self.send({"cmd":"judged", "msg":msg})
+        else:
+            for testdata in msg['testdata']:
+                res, sandbox = self.compile(msg)
+                self.exec(sandbox, testdata, msg)
+                sandbox.delete_box()
+                    
+        self.send({"cmd":"judged", "msg":""})
 
     def SockHandler(self):
         MSGS = self.receive()
