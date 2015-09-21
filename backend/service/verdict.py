@@ -40,7 +40,7 @@ class VerdictService(BaseService):
         if not os.path.isfile(file_path):
             remote_folder = './data/verdicts/%s/' % str(res['id'])
             remote_path = '%s/%s' % (remote_folder, res['file_name'])
-            yield from self.ftp.download(remote_path, file_path)
+            yield self.ftp.get(remote_path, file_path)
 
         with open(file_path) as f:
             res['code'] = f.read()

@@ -7,6 +7,7 @@
 </div>
 {% if map_power['verdict_manage'] in account['power'] %}
     <a class="btn btn-default" href="/verdicts/{{data['id']}}/edit/" style="margin-bottom: 12px;">Edit</a>
+    <div class="btn btn-default"style="margin-bottom: 12px;" onclick="delete_verdict()">Delete</div>
 {% end %}
 <h3>Type:{{data['title']}}</h3>
 <h3>Setter:{{data['setter_user']}}</h3>
@@ -22,4 +23,23 @@
         </div>
     </div>
 </div>
+<script>
+function delete_verdict(){
+    $.ajax({
+        url: '/api/verdicts/'+{{data['id']}}+'/',
+        type: 'DELETE',
+        dataType: 'json',
+        data: {'token': "{{account['token']}}"},
+        success: function(msg){
+            if(msg['status'] == 200){
+                bootbox.alert('Delete successfully', function(){
+                    location.href = '/api/verdicts/';
+                });
+            }else{
+                bootbox.alert(msg['msg']);
+            }
+        }
+    });
+}
+</script>
 {% end %}

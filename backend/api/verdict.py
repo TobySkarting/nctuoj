@@ -6,7 +6,9 @@ import tornado
 class ApiVerdictTypesHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self):
-        err, data = yield from Service.Verdict.get_verdict_list()
+        args = ['problem_id']
+        meta = self.get_args(args)
+        err, data = yield from Service.Verdict.get_verdict_list(meta)
         if err: self.render(500, err)
         else: self.render(200, data)
 

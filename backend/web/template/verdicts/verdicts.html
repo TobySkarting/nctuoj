@@ -4,6 +4,10 @@
     <a class="btn btn-default" href="/verdicts/0/edit/" style="margin-bottom: 12px;">New</a>
 {% end %}
 {{data}}
+<div class="col-md-4 input-group">
+    <span class="input-group-addon">Problem ID</span>
+    <input type="number" class="form-control" placeholder="problem ID" name="problem_id">
+</div>
 <table class="table table-hover table-striped table-condensed">
     <thead>
         <tr>
@@ -14,7 +18,7 @@
     </thead>
     <tbody>
         {% for x in data %}
-            <tr>
+            <tr problem-id="{{x['problem_id']}}">
                 <td>{{x['title']}}</td>
                 <td><a class='btn btn-xs btn-default' href="/verdicts/{{x['id']}}/">View</a></td>
                 <td>{{x['created_at']}}</td>
@@ -22,6 +26,21 @@
         {% end %}
     </tbody>
 </table>
-        
+<script> 
+$('[name="problem_id"]').change(function(){
+    problem_id = $(this).val();
+    if(problem_id != 0 && problem_id != ''){
+        $('tbody > tr').each(function(){
+            if($(this).attr('problem-id') == problem_id)
+                $(this).show(100);
+            else $(this).hide(100);
+        });
+    }else{
+        $('tbody > tr').each(function(){
+            $(this).show(100);
+        });
+    }
+});
+</script>
 
 {% end %}

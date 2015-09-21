@@ -214,6 +214,7 @@ CREATE TABLE verdicts(
     id              serial          NOT NULL    PRIMARY KEY,
     title           varchar(255)    ,
     execute_type_id integer         NOT NULL    DEFAULT 0   REFERENCES execute_types(id)    ON DELETE CASCADE,
+    problem_id      integer         NOT NULL    DEFAULT 0,
     file_name       varchar(255)    NOT NULL,
     setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
