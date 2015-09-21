@@ -48,11 +48,27 @@ class TagService(BaseService):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        self.rs.delete('tag@%s'%(str(data['id'])))
         yield from self.db.execute('DELETE FROM tags WHERE id=%s', (data['id'],))
         return (None, None)
 
     def post_problem_tag(self, data={}):
-        pass
+        required_args = ['tag_id', 'problem_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        self.rs.delete('tag@problem@%s'%(data['problem_id']))
+        yield from self.db.execute('INSERT INTO map_problem_tag (tag_id, problem_id) VALUES(%s, %s);', (data['tag_id'], data['problem_id']))
+        return (None, None)
+
+    def delete_problem_tag(self, data={}):
+        required_args = ['tag_id', 'problem_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        self.rs.delete('tag@problem@%s'%(data['problem_id']))
+        res, res_cnt = yield from self.db.execute('DELETE FROM map_problem_tag WHERE tag_id=%s AND problem_id=%s RETURNING id;', (data['tag_id'], data['problem_id']))
+        if res_cnt == 0:
+            return ('no this tag in this problem', None)
+        return (None, None)
 
     def get_problem_tag(self, data={}):
         required_args = ['problem_id']
@@ -60,6 +76,7 @@ class TagService(BaseService):
         if err: return (err, None)
         res = self.rs.get('tag@problem@%s'%(str(data['problem_id'])))
         if res: return (None, res)
-        res, res_cnt = yield from self.db.execute('SELECT t.* FROM tags as t, map_problem_tag as m WHERE m.tsg_id=t.id AND m.problem_if=%s;', (data['problem_id'],))
+        res, res_cnt = yield from self.db.execute('SELECT t.* FROM tags as t, map_problem_tag as m WHERE m.tag_id=t.id AND m.problem_id=%s;', (data['problem_id'],))
+        print('RES: ', res)
         self.rs.set('tag@problem@%s'%(str(data['problem_id'])), res)
         return (None, res)

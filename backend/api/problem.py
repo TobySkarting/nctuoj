@@ -58,6 +58,9 @@ class ApiProblemHandler(ApiRequestHandler):
         if action == "basic":
             self.render(200, data)
         elif action == "tag":
+            err, data = yield from Service.Tags.get_problem_tag({'problem_id': meta['id']})
+            if err: self.redner(500, err)
+            else: self.render(200, data)
             pass
         else:
             self.render(404)
@@ -96,7 +99,12 @@ class ApiProblemHandler(ApiRequestHandler):
                 if err: self.render(500, err)
                 else: self.render()
             elif action == 'tag':
-                pass
+                args = ['tag_id']
+                meta = self.get_args(args)
+                meta['problem_id'] = id
+                err, res = yield from Service.Tags.post_problem_tag(meta)
+                if err: self.render(500, err)
+                else: self.render()
             else: self.render(404)
         else: self.render(403, 'Permission Denied')
 
@@ -111,6 +119,13 @@ class ApiProblemHandler(ApiRequestHandler):
                 meta = {}
                 meta['id'] = id
                 err, data = yield from Service.Problem.delete_problem(meta)
+                if err: self.render(500, err)
+                else: self.render()
+            elif action == "tag":
+                args = ['tag_id']
+                meta = self.get_args(args)
+                meta['problem_id'] = id
+                err, res = yield from Service.Tags.delete_problem_tag(meta)
                 if err: self.render(500, err)
                 else: self.render()
             else: self.render(404)
