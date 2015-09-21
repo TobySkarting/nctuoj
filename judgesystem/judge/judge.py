@@ -43,6 +43,16 @@ class Judge:
         #self.s.setblocking(0)
         self.pool = [sys.stdin, self.s]
         self.recv_buffer_len = 1024
+        try: os.makedirs('%s/submissions/'%(config.store_folder))
+        except: pass
+        try: os.makedirs('%s/testdata/lock/'%(config.store_folder))
+        except: pass
+        try: os.makedirs('%s/testdata/config/'%(config.store_folder))
+        except: pass
+        try: os.makedirs('%s/verdict/lock/'%(config.store_folder))
+        except: pass
+        try: os.makedirs('%s/verdict/config/'%(config.store_folder))
+        except: pass
 
     def receive(self):
         sock = self.s
@@ -73,13 +83,39 @@ class Judge:
                     print("err: %s" % x)
         return res
 
+    
+    def lock_get(self, _from, _to, _config, _lock, timestamp):
+        def read_config(path, timestamp):
+            try:
+                f = open(path)
+                t = f.read()
+                return t == str(timestamp)
+            except:
+                return False
+        def write_config(path, timestamp):
+            f = open(path, "w+")
+            f.write(str(timestamp))
+            f.close()
+        while True:
+            if read_config(_config, timestamp):
+                break
+            if os.path.exists(_lock):
+                time.sleep(0.01)
+            else:
+                f = open(_lock, "w+")
+                f.close()
+                print("download: ", _from, _to)
+                self.ftp.get(_from, _to)
+                write_config(_config, timestamp)
+                os.remove(_lock)
+
     def get_testdata(self,testdata):
         for x in testdata:
             remote_path = './data/testdata/%s/'%(str(x['id']))
             file_path = '%s/testdata/'%(config.store_folder)
-            try: shutil.rmtree("%s/%s"%(file_path,str(x['id'])))
-            except: pass
-            self.ftp.get(remote_path, file_path)
+            lock_path = '%s/testdata/lock/%s'%(config.store_folder, x['id'])
+            config_path = '%s/testdata/config/%s'%(config.store_folder, x['id'])
+            self.lock_get(remote_path, file_path, config_path, lock_path, x['updated_at'])
 
     def get_submission(self, submission_id):
         remote_path = './data/submissions/%s/'%(str(submission_id))
@@ -113,6 +149,7 @@ class Judge:
             res['status'] = "TLE"
         if res['status'] == "SG":
             res['status'] = "RE" 
+        print(res)
         return res
 
 
@@ -149,17 +186,17 @@ class Judge:
                 'status': res['status'],
                 'verdict': self.map_verdict_string[res['status']],
                 'time_usage': res['time'],
-                'memory_usage': res['memory']
+                'memory_usage': res['memory'],
+                'score': int(res['score'] * int(testdata['score']))
             }
         })
 
     def verdict(self, file_a, file_b):
         a = open(file_a, "r").readlines()
         b = open(file_b, "r").readlines()
-        print(a)
-        print(b)
-        print(a==b)
-        return "WA" if a != b else "AC"
+        verdict = "WA" if a != b else "AC"
+        score = 1.0 if a == b else 0.0
+        return (verdict, score)
 
     def exec(self, sandbox, testdata, msg):
         run_cmd = msg['execute_steps'][-1]['command']
@@ -174,8 +211,9 @@ class Judge:
         res = self.read_meta(sandbox.options['meta'])
         if res['memory'] > testdata['memory_limit']:
             res['status'] == "MLE"
+        res['score'] = 0
         if res['status'] == "AC":
-            res['status'] = self.verdict("%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(sandbox.folder))
+            res['status'], res['score'] = self.verdict("%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(sandbox.folder))
         self.send_judged_testdata(res, testdata, msg)
         return res
 
@@ -224,6 +262,8 @@ class Judge:
                 for x in msg['msg']:
                     self.map_verdict_string[x['abbreviation']] = int(x['id'])
                 print(self.map_verdict_string)
+            elif msg['cmd'] == 'restart':
+                self.restart()
             else:
                 print(msg)
 
@@ -232,7 +272,7 @@ class Judge:
 
     def send(self, msg):
         try: self.s.sendall((json.dumps(msg, cls=DatetimeEncoder)+'\r\n').encode())
-        except socket.error: self.close_socket(self.s)
+        except socket.error: self.restart()
         except Exception as e: print(e, 'send msg error')
 
     def send_token(self):

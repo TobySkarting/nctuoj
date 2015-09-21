@@ -1,6 +1,6 @@
 {% extends './../frame.html' %}
 {% block content %}
-{% if map_group_power['submission_manage'] in current_group_power %}
+{% if map_group_power['submission_manage'] in current_group_power and data['verdict_abbreviation'] != 'Pending'%}
     <a class="btn btn-default" _href="/api/group/{{current_group}}/submissions/{{data['id']}}/rejudge/" style="margin-bottom: 12px;" onclick="rejudge_submission(this);">Rejudge</a>
     <script>
     function rejudge_submission(ele){

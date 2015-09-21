@@ -20,9 +20,9 @@ class SubmissionService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         sql = """
-        SELECT s.*, u.account as user, e.lang
-        FROM submissions as s, users as u, execute_types as e, problems as p
-        WHERE p.id=s.problem_id AND u.id=s.user_id AND e.id=s.execute_type_id
+        SELECT s.*, u.account as user, e.lang, v.abbreviation
+        FROM submissions as s, users as u, execute_types as e, problems as p, map_verdict_string as v 
+        WHERE p.id=s.problem_id AND u.id=s.user_id AND e.id=s.execute_type_id AND v.id=s.verdict
         """
         sql += " AND p.group_id=%s  "
         if 'problem_id' in data and data['problem_id']:
@@ -137,7 +137,7 @@ class SubmissionService(BaseService):
         if err: return (err, None)
         self.rs.delete('submission@%s'%(str(data['id'])))
         yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (data['id'],))
-        yield from self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s WHERE id=%s;', (None, None, None, data['id']))
+        yield from self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s, verdict=%s WHERE id=%s;', (None, None, None, 1, data['id']))
         yield from self.db.execute('DELETE FROM map_submission_testdata WHERE submission_id=%s;', (data['id'],))
         print(data['id'])
         return (None, str(data['id']))
