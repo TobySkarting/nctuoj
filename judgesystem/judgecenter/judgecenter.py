@@ -40,6 +40,7 @@ class JudgeCenter:
         self.pool = [sys.stdin, self.s]
         self.client_pool = []
         self.submission_queue = []
+        self.submissioning_queue = []
 
         self.client = {}
 
@@ -71,6 +72,7 @@ class JudgeCenter:
                     client = self.client[sock]
                     if client.lock != 0:
                         self.submission_queue.append(client.lock)
+                        self.submissioning_queue.remove(client.lock)
                     self.close_socket(sock)
                     return []
         data = data.split("\r\n")
@@ -82,21 +84,6 @@ class JudgeCenter:
                 except:
                     print("err: %s" % x)
         return res
-
-    def check_submission_meta(self, msg):
-        if 'submission_id' not in msg or 'testdata' not in msg:
-            return False
-        for testdata in msg['testdata']:
-            if 'id' not in testdata or 'time_usage' not in testdata or 'memory_usage' not in testdata or 'verdict' not in testdata:
-                return False
-            try:
-                testdata['id'] = int(testdata['id'])
-                testdata['time_usage'] = int(testdata['time_usage'])
-                testdata['memory_usage'] = int(testdata['memory_usage'])
-                testdata['verdict'] = int(testdata['verdict'])
-            except Exception as e:
-                return False
-        return True
 
     def gen_submission_meta(self, submission_id):
         res = {}
@@ -110,7 +97,7 @@ class JudgeCenter:
         msg['execute_type'] = dict(cur.fetchone())
         cur.execute('SELECT * FROM execute_steps WHERE execute_type_id=%s ORDER BY id;', (msg['execute_type_id'],))
         msg['execute_steps'] = [dict(x) for x in cur]
-        cur.execute('SELECT id, time_limit, memory_limit, score FROM testdata WHERE problem_id=%s ORDER BY id;', (msg['problem_id'],))
+        cur.execute('SELECT id, time_limit, memory_limit, updated_at, score FROM testdata WHERE problem_id=%s ORDER BY id;', (msg['problem_id'],))
         msg['testdata'] = [dict(x) for x in cur]
         return res
     
@@ -124,9 +111,8 @@ class JudgeCenter:
         delete_cur = self.cursor()
         cur.execute("SELECT * FROM wait_submissions")
         for x in cur:
-            if x['submission_id'] not in self.submission_queue:
+            if x['submission_id'] not in self.submission_queue and x['submission_id'] not in self.submissioning_queue:
                 self.submission_queue.append(x['submission_id'])
-            delete_cur.execute("DELETE FROM wait_submissions WHERE id=%s", (x['id'],))
 
     def CommandHandler(self, cmd):
         param = cmd.lower().split(' ')
@@ -169,16 +155,31 @@ class JudgeCenter:
         self.send(sock, {'cmd': 'type', 'msg': self.client[sock].type})
 
     def sock_update_submission(self, id):
-        return 
-        if not self.check_submission_meta(msg):
-            return
+        cur = self.cursor()
+        cur.execute("SELECT * FROM map_submission_testdata WHERE submission_id=%s", (id,))
+        testdata = [dict(x) for x in cur]
+        time = 0
+        memory = 0
+        score = 0
+        verdict_priority = 999999
+        for x in testdata:
+            if x['time_usage']: time += x['time_usage']
+            if x['memory_usage']: memory = max(memory, x['memory_usage'])
+            if x['score']: score += x['score']
+            verdict_priority = min(verdict_priority, self.map_verdict_priority[x['verdict']])
+        verdict = self.map_priority_verdict[verdict_priority]
+        if memory == 0:
+            cur.execute("UPDATE submissions SET verdict=%s, score=%s WHERE id=%s", (verdict_priority, score,id))
+        else:
+            cur.execute("UPDATE submissions SET verdict=%s, score=%s, time_usage=%s, memory_usage=%s WHERE id=%s", (verdict_priority, score,time,memory, id,))
+        cur.execute("DELETE FROM wait_submissions WHERE submission_id=%s", (id,))
 
     def sock_update_submission_testdata(self, msg):
         cur = self.cursor()
         cur.execute("INSERT INTO map_submission_testdata (submission_id, testdata_id, verdict) VALUES (%s, %s, %s) RETURNING id", (msg['submission_id'], msg['testdata_id'], msg['verdict'],))
         x = cur.fetchone()
         if 'time_usage' in msg:
-            cur.execute("UPDATE map_submission_testdata SET time_usage=%s, memory_usage=%s WHERE id=%s", (msg['time_usage'],msg['memory_usage'],x['id'],))
+            cur.execute("UPDATE map_submission_testdata SET time_usage=%s, memory_usage=%s, score=%s WHERE id=%s", (msg['time_usage'],msg['memory_usage'],msg['score'],x[0],))
         pass
 
     def sock_send_submission(self, sock, submission_id):
@@ -209,6 +210,7 @@ class JudgeCenter:
                     self.sock_update_submission_testdata(msg['msg'])
                 elif msg['cmd'] == 'judged':
                     self.sock_update_submission(client.lock)
+                    self.submissioning_queue.remove(client.lock)
                     client.lock = 0
                 else:
                     print('unkown cmd')
@@ -227,6 +229,7 @@ class JudgeCenter:
         elif client.type == map_sock_type['judge']:
             if len(self.submission_queue) and client.lock == 0:
                 id = self.submission_queue.pop(0)
+                self.submissioning_queue.append(id)
                 self.sock_send_submission(sock, id)
                 client.lock = id
         elif client.type == map_sock_type['web']:
@@ -247,8 +250,17 @@ class JudgeCenter:
         cur = self.cursor()
         cur.execute("SELECT * FROM map_verdict_string")
         map_verdict_string = [dict(x) for x in cur]
+        self.map_verdict_priority = {}
+        self.map_priority_verdict = {}
+        for x in map_verdict_string:
+            self.map_priority_verdict[x['priority']] = x['id']
+            self.map_verdict_priority[x['id']] = x['priority']
+
         while True:
-            self.get_submission()
+            try:
+                self.get_submission()
+            except:
+                pass
             read_sockets, write_sockets, error_sockets = select.select(self.pool, [], [], 0.1)
             for sock in read_sockets:
                 if sock == self.s:
