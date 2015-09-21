@@ -63,7 +63,7 @@ class SubmissionService(BaseService):
         if res_cnt == 0:
             return ('No Submission ID', None)
         res = res[0]
-        res['testdata'], res_cnt = yield from self.db.execute('SELECT * FROM map_submission_testdata WHERE submission_id=%s ORDER by testdata_id;', (data['id'],))
+        res['testdata'], res_cnt = yield from self.db.execute('SELECT m.*, v.* FROM map_submission_testdata as m, map_verdict_string as v WHERE submission_id=%s AND v.id=m.verdict ORDER BY testdata_id;', (data['id'],))
 
         folder = './../data/submissions/%s/' % str(res['id'])
         file_path = '%s/%s' % (folder, res['file_name'])
