@@ -15,7 +15,7 @@ import markdown as markdown
 
 def md(s):
     if s is None: s = ''
-    return markdown.markdown(s)
+    return markdown.markdown(s, extensions=['markdown.extensions.nl2br'])
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
