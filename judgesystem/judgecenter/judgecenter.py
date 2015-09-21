@@ -178,7 +178,7 @@ class JudgeCenter:
         cur.execute("INSERT INTO map_submission_testdata (submission_id, testdata_id, verdict) VALUES (%s, %s, %s) RETURNING id", (msg['submission_id'], msg['testdata_id'], msg['verdict'],))
         x = cur.fetchone()
         if 'time_usage' in msg:
-            cur.execute("UPDATE map_submission_testdata SET time_usage=%s, memory_usage=%s WHERE id=%s", (msg['time_usage'],msg['memory_usage'],x[0],))
+            cur.execute("UPDATE map_submission_testdata SET time_usage=%s, memory_usage=%s WHERE id=%s", (msg['time_usage'],msg['memory_usage'],x['id'],))
         pass
 
     def sock_send_submission(self, sock, submission_id):
