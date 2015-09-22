@@ -167,6 +167,8 @@ class JudgeCenter:
             if x['memory_usage']: memory = max(memory, x['memory_usage'])
             if x['score']: score += x['score']
             verdict_priority = min(verdict_priority, self.map_verdict_priority[x['verdict']])
+        if verdict_priority == 999999:
+            verdict_priority = self.map_verdict_priority[2]
         verdict = self.map_priority_verdict[verdict_priority]
         if memory == 0:
             cur.execute("UPDATE submissions SET verdict=%s, score=%s WHERE id=%s", (verdict_priority, score,id))
@@ -255,6 +257,7 @@ class JudgeCenter:
         for x in map_verdict_string:
             self.map_priority_verdict[x['priority']] = x['id']
             self.map_verdict_priority[x['id']] = x['priority']
+        print(self.map_verdict_priority)
 
         while True:
             try:

@@ -5,7 +5,7 @@ class Sandbox:
     class SandboxOption:
         def __init__(self):
             meta = {}
-            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-8-oracle/bin/'}                    #-E
+            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/'} 
             meta["cgroup"] = True               #--cg
             meta["full_env"] = True             #--full-env
             meta["input"] = ''                  #--stdin
@@ -64,21 +64,21 @@ class Sandbox:
         if self._opt['time_limit']: cmd += '--wall-time=%s '%(str(self._opt['time_limit']*1.3))
         if self._opt['fsize_limit']: cmd += '--fsize=%s '%(str(self._opt['fsize_limit']))
         if self._opt['env']: 
-            for (var, val) in self._opt.items():
+            for (var, val) in self._opt['env'].items():
                 cmd += '--env=%s=%s '%(var, val)
         cmd += '--extra-time=0.2 '
         cmd += '--run -- %s'%exec_cmd
         print("Run: ", exec_cmd)
-        return sp.call(cmd, shell=True, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        #return sp.call(cmd, shell=True, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        return sp.call(cmd, shell=True)
 
         
 if __name__ == "__main__":
     s = Sandbox(1, './isolate')
-    s.set_options(proc_limit=4, meta='meta', errput='err', mem_limit=65535*20)
+    s.set_options(proc_limit=16, meta='meta', errput='err', mem_limit=0, time_limit=3)
     s.init_box()
-    #print(s.exec_box("g++ test.cpp"))
-    s.set_options(proc_limit=2)
-    s.exec_box("/usr/bin/env ls")
-    #print(s.exec_box("./a.out"))
-    sp.call('cat /tmp/box/1/box/err', shell=True)
-    s.delete_box()
+    sp.call("cp ./test.java /tmp/box/1/box/", shell=True)
+    s.exec_box("/usr/bin/env javac -J-Xrs -J-Xmx256m -J-Xss8m test.java")
+    s.set_options(proc_limit=16, meta='meta', errput='err', mem_limit=0, time_limit=2)
+    s.exec_box("/usr/bin/env java -Xmx4m -Xss8m test")
+    #s.delete_box()

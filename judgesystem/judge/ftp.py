@@ -20,16 +20,14 @@ class FTP:
         self.client.connect(self.server, self.port, self.user, self.password)
     
     def get(self, _from, _to):
-        while True:
-            try:
-                scp = SCPClient(self.client.get_transport())
-                try: os.makedirs(os.path.split(_to)[0])
-                except: pass
-                scp.get(_from, _to, recursive=True)
-                scp.close()
-                return
-            except:
-                pass
+        scp = SCPClient(self.client.get_transport())
+        try: os.makedirs(os.path.split(_to)[0])
+        except: pass
+        try:
+            scp.get(_from, _to, recursive=True)
+        except:
+            pass
+        scp.close()
 
     def put(self, _from, _to):
         try: ssh.exec_command('mkdir -p %s' % os.path.split(_to)[0])
