@@ -19,6 +19,8 @@ class Sandbox:
             self._meta = meta
 
         def set_env(self, **kwargs):
+            for var, val in kwargs.items():
+                val = '$%s:%s'%(var, val)
             self._meta.update(kwargs)
 
         def set_options(self, **kwargs):
