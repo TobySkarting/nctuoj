@@ -66,7 +66,7 @@ class Sandbox:
         if self._opt['time_limit']: cmd += '--wall-time=%s '%(str(self._opt['time_limit']*1.3))
         if self._opt['fsize_limit']: cmd += '--fsize=%s '%(str(self._opt['fsize_limit']))
         if self._opt['env']: 
-            for (var, val) in self._opt.items():
+            for (var, val) in self._opt['env'].items():
                 cmd += '--env=%s=%s '%(var, val)
         cmd += '--extra-time=0.2 '
         cmd += '--run -- %s'%exec_cmd
