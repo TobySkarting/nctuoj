@@ -27,19 +27,16 @@
     </tbody>
 </table>
 <script> 
-$('[name="problem_id"]').change(function(){
+$(document).ready(function(){
+$('[name="problem_id"]').keypress(function(){
     problem_id = $(this).val();
-    if(problem_id != 0 && problem_id != ''){
-        $('tbody > tr').each(function(){
-            if($(this).attr('problem-id') == problem_id)
-                $(this).show(100);
-            else $(this).hide(100);
-        });
-    }else{
-        $('tbody > tr').each(function(){
+    if(problem_id == '') problem_id = 0;
+    $('tbody > tr').each(function(){
+        if($(this).attr('problem-id') == problem_id)
             $(this).show(100);
-        });
-    }
+        else $(this).hide(100);
+    });
+})
 });
 </script>
 

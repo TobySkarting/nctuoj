@@ -5,6 +5,7 @@ class Sandbox:
     class SandboxOption:
         def __init__(self):
             meta = {}
+            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-8-oracle/bin/'}                    #-E
             meta["cgroup"] = True               #--cg
             meta["full_env"] = True             #--full-env
             meta["input"] = ''                  #--stdin
@@ -16,6 +17,9 @@ class Sandbox:
             meta['time_limit'] = 1              #--time
             meta['fsize_limit'] = 65535         #--fsize
             self._meta = meta
+
+        def set_env(self, **kwargs):
+            self._meta.update(kwargs)
 
         def set_options(self, **kwargs):
             self._meta.update(kwargs)
@@ -59,6 +63,9 @@ class Sandbox:
         if self._opt['time_limit']: cmd += '--time=%s '%(str(self._opt['time_limit']))
         if self._opt['time_limit']: cmd += '--wall-time=%s '%(str(self._opt['time_limit']*1.3))
         if self._opt['fsize_limit']: cmd += '--fsize=%s '%(str(self._opt['fsize_limit']))
+        if self._opt['env']: 
+            for (var, val) in self._opt.items():
+                cmd += '--env=%s=%s '%(var, val)
         cmd += '--extra-time=0.2 '
         cmd += '--run -- %s'%exec_cmd
         print("Run: ", exec_cmd)
