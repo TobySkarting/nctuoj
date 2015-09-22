@@ -53,16 +53,16 @@
                 {{data['submitter']}}
             </div>
             <div class="col-xs-2">
-                {{data['time_usage'] if data['time_usage'] else '--'}}
+                {{data['time_usage'] if data['time_usage'] is not None else '--'}}
             </div>
             <div class="col-xs-2">
-                {{data['memory_usage'] if data['memory_usage'] else '--'}}
+                {{data['memory_usage'] if data['memory_usage'] is not None else '--'}}
             </div>
             <div class="col-xs-2">
-                {{data['verdict']}}
+                {{data['verdict_abbreviation']}}
             </div>
             <div class="col-xs-2">
-                {{data['score'] if data['score'] != None else '--'}}
+                {{data['score'] if data['score'] is not None else '--'}}
             </div>
         </div>
     </div>

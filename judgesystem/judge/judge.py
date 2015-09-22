@@ -160,17 +160,23 @@ class Judge:
         sandbox.options = {
             "proc_limit": 4,
             "meta": "%s/meta"%(sandbox.folder),
-            "output": "output",
-            "errput": "errput",
+            #"output": "output",
+            #"errput": "errput",
             "mem_limit": 262144,
             "time_limit": 3,
         }
         sandbox.init_box()
         sandbox.set_options(**sandbox.options)
         sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], sandbox.folder), shell=True)
+        res = {
+            "status": "AC",
+            "exitcode": 0,
+        }
         for step in range(len(msg['execute_steps']) - 1):
             run_cmd = msg['execute_steps'][step]['command']
-            run_cmd = run_cmd.replace("__FILE__", msg['file_name'])
+            run_cmd = self.cmd_replace(run_cmd, {
+                "file_name": msg['file_name'],
+                })
             sandbox.exec_box("/usr/bin/env %s" % run_cmd)
             res = self.read_meta(sandbox.options['meta'])
             if res['exitcode'] != 0:
@@ -198,14 +204,25 @@ class Judge:
         score = 1.0 if a == b else 0.0
         return (verdict, score)
 
+    def cmd_replace(self, cmd, param):
+        if "file_name" in param:
+            cmd = cmd.replace("__FILE__", param['file_name'])
+            cmd = cmd.replace("__FILE_EXTENSION__", param['file_name'].split(".")[-1])
+            cmd = cmd.replace("__MAIN_FILE__", ('.').join(param['file_name'].split(".")[:-1]))
+        return cmd
+
     def exec(self, sandbox, testdata, msg):
         run_cmd = msg['execute_steps'][-1]['command']
-        run_cmd = run_cmd.replace("__FILE__", msg['file_name'])
+        run_cmd = self.cmd_replace(run_cmd, {
+            "file_name": msg['file_name'],
+            })
         sp.call("cp %s/testdata/%s/input %s"%(config.store_folder, testdata['id'], sandbox.folder), shell=True)
         sandbox.options['input'] = "input"
         sandbox.options['time_limit'] = testdata['time_limit'] / 1000
         sandbox.options['mem_limit'] = testdata['memory_limit']
         sandbox.options['fsize_limit'] = 65536
+        sandbox.options['output'] = "output"
+        sandbox.options["errput"] = "errput"
         sandbox.set_options(**sandbox.options)
         sandbox.exec_box("/usr/bin/env %s" % run_cmd)
         res = self.read_meta(sandbox.options['meta'])

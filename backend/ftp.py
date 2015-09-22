@@ -34,8 +34,12 @@ class FTP:
 
     @run_on_executor
     def put(self, _from, _to):
-        try: self.client.exec_command('mkdir -p %s' % os.path.split(_to)[0])
-        except Exception as e: print(e)
+        while True:
+            try:
+                self.client.exec_command('mkdir -p %s' % os.path.split(_to)[0])
+                break
+            except: 
+                continue
         scp = SCPClient(self.client.get_transport())
         scp.put(_from, _to)
         scp.close()

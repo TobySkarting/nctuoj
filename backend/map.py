@@ -14,16 +14,17 @@ map_group_power = {
 }
 
 map_lang = {
-    0: "C",
-    1: "C++",
-    2: "Java",
-    3: "Python2",
-    4: "Python3",
-    5: "Go",
-    6: "Perl",
-    7: "Javascript",
-    8: "Haskell",
-    9: "ruby",
+    0:  "C",
+    1:  "C++",
+    2:  "Java",
+    3:  "Python2",
+    4:  "Python3",
+    5:  "Go",
+    6:  "Perl",
+    7:  "Javascript",
+    8:  "Haskell",
+    9:  "ruby",
+    10: "sh",
 }
 
 map_visible = {
