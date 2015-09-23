@@ -5,7 +5,8 @@ class Sandbox:
     class SandboxOption:
         def __init__(self):
             meta = {}
-            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/'} 
+            meta['dir'] = {'/var': None}
+            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/:/usr/lib/ghc'} 
             meta["cgroup"] = True               #--cg
             meta["full_env"] = True             #--full-env
             meta["input"] = ''                  #--stdin
@@ -19,7 +20,12 @@ class Sandbox:
             self._meta = meta
 
         def set_env(self, **kwargs):
-            self._meta.update(kwargs)
+            for var, val in kwargs.items():
+                val = '$%s:%s'%(var, val)
+            self._meta['env'].update(kwargs)
+
+        def set_dir(self, **kwargs):
+            self._meta['dir'].update(kwargs)
 
         def set_options(self, **kwargs):
             self._meta.update(kwargs)
@@ -66,6 +72,12 @@ class Sandbox:
         if self._opt['env']: 
             for (var, val) in self._opt['env'].items():
                 cmd += '--env=%s=%s '%(var, val)
+        if self._opt['dir']:
+            for (out, _in) in self._opt['dir'].items():
+                if _in:
+                    cmd += '--dir=%s=%s '%(out, _in) 
+                else:
+                    cmd += '--dir=%s '%(out)
         cmd += '--extra-time=0.2 '
         cmd += '--run -- %s'%exec_cmd
         print("Run: ", exec_cmd)
@@ -76,7 +88,7 @@ class Sandbox:
         
 if __name__ == "__main__":
     s = Sandbox(1, './isolate')
-    s.set_options(proc_limit=16, meta='meta', mem_limit=0, time_limit=3)
+    s.set_options(proc_limit=4, meta='meta', mem_limit=65535*20)
     s.init_box()
     s.exec_box("/usr/bin/env ghc")
     #s.delete_box()
