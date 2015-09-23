@@ -5,7 +5,7 @@ class Sandbox:
     class SandboxOption:
         def __init__(self):
             meta = {}
-            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/:/usr/lib/ghc'} 
+            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/'} 
             meta["cgroup"] = True               #--cg
             meta["full_env"] = True             #--full-env
             meta["input"] = ''                  #--stdin
@@ -69,13 +69,14 @@ class Sandbox:
         cmd += '--extra-time=0.2 '
         cmd += '--run -- %s'%exec_cmd
         print("Run: ", exec_cmd)
+        print("Final: ", cmd)
         #return sp.call(cmd, shell=True, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
         return sp.call(cmd, shell=True)
 
         
 if __name__ == "__main__":
     s = Sandbox(1, './isolate')
-    s.set_options(proc_limit=16, meta='meta', errput='err', mem_limit=0, time_limit=3)
+    s.set_options(proc_limit=16, meta='meta', mem_limit=0, time_limit=3)
     s.init_box()
-    s.exec_box("/usr/bin/env go")
+    s.exec_box("/usr/bin/env ghc")
     #s.delete_box()
