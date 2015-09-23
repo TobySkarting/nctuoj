@@ -167,7 +167,8 @@ INSERT INTO execute_types (description, lang, setter_user_id, priority) values (
 INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Python3', 4, 1, 6);
 INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Go', 5, 1, 7);
 INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Perl', 6, 1, 8);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic shell', 10, 1, 9);
+INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Ruby', 9, 1, 9);
+INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic shell', 10, 1, 10);
 --map_lang = {
 --0: "C",
 --1: "C++",
@@ -206,7 +207,8 @@ INSERT INTO execute_steps (execute_type_id, command) values (5, 'python2 __FILE_
 INSERT INTO execute_steps (execute_type_id, command) values (6, 'python3 -m py_compile __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (6, 'python3 __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (8, 'perl __FILE__');
-INSERT INTO execute_steps (execute_type_id, command) values (9, 'sh __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (9, 'ruby __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (10, 'sh __FILE__');
 
 
 --INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C', 0, 1, 1);

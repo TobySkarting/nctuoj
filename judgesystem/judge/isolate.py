@@ -90,5 +90,6 @@ if __name__ == "__main__":
     s = Sandbox(1, './isolate')
     s.set_options(proc_limit=4, meta='meta', mem_limit=65535*20)
     s.init_box()
-    s.exec_box("/usr/bin/env ghc")
+    s.exec_box("/usr/bin/env touch /var/XD")
+    s.exec_box("/usr/bin/env ls -l /var")
     #s.delete_box()
