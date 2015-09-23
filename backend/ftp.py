@@ -41,7 +41,12 @@ class FTP:
             except: 
                 continue
         scp = SCPClient(self.client.get_transport())
-        scp.put(_from, _to)
+        while True:
+            try:
+                scp.put(_from, _to)
+                break
+            except:
+                continue
         scp.close()
 
     @run_on_executor

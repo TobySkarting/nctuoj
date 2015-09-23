@@ -5,8 +5,8 @@ class Sandbox:
     class SandboxOption:
         def __init__(self):
             meta = {}
-            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-8-oracle/bin/'}                    #-E
             meta['dir'] = {'/var': None}
+            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/:/usr/lib/ghc'} 
             meta["cgroup"] = True               #--cg
             meta["full_env"] = True             #--full-env
             meta["input"] = ''                  #--stdin
@@ -20,12 +20,16 @@ class Sandbox:
             self._meta = meta
 
         def set_env(self, **kwargs):
+<<<<<<< HEAD
             for var, val in kwargs.items():
                 val = '$%s:%s'%(var, val)
             self._meta['env'].update(kwargs)
 
         def set_dir(self, **kwargs):
             self._meta['dir'].update(kwargs)
+=======
+            self._meta.update(kwargs)
+>>>>>>> bb741647604bbd0bfa762bbb32407418ceefc225
 
         def set_options(self, **kwargs):
             self._meta.update(kwargs)
@@ -81,16 +85,17 @@ class Sandbox:
         cmd += '--extra-time=0.2 '
         cmd += '--run -- %s'%exec_cmd
         print("Run: ", exec_cmd)
-        return sp.call(cmd, shell=True, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        #return sp.call(cmd, shell=True, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        return sp.call(cmd, shell=True)
 
         
 if __name__ == "__main__":
     s = Sandbox(1, './isolate')
+<<<<<<< HEAD
     s.set_options(proc_limit=4, meta='meta', mem_limit=65535*20)
+=======
+    s.set_options(proc_limit=16, meta='meta', errput='err', mem_limit=0, time_limit=3)
+>>>>>>> bb741647604bbd0bfa762bbb32407418ceefc225
     s.init_box()
-    #print(s.exec_box("g++ test.cpp"))
-    s.set_options(proc_limit=2)
-    s.exec_box("/usr/bin/env ls")
-    #print(s.exec_box("./a.out"))
-    sp.call('cat /tmp/box/1/box/err', shell=True)
-    s.delete_box()
+    s.exec_box("/usr/bin/env go")
+    #s.delete_box()
