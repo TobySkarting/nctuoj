@@ -47,7 +47,7 @@ class ApiProblemHandler(ApiRequestHandler):
         meta['group_id'] = self.current_group
 
         if action == "execute":
-            err, data = yield from Service.Problem.get_problem_execute(meta)
+            err, data = yield from Service.Execute.get_problem_execute({"problem_id": meta['id']})
             self.render(200, data)
             return
     

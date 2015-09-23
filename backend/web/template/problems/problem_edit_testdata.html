@@ -26,9 +26,9 @@ function new_testdata(){
             <th>#</th>
             <th colspan=2>Input</th>
             <th colspan=2>Output</th>
-            <th>Time</th>
-            <th>Memory</th>
-            <th>Output</th>
+            <th>Time(mesc)</th>
+            <th>Memory(Kb)</th>
+            <th>Output(Kb)</th>
             <th>Score</th>
             <th colspan=2></th>
         </tr>
@@ -103,8 +103,8 @@ $( document ).ready(function(){
         $(".testdata_delete").prop("disabled", true);
         var data = new FormData($(this)[0]);
         form = $(this);
-        //$(".progress-bar").removeClass("progress-bar-success").css({"width": '0%'}).attr("aria-valuenow", '0').html("");
-        //setTimeout(function(){
+        $(".progress-bar").removeClass("progress-bar-success").addClass("active progress-bar-striped").css({"width": "0%"}).attr("aria-valuenow", "0").html("0%");
+        setTimeout(function(){
             $.ajax({
                 xhr: function(){
                     var xhr = new window.XMLHttpRequest();
@@ -130,7 +130,7 @@ $( document ).ready(function(){
                 processData: false,
                 contentType: false,
                 success: function(msg){
-                    $(".progress-bar").addClass("progress-bar-success").css({"width": percent_value}).attr("aria-valuenow", value).html("Complete");
+                    $(".progress-bar").addClass("progress-bar-success").removeClass("active progress-bar-striped").css({"width": percent_value}).attr("aria-valuenow", value).html("Complete");
                     if(msg['status'] == 200){
                     } else {
                         bootbox.alert(msg['msg']);
@@ -139,10 +139,10 @@ $( document ).ready(function(){
                     $(".testdata_delete").prop("disabled", false);
                 }
             });
-        //}, 1000);
+            return false;
+        }, 1000);
         return false;
     });
-    
 });
 </script>
 

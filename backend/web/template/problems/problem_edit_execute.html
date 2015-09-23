@@ -132,7 +132,7 @@ $( document ).ready(function(){
             success: function(msg){
                 if(msg['status'] == 200){
                     bootbox.alert("success", function(){
-                        location.href = "/group/{{current_group}}/problems/{{data['id']}}/";
+//                        location.href = "/group/{{current_group}}/problems/{{data['id']}}/";
                     });
                 } else {
                     bootbox.alert(msg['msg']);

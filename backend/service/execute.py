@@ -109,6 +109,8 @@ class ExecuteService(BaseService):
         res = self.rs.get('execute@problem@%s'%str(data['problem_id']))
         if res: return (None, res)
         res, res_cnt = yield from self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['problem_id'],))
+        print("*****")
+        print(res)
         self.rs.set('execute@problem@%s' % str(data['problem_id']), res)
         return (None, res)
 
