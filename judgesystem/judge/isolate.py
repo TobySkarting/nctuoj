@@ -5,7 +5,7 @@ class Sandbox:
     class SandboxOption:
         def __init__(self):
             meta = {}
-            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/'} 
+            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/:/usr/lib/ghc'} 
             meta["cgroup"] = True               #--cg
             meta["full_env"] = True             #--full-env
             meta["input"] = ''                  #--stdin
@@ -19,8 +19,6 @@ class Sandbox:
             self._meta = meta
 
         def set_env(self, **kwargs):
-            for var, val in kwargs.items():
-                val = '$%s:%s'%(var, val)
             self._meta.update(kwargs)
 
         def set_options(self, **kwargs):
@@ -79,8 +77,5 @@ if __name__ == "__main__":
     s = Sandbox(1, './isolate')
     s.set_options(proc_limit=16, meta='meta', errput='err', mem_limit=0, time_limit=3)
     s.init_box()
-    sp.call("cp ./test.java /tmp/box/1/box/", shell=True)
-    s.exec_box("/usr/bin/env javac -J-Xrs -J-Xmx256m -J-Xss8m test.java")
-    s.set_options(proc_limit=16, meta='meta', errput='err', mem_limit=0, time_limit=2)
-    s.exec_box("/usr/bin/env java -Xmx4m -Xss8m test")
+    s.exec_box("/usr/bin/env go")
     #s.delete_box()
