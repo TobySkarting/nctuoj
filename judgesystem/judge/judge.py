@@ -15,6 +15,20 @@ import time
 from isolate import Sandbox
 import subprocess as sp
 import re
+#from backend
+map_lang = {
+    0:  "C",
+    1:  "C++",
+    2:  "Java",
+    3:  "Python2",
+    4:  "Python3",
+    5:  "Go",
+    6:  "Perl",
+    7:  "Javascript",
+    8:  "Haskell",
+    9:  "ruby",
+    10: "sh",
+}
 
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -165,6 +179,11 @@ class Judge:
             "mem_limit": 262144,
             "time_limit": 3,
         }
+        ### special option for each lang
+
+        if map_lang[msg['execute_type']['lang']] == "Java":
+            sandbox.options['mem_limit'] = 0
+            sandbox.options['proc_limit'] = 16
         sandbox.init_box()
         sandbox.set_options(**sandbox.options)
         sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], sandbox.folder), shell=True)
@@ -223,6 +242,11 @@ class Judge:
         sandbox.options['fsize_limit'] = 65536
         sandbox.options['output'] = "output"
         sandbox.options["errput"] = "errput"
+        ### special option for each lang
+        if map_lang[msg['execute_type']['lang']] == "Java":
+            sandbox.options['mem_limit'] = 0
+            sandbox.options['proc_limit'] = 16
+
         sandbox.set_options(**sandbox.options)
         sandbox.exec_box("/usr/bin/env %s" % run_cmd)
         res = self.read_meta(sandbox.options['meta'])
