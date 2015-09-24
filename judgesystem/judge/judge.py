@@ -195,6 +195,7 @@ class Judge:
             run_cmd = msg['execute_steps'][step]['command']
             run_cmd = self.cmd_replace(run_cmd, {
                 "file_name": msg['file_name'],
+                "memory_limit": 262144,
                 })
             sandbox.exec_box("/usr/bin/env %s" % run_cmd)
             res = self.read_meta(sandbox.options['meta'])
@@ -228,12 +229,15 @@ class Judge:
             cmd = cmd.replace("__FILE__", param['file_name'])
             cmd = cmd.replace("__FILE_EXTENSION__", param['file_name'].split(".")[-1])
             cmd = cmd.replace("__MAIN_FILE__", ('.').join(param['file_name'].split(".")[:-1]))
+        if "memory_limit" in param:
+            cmd = cmd.replace("__MEMORY_LIMIT__", str(param['memory_limit']))
         return cmd
 
     def exec(self, sandbox, testdata, msg):
         run_cmd = msg['execute_steps'][-1]['command']
         run_cmd = self.cmd_replace(run_cmd, {
             "file_name": msg['file_name'],
+            "memory_limit": testdata['memory_limit'],
             })
         sp.call("cp %s/testdata/%s/input %s"%(config.store_folder, testdata['id'], sandbox.folder), shell=True)
         sandbox.options['input'] = "input"

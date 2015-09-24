@@ -201,7 +201,7 @@ INSERT INTO execute_steps (execute_type_id, command) values (2, './a.out');
 INSERT INTO execute_steps (execute_type_id, command) values (3, 'g++ -std=c++11  __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (3, './a.out');
 INSERT INTO execute_steps (execute_type_id, command) values (4, 'javac __FILE__');
-INSERT INTO execute_steps (execute_type_id, command) values (4, 'java __MAIN_FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (4, 'java -Xmx__MEMORY_LIMIT__k -Xss8m __MAIN_FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (5, 'python2 -m py_compile __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (5, 'python2 __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (6, 'python3 -m py_compile __FILE__');
