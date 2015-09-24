@@ -35,7 +35,7 @@ class JudgeCenter:
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.setblocking(0)
-        self.s.bind((config.judgecenter_host, config.judgecenter_port))
+        self.s.bind(('0.0.0.0', config.judgecenter_port))
         self.s.listen(config.judgecenter_listen)
         self.pool = [sys.stdin, self.s]
         self.client_pool = []
