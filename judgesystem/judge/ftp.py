@@ -42,10 +42,7 @@ class FTP:
 
 if __name__ == "__main__":
     ftp = FTP("localhost", 22, "nctuojftp", "nctuojftp")
-    print("sleep")
-    time.sleep(100)
-    ftp.put("./meta", "./")
-
+    #ftp.get("./meta", "./testftp/dir/test3.txt")
 
 
     pass

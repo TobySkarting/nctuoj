@@ -57,16 +57,12 @@ class Judge:
         #self.s.setblocking(0)
         self.pool = [sys.stdin, self.s]
         self.recv_buffer_len = 1024
-        try: os.makedirs('%s/submissions/'%(config.store_folder))
-        except: pass
-        try: os.makedirs('%s/testdata/lock/'%(config.store_folder))
-        except: pass
-        try: os.makedirs('%s/testdata/config/'%(config.store_folder))
-        except: pass
-        try: os.makedirs('%s/verdict/lock/'%(config.store_folder))
-        except: pass
-        try: os.makedirs('%s/verdict/config/'%(config.store_folder))
-        except: pass
+        default_folder = ["submissions", "testdata/lock", "testdata/config", "verdict/lock", "verdict/config"]
+        for x in default_folder:
+            try:
+                os.makedirs("%s/%s"%(config.store_folder, x))
+            except:
+                pass
 
     def receive(self):
         sock = self.s
@@ -125,17 +121,22 @@ class Judge:
 
     def get_testdata(self,testdata):
         for x in testdata:
-            remote_path = './data/testdata/%s/'%(str(x['id']))
-            file_path = '%s/testdata/'%(config.store_folder)
+            remote_path = './data/testdata/%s'%(str(x['id']))
+            file_path = '%s/testdata/%s'%(config.store_folder, str(x['id']))
             lock_path = '%s/testdata/lock/%s'%(config.store_folder, x['id'])
             config_path = '%s/testdata/config/%s'%(config.store_folder, x['id'])
             self.lock_get(remote_path, file_path, config_path, lock_path, x['updated_at'])
 
     def get_submission(self, submission_id):
-        remote_path = './data/submissions/%s/'%(str(submission_id))
-        file_path = '%s/submissions/'%(config.store_folder)
-        try: shutil.rmtree("%s/%s"%(file_path,str(submission_id)))
-        except: pass
+        remote_path = './data/submissions/%s'%(str(submission_id))
+        file_path = '%s/submissions/%s'%(config.store_folder, str(submission_id))
+        try:
+            shutil.rmtree("%s"%(file_path))
+        except:
+            try:
+                os.remove("%s"%(file_path))
+            except:
+                pass
         self.ftp.get(remote_path, file_path)
 
 
@@ -254,8 +255,12 @@ class Judge:
         sandbox.set_options(**sandbox.options)
         sandbox.exec_box("/usr/bin/env %s" % run_cmd)
         res = self.read_meta(sandbox.options['meta'])
-        if res['memory'] > testdata['memory_limit']:
-            res['status'] == "MLE"
+        ### judge if MLE occur
+        if map_lang[msg['execute_type']['lang']] == "Java":
+            pass
+        else:
+            if res['memory'] > testdata['memory_limit']:
+                res['status'] == "MLE"
         res['score'] = 0
         if res['status'] == "AC":
             res['status'], res['score'] = self.verdict("%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(sandbox.folder))
@@ -279,7 +284,8 @@ class Judge:
                             'submission_id': msg['submission_id'],
                             'testdata_id': testdata['id'],
                             'status': 'CE',
-                            'verdict': self.map_verdict_string['CE']
+                            'verdict': self.map_verdict_string['CE'],
+                            'score': 0,
                         }
                     })
                 self.send({"cmd":"judged", "msg":""})
