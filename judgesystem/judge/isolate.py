@@ -6,7 +6,9 @@ class Sandbox:
         def __init__(self):
             meta = {}
             meta['dir'] = {'/var': None}
-            meta['env'] = {'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/:/usr/lib/ghc'} 
+            meta['env'] = {
+                    'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/:/usr/lib/ghc',
+                    'LD_LIBRARY_PATH': '$LD_LIBRARY_PATH:/usr/local/lib/'} 
             meta["cgroup"] = True               #--cg
             meta["full_env"] = True             #--full-env
             meta["input"] = ''                  #--stdin
