@@ -27,37 +27,66 @@
         {% end %}
     </tbody>
 </table>
-<script>
-var fixer = function(e, ui) {
-    ui.children().each(function() {
-        $(this).width($(this).width());
-    });
-    return ui;
-};
-$('#executes tbody').sortable({
-    helper: fixer,
-    update: update_priority
-}).disableSelection();
-function update_priority(){
-    trs = $('#executes tbody tr');
-    data = Object();
-    data.token = "{{account['token']}}";
-    data.id = Array();
-    data.priority = Array();
-    $.each(trs, function(i, tr){
-        $(tr).find('[priority]').text(i+1);
-        data.id.push($(tr).attr('execute-id'));
-        data.priority.push(i+1);
-    });
-    $.post('/api/executes/', data, function(msg){
-        if(msg['status'] == 200){
-        }else{
-            bootbox.alert(msg['msg']);
-        }
-    }, "json");
-    return true;
-}
-</script>
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th>取代</th>
+            <th>意義</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>__FILE__</td>
+            <td>提交的檔案</td>
+        </tr>
+        <tr>
+            <td>__MAIN_FILE__</td>
+            <td>主檔名</td>
+        </tr>
+        <tr>
+            <td>__FILE_EXTENSION__</td>
+            <td>副檔名</td>
+        </tr>
+        <tr>
+            <td>__MEMORY_LIMIT__</td>
+            <td>記憶體上限</td>
+        </tr>
+    </tbody>
+</table>
+
+{% if map_power['execute_manage'] in account['power'] %}
+    <script>
+    var fixer = function(e, ui) {
+        ui.children().each(function() {
+            $(this).width($(this).width());
+        });
+        return ui;
+    };
+    $('#executes tbody').sortable({
+        helper: fixer,
+        update: update_priority
+    }).disableSelection();
+    function update_priority(){
+        trs = $('#executes tbody tr');
+        data = Object();
+        data.token = "{{account['token']}}";
+        data.id = Array();
+        data.priority = Array();
+        $.each(trs, function(i, tr){
+            $(tr).find('[priority]').text(i+1);
+            data.id.push($(tr).attr('execute-id'));
+            data.priority.push(i+1);
+        });
+        $.post('/api/executes/', data, function(msg){
+            if(msg['status'] == 200){
+            }else{
+                bootbox.alert(msg['msg']);
+            }
+        }, "json");
+        return true;
+    }
+    </script>
+{% end %}
         
 
 {% end %}
