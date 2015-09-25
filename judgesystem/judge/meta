@@ -1,5 +1,9 @@
-time:0.002
-time-wall:0.031
-max-rss:2884
-csw-voluntary:3
-csw-forced:31
+exitsig:2
+status:SG
+message:Interrupted
+killed:1
+time:1.020
+time-wall:1.100
+max-rss:15580
+csw-voluntary:6
+csw-forced:6
