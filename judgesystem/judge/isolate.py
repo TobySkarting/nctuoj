@@ -7,7 +7,8 @@ class Sandbox:
             meta = {}
             meta['dir'] = {
                     '/var': None,
-                    '$HOME/.gvm': None}
+                    }
+                    #'$HOME/.gvm': None}
             meta['env'] = dict(os.environ)
             '''{
                     'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/:/usr/lib/ghc:$HOME/.gvm/',
@@ -97,9 +98,10 @@ class Sandbox:
         
 if __name__ == "__main__":
     s = Sandbox(1, './isolate')
-    s.set_options(proc_limit=4, meta='meta', mem_limit=65535*20)
+    s.set_options(proc_limit=4, meta='meta', mem_limit=65535)
     s.init_box()
-    s.exec_box("/usr/bin/env d8")
-    s.exec_box("/usr/bin/env ls /usr/local/lib/")
+    sp.call("cp ./test.js /tmp/box/1/box/", shell=True)
+    s.exec_box("/usr/bin/env d8 test.js")
+    
     #s.exec_box("/usr/bin/env ls -al /home/allenwhale/.gvm")
     #s.delete_box()

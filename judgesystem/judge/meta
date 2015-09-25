@@ -1,9 +1,8 @@
-exitsig:2
+exitsig:4
+time:0.009
+time-wall:0.179
+max-rss:10400
+csw-voluntary:10
+csw-forced:14
 status:SG
-message:Interrupted
-killed:1
-time:1.020
-time-wall:1.100
-max-rss:15580
-csw-voluntary:6
-csw-forced:6
+message:Caught fatal signal 4

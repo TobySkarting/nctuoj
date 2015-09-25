@@ -251,6 +251,8 @@ class Judge:
         if map_lang[msg['execute_type']['lang']] == "Java":
             sandbox.options['mem_limit'] = 0
             sandbox.options['proc_limit'] = 16
+        elif map_lang[msg['execute_type']['lang']] == "Javascript":
+            sandbox.options['mem_limit'] = 0
 
         sandbox.set_options(**sandbox.options)
         sandbox.exec_box("/usr/bin/env %s" % run_cmd)

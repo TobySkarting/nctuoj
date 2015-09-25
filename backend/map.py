@@ -43,4 +43,5 @@ map_default_file_name = {
     7: 'main.js',
     8: 'main.hs',
     9: 'main.rb',
+    10:'main.sh',
 }
