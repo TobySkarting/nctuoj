@@ -1,9 +1,8 @@
-exitsig:2
-status:SG
-message:Interrupted
-killed:1
-time:1.020
-time-wall:1.100
-max-rss:15580
-csw-voluntary:6
-csw-forced:6
+time:0.052
+time-wall:0.183
+max-rss:38072
+csw-voluntary:327
+csw-forced:78
+exitcode:1
+status:RE
+message:Exited with error status 1
