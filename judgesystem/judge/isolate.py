@@ -6,15 +6,10 @@ class Sandbox:
         def __init__(self):
             meta = {}
             meta['dir'] = {
-                    '/var': None,
-                    }
-            meta['env'] = dict(os.environ)
-            '''{
-                    'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/:/usr/lib/ghc:$HOME/.gvm/',
-                    'LD_LIBRARY_PATH': '$LD_LIBRARY_PATH:/usr/local/lib/',
-                    'GOROOT': '$GOROOT',
-                    'GOPATH': '$GOPATH'} 
-            '''
+                            '/var': None,
+                            '$HOME/.gvm': None,
+                        }
+            meta['env'] = dict()
             meta["cgroup"] = True               #--cg
             meta["full_env"] = True             #--full-env
             meta["input"] = ''                  #--stdin
@@ -100,8 +95,10 @@ if __name__ == "__main__":
     s = Sandbox(1, './isolate')
     s.set_options(proc_limit=100, meta='meta', mem_limit=65535*200)
     s.init_box()
-    s.exec_box('/usr/bin/env d8')
-    s.exec_box("/usr/bin/env go")
-    s.exec_box("/usr/bin/env java")
-    s.exec_box("/usr/bin/env ghc")
+    sp.call("cp test.go /tmp/box/1/box/", shell=True)
+    #s.exec_box('/usr/bin/env d8')
+    s.exec_box("/usr/bin/env echo $HOME")
+    s.exec_box("/usr/bin/env go test.go")
+    #s.exec_box("/usr/bin/env java")
+    #s.exec_box("/usr/bin/env ghc")
     #s.delete_box()
