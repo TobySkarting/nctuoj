@@ -1,29 +1,5 @@
 {% extends './../frame.html' %}
 {% block content %}
+{{data}}
 
-<div class="row">
-    <div class="col-md-1"></div>
-    <div class="col-md-6">
-        <table class="table table-bordered" style="border-radius:10px">
-            <tr>
-                <td class="text-center col-xs-2">Name :</td>
-                <td>{{data['account']}}</td> 
-            </tr>
-            <tr>
-                <td class="text-center col-xs-2">StudentID :</td>
-                <td>{{data['student_id']}}</td> 
-            </tr>
-            <tr>
-                <td class="text-center col-xs-2">Email :</td>
-                <td>{{data['email']}}</td> 
-            </tr>
-            <tr>
-                <td class="text-center col-xs-2">School :</td>
-                <td>{{data['school_id']}}</td> 
-            </tr>
-        </table>
-    </div>
-    <div class="col-md-5"></div>
-</div>
-FUCK you moron
 {% end %}

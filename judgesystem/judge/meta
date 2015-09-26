@@ -1,8 +1,8 @@
-exitsig:4
-time:0.009
-time-wall:0.179
-max-rss:10400
-csw-voluntary:10
-csw-forced:14
-status:SG
-message:Caught fatal signal 4
+time:0.029
+time-wall:0.111
+max-rss:38716
+csw-voluntary:38
+csw-forced:90
+exitcode:1
+status:RE
+message:Exited with error status 1

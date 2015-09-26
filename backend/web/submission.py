@@ -7,7 +7,7 @@ import math
 class WebSubmissionsHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self):
-        args = ["page", "user_id", "problem_id"]
+        args = ["page", "account", "problem_id"]
         meta = self.get_args(args)
         meta["count"] = 10
         meta["group_id"] = self.current_group
@@ -34,7 +34,7 @@ class WebSubmissionsHandler(WebRequestHandler):
         page['total'] = page_count
         page['current'] = meta['page']
         page['url'] = '/group/%s/submissions/' % meta['group_id']
-        args = ['user_id', 'problem_id']
+        args = ['account', 'problem_id']
         page['get'] = self.get_args(args)
         self.Render('./submissions/submissions.html', data=data, page=page)
 

@@ -8,7 +8,6 @@ class Sandbox:
             meta['dir'] = {
                     '/var': None,
                     }
-                    #'$HOME/.gvm': None}
             meta['env'] = dict(os.environ)
             '''{
                     'PATH': '$PATH:/usr/lib/jvm/java-7-openjdk-amd64/bin/:/usr/lib/ghc:$HOME/.gvm/',
@@ -28,10 +27,11 @@ class Sandbox:
             meta['fsize_limit'] = 65535         #--fsize
             self._meta = meta
             self.set_env(LD_LIBRARY_PATH='/usr/local/lib/')
+            self.set_env(PATH='$GOROOT/bin:/usr/lib/jvm/java-7-openjdk-amd64/bin/:/usr/lib/ghc')
 
         def set_env(self, **kwargs):
-            for var, val in kwargs.items():
-                val = '$%s:%s'%(var, val)
+            for var in kwargs:
+                kwargs[var] = '$%s:%s'%(var, kwargs[var])
             self._meta['env'].update(kwargs)
 
         def set_dir(self, **kwargs):
@@ -81,7 +81,7 @@ class Sandbox:
         if self._opt['fsize_limit']: cmd += '--fsize=%s '%(str(self._opt['fsize_limit']))
         if self._opt['env']: 
             for (var, val) in self._opt['env'].items():
-                cmd += '--env=%s=\'%s\' '%(var, val)
+                cmd += '--env=%s="%s" '%(var, val)
         if self._opt['dir']:
             for (out, _in) in self._opt['dir'].items():
                 if _in:
@@ -93,15 +93,15 @@ class Sandbox:
         print("Run: ", exec_cmd)
         print("Final: ", cmd)
         #return sp.call(cmd, shell=True, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        return sp.call(cmd, shell=True)
+        return sp.call(cmd, shell=True, env=os.environ)
 
         
 if __name__ == "__main__":
     s = Sandbox(1, './isolate')
-    s.set_options(proc_limit=4, meta='meta', mem_limit=65535)
+    s.set_options(proc_limit=100, meta='meta', mem_limit=65535*200)
     s.init_box()
-    sp.call("cp ./test.js /tmp/box/1/box/", shell=True)
-    s.exec_box("/usr/bin/env d8 test.js")
-    
-    #s.exec_box("/usr/bin/env ls -al /home/allenwhale/.gvm")
+    s.exec_box('/usr/bin/env d8')
+    s.exec_box("/usr/bin/env go")
+    s.exec_box("/usr/bin/env java")
+    s.exec_box("/usr/bin/env ghc")
     #s.delete_box()

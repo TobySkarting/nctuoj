@@ -27,9 +27,14 @@ class SubmissionService(BaseService):
         sql += " AND p.group_id=%s  "
         if 'problem_id' in data and data['problem_id']:
             sql += "AND problem_id=%s " % (int(data['problem_id']))
-        if 'user_id' in data and data['user_id']:
-            sql += "AND user_id=%s " % (int(data['user_id']))
+        if 'account' in data and data['account']:
+            try:
+                user_id = (yield from self.db.execute("SELECT id FROM users WHERE account=%s", (data['account'],)))[0][0]['id']
+            except:
+                user_id = 0
+            sql += "AND user_id=%s " % (user_id)
         sql += " ORDER BY s.id DESC LIMIT %s OFFSET %s"
+        print("======================================", sql)
         
         res, res_cnt = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"])))
         return (None, res)
