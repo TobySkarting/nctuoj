@@ -1,8 +1,5 @@
-time:0.010
-time-wall:0.047
-max-rss:8012
-csw-voluntary:428
-csw-forced:14
-exitcode:2
-status:RE
-message:Exited with error status 2
+time:0.541
+time-wall:0.471
+max-rss:37268
+csw-voluntary:788
+csw-forced:107
