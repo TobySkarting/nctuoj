@@ -21,7 +21,23 @@
             </select>
         </div>
         <div class="col-md-3 form-group">
-            <label class="control-label">Verdict</label>
+            <div>
+                <label class="control-label">Verdict</label>
+            </div>
+            <select class="selectpicker" name="verdict_id" data-width="100%">
+                <option value="0">Add new Verdict</option>
+                {% for x in data['verdict_list'] %}
+                    <option value={{x['id']}}>{{x['title']}}</option>
+                {% end %}
+            </select>
+            <div name="new_verdict">
+                <input name="verdict_code" type="file" class="form-control">
+                <select class="select" name="verdict_execute_type_id">
+                    {% for x in data['execute_types'] %}
+                        <option value="{{x['id']}}">{{map_lang[x['lang']]}}|{{x['description']}}</option>
+                    {% end %}
+                </select>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -82,13 +98,28 @@
 <script>
 $( document ).ready(function(){
     $("[name=visible]").selectpicker().selectpicker('val', {{data["visible"]}});
+    $("[name=verdict_id]").selectpicker().selectpicker('val', {{data["verdict_id"]}});
+    $("[name=verdict_execute_type_id]").selectpicker();
+    if({{data['verdict_id']}} != 0){
+        $('[name=new_verdict]').hide();
+    }
+    $('[name=verdict_id]').change(function(){
+        if($(this).val() == 0){
+            $('[name=new_verdict]').show();
+        }else{
+            $('[name=new_verdict]').hide();
+        }
+    });
     $("form").submit(function(){
         form = $(this);
+        var data = new FormData($(this)[0]);
         $.ajax({
             url: form.attr("action"),
             type: form.attr("method"),
-            data: form.serialize(),
+            data: data,
             dataType: "json",
+            processData: false,
+            contentType: false,
             success: function(msg){
                 if(msg['status'] == 200){
                     location.href = "/group/{{current_group}}/problems/" + msg['msg']['id'] + "/";

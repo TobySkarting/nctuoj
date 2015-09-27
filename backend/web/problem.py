@@ -85,6 +85,8 @@ class WebProblemEditHandler(WebRequestHandler):
         if not (yield from self.check_edit(meta)):
             return
         err, data = yield from Service.Problem.get_problem(meta)
+        err, data['verdict_list'] = yield from Service.Verdict.get_verdict_list({'problem_id': data['id']})
+        err, data['execute_types'] = yield from Service.Execute.get_execute_list()
 
         if not action: action = "basic"
         if action == "basic":
