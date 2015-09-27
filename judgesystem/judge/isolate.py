@@ -99,6 +99,7 @@ if __name__ == "__main__":
     sp.call("cp test.go /tmp/box/1/box/", shell=True)
     s.exec_box("/usr/bin/env echo $HOME")
     s.exec_box('/usr/bin/env ls /tmp')
+    s.exec_box("/usr/bin/evn TMPDIR='.' go build test.go")
     s.exec_box("/usr/bin/env TMPDIR='.' go run test.go")
     #s.exec_box("./test")
     #s.exec_box("/usr/bin/env java")

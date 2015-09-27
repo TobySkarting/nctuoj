@@ -117,7 +117,11 @@
     </tbody>
 </table>
 {% if data['user_id'] == account['id'] or map_group_power['submission_manage'] in current_group_power %}
-<div class="form">
+<form class="form" action="/api/group/{{current_group}}/submissions/0/submit/">
+    <input type="hidden" name="id" value="{{data['problem_id']}}">
+    <input type="hidden" name="token" value="{{account['token']}}">
+    <input type="hidden" name="execute_type_id" value="{{data['execute_type_id']}}">
+    <input type="hidden" name="file_name" value="{{data['file_name']}}">
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
@@ -125,11 +129,40 @@
                     {{data['file_name']}}
                 </div>
                 <div class="panel-body edit">
-                    <textarea class="form-control" rows=25>{{data['code']}}</textarea>
+                    <textarea class="form-control" name="plain_code" rows=25>{{data['code']}}</textarea>
                 </div>
             </div>
         </div>
     </div>
+    <button type="submit" class="btn btn-success">Submit</button>
 </div>
+<script>
+$( document ).ready(function(){
+    $("button").prop("disabled", false);
+    $(".selectpicker").selectpicker();
+    $("form").submit(function(){
+        var data = new FormData($(this)[0]);
+        form = $(this);
+        $("button").prop("disabled", true);
+        $.ajax({
+            url: form.attr("action"),
+            type: "post",
+            data: data,
+            dataType: "json",
+            processData: false,
+            contentType: false,
+            success: function(msg){
+                $("button").prop("disabled", false);
+                if(msg['status'] == 200){
+                    location.href = "/group/{{current_group}}/submissions/"+msg['msg']+"/";
+                } else {
+                    bootbox.alert(msg['msg']);
+                }
+            }
+        });
+        return false;
+    });
+});
+</script>
 {% end %}
 {% end %}
