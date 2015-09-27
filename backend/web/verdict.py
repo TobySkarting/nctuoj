@@ -23,6 +23,8 @@ class WebVerdictTypeHandler(WebRequestHandler):
             if err: 
                 self.write_error(500, err)
                 return False
+            if map_power['verdict_manage'] in self.power:
+                return True
             if int(data['group_id']) not in (int(x['id']) for x in self.group):
                 self.write_error(403)
                 return False

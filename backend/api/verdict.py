@@ -37,6 +37,8 @@ class ApiVerdictTypeHandler(ApiRequestHandler):
             if err: 
                 self.render(500, err)
                 return False
+            if map_power['verdict_manage'] in self.power:
+                return True
             if int(data['group_id']) not in (int(x['id']) for x in self.group):
                 self.render(403, 'Permission Denied')
                 return False
