@@ -222,7 +222,7 @@ if __name__ == '__main__':
         ### user list only admin
         ('/users/',                                                     WebUsersHandler),       
         ('/user/',                                                      WebUserHandler),
-        ('/users/(\d+)/',                                                WebUserHandler),
+        ('/users/(\d+)/',                                               WebUserHandler),
         ('/user/(sign\w*)/?',                                           WebUserSignHandler),
         ('/user/(\d+)/(\w*)/?',                                         WebUserHandler),
 

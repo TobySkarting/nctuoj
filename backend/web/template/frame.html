@@ -65,9 +65,9 @@ ga('set', '&uid', "{{account['id']}}");
                         {% if current_group != 0 %}
                             <li><a href="/group/{{current_group}}/bulletins/">Bulletins</a></li>
                             <li><a href="/group/{{current_group}}/problems/">Problems</a></li>
-                            <li><a href="/group/{{current_group}}/submissions/">Submissions</a></li>
+                            <li><a href="/group/{{current_group}}/submissions/?account={{account['account']}}">Submissions</a></li>
                             <li><a href="/group/{{current_group}}/contests/">Contests</a></li>
-                            <li><a href="/group/{{current_group}}/">Manage</a></li>
+                            <li><a href="/group/{{current_group}}/manage/">Manage</a></li>
                         {% end %}
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
@@ -103,7 +103,7 @@ ga('set', '&uid', "{{account['id']}}");
                         <div class="computer only col-xs-12">
                             <ul id="left-side" class="nav nav-pills nav-stacked">
                                 {% for x in group %}
-                                    <li role="presentation" {{ 'class=active' if str(x['id'])== str(current_group) else '' }} ><a href="/group/{{x['id']}}/{{current_group_active}}/">{{x['name']}}</a></li>
+                                    <li role="presentation" {{ 'class=active' if str(x['id'])== str(current_group) else '' }} ><a href="/group/{{x['id']}}/bulletins/">{{x['name']}}</a></li>
                                 {% end %}
                             </ul>
                         </div>
@@ -124,7 +124,7 @@ ga('set', '&uid', "{{account['id']}}");
                                 </button>
                                 <ul class="dropdown-menu" style="width: 100%">
                                     {% for x in group %}
-                                        <li><a href="/group/{{x['id']}}/{{current_group_active}}/">{{x['name']}}</a></li>
+                                        <li><a href="/group/{{x['id']}}/bulletins/">{{x['name']}}</a></li>
                                     {% end %}
                                 </ul>
                             </div>
