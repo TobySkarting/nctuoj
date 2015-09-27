@@ -1,5 +1,4 @@
 import datetime
-PASSWORD_KEY = ''
 DBNAME = ''
 DBUSER = ''
 DBPASSWORD = ''
@@ -16,3 +15,4 @@ LOG_FILE_PATH = './log/server.log'
 DATA_EXPIRE_SECOND = 60
 API_URI_WITHOUT_SIGNIN = ['/api/user/signin/', '/api/user/signup/']
 DEBUG = True
+PASSWORD_SALT="adfdafd"
