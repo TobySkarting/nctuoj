@@ -59,6 +59,28 @@ class UserService(BaseService):
         if err: return (err, None)
         return (None, data)
 
+    def post_user_basic_info(self, data={}):
+        required_args = ['id', 'account', 'school_id', 'email', 'student_id', 'passwd']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        id = data.pop('id')
+        passwd = data.pop('passwd')
+        npasswd = data.pop('npasswd')
+        rpasswd = data.pop('rpasswd')
+        res, res_cnt = yield from self.db.execute('SELECT passwd FROM users WHERE id=%ss;', (id,))
+        if res_cnt == 0: return ('User id not exist', None)
+        hpasswd = res[0]['passwd']
+        if self.hash_pwd(passwd) != hpasswd: return ('Wrong Password', None)
+        if npasswd is not None and npasswd != '':
+            if npasswd != rpasswd:
+                return ('Confirm new password', None)
+            else: data['passwd'] = self.hash_pwd(npasswd)
+        sql ,param = self.gen_update_sql('users', data)
+        res, res_cnt = yield from self.db.execute(sql+' WHERE id=%s RETURNING token;', param+(id,))
+        self.rs.delete('user@%s'%(id))
+        self.rs.delete('user_token@%s'%(res[0]['token']))
+        return (None, id)
+
     def get_user_advance_info_by_id(self, id):
         pass
 
@@ -102,9 +124,6 @@ class UserService(BaseService):
             yield from self.db.execute('DELETE FROM map_group_user_power WHERE user_id=%s AND group_id=%s AND power=%s;', (uid, gid, power,))
         else:
             yield from self.db.execute('INSERT INTO map_group_user_power (user_id, group_id, power) VALUES(%s, %s, %s);', (uid, gid, power))
-
-    def modify(self, data={}):
-        pass
 
     def get_user_contest(self, id):
         #res = self.rs.get('user@%scontest'%(str(id)))
