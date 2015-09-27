@@ -13,7 +13,11 @@ class VerdictService(BaseService):
         res = self.rs.get('verdict_list')
         if res: return (None, res)
         sql = "SELECT v.*, u.account as setter_user FROM verdicts as v, users as u WHERE v.setter_user_id=u.id"
-        res, res_cnt = yield from self.db.execute(sql)
+        param = tuple()
+        if 'problem_id' in data and data['problem_id']:
+            sql += ' AND (v.problem_id=%s OR v.problem_id=0)'
+            param = (data['problem_id'],)
+        res, res_cnt = yield from self.db.execute(sql, param)
         self.rs.set('verdict_list', res)
         return (None, res)
 
@@ -80,7 +84,7 @@ class VerdictService(BaseService):
             except: pass
             with open(file_path, 'wb+') as f:
                 f.write(code_file['body'])
-            yield from self.ftp.upload(file_path, remote_path)
+            yield self.ftp.put(file_path, remote_path)
         self.rs.delete('verdict@%s'%(str(id)))
         self.rs.delete('verdict_list')
         return (None, str(id))

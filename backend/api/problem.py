@@ -75,8 +75,9 @@ class ApiProblemHandler(ApiRequestHandler):
         if (yield from self.check_edit(check_meta)):
             ### /api/{{group_id}}/problems/{{problem_id}}/basic/
             if action == "basic":
-                args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible"]
+                args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible", 'verdict_id', 'verdict_code[file]', 'verdict_execute_type_id']
                 meta = self.get_args(args)
+                print('META: ', meta)
                 meta['group_id'] = self.current_group
                 meta['setter_user_id'] = self.account['id']
                 meta['id'] = id

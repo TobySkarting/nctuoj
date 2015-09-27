@@ -81,19 +81,38 @@ class ProblemService(BaseService):
         required_args = ['id', 'group_id', 'setter_user_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        new_verdict = False
+        if int(data['verdict_id']) == 0:
+            new_verdict = True
+            meta = {}
+            meta['id'] = 0
+            meta['title'] = 'special judge'
+            meta['execute_type_id'] = data.pop('verdict_execute_type_id')
+            meta['setter_user_id'] = data['setter_user_id']
+            meta['code_file'] = data.pop('verdict_code')
+            err, data['verdict_id'] = yield from Service.Verdict.post_verdict(meta)
+            if err: return (err, None)
         if int(data['id']) == 0:
             self.reset_rs_problem_count(data['group_id'])
             data.pop('id')
             sql, parma = self.gen_insert_sql("problems", data)
-            insert_id = (yield from self.db.execute(sql, parma))[0][0]['id']
-            return (None, insert_id)
+            id = (yield from self.db.execute(sql, parma))[0][0]['id']
         else:
             self.reset_rs_problem_count(data['group_id'])
             id = data.pop('id')
             self.rs.delete('problem@%s' % str(id))
             sql, parma = self.gen_update_sql("problems", data)
             yield from self.db.execute("%s WHERE id = %s" % (sql, id), parma)
-            return (None, id)
+            yield from self.db.execute('DELETE FROM verdicts WHERE problem_id=%s AND id!=%s;', (id, data['verdict_id'],))
+        if new_verdict:
+            meta['id'] = data['verdict_id']
+            meta['title'] = 'special judge for problem %s'%(id)
+            meta['setter_user_id'] = data['setter_user_id']
+            meta['problem_id'] = id
+            meta['code_file'] = None
+            err, data['verdict_id'] = yield from Service.Verdict.post_verdict(meta)
+            if err: return (err, None)
+        return (None, id)
 
     def delete_problem(self, data={}):
         required_args = ['id']

@@ -28,10 +28,6 @@
 </table>
 <script> 
 $(document).ready(function(){
-$('tbody > tr').each(function(){
-    if($(this).attr('problem-id') != 0)
-        $(this).hide();
-});
 $('[name="problem_id"]').keypress(function(){
     problem_id = $(this).val();
     if(problem_id == '') problem_id = 0;
