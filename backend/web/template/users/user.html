@@ -1,6 +1,10 @@
 {% extends './../frame.html' %}
 {% block content %}
-
+<style>
+.glyphicon-question-sign:hover{
+    cursor: pointer;
+}
+</style>
 <div class="row">
     <!-- Personal Information -->
     <div class="col-md-4">
@@ -52,18 +56,36 @@
                 </table>
             </div>
         </div>
-    </div>
-    <!-- Each Group -->
-    <div class="col-md-8">
-        {% for x in group %}
+        {% if data['id'] == account['id'] %}
+        <div class="row">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    {{x['name']}}
+                    Token
                     <span style="float: right;">
-                        <a class="btn btn-default btn-xs user_group_toggle_button" data-status="hide" data-group-id="{{x['id']}}">Toggle</a>
+                        <span class="glyphicon glyphicon-question-sign token_explain"></span>
+                        <a class="btn btn-default btn-xs user_token_show_button">Show</a>
+                        <a class="btn btn-default btn-xs user_token_reset_button">Reset</a>
                     </span>
                 </div>
             </div>
+        </div>
+        {% end %}
+    </div>
+    <!-- Each Group -->
+    <div class="col-md-8">
+        {% for x in data['group']  %}
+            {% if x in group %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        {{x['name']}}
+                        <span style="float: right;">
+                            <a class="btn btn-default btn-xs user_group_toggle_button" data-status="hide" data-group-id="{{x['id']}}">Toggle</a>
+                        </span>
+                    </div>
+                    <div class="panel-body">
+                    </div>
+                </div>
+            {% end %}
         {% end %}
     </div>
 </div>
@@ -72,6 +94,24 @@ $(document).ready(function(){
     $(".user_group_toggle_button").click(function(){
         user = {{data['id']}};
         bootbox.alert(' '+$(this).attr("data-group-id") + user);
+    });
+    $(".token_explain").click(function(){
+        bootbox.alert("Token allow you to post api by yourself.");
+    });
+    $(".user_token_show_button").click(function(){
+        bootbox.confirm("Ensure there is nobody around you", function(result){
+            if(result){
+                bootbox.alert("{{account['token']}}");
+            }
+        });
+    });
+    $(".user_token_reset_button").click(function(){
+        
+        bootbox.confirm("Do you really want to reset it?", function(result){
+            if(result){
+                bootbox.alert("Reset");
+            }
+        });
     });
 });
 

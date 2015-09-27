@@ -49,6 +49,7 @@ class WebUserHandler(WebRequestHandler):
         if not id: id = self.account["id"]
         ###err, meta = yield from Service.User.get_user_advanced_info(id)
         err, meta = yield from Service.User.get_user_basic_info(id)
+        err, meta['group'] = yield from Service.User.get_user_group_info(id)
         if err:
             self.write_error(500, err)
             return
