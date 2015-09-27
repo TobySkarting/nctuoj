@@ -27,7 +27,9 @@
             <select class="selectpicker" name="verdict_id" data-width="100%">
                 <option value="0">Add new Verdict</option>
                 {% for x in data['verdict_list'] %}
+                    {% if int(x['problem_id']) == 0 or int(x['problem_id']) == int(data['id'])%}
                     <option value={{x['id']}}>{{x['title']}}</option>
+                    {% end %}
                 {% end %}
             </select>
             <div name="new_verdict">

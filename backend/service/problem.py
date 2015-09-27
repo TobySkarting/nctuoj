@@ -58,6 +58,7 @@ class ProblemService(BaseService):
             res = { x: "" for x in col }
             res['id'] = 0
             res['visible'] = 0
+            res['verdict_id'] = 1
             return (None, res)
 
         res = self.rs.get('problem@%s' % str(data['id']))
