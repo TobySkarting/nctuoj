@@ -106,10 +106,25 @@ $(document).ready(function(){
         });
     });
     $(".user_token_reset_button").click(function(){
-        
         bootbox.confirm("Do you really want to reset it?", function(result){
             if(result){
-                bootbox.alert("Reset");
+                bootbox.prompt({
+                    title: 'password',
+                    callback: function(passwd){
+                        $.post('/api/user/resettoken/',{
+                            'token': "{{account['token']}}",
+                            'passwd': passwd}, function(msg){
+                                if(msg['status'] == 200){
+                                    bootbox.alert('token is reset', function(){
+                                        location.href = location.href;
+                                    });
+                                }else{
+                                    bootbox.alert(msg['msg']);
+                                }
+                            }, "json");
+                    },
+                    inputType: 'password'
+                });
             }
         });
     });

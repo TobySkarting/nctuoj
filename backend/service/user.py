@@ -11,13 +11,13 @@ class UserService(BaseService):
         UserService.inst = self
 
     def hash_pwd(self, pwd):
-        hpwd = hashlib.sha512(str(pwd).encode()).hexdigest() + config.PASSWORD_KEY
+        hpwd = hashlib.sha512(str(pwd).encode()).hexdigest() + config.PASSWORD_SALT
         hpwd = hashlib.md5(str(pwd).encode()).hexdigest()
         return hpwd
 
     def gen_token(self, account):
         token = "%s"%hashlib.md5(("%s@%s"%(account, str(time.time()))).encode()).hexdigest()
-        token = 'TOKEN@%s@'%account + ''.join( _ if random.random() < 0.5 else _.upper() for _ in token)
+        token = 'NCTUOJ@%s@'%hash(account) + ''.join( _ if random.random() < 0.5 else _.upper() for _ in token)
         return token
 
 
