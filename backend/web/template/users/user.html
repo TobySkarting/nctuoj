@@ -106,7 +106,8 @@ $(document).ready(function(){
         });
     });
     $(".user_token_reset_button").click(function(){
-        bootbox.confirm("", function(result){
+        
+        bootbox.confirm("Do you really want to reset it?", function(result){
             if(result){
                 bootbox.alert("Reset");
             }
