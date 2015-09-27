@@ -26,11 +26,31 @@ class ApiVerdictTypeHandler(ApiRequestHandler):
             self.render(500, err)
             return False
         return True
+    
+    def check_view(self, meta):
+        err, data = yield from Service.Verdict.get_verdict(meta)
+        if err:
+            self.render(500, err)
+            return False
+        if int(data['problem_id']) != 0:
+            err, data = yield from Service.Problem.get_problem({'id': data['problem_id']})
+            if err: 
+                self.render(500, err)
+                return False
+            if int(data['group_id']) not in (int(x['id']) for x in self.group):
+                self.render(403, 'Permission Denied')
+                return False
+            if map_group_power['problem_manage'] not in (yield from Service.User.get_user_group_power_info(self.account['id'], data['group_id']))[1]:
+                self.render(403, 'Permission Denied')
+                return False
+        return True
 
     @tornado.gen.coroutine
     def get(self, id):
         meta = {}
         meta['id'] = id
+        if not (yield from self.check_view(meta)):
+            return False
         err, data = yield from Service.Verdict.get_verdict(meta)
         if err: self.render(500, err)
         else: self.render(200, data)
