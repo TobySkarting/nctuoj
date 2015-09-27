@@ -145,8 +145,8 @@ if __name__ == '__main__':
         ('/',                                                           WebIndexHandler),
         ('/api/users/',                                                 ApiUsersHandler),
         ('/api/users/(\d+)/',                                           ApiUserHandler),
-        ('/api/user/(sign\w*)/',                                        ApiUserSignHandler),
-        ('/api/user/(resettoken)/',                                     ApiUserSignHandler),
+        ('/api/users/(sign\w*)/',                                       ApiUserSignHandler),
+        ('/api/users/(resettoken)/',                                    ApiUserSignHandler),
         
         ('/api/group/\d+/',                                             ApiGroupHandler),
         ('/api/group/\d+/(\d+)/',                                       ApiGroupUserHandler),
@@ -221,10 +221,9 @@ if __name__ == '__main__':
 
         ### user list only admin
         ('/users/',                                                     WebUsersHandler),       
-        ('/user/',                                                      WebUserHandler),
         ('/users/(\d+)/',                                               WebUserHandler),
-        ('/user/(sign\w*)/?',                                           WebUserSignHandler),
-        ('/user/(\d+)/(\w*)/?',                                         WebUserHandler),
+        ('/users/(sign\w*)/?',                                          WebUserSignHandler),
+        ('/users/(\d+)/(\w*)/?',                                        WebUserHandler),
 
 
         ('/about/',                                                     WebAboutHandler),

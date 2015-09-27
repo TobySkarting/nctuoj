@@ -86,11 +86,11 @@ ga('set', '&uid', "{{account['id']}}");
                             </ul>
                         </li>
                         {% if account['id'] != 0 %}
-                            <li><a href="/user/">{{account['account']}}</a></li>
-                            <li><a href="/user/signout/">Sign Out</a><li>
+                            <li><a href="/users/{{account['id']}}/">{{account['account']}}</a></li>
+                            <li><a href="/users/signout/">Sign Out</a><li>
                         {% else %}
-                            <li><a href="/user/signin/">Sign In</a><li>
-                            <li><a href="/user/signup/">Sign Up</a><li>
+                            <li><a href="/users/signin/">Sign In</a><li>
+                            <li><a href="/users/signup/">Sign Up</a><li>
                         {% end %}
                     </ul>
                 </div>

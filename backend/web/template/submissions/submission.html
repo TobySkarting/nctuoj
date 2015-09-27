@@ -49,7 +49,7 @@
                 <a href="/group/{{current_group}}/problems/{{data['problem_id']}}/">{{data['problem_id']}}.{{data['problem_name']}}</a>
             </div>
             <div class="col-xs-2">
-                <a href="/user/{{data['user_id']}}/">{{data['submitter']}}</a>
+                <a href="/users/{{data['user_id']}}/">{{data['submitter']}}</a>
             </div>
             <div class="col-xs-2">
                 {{data['time_usage'] if data['time_usage'] is not None else '--'}}
