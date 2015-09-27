@@ -55,9 +55,26 @@
     </div>
     <!-- Each Group -->
     <div class="col-md-8">
-        {{group}}
-        <!-- with ajax -->
+        {% for x in group %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{x['name']}}
+                    <span style="float: right;">
+                        <a class="btn btn-default btn-xs user_group_toggle_button" data-status="hide" data-group-id="{{x['id']}}">Toggle</a>
+                    </span>
+                </div>
+            </div>
+        {% end %}
     </div>
 </div>
+<script>
+$(document).ready(function(){
+    $(".user_group_toggle_button").click(function(){
+        user = {{data['id']}};
+        bootbox.alert(' '+$(this).attr("data-group-id") + user);
+    });
+});
+
+</script>
 
 {% end %}
