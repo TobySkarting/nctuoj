@@ -97,6 +97,7 @@ if __name__ == "__main__":
     s.set_options(proc_limit=100, meta='meta', mem_limit=65535*200)
     s.init_box()
     sp.call("cp test.go /tmp/box/1/box/", shell=True)
+    s.exec_box("/usr/bin/env echo $HOME")
     s.exec_box('/usr/bin/env ls /tmp')
     s.exec_box("/usr/bin/env TMPDIR='.' go run test.go")
     #s.exec_box("./test")
