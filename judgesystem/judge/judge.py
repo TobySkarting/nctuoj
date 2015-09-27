@@ -1,3 +1,5 @@
+### sudo python3 -E judge.py
+
 import socket
 import os
 import select
@@ -184,6 +186,8 @@ class Judge:
 
         if map_lang[msg['execute_type']['lang']] == "Java":
             sandbox.options['mem_limit'] = 0
+            sandbox.options['proc_limit'] = 16
+        elif map_lang[msg['execute_type']['lang']] == "Go":
             sandbox.options['proc_limit'] = 16
         sandbox.init_box()
         sandbox.set_options(**sandbox.options)
