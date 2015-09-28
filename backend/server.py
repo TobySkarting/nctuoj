@@ -145,6 +145,7 @@ if __name__ == '__main__':
         ('/',                                                           WebIndexHandler),
         ('/api/users/',                                                 ApiUsersHandler),
         ('/api/users/(\d+)/',                                           ApiUserHandler),
+        ('/api/users/(\d+)/group/(\d+)/',                                           ApiUserHandler),
         ('/api/users/(sign\w*)/',                                       ApiUserSignHandler),
         ('/api/users/(resettoken)/',                                    ApiUserSignHandler),
         

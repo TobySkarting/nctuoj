@@ -83,14 +83,16 @@ class ProblemService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         new_verdict = False
+        verdict_code = data.pop('verdict_code')
+        verdict_execute_type_id = data.pop('verdict_execute_type_id')
         if int(data['verdict_id']) == 0:
             new_verdict = True
             meta = {}
             meta['id'] = 0
             meta['title'] = 'special judge'
-            meta['execute_type_id'] = data.pop('verdict_execute_type_id')
+            meta['execute_type_id'] = verdict_execute_type_id
             meta['setter_user_id'] = data['setter_user_id']
-            meta['code_file'] = data.pop('verdict_code')
+            meta['code_file'] = verdict_code
             err, data['verdict_id'] = yield from Service.Verdict.post_verdict(meta)
             if err: return (err, None)
         if int(data['id']) == 0:

@@ -35,6 +35,15 @@ class UserService(BaseService):
         self.rs.set('user_list_count', res[0]['count'])
         return (None, res[0]['count'])
 
+    def get_user_group_problem_info(self, data={}):
+        required_args = ['id', 'group_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+
+    def post_user_group_priority(self, data={}):
+        required_args = ['id', 'group_list']
+        pass
+
     def get_user_basic_info(self, id):
         res = self.rs.get("user_basic@%s" % str(id))
         if res: return (None, res)
