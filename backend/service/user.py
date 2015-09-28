@@ -39,6 +39,9 @@ class UserService(BaseService):
         required_args = ['id', 'group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        sql = '''SELECT p.id AS problem_id, s.* FROM (SELECT p.* FROM problems as p WHERE p.group_id=%s ORDER BY p.id) AS p LEFT JOIN (SELECT s2.*, v.abbreviation FROM (SELECT MIN(s2.id) AS submission_id FROM (SELECT s.problem_id, MAX(v.priority) AS priority FROM map_verdict_string AS v, submissions AS s WHERE v.id=s.verdict AND s.user_id=%s GROUP BY s.problem_id) AS s1, map_verdict_string AS v, submissions AS s2 WHERE v.priority=s1.priority AND v.id=s2.verdict AND s2.problem_id=s1.problem_id) AS s1, submissions AS s2, map_verdict_string AS v WHERE s2.id=s1.submission_id AND s2.verdict=v.id) AS s ON p.id=s.problem_id;'''
+        res, res_cnt = yield from self.db.execute(sql, (data['id'], data['group_id']))
+        return (None, res)
 
     def post_user_group_priority(self, data={}):
         required_args = ['id', 'group_list']

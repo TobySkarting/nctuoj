@@ -34,6 +34,7 @@ from service.verdictstring import VerdictStringService
 from api.user           import ApiUserSignHandler
 from api.user           import ApiUsersHandler
 from api.user           import ApiUserHandler
+from api.user           import ApiUserGroupHandler
 from api.bulletin       import ApiBulletinsHandler
 from api.bulletin       import ApiBulletinHandler
 from api.problem        import ApiProblemsHandler
@@ -146,7 +147,7 @@ if __name__ == '__main__':
         ('/',                                                           WebIndexHandler),
         ('/api/users/',                                                 ApiUsersHandler),
         ('/api/users/(\d+)/',                                           ApiUserHandler),
-        ('/api/users/(\d+)/group/(\d+)/',                                           ApiUserHandler),
+        ('/api/users/(\d+)/group/(\d+)/(problems)/',                    ApiUserGroupHandler),
         ('/api/users/(sign\w*)/',                                       ApiUserSignHandler),
         ('/api/users/(resettoken)/',                                    ApiUserSignHandler),
         

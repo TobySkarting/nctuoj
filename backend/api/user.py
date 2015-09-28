@@ -8,6 +8,17 @@ class ApiUsersHandler(ApiRequestHandler):
     def get(self):
         pass
 
+class ApiUserGroupHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, id, group_id, action=None):
+        if action == 'problems':
+            meta = {}
+            meta['id'] = id
+            meta['group_id'] = group_id
+            err, data = yield from Service.User.get_user_group_problem_info(meta)
+            if err: self.render(500, err)
+            else: self.render(200, data)
+
 class ApiUserHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
