@@ -27,6 +27,9 @@
                         <th>Compiler</th>
                         <th>Score</th>
                         <th>Submit Time</th>
+                        {% if map_group_power['submission_manage'] in current_group_power %}
+                            <th>IP</th>
+                        {% end %}
                     </tr>
                 </thead>
                 <tbody>
@@ -41,6 +44,9 @@
                             <td><a href="/executes/{{x['execute_type_id']}}/">{{map_lang[x['lang']]}}</a></td>
                             <td>{{x['score'] if x['score'] is not None else '--' }}</td>
                             <td>{{x['created_at']}}</td>
+                            {% if map_group_power['submission_manage'] in current_group_power %}
+                                <td>{{x['ip']}}</td>
+                            {% end %}
                         </tr>
                     {% end %}
                 </tbody>

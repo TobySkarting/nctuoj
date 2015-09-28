@@ -333,6 +333,7 @@ CREATE TABLE submissions(
     score           integer         ,
     length          integer         NOT NULL,
     file_name       varchar(255)    NOT NULL,
+    ip              inet            NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );

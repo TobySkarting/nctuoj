@@ -51,6 +51,11 @@ class ApiSubmissionHandler(ApiRequestHandler):
                 return
             meta['problem_id'] = meta['id']
             meta['user_id'] =  self.account['id']
+            print("=========================ip=====================")
+            print(repr(self.request))
+            x_real_ip = self.request.headers.get("X-Real-IP")
+            remote_ip = self.request.remote_ip if not x_real_ip else x_real_ip
+            meta['ip'] = remote_ip
             err, res = yield from Service.Submission.post_submission(meta)
             if err: self.render(500, err)
             else: self.render(200, res)

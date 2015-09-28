@@ -236,7 +236,8 @@ if __name__ == '__main__':
             compress_response = True,
             debug = config.DEBUG,
             autoescape =    'xhtml_escape', 
-            ui_modules =    ui_modules)
+            ui_modules =    ui_modules,
+            xheaders=True,)
     global srv
     srv = tornado.httpserver.HTTPServer(app)
     srv.listen(config.PORT)
