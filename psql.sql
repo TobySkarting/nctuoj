@@ -99,7 +99,7 @@ CREATE TABLE map_group_user (
     id              serial          NOT NULL    PRIMARY KEY,
     group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
     user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
-    priority        integer         NOt NULL    DEAFULT 999,
+    priority        integer         NOt NULL    DEFAULT 999,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
