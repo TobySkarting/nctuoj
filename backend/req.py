@@ -176,7 +176,7 @@ class WebRequestHandler(RequestHandler):
             return
         
         if self.current_contest:
-            if re.search(r'/group/\d+/contests/(\w*)/', self.request.uri) is None:
+            if re.search(r'/group/\d+/*', self.request.uri) is not None and re.search(r'/group/\d+/contests/(\w*)/', self.request.uri) is None:
                 self.redirect('/group/%s/contests/%s/'%(str(self.current_contest['group_id']), str(self.current_contest['id'])))
 
 

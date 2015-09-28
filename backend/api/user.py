@@ -10,6 +10,9 @@ class ApiUsersHandler(ApiRequestHandler):
 
 class ApiUserHandler(ApiRequestHandler):
     @tornado.gen.coroutine
+    def get(self, id):
+        pass
+    @tornado.gen.coroutine
     def post(self, id):
         args = ['basic_info', 'power']
         meta = self.get_args(args)

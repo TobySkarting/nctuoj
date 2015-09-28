@@ -65,4 +65,7 @@ class ApiSubmissionHandler(ApiRequestHandler):
             else: self.render(200, res)
         else:
             self.render(404, 'Page Not Found')
+            self.render(404, 'Page Not Found')
 
+
+    

@@ -184,6 +184,30 @@ class ApiContestSubmissionsHandler(ApiRequestHandler):
         if err: self.render(500, err)
         else: self.render(200, data)
 
+"""
+class ApiContestSubmissionHandler(ApiRequestHandler):
+    def check_view(self, meta):
+        err, current_contest = yield from Service.Contest.get_current_contest()
+        err, data = yield from Service.Contest.get_contest(meta)
+        if err:
+            self.render(500, err)
+            return False
+        if int(meta['group_id']) == int(data['group_id']) and (map_group_power['contest_manage'] in self.current_group_power or (int(meta['id']) in current_contest and int(self.current_contest['id']) in current_contest)):
+            return True
+        self.render(403, 'Permission Denied')
+        return False
+    
+    @tornado.gen.coroutine
+    def get(self, id):
+        meta = {}
+        meta['id'] = id
+        meta['group_id'] = self.current_group
+        if not (yield from self.check_view(meta)):
+            return
+        err, data = yield from Service.Contest.get_contest_submission(meta)
+        if err: self.render(500, err)
+        else: self.render(200, data)
+"""
 class ApiContestScoreboardHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
