@@ -81,6 +81,7 @@ from web.contest        import WebContestEditHandler
 from web.contest        import WebContestProblemHandler
 from web.contest        import WebContestSubmissionsHandler
 from web.contest        import WebContestSubmissionHandler
+from web.contest        import WebContestScoreboardHandler
 
 from web.execute        import WebExecuteTypesHandler
 from web.execute        import WebExecuteTypeHandler
@@ -213,6 +214,8 @@ if __name__ == '__main__':
         ('/group/\d+/contests/(\d+)/problems/(\d+)/(\w*)/',             WebContestProblemHandler),
         ('/group/\d+/contests/(\d+)/submissions/',                      WebContestSubmissionsHandler),
         ('/group/\d+/contests/(\d+)/submissions/(\d+)/',                WebContestSubmissionHandler),
+        ('/group/\d+/contests/(\d+)/scoreboard/',                       WebContestScoreboardHandler),
+
         #('/group/\d+/contests/(\d+)/rank/',                             WebContestRankHandler),
 
 

@@ -1,5 +1,5 @@
-{% extends './../frame.html' %}
-{% block content %}
+{% extends './contest_frame.html' %}
+{% block contest_content %}
 
 <div class="row">
     <div class="col-md-12">
@@ -8,7 +8,7 @@
 </div>
 <div class="row margin-bottom">
     <div class="col-md-2">
-        <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/contests/{{contest_id}}/problems/{{data['id']}}/submit/">Submit</a>
+        <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/contests/{{contest_data['id']}}/problems/{{data['id']}}/submit/">Submit</a>
     </div>
     <div class="col-md-2">
         <a class="btn btn-default btn-block btn-sm" href="">Submissions</a>
@@ -18,9 +18,6 @@
             <a class="btn btn-default btn-block btn-sm">Rejudge</a>
         </div>
     {% end %}
-    <div class="col-md-2">
-        <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/contests/{{contest_id}}/">Back to List</a>
-    </div>
 </div>
 <div class="row">
     <div class="col-md-12">
