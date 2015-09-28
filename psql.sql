@@ -99,6 +99,7 @@ CREATE TABLE map_group_user (
     id              serial          NOT NULL    PRIMARY KEY,
     group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
     user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
+    priority        integer         NOt NULL    DEAFULT 999,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
@@ -207,6 +208,8 @@ INSERT INTO execute_steps (execute_type_id, command) values (5, 'python2 -m py_c
 INSERT INTO execute_steps (execute_type_id, command) values (5, 'python2 __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (6, 'python3 -m py_compile __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (6, 'python3 __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (7, 'TMPDIR="." go build -o a.out __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (7, './a.out');
 INSERT INTO execute_steps (execute_type_id, command) values (8, 'perl __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (9, 'd8 __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (10, 'ruby __FILE__');
