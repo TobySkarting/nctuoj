@@ -62,7 +62,7 @@ ga('set', '&uid', "{{account['id']}}");
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        {% if current_group != 0 %}
+                        {% if current_group != 0 and account['id'] != 0 %}
                             <li><a href="/group/{{current_group}}/bulletins/">Bulletins</a></li>
                             <li><a href="/group/{{current_group}}/problems/">Problems</a></li>
                             <li><a href="/group/{{current_group}}/submissions/?account={{account['account']}}">Submissions</a></li>
