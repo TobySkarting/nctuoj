@@ -16,6 +16,10 @@ class ApiSubmissionHandler(ApiRequestHandler):
             return False
         if int(meta['group_id']) == int(data['group_id']) and (map_group_power['submission_manage'] in self.current_group_power or int(data['visible']) > 0):
             return True
+        if self.current_contest:
+            err, contest_problem_list = yield from Service.Contest.get_contest_problem_list(self.current_contest)
+            if int(meta['id']) in (int(x['id']) for x in contest_problem_list):
+                return True
         self.render(403, 'Permission Denied')
         return False
 
