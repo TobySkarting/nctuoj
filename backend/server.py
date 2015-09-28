@@ -79,6 +79,8 @@ from web.contest        import WebContestsHandler
 from web.contest        import WebContestHandler
 from web.contest        import WebContestEditHandler
 from web.contest        import WebContestProblemHandler
+from web.contest        import WebContestSubmissionsHandler
+from web.contest        import WebContestSubmissionHandler
 
 from web.execute        import WebExecuteTypesHandler
 from web.execute        import WebExecuteTypeHandler
@@ -174,7 +176,6 @@ if __name__ == '__main__':
         ('/api/group/\d+/contests/(\d+)/',                              ApiContestHandler),
         ('/api/group/\d+/contests/(\d+)/problems/',                     ApiContestProblemsHandler),
         ('/api/group/\d+/contests/(\d+)/submissions/',                  ApiContestSubmissionsHandler),
-        #('/api/group/\d+/contests/(\d+)/submissions/(\d+)/(\w*)/',      ApiContestSubmissionHandler),
         ('/api/group/\d+/contests/(\d+)/scoreboard/',                   ApiContestScoreboardHandler),
         ('/api/group/\d+/contests/(\d+)/(\w+)/',                        ApiContestHandler),
         ('/api/time/',                                                  ApiTimeHandler),
@@ -209,8 +210,9 @@ if __name__ == '__main__':
         ### TODO
         ('/group/\d+/contests/(\d+)/edit/',                             WebContestEditHandler),
         ('/group/\d+/contests/(\d+)/problems/(\d+)/',                   WebContestProblemHandler),
-        #('/group/\d+/contests/(\d+)/submissions/',                      WebContestSubmissionsHandler),
-        #('/group/\d+/contests/(\d+)/submissions/(\d+)/',                WebContestSubmissionHandler),
+        ('/group/\d+/contests/(\d+)/problems/(\d+)/(\w*)/',             WebContestProblemHandler),
+        ('/group/\d+/contests/(\d+)/submissions/',                      WebContestSubmissionsHandler),
+        ('/group/\d+/contests/(\d+)/submissions/(\d+)/',                WebContestSubmissionHandler),
         #('/group/\d+/contests/(\d+)/rank/',                             WebContestRankHandler),
 
 

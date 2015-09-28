@@ -81,9 +81,23 @@ class WebContestEditHandler(WebRequestHandler):
 
 class WebContestProblemHandler(WebRequestHandler):
     @tornado.gen.coroutine
-    def get(self, contest_id, problem_id):
+    def get(self, contest_id, problem_id, action=None):
         meta = {
             'id': problem_id
         }
         err, data = yield from Service.Problem.get_problem(meta)
-        self.Render('./contests/contest_problem.html', data=data)
+        if action == None:
+            self.Render('./contests/contest_problem.html', data=data, contest_id=contest_id)
+        elif action == "submit":
+            self.Render('./contests/contest_problem_submit.html', data=data, contest_id=contest_id)
+        else:
+            self.write_error(404)
+
+class WebContestSubmissionsHandler(WebRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, contest_id):
+        pass
+class WebContestSubmissionHandler(WebRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, contest_id):
+        pass

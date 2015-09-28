@@ -113,19 +113,22 @@ class ContestService(BaseService):
             yield from self.db.execute(sql, param)
         return (None, data['id'])
 
-    def get_contest_submission(self, data={}):
+    def get_contest_submission_list(self, data={}):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res = self.rs.get('contest@%ssubmission'%(str(data['id'])))
-        if res: return (None, res)
+        #res = self.rs.get('contest@%s@submission'%(str(data['id'])))
+        #if res: return (None, res)
         err, res = yield from self.get_contest(data)
         if err: return (err, None)
         end = res['end']
-        res, res_cnt = yield from self.db.execute('SELECT s.* FROM submissions as s, (SELECT m.user_id FROM map_contest_user as m WHERE m.contest_id=%s) as u WHERE s.user_id=u.user_id AND %s<=s.created_at AND s.created_at<=%s ORDER BY s.id ASC;', (res['id'], res['start'], res['end'],))
-        if datetime.datetime.now() > end:
-            self.rs.set('contest@%ssubmission'%(str(data['id'])), res)
+        res, res_cnt = yield from self.db.execute('SELECT s.* FROM submissions as s, (SELECT m.user_id FROM map_contest_user as m WHERE m.contest_id=%s) as u WHERE s.user_id=u.user_id AND %s<=s.created_at AND s.created_at<=%s ORDER BY s.id DESC;', (res['id'], res['start'], res['end'],))
+        #if datetime.datetime.now() > end:
+        #    self.rs.set('contest@%s@submission'%(str(data['id'])), res)
         return (None, res)
+
+    def get_contest_submission(self, data={}):
+        pass
 
     def register(self, data={}):
         required_args = ['id', 'user_id']
