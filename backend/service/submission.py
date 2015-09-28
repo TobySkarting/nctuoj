@@ -34,8 +34,6 @@ class SubmissionService(BaseService):
                 user_id = 0
             sql += "AND user_id=%s " % (user_id)
         sql += " ORDER BY s.id DESC LIMIT %s OFFSET %s"
-        print("======================================", sql)
-        
         res, res_cnt = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"])))
         return (None, res)
 

@@ -56,7 +56,7 @@ class WebContestHandler(WebRequestHandler):
         if not (yield from self.check_view(meta)):
             return
         err, data = yield from Service.Contest.get_contest(meta)
-        self.Render('./contests/contest.html', data=data)
+        self.Render('./contests/contest.html', contest_data=data)
 
 class WebContestEditHandler(WebRequestHandler):
     def check_edit(self, meta):
@@ -81,9 +81,33 @@ class WebContestEditHandler(WebRequestHandler):
 
 class WebContestProblemHandler(WebRequestHandler):
     @tornado.gen.coroutine
-    def get(self, contest_id, problem_id):
+    def get(self, contest_id, problem_id, action=None):
         meta = {
             'id': problem_id
         }
         err, data = yield from Service.Problem.get_problem(meta)
-        self.Render('./contests/contest_problem.html', data=data)
+        err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
+        if action == None:
+            self.Render('./contests/contest_problem.html', data=data, contest_data=contest_data)
+        elif action == "submit":
+            self.Render('./contests/contest_problem_submit.html', data=data, contest_data=contest_data)
+        else:
+            self.write_error(404)
+
+class WebContestSubmissionsHandler(WebRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, contest_id):
+        err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
+        self.Render('./contests/contest_submissions.html', contest_data=contest_data)
+
+class WebContestSubmissionHandler(WebRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, contest_id):
+        err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
+        self.Render('./contests/contest_submission.html', contest_data=contest_data)
+
+class WebContestScoreboardHandler(WebRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, contest_id):
+        err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
+        self.Render('./contests/contest_scoreboard.html', contest_data=contest_data)
