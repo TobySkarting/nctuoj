@@ -365,7 +365,7 @@ if __name__ == "__main__":
         print("This program need root! Do you want to run it as root?(Y/N)")
         x = input().lower()
         if x == "y":
-            os.execv("/usr/bin/sudo", ("sudo", "python3", __file__,))
+            os.execv("/usr/bin/sudo", ("sudo", "-E", "python3", __file__,))
         else:
             sys.exit(0)
     judge = Judge()

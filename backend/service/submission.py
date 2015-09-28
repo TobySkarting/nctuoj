@@ -84,7 +84,7 @@ class SubmissionService(BaseService):
         return (None, res)
 
     def post_submission(self, data):
-        required_args = ['problem_id', 'execute_type_id', 'user_id']
+        required_args = ['problem_id', 'execute_type_id', 'user_id', 'ip']
         err = self.check_required_args(required_args, data)
         if err: return(err, None)
         if data['code_file'] == None and len(data['plain_code']) == 0:

@@ -40,7 +40,7 @@ class WebSubmissionsHandler(WebRequestHandler):
 
 class WebSubmissionHandler(WebRequestHandler):
     @tornado.gen.coroutine
-    def get(self, id, action=None):
+    def get(self, id):
         err, data = yield from Service.Submission.get_submission({'id': id})
         if err:
             self.write_error(500, err)

@@ -68,30 +68,64 @@
 </div>
 <div class="panel panel-default">
     <div class="panel-heading">
-        <div class="row">
-            <div class="col-xs-4">
-                Compiler
+        {% if map_group_power['submission_manage'] in current_group_power %}
+            <div class="row">
+                <div class="col-xs-3">
+                    Compiler
+                </div>
+                <div class="col-xs-3">
+                    Execute Type
+                </div>
+                <div class="col-xs-3">
+                    Code Length
+                </div>
+                <div class="col-xs-3">
+                    IP
+                </div>
             </div>
-            <div class="col-xs-4">
-                Execute Type
+        {% else %}
+            <div class="row">
+                <div class="col-xs-4">
+                    Compiler
+                </div>
+                <div class="col-xs-4">
+                    Execute Type
+                </div>
+                <div class="col-xs-4">
+                    Code Length
+                </div>
             </div>
-            <div class="col-xs-4">
-                Code Length
-            </div>
-        </div>
+        {% end %}
     </div>
     <div class="panel-body">
-        <div class="row">
-            <div class="col-xs-4">
-               {{map_lang[data['execute_lang']]}}
+        {% if map_group_power['submission_manage'] in current_group_power %}
+            <div class="row">
+                <div class="col-xs-3">
+                   {{map_lang[data['execute_lang']]}}
+                </div>
+                <div class="col-xs-3">
+                    <a href="/executes/{{data['execute_type_id']}}/">{{data['execute_description']}}</a>
+                </div>
+                <div class="col-xs-3">
+                    {{data['length']}}
+                </div>
+                <div class="col-xs-3">
+                    {{data['ip']}}
+                </div>
             </div>
-            <div class="col-xs-4">
-                <a href="/executes/{{data['execute_type_id']}}/">{{data['execute_description']}}</a>
+        {% else %}
+            <div class="row">
+                <div class="col-xs-4">
+                   {{map_lang[data['execute_lang']]}}
+                </div>
+                <div class="col-xs-4">
+                    <a href="/executes/{{data['execute_type_id']}}/">{{data['execute_description']}}</a>
+                </div>
+                <div class="col-xs-4">
+                    {{data['length']}}
+                </div>
             </div>
-            <div class="col-xs-4">
-                {{data['length']}}
-            </div>
-        </div>
+        {% end %}
     </div>
 </div>
 <table class="table table-hover table-striped">
