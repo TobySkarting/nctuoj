@@ -73,6 +73,9 @@ class RequestHandler(tornado.web.RequestHandler):
         self.map_power = map_power
         self.map_group_power = map_group_power
         self.map_lang = map_lang
+        x_real_ip = self.request.headers.get("X-Real-IP")
+        remote_ip = x_real_ip or self.request.remote_ip
+        self.remote_ip = remote_ip
 
 
 

@@ -113,10 +113,6 @@ class SubmissionService(BaseService):
         sql, parma = self.gen_insert_sql("submissions", meta)
         id = (yield from self.db.execute(sql, parma))[0][0]['id']
         res, res_cnt = yield from self.db.execute('SELECT id FROM testdata WHERE problem_id=%s;', (data['problem_id'],))
-        '''
-        for x in res:
-            yield from self.db.execute('INSERT INTO map_submission_testdata (testdata_id, submission_id) VALUES(%s, %s);', (x['id'], id,))
-        '''
         ### save file
         folder = './../data/submissions/%s/' % str(id)
         remote_folder = './data/submissions/%s/' % str(id)
