@@ -55,8 +55,6 @@ class ApiSubmissionHandler(ApiRequestHandler):
                 return
             meta['problem_id'] = meta['id']
             meta['user_id'] =  self.account['id']
-            print("=========================ip=====================")
-            print(repr(self.request))
             meta['ip'] = self.remote_ip
             err, res = yield from Service.Submission.post_submission(meta)
             if err: self.render(500, err)
@@ -71,7 +69,6 @@ class ApiSubmissionHandler(ApiRequestHandler):
             if err: self.render(500, err)
             else: self.render(200, res)
         else:
-            self.render(404, 'Page Not Found')
             self.render(404, 'Page Not Found')
 
 

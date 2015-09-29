@@ -138,5 +138,4 @@ class SubmissionService(BaseService):
         yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (data['id'],))
         yield from self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s, verdict=%s WHERE id=%s;', (None, None, None, 1, data['id']))
         yield from self.db.execute('DELETE FROM map_submission_testdata WHERE submission_id=%s;', (data['id'],))
-        print(data['id'])
         return (None, str(data['id']))

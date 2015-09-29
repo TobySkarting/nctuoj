@@ -1,4 +1,13 @@
 {% extends './contest_frame.html' %}
 {% block contest_content %}
 submissions
+<script>
+function flash_submission(){
+    $.get("http://nctuoj.twbbs.org/api/group/1/contests/1001/submissions/", {token: '{{account["token"]}}'}, function(msg){
+    
+
+    }, "json");
+}
+flash_submission();
+</script>
 {% end %}
