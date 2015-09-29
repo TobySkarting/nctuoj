@@ -1,5 +1,54 @@
 {% extends './contest_frame.html' %}
 {% block contest_content %}
+<div class="row margin-bottom">
+    <div class="col-md-12 text-center">
+        <h3>
+            Name: {{contest_data['title']}}
+        </h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Start
+            </div>
+            <div class="panel-body">
+                {{contest_data['start']}}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                End
+            </div>
+            <div class="panel-body">
+                {{contest_data['end']}}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Freeze
+            </div>
+            <div class="panel-body">
+                {{contest_data['end']}}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Style
+            </div>
+            <div class="panel-body">
+                Style
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
@@ -18,13 +67,13 @@
             <div class="panel-heading">
                 Problem
             </div>
-            <table class="table table-hover table-striped table-condensed">
+            <div class="panel-body">
                 {% for id, x in enumerate(contest_data['problem']) %}
-                    <tr>
-                        <td class="col-xs-2"><a href="/group/{{current_group}}/contests/{{contest_data['id']}}/problems/{{x['id']}}/">p{{chr(id+65)}}.{{x['id']}} {{x['title']}}</a></td>
-                    </tr>
+                    <h4>
+                        <a href="/group/{{current_group}}/contests/{{contest_data['id']}}/problems/{{x['id']}}/">p{{chr(id+65)}}.{{x['id']}} {{x['title']}}</a>
+                    </h4>
                 {% end %}
-            </table>
+            </div>
         </div>
     </div>
 </div>
