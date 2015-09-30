@@ -4,3 +4,4 @@ __pycache__
 *.log
 .sass-cache
 data
+client.ovpn
