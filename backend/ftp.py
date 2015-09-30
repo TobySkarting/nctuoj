@@ -18,6 +18,7 @@ class FTP:
         self.password = password
         self.createSSHClient()
     
+    @run_on_executor
     def createSSHClient(self):
         self.client = paramiko.SSHClient()
         self.client.load_system_host_keys()

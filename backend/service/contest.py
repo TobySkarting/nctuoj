@@ -127,15 +127,19 @@ class ContestService(BaseService):
         #res = self.rs.get('contest@%s@submission'%(str(data['id'])))
         #if res: return (None, res)
         err, res = yield from self.get_contest(data)
-        if err: return (err, None)
-        start = data.get('start') or res['start']
-        end = data.get('end') or res['end']
-        if data.get('admin'):
-            end = min(end, res['end']-datetime.timedelta(minutes=res['freeze']))
+        start = res['start']
         end = res['end']
-        res, res_cnt = yield from self.db.execute('SELECT s.* FROM submissions as s, (SELECT m.user_id FROM map_contest_user as m WHERE m.contest_id=%s) as u WHERE s.user_id=u.user_id AND %s<=s.created_at AND s.created_at<=%s ORDER BY s.id DESC;', (res['id'], start, end,))
-        #if datetime.datetime.now() > end:
-        #    self.rs.set('contest@%s@submission'%(str(data['id'])), res)
+        res, res_cnt = yield from self.db.execute('''
+        SELECT s.*, u.account as user, e.lang, v.abbreviation
+        FROM submissions as s, users as u, execute_types as e, map_verdict_string as v, map_contest_problem as mp, map_contest_user as mu
+        WHERE 
+        u.id=s.user_id AND u.id=%s AND mu.user_id=%s 
+        AND mu.contest_id=%s AND mp.contest_id=%s 
+        AND mp.problem_id=s.problem_id 
+        AND e.id=s.execute_type_id AND v.id=s.verdict
+        AND %s<=s.created_at AND s.created_at<=%s
+        ORDER BY s.id DESC;
+        ''', (data['user_id'], data['user_id'], res['id'], res['id'], start, end, ))
         return (None, res)
 
     def get_contest_submission(self, data={}):

@@ -61,7 +61,7 @@ class RequestHandler(tornado.web.RequestHandler):
                     meta[n] = self.get_argument(n)
             except:
                 meta[n] = None
-                print("get_args error: ", n)
+                #print("get_args error: ", n)
         return meta
 
     @tornado.gen.coroutine
