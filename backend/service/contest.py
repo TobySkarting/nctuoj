@@ -51,7 +51,7 @@ class ContestService(BaseService):
         if err: return (err, None)
         ### new contest
         if int(data['id']) == 0:
-            col = ['id', 'group_id', 'visible', 'title', 'description', 'setter_user_id', 'type']
+            col = ['id', 'group_id', 'visible', 'title', 'description', 'setter_user_id', 'type', 'freeze']
             res = { x: '' for x in col }
             col = ['register_start', 'register_end', 'start', 'end']
             res.update({ x: datetime.datetime.now() for x in col })
@@ -69,6 +69,7 @@ class ContestService(BaseService):
             self.rs.set('contest@%s'%str(data['id']), res)
         err, res['problem'] = yield from self.get_contest_problem_list(data)
         err, res['user'] = yield from self.get_contest_user(data)
+        print('RES', res)
         return (None, res)
 
     def get_contest_problem_list(self, data={}):
@@ -79,9 +80,15 @@ class ContestService(BaseService):
         return (None, res)
 
     def post_contest(self, data={}):
-        required_args = ['id', 'group_id', 'setter_user_id', 'visible', 'title', 'description', 'register_start', 'register_end', 'start', 'end', 'type']
+        required_args = ['id', 'group_id', 'setter_user_id', 'visible', 'title', 'description', 'register_start', 'register_end', 'start', 'freeze', 'end', 'type']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        if not data['freeze'] or data['freeze'] == '': data['freeze'] = 0
+        #try: data['freeze'] = datetime.timedelta(minutes=int(data['freeze']))
+        #except: return ('freeze time error', None) 
+        print('FREEZE',data['freeze'])
+        #if data['end'] - data['start'] < data['freeze']:
+        #    return ('freeze time too long', None)
         self.rs.delete('contest_list_count@%s' 
                 % (str(data['group_id'])))
         if int(data['id']) == 0:
@@ -121,8 +128,12 @@ class ContestService(BaseService):
         #if res: return (None, res)
         err, res = yield from self.get_contest(data)
         if err: return (err, None)
+        start = data.get('start') or res['start']
+        end = data.get('end') or res['end']
+        if data.get('admin'):
+            end = min(end, res['end']-datetime.timedelta(minutes=res['freeze']))
         end = res['end']
-        res, res_cnt = yield from self.db.execute('SELECT s.* FROM submissions as s, (SELECT m.user_id FROM map_contest_user as m WHERE m.contest_id=%s) as u WHERE s.user_id=u.user_id AND %s<=s.created_at AND s.created_at<=%s ORDER BY s.id DESC;', (res['id'], res['start'], res['end'],))
+        res, res_cnt = yield from self.db.execute('SELECT s.* FROM submissions as s, (SELECT m.user_id FROM map_contest_user as m WHERE m.contest_id=%s) as u WHERE s.user_id=u.user_id AND %s<=s.created_at AND s.created_at<=%s ORDER BY s.id DESC;', (res['id'], start, end,))
         #if datetime.datetime.now() > end:
         #    self.rs.set('contest@%s@submission'%(str(data['id'])), res)
         return (None, res)
@@ -235,9 +246,11 @@ class ContestService(BaseService):
         if err: return (err, None)
         start, end = data['start'], data['end']
         err, data = yield from self.get_contest(data)
+        if err: return (err, None)
         start = start or data['start']
         end = end or data['end']
-        if err: return (err, None)
+        if data.get('admin'):
+            end = min(end, data['end']-datetime.timedelta(minutes=data['freeze']))
         res = {}
         score = res['score'] = {}
         res['contest'] = data

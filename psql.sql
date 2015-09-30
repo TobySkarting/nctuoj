@@ -379,6 +379,7 @@ CREATE TABLE contests(
     register_start  timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
     register_end    timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
     "start"         timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
+    "freeze"        integer         NOT NULL    DEFAULT 0 CHECK ("freeze" * interval '1 minute' <= "end"-"start"),
     "end"           timestamp       NOT NULL    DEFAULT date_trunc('second', now()),
     "type"          integer         NOT NULL    DEFAULT 0,
     created_at      timestamp       DEFAULT date_trunc('second',now()),

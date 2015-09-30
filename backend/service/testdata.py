@@ -47,17 +47,17 @@ class TestdataSerivce(BaseService):
             res, cnt = yield from self.db.execute("INSERT INTO testdata (problem_id) VALUES (%s) RETURNING id;", (data['problem_id'],))
             id = res[0]['id']
             print('ID', id)
-            folder = "../data/testdata/%s/" % id
-            remote_folder = "./data/testdata/%s/" % id
+            folder = "/mnt/nctuoj/data/testdata/%s/" % id
+            #remote_folder = "/mnt/nctuoj/data/testdata/%s/" % id
             try: os.makedirs(folder)
             except: pass
             for x in ['input', 'output']:
                 file_path = "%s/%s" % (folder, x)
                 with open(file_path, 'wb+') as f:
                     f.write(''.encode())
-                remote_path = "%s/%s" % (remote_folder, x)
-                print(file_path, remote_path)
-                yield self.ftp.put(file_path, remote_path)
+                #remote_path = "%s/%s" % (remote_folder, x)
+                #print(file_path, remote_path)
+                #yield self.ftp.put(file_path, remote_path)
             return (None, id)
         else:
             required_args = ['time_limit', 'memory_limit', 'output_limit', 'score']
@@ -68,9 +68,9 @@ class TestdataSerivce(BaseService):
             yield from self.db.execute("%s WHERE id=%s" % (sql, data['id']), parma)
 
             """ create folder """
-            folder = "../data/testdata/%s" % data['id']
-            print('FOLDER ', folder)
-            remote_folder = "./data/testdata/%s" % data['id']
+            folder = "/mnt/nctuoj/data/testdata/%s" % data['id']
+            #print('FOLDER ', folder)
+            #remote_folder = "/mnt/nctuoj/data/testdata/%s" % data['id']
             try: os.makedirs(folder)
             except Exception as e: print(e)
 
@@ -78,10 +78,11 @@ class TestdataSerivce(BaseService):
             for x in ['input', 'output']:
                 if data[x] != None:
                     file_path = "%s/%s" % (folder, x)
+                    print('FILE: ', file_path)
                     with open(file_path, 'wb+') as f:
                         f.write(data[x]['body'])
-                    remote_path = "%s/%s" % (remote_folder, x)
-                    yield self.ftp.put(file_path, remote_path)
+                    #remote_path = "%s/%s" % (remote_folder, x)
+                    #yield self.ftp.put(file_path, remote_path)
             return (None, data['id'])
 
     def delete_testdata(self, data={}):

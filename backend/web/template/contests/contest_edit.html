@@ -35,7 +35,7 @@
     </div>
     <div class="row margin-bottom">
         <div class="col-md-6">
-            <div class="form-contorl">
+            <div class="form-group">
                 <label class="control-label">Register</label>
                 <div class="input-group" >
                     <input type="text" class="datetimepicker form-control" name="register_start" value="{{data['register_start']}}">
@@ -45,13 +45,19 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="form-contorl">
+            <div class="form-group">
                 <label class="control-label">Contest</label>
                 <div class="input-group" >
                     <input type="text" class="datetimepicker form-control" name="start" value="{{data['start']}}">
                     <div class="input-group-addon">to</div>
                     <input type="text" class="datetimepicker form-control" name="end" value="{{data['end']}}">
                 </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Freeze</label>
+                <input type="number" class="form-control" name="freeze" value="{{data['freeze']}}" placeholder="freeze the scoreboard X minutes before the end(it won't effect if freeze time error)">
             </div>
         </div>
     </div>

@@ -68,12 +68,12 @@ class SubmissionService(BaseService):
         res = res[0]
         res['testdata'], res_cnt = yield from self.db.execute('SELECT m.*, v.* FROM map_submission_testdata as m, map_verdict_string as v WHERE submission_id=%s AND v.id=m.verdict ORDER BY testdata_id;', (data['id'],))
 
-        folder = './../data/submissions/%s/' % str(res['id'])
+        folder = '/mnt/nctuoj/data/submissions/%s/' % str(res['id'])
         file_path = '%s/%s' % (folder, res['file_name'])
-        if not os.path.isfile(file_path):
-            remote_folder = './data/submissions/%s/' % str(res['id'])
-            remote_path = '%s/%s' % (remote_folder, res['file_name'])
-            yield self.ftp.get(remote_path, file_path)
+        #if not os.path.isfile(file_path):
+            #remote_folder = '/mnt/nctuoj/data/submissions/%s/' % str(res['id'])
+            #remote_path = '%s/%s' % (remote_folder, res['file_name'])
+            #yield self.ftp.get(remote_path, file_path)
 
         with open(file_path) as f:
             res['code'] = f.read()
@@ -112,21 +112,22 @@ class SubmissionService(BaseService):
         id = (yield from self.db.execute(sql, parma))[0][0]['id']
         res, res_cnt = yield from self.db.execute('SELECT id FROM testdata WHERE problem_id=%s;', (data['problem_id'],))
         ### save file
-        folder = './../data/submissions/%s/' % str(id)
-        remote_folder = './data/submissions/%s/' % str(id)
+        folder = '/mnt/nctuoj/data/submissions/%s/' % str(id)
+        #remote_folder = '/mnt/nctuoj/data/submissions/%s/' % str(id)
         file_path = '%s/%s' % (folder, meta['file_name'])
-        remote_path = '%s/%s' % (remote_folder, meta['file_name'])
+        #remote_path = '%s/%s' % (remote_folder, meta['file_name'])
         try: shutil.rmtree(folder)
         except: pass
         try: os.makedirs(folder)
-        except: pass
+        except Exception as e: print(e)
+        #yield self.ftp.delete(remote_folder)
+        #shutil.rmtree(remote_folder)
         with open(file_path, 'wb+') as f:
             if data['code_file']:
                 f.write(data['code_file']['body'])
             else:
                 f.write(data['plain_code'].encode())
-        yield self.ftp.delete(remote_folder)
-        yield self.ftp.put(file_path, remote_path)
+        #yield self.ftp.put(file_path, remote_path)
         yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (id,))
         return (None, id) 
 

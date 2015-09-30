@@ -60,7 +60,7 @@ class ApiContestHandler(ApiRequestHandler):
         if action == None:
             if not (yield from self.check_edit(check_meta)):
                 return
-            args = ['visible', 'title', 'description', 'register_start', 'register_end', 'start', 'end', 'type']
+            args = ['visible', 'title', 'description', 'register_start', 'register_end', 'start', 'freeze', 'end', 'type']
             meta = self.get_args(args)
             meta['id'] = id
             meta['group_id'] = self.current_group
