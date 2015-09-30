@@ -132,6 +132,7 @@ class Judge:
     def get_submission(self, submission_id):
         remote_path = './data/submissions/%s'%(str(submission_id))
         file_path = '%s/submissions/%s'%(config.store_folder, str(submission_id))
+        '''
         try:
             shutil.rmtree("%s"%(file_path))
         except:
@@ -140,6 +141,7 @@ class Judge:
             except:
                 pass
         self.ftp.get(remote_path, file_path)
+        '''
 
 
     def read_meta(self, file_path):
