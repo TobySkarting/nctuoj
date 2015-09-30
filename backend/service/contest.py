@@ -121,13 +121,19 @@ class ContestService(BaseService):
         #if res: return (None, res)
         err, res = yield from self.get_contest(data)
         if err: return (err, None)
+        start = res['start']
         end = res['end']
         res, res_cnt = yield from self.db.execute('''
-        SELECT s.* 
-        FROM submissions as s, (SELECT m.user_id FROM map_contest_user as m WHERE m.contest_id=%s AND m.user_id=%s) as u 
-        WHERE s.user_id=u.user_id AND %s<=s.created_at AND s.created_at<=%s 
+        SELECT s.*, u.account as user, e.lang, v.abbreviation
+        FROM submissions as s, users as u, execute_types as e, map_verdict_string as v, map_contest_problem as mp, map_contest_user as mu
+        WHERE 
+        u.id=s.user_id AND u.id=%s AND mu.user_id=%s 
+        AND mu.contest_id=%s AND mp.contest_id=%s 
+        AND mp.problem_id=s.problem_id 
+        AND e.id=s.execute_type_id AND v.id=s.verdict
+        AND %s<=s.created_at AND s.created_at<=%s
         ORDER BY s.id DESC;
-        ''', (res['id'], data['user_id'], res['start'], res['end'],))
+        ''', (data['user_id'], data['user_id'], res['id'], res['id'], start, end, ))
         #if datetime.datetime.now() > end:
         #    self.rs.set('contest@%s@submission'%(str(data['id'])), res)
         return (None, res)
