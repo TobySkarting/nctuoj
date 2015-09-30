@@ -3,8 +3,7 @@
 submissions
 <script>
 function flash_submission(){
-    $.get("http://nctuoj.twbbs.org/api/group/1/contests/1001/submissions/", {token: '{{account["token"]}}'}, function(msg){
-    
+    $.get("http://nctuoj.twbbs.org/api/group/{{current_group}}/contests/{{contest_data['id']}}/submissions/", {token: '{{account["token"]}}'}, function(msg){
 
     }, "json");
 }
