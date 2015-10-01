@@ -99,10 +99,16 @@ class JudgeCenter:
         msg['execute_steps'] = [dict(x) for x in cur]
         cur.execute('SELECT id, time_limit, memory_limit, updated_at, score FROM testdata WHERE problem_id=%s ORDER BY id;', (msg['problem_id'],))
         msg['testdata'] = [dict(x) for x in cur]
+        cur.execute('SELECT * FROM verdicts WHERE id=%s', (msg['verdict_id'],))
+        msg['verdict'] = dict(cur.fetchone())
+        cur.execute('SELECT * FROM execute_types WHERE id=%s;', (msg['verdict']['execute_type_id'],))
+        msg['verdict']['execute_type'] = dict(cur.fetchone())
+        cur.execute('SELECT * FROM execute_steps WHERE execute_type_id=%s ORDER BY id;', (msg['verdict']['execute_type_id'],))
+        msg['verdict']['execute_steps'] = [dict(x) for x in cur]
         return res
     
     def send(self, sock, msg):
-        try: sock.send((json.dumps(msg, cls=DatetimeEncoder)+'\r\n').encode())
+        try: sock.sendall((json.dumps(msg, cls=DatetimeEncoder)+'\r\n').encode())
         except socket.error: self.close_socket(sock)
         except Exception as e: print(e, 'send msg error')
 

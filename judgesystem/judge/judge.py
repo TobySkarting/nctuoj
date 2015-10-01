@@ -58,11 +58,7 @@ class Judge:
 
         #self.s.setblocking(0)
         self.pool = [sys.stdin, self.s]
-        self.recv_buffer_len = 1024
-        default_folder = ["submissions", "testdata", "verdict"]
-        for x in default_folder:
-            if not os.path.exists("%s/%s"%(config.store_folder, x)):
-                os.makedirs("%s/%s"%(config.store_folder, x))
+        self.recv_buffer_len = 1024*2
 
     def receive(self):
         sock = self.s
@@ -72,6 +68,7 @@ class Judge:
             try:
                 tmp = sock.recv(self.recv_buffer_len)
             except Exception as e:
+                print(e)
                 err = e.args[0]
                 if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
                     break
@@ -93,53 +90,6 @@ class Judge:
                     print("err: %s" % x)
         return res
 
-    
-    def lock_get(self, _from, _to, _config, _lock, timestamp):
-        def read_config(path, timestamp):
-            try:
-                f = open(path)
-                t = f.read()
-                return t == str(timestamp)
-            except:
-                return False
-        def write_config(path, timestamp):
-            f = open(path, "w+")
-            f.write(str(timestamp))
-            f.close()
-        while True:
-            if read_config(_config, timestamp):
-                break
-            if os.path.exists(_lock):
-                time.sleep(0.01)
-            else:
-                f = open(_lock, "w+")
-                f.close()
-                print("download: ", _from, _to)
-                self.ftp.get(_from, _to)
-                write_config(_config, timestamp)
-                os.remove(_lock)
-
-    def get_testdata(self,testdata):
-        for x in testdata:
-            remote_path = './data/testdata/%s'%(str(x['id']))
-            file_path = '%s/testdata/%s'%(config.store_folder, str(x['id']))
-            lock_path = '%s/testdata/lock/%s'%(config.store_folder, x['id'])
-            config_path = '%s/testdata/config/%s'%(config.store_folder, x['id'])
-            self.lock_get(remote_path, file_path, config_path, lock_path, x['updated_at'])
-
-    def get_submission(self, submission_id):
-        remote_path = './data/submissions/%s'%(str(submission_id))
-        file_path = '%s/submissions/%s'%(config.store_folder, str(submission_id))
-        '''
-        try:
-            shutil.rmtree("%s"%(file_path))
-        except:
-            try:
-                os.remove("%s"%(file_path))
-            except:
-                pass
-        self.ftp.get(remote_path, file_path)
-        '''
 
 
     def read_meta(self, file_path):
@@ -192,6 +142,7 @@ class Judge:
         sandbox.init_box()
         sandbox.set_options(**sandbox.options)
         sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], sandbox.folder), shell=True)
+        #sandbox._opt.set_dir({"%s/submissions/%s"%(config.store_folder, msg['submission_id']): None})
         res = {
             "status": "AC",
             "exitcode": 0,
@@ -222,7 +173,7 @@ class Judge:
             }
         })
 
-    def verdict(self, file_a, file_b):
+    def verdict(self, msg, file_a, file_b):
         a = open(file_a, "r").readlines()
         b = open(file_b, "r").readlines()
         verdict = "WA" if a != b else "AC"
@@ -263,23 +214,18 @@ class Judge:
         sandbox.exec_box("/usr/bin/env %s" % run_cmd)
         res = self.read_meta(sandbox.options['meta'])
         ### judge if MLE occur
-        if map_lang[msg['execute_type']['lang']] == "Java":
-            pass
-        else:
-            if res['memory'] > testdata['memory_limit']:
-                res['status'] == "MLE"
         res['score'] = 0
         if res['status'] == "AC":
-            res['status'], res['score'] = self.verdict("%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(sandbox.folder))
+            if res['memory'] > testdata['memory_limit']:
+                res['status'] == "MLE"
+            else:
+                res['status'], res['score'] = self.verdict(msg, "%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(sandbox.folder))
         self.send_judged_testdata(res, testdata, msg)
         return res
 
 
     def judge(self, msg):
         print(msg)
-        #self.get_testdata(msg['testdata'])
-        #self.get_submission(msg['submission_id'])
-
         if msg['execute_type']['recompile'] == 0:
             print("Don't compile everytime!")
             res, sandbox = self.compile(msg)
