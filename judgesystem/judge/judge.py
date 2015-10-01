@@ -178,7 +178,7 @@ class Judge:
             }
         })
 
-    def verdict(self, file_a, file_b):
+    def verdict(self, msg, file_a, file_b):
         a = open(file_a, "r").readlines()
         b = open(file_b, "r").readlines()
         verdict = "WA" if a != b else "AC"
@@ -218,11 +218,12 @@ class Judge:
         sandbox.exec_box("/usr/bin/env %s" % run_cmd)
         res = self.read_meta(sandbox.options['meta'])
         ### judge if MLE occur
-        if res['memory'] > testdata['memory_limit']:
-            res['status'] == "MLE"
         res['score'] = 0
         if res['status'] == "AC":
-            res['status'], res['score'] = self.verdict("%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(sandbox.folder))
+            if res['memory'] > testdata['memory_limit']:
+                res['status'] == "MLE"
+            else:
+                res['status'], res['score'] = self.verdict(msg, "%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(sandbox.folder))
         self.send_judged_testdata(res, testdata, msg)
         return res
 
