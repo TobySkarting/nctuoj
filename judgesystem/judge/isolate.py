@@ -93,9 +93,9 @@ class Sandbox:
         cmd += '--extra-time=0.2 '
         cmd += '--run -- %s'%exec_cmd
         print("Run: ", exec_cmd)
-        print("Final: ", cmd)
+        #print("Final: ", cmd)
         #return sp.call(cmd, shell=True, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        return sp.call(cmd, shell=True, env=os.environ)
+        return sp.call(cmd, shell=True, env=os.environ, stdout=sp.DEVNULL, stderr=sp.DEVNULl)
 
         
 if __name__ == "__main__":
