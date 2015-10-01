@@ -59,12 +59,10 @@ class Judge:
         #self.s.setblocking(0)
         self.pool = [sys.stdin, self.s]
         self.recv_buffer_len = 1024
-        default_folder = ["submissions", "testdata/lock", "testdata/config", "verdict/lock", "verdict/config"]
+        default_folder = ["submissions", "testdata", "verdict"]
         for x in default_folder:
-            try:
+            if not os.path.exists("%s/%s"%(config.store_folder, x)):
                 os.makedirs("%s/%s"%(config.store_folder, x))
-            except:
-                pass
 
     def receive(self):
         sock = self.s
@@ -246,8 +244,9 @@ class Judge:
             "file_name": msg['file_name'],
             "memory_limit": testdata['memory_limit'],
             })
-        sp.call("cp %s/testdata/%s/input %s"%(config.store_folder, testdata['id'], sandbox.folder), shell=True)
-        sandbox.options['input'] = "input"
+        #sp.call("cp %s/testdata/%s/input %s"%(config.store_folder, testdata['id'], sandbox.folder), shell=True)
+        sandbox._opt.set_dir({'%s/testdata/%s'%(config.store_folder, testdata['id']): None})
+        sandbox.options['input'] = "%s/testdata/%s/input"%(config.store_folder, testdata['id'])
         sandbox.options['time_limit'] = testdata['time_limit'] / 1000
         sandbox.options['mem_limit'] = testdata['memory_limit']
         sandbox.options['fsize_limit'] = 65536
@@ -278,8 +277,8 @@ class Judge:
 
     def judge(self, msg):
         print(msg)
-        self.get_testdata(msg['testdata'])
-        self.get_submission(msg['submission_id'])
+        #self.get_testdata(msg['testdata'])
+        #self.get_submission(msg['submission_id'])
 
         if msg['execute_type']['recompile'] == 0:
             print("Don't compile everytime!")

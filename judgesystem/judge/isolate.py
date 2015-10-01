@@ -30,8 +30,8 @@ class Sandbox:
                 kwargs[var] = '$%s:%s'%(var, kwargs[var])
             self._meta['env'].update(kwargs)
 
-        def set_dir(self, **kwargs):
-            self._meta['dir'].update(kwargs)
+        def set_dir(self, dirs):
+            self._meta['dir'].update(dirs)
 
         def set_options(self, **kwargs):
             self._meta.update(kwargs)
@@ -43,7 +43,6 @@ class Sandbox:
         self._isolate = isolate
         self._box_id = box_id
         self._opt = self.SandboxOption()
-        pass
 
     def set_options(self, **kwargs):
         self._opt.set_options(**kwargs)
