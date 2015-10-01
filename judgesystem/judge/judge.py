@@ -64,33 +64,38 @@ class Judge:
         sock = self.s
         data = ""
         sock.setblocking(0)
+        def parse(data):
+            res = []
+            ok = True
+            for x in data.split('\r\n'):
+                if len(x):
+                    try: res.append(json.loads(x))
+                    except:
+                        ok = False
+            if ok:
+                return res
+            else:
+                return None
         while True:
             try:
                 tmp = sock.recv(self.recv_buffer_len)
             except Exception as e:
-                print(e)
                 err = e.args[0]
+                print(e)
                 if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
-                    break
+                    re = parse(data)
+                    if re is not None:
+                        return re
                 else:
                     return []
             else:
                 data += tmp.decode()
                 if len(data)==0:
                     self.restart()
-
-
-        data = data.split("\r\n")
-        res = []
-        for x in data:
-            if len(x):
-                try:
-                    res.append(json.loads(x))
-                except:
-                    print("err: %s" % x)
-        return res
-
-
+                else:
+                    re = parse(data)
+                    if re is not None:
+                        return re
 
     def read_meta(self, file_path):
         res = {
@@ -196,6 +201,7 @@ class Judge:
             "memory_limit": testdata['memory_limit'],
             })
         #sp.call("cp %s/testdata/%s/input %s"%(config.store_folder, testdata['id'], sandbox.folder), shell=True)
+        sandbox._opt.clear_dir()
         sandbox._opt.set_dir({'%s/testdata/%s'%(config.store_folder, testdata['id']): None})
         sandbox.options['input'] = "%s/testdata/%s/input"%(config.store_folder, testdata['id'])
         sandbox.options['time_limit'] = testdata['time_limit'] / 1000

@@ -33,6 +33,13 @@ class Sandbox:
         def set_dir(self, dirs):
             self._meta['dir'].update(dirs)
 
+        def clear_dir(self):
+            self._meta['dir'] = {
+                            '/var': None,
+                            '$HOME/.gvm': None,
+                            '/tmp': None
+                        }
+
         def set_options(self, **kwargs):
             self._meta.update(kwargs)
 
