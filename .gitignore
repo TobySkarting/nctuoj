@@ -5,3 +5,4 @@ __pycache__
 .sass-cache
 data
 client.ovpn
+build/
