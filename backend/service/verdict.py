@@ -45,6 +45,8 @@ class VerdictService(BaseService):
             #remote_folder = '/mnt/nctuoj/data/verdicts/%s/' % str(res['id'])
             #remote_path = '%s/%s' % (remote_folder, res['file_name'])
             #yield self.ftp.get(remote_path, file_path)
+        try: os.makedirs(folder)
+        except: pass
 
         with open(file_path) as f:
             res['code'] = f.read()

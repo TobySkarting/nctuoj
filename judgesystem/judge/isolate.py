@@ -79,7 +79,7 @@ class Sandbox:
         if self._opt['mem_limit']: cmd += '--cg-mem=%s '%(str(self._opt['mem_limit']))
         if self._opt['proc_limit']: cmd += '--processes=%s '%(str(self._opt['proc_limit']))
         if self._opt['time_limit']: cmd += '--time=%s '%(str(self._opt['time_limit']))
-        if self._opt['time_limit']: cmd += '--wall-time=%s '%(str(self._opt['time_limit']*1.3))
+        if self._opt['time_limit']: cmd += '--wall-time=%s '%(str(self._opt['time_limit']))
         if self._opt['fsize_limit']: cmd += '--fsize=%s '%(str(self._opt['fsize_limit']))
         if self._opt['env']: 
             for (var, val) in self._opt['env'].items():
@@ -90,23 +90,20 @@ class Sandbox:
                     cmd += '--dir=%s=%s '%(out, _in) 
                 else:
                     cmd += '--dir=%s '%(out)
-        cmd += '--extra-time=0.2 '
+        cmd += '--extra-time=0.20 '
         cmd += '--run -- %s'%exec_cmd
         print("Run: ", exec_cmd)
         #print("Final: ", cmd)
-        #return sp.call(cmd, shell=True, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        return sp.call(cmd, shell=True, env=os.environ, stdout=sp.DEVNULL, stderr=sp.DEVNULl)
+        #return sp.call(cmd, shell=True, env=os.environ, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        return sp.call(cmd, shell=True, env=os.environ)
 
         
 if __name__ == "__main__":
     s = Sandbox(1, './isolate')
     s.set_options(proc_limit=100, meta='meta', mem_limit=65535*200)
     s.init_box()
-    sp.call("cp test.go /tmp/box/1/box/", shell=True)
-    s.exec_box("/usr/bin/env echo $HOME")
-    s.exec_box('/usr/bin/env ls /tmp')
-    s.exec_box("/usr/bin/evn TMPDIR='.' go build test.go")
-    s.exec_box("/usr/bin/env TMPDIR='.' go run test.go")
+    sp.call("cp test.py /tmp/box/1/box/", shell=True)
+    s.exec_box("/usr/bin/env python3 test.py")
     #s.exec_box("./test")
     #s.exec_box("/usr/bin/env java")
     #s.exec_box("/usr/bin/env ghc")

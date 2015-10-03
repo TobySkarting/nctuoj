@@ -51,7 +51,9 @@
                 {'token': '{{account['token']}}'},
                 function(msg){
                 if(msg['status'] == 200){
-                    location.href = location.href;
+                    bootbox.alert("Rejudged.", function(){
+                        location.href="/group/{{current_group}}/submissions/?problem_id={{data['id']}}";
+                    });
                 }else{
                     bootbox.alert(msg['msg'], function(){});
                 }

@@ -58,44 +58,45 @@ class Judge:
 
         #self.s.setblocking(0)
         self.pool = [sys.stdin, self.s]
-        self.recv_buffer_len = 1024*2
+        self.recv_buffer_len = 1024
+
+        #default_folder = ["submissions", "testdata/lock", "testdata/config", "verdict/lock", "verdict/config"]
+        #for x in default_folder:
+        #    try:
+        #        os.makedirs("%s/%s"%(config.store_folder, x))
+        #    except:
+        #        pass
 
     def receive(self):
         sock = self.s
         data = ""
         sock.setblocking(0)
-        def parse(data):
-            res = []
-            ok = True
-            for x in data.split('\r\n'):
-                if len(x):
-                    try: res.append(json.loads(x))
-                    except:
-                        ok = False
-            if ok:
-                return res
-            else:
-                return None
         while True:
             try:
                 tmp = sock.recv(self.recv_buffer_len)
             except Exception as e:
                 err = e.args[0]
-                print(e)
                 if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
-                    re = parse(data)
-                    if re is not None:
-                        return re
+                    break
                 else:
                     return []
             else:
                 data += tmp.decode()
                 if len(data)==0:
                     self.restart()
-                else:
-                    re = parse(data)
-                    if re is not None:
-                        return re
+
+
+        data = data.split("\r\n")
+        res = []
+        for x in data:
+            if len(x):
+                try:
+                    res.append(json.loads(x))
+                except:
+                    print("err: %s" % x)
+        return res
+
+
 
     def read_meta(self, file_path):
         res = {
@@ -119,6 +120,7 @@ class Judge:
                 res[x[0]] = x[1]
         if res['status'] == "TO":
             res['status'] = "TLE"
+            res['time'] = int(1000*float(res['time-wall']))
         if res['status'] == "SG":
             res['status'] = "RE" 
         print(res)
@@ -147,7 +149,6 @@ class Judge:
         sandbox.init_box()
         sandbox.set_options(**sandbox.options)
         sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], sandbox.folder), shell=True)
-        #sandbox._opt.set_dir({"%s/submissions/%s"%(config.store_folder, msg['submission_id']): None})
         res = {
             "status": "AC",
             "exitcode": 0,
@@ -200,10 +201,8 @@ class Judge:
             "file_name": msg['file_name'],
             "memory_limit": testdata['memory_limit'],
             })
-        #sp.call("cp %s/testdata/%s/input %s"%(config.store_folder, testdata['id'], sandbox.folder), shell=True)
-        sandbox._opt.clear_dir()
-        sandbox._opt.set_dir({'%s/testdata/%s'%(config.store_folder, testdata['id']): None})
-        sandbox.options['input'] = "%s/testdata/%s/input"%(config.store_folder, testdata['id'])
+        sp.call("cp %s/testdata/%s/input %s"%(config.store_folder, testdata['id'], sandbox.folder), shell=True)
+        sandbox.options['input'] = "input"
         sandbox.options['time_limit'] = testdata['time_limit'] / 1000
         sandbox.options['mem_limit'] = testdata['memory_limit']
         sandbox.options['fsize_limit'] = 65536
@@ -215,6 +214,7 @@ class Judge:
             sandbox.options['proc_limit'] = 16
         elif map_lang[msg['execute_type']['lang']] == "Javascript":
             sandbox.options['mem_limit'] = 0
+        print(sandbox.options)
 
         sandbox.set_options(**sandbox.options)
         sandbox.exec_box("/usr/bin/env %s" % run_cmd)
