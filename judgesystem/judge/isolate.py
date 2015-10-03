@@ -94,8 +94,13 @@ class Sandbox:
         cmd += '--run -- %s'%exec_cmd
         print("Run: ", exec_cmd)
         #print("Final: ", cmd)
+<<<<<<< HEAD
+        #return sp.call(cmd, shell=True, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+        return sp.call(cmd, shell=True, env=os.environ, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+=======
         #return sp.call(cmd, shell=True, env=os.environ, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
         return sp.call(cmd, shell=True, env=os.environ)
+>>>>>>> 7d63ae9293ed3f0a51311f0752be5c16b73a65da
 
         
 if __name__ == "__main__":

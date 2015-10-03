@@ -179,6 +179,7 @@ class ApiContestSubmissionsHandler(ApiRequestHandler):
         meta['id'] = id
         meta['group_id'] = self.current_group
         meta['user_id'] = self.account['id']
+        meta['admin'] = self.current_group_power
         if not (yield from self.check_view(meta)):
             return
         err, data = yield from Service.Contest.get_contest_submission_list(meta)

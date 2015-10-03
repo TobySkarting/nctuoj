@@ -129,21 +129,25 @@ class ContestService(BaseService):
         err, res = yield from self.get_contest(data)
         start = res['start']
         end = res['end']
+        freeze_time = min(end, end-datetime.timedelta(minutes=res['freeze']))
         res, res_cnt = yield from self.db.execute('''
         SELECT s.*, u.account as user, e.lang, v.abbreviation
         FROM submissions as s, users as u, execute_types as e, map_verdict_string as v, map_contest_problem as mp, map_contest_user as mu
         WHERE 
-        u.id=s.user_id AND u.id=%s AND mu.user_id=%s 
-        AND mu.contest_id=%s AND mp.contest_id=%s 
+        u.id=s.user_id AND u.id=%s AND mu.user_id=u.id 
+        AND mu.contest_id=%s AND mp.contest_id=mu.contest_id  
         AND mp.problem_id=s.problem_id 
-        AND e.id=s.execute_type_id AND v.id=s.verdict
-        AND %s<=s.created_at AND s.created_at<=%s
+        AND e.id=s.execute_type_id AND v.id=s.verdict 
+        AND %s<=s.created_at AND s.created_at<=%s 
         ORDER BY s.id DESC;
-        ''', (data['user_id'], data['user_id'], res['id'], res['id'], start, end, ))
+        ''', (data['user_id'], res['id'], start, end, ))
+        map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
+        if not data.get('admin'):
+            for submission in res:
+                if submission['created_at'] >= freeze_time:
+                    submission['verdict'] = map_string_verdict['Pending']
+                    submission['abbreviation'] = 'Pending'
         return (None, res)
-
-    def get_contest_submission(self, data={}):
-        pass
 
     def register(self, data={}):
         required_args = ['id', 'user_id']
