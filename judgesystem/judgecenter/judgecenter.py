@@ -115,8 +115,10 @@ class JudgeCenter:
     def get_submission(self):
         cur = self.cursor()
         delete_cur = self.cursor()
-        cur.execute("SELECT * FROM wait_submissions")
+        cur.execute("SELECT * FROM wait_submissions ORDER BY id ASC LIMIT 100")
         for x in cur:
+            if len(self.submission_queue) + len(self.submissioning_queue) > 100:
+                return
             if x['submission_id'] not in self.submission_queue and x['submission_id'] not in self.submissioning_queue:
                 self.submission_queue.append(x['submission_id'])
 
@@ -240,6 +242,7 @@ class JudgeCenter:
                 self.submissioning_queue.append(id)
                 self.sock_send_submission(sock, id)
                 client.lock = id
+                print("sent submission: ", id)
         elif client.type == map_sock_type['web']:
             pass
         else:
