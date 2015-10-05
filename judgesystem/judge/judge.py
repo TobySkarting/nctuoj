@@ -177,10 +177,6 @@ class Judge:
     def verdict(self, msg, file_a, file_b):
         sp.call("cp %s/verdicts/%s/%s %s"%(config.store_folder, msg['verdict']['id'], msg['verdict']['file_name'], self.sandbox.folder), shell=True)
         self.compile(msg['verdict'])
-        a = open(file_a, "r").readlines()
-        b = open(file_b, "r").readlines()
-        verdict = "WA" if a != b else "AC"
-        score = 1.0 if a == b else 0.0
         return (verdict, score)
 
     def cmd_replace(self, cmd, param):
@@ -211,7 +207,6 @@ class Judge:
             self.sandbox.options['proc_limit'] = 16
         elif map_lang[msg['execute_type']['lang']] == "Javascript":
             self.sandbox.options['mem_limit'] = 0
-        print(self.sandbox.options)
 
         self.sandbox.set_options(**self.sandbox.options)
         self.sandbox.exec_box("/usr/bin/env %s" % run_cmd)
@@ -229,6 +224,7 @@ class Judge:
 
     def judge(self, msg):
         print(msg)
+        """
         if msg['execute_type']['recompile'] == 0:
             print("Don't compile everytime!")
             self.prepare_sandbox()
@@ -253,24 +249,25 @@ class Judge:
                 res = self.exec(testdata, msg)
             self.sandbox.delete_box()
         else:
-            for testdata in msg['testdata']:
-                self.prepare_sandbox()
-                sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], self.sandbox.folder), shell=True)
-                res = self.compile(msg)
-                if res['status'] != "AC":
-                    self.send({
-                        'cmd': 'judged_testdata',
-                        'msg': {
-                            'submission_id': msg['submission_id'],
-                            'testdata_id': testdata['id'],
-                            'status': 'CE',
-                            'verdict': self.map_verdict_string['CE'],
-                            'score': 0,
-                        }
-                    })
-                else:
-                    self.exec(testdata, msg)
-                    self.sandbox.delete_box()
+        """
+        for testdata in msg['testdata']:
+            self.prepare_sandbox()
+            sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], self.sandbox.folder), shell=True)
+            res = self.compile(msg)
+            if res['status'] != "AC":
+                self.send({
+                    'cmd': 'judged_testdata',
+                    'msg': {
+                        'submission_id': msg['submission_id'],
+                        'testdata_id': testdata['id'],
+                        'status': 'CE',
+                        'verdict': self.map_verdict_string['CE'],
+                        'score': 0,
+                    }
+                })
+            else:
+                self.exec(testdata, msg)
+                self.sandbox.delete_box()
                     
         self.send({"cmd":"judged", "msg":""})
 
