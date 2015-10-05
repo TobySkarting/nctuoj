@@ -94,21 +94,20 @@ class Sandbox:
         cmd += '--run -- %s'%exec_cmd
         print("Run: ", exec_cmd)
         #print("Final: ", cmd)
-<<<<<<< HEAD
-        #return sp.call(cmd, shell=True, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-        return sp.call(cmd, shell=True, env=os.environ, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-=======
         #return sp.call(cmd, shell=True, env=os.environ, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
         return sp.call(cmd, shell=True, env=os.environ)
->>>>>>> 7d63ae9293ed3f0a51311f0752be5c16b73a65da
 
         
 if __name__ == "__main__":
     s = Sandbox(1, './isolate')
     s.set_options(proc_limit=100, meta='meta', mem_limit=65535*200)
     s.init_box()
-    sp.call("cp test.py /tmp/box/1/box/", shell=True)
-    s.exec_box("/usr/bin/env python3 test.py")
+    s.exec_box("/usr/bin/env mkdir test")
+    s.exec_box("/usr/bin/env ls")
+    s.exec_box("/usr/bin/env cd test && touch XD")
+    s.exec_box("/usr/bin/env ls")
+    #sp.call("cp test.py /tmp/box/1/box/", shell=True)
+    #s.exec_box("/usr/bin/env python3 test.py")
     #s.exec_box("./test")
     #s.exec_box("/usr/bin/env java")
     #s.exec_box("/usr/bin/env ghc")

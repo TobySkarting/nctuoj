@@ -60,12 +60,6 @@ class Judge:
         self.pool = [sys.stdin, self.s]
         self.recv_buffer_len = 1024
 
-        #default_folder = ["submissions", "testdata/lock", "testdata/config", "verdict/lock", "verdict/config"]
-        #for x in default_folder:
-        #    try:
-        #        os.makedirs("%s/%s"%(config.store_folder, x))
-        #    except:
-        #        pass
 
     def receive(self):
         sock = self.s
@@ -125,15 +119,17 @@ class Judge:
             res['status'] = "RE" 
         print(res)
         return res
-
+    
+    def prepare_sandbox(self):
+        self.sandbox = Sandbox(os.getpid(), './isolate')
+        self.sandbox.folder = "/tmp/box/%s/box/"%(os.getpid())
+        print("Box: ", self.sandbox.folder)
+        self.sandbox.init_box()
 
     def compile(self, msg):
-        sandbox = Sandbox(os.getpid(), './isolate')
-        sandbox.folder = "/tmp/box/%s/box/"%(os.getpid())
-        print("Box: ", sandbox.folder)
-        sandbox.options = {
+        self.sandbox.options = {
             "proc_limit": 4,
-            "meta": "%s/meta"%(sandbox.folder),
+            "meta": "%s/meta"%(self.sandbox.folder),
             #"output": "output",
             #"errput": "errput",
             "mem_limit": 262144,
@@ -142,13 +138,11 @@ class Judge:
         ### special option for each lang
 
         if map_lang[msg['execute_type']['lang']] == "Java":
-            sandbox.options['mem_limit'] = 0
-            sandbox.options['proc_limit'] = 16
+            self.sandbox.options['mem_limit'] = 0
+            self.sandbox.options['proc_limit'] = 16
         elif map_lang[msg['execute_type']['lang']] == "Go":
-            sandbox.options['proc_limit'] = 16
-        sandbox.init_box()
-        sandbox.set_options(**sandbox.options)
-        sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], sandbox.folder), shell=True)
+            self.sandbox.options['proc_limit'] = 16
+        self.sandbox.set_options(**self.sandbox.options)
         res = {
             "status": "AC",
             "exitcode": 0,
@@ -159,11 +153,11 @@ class Judge:
                 "file_name": msg['file_name'],
                 "memory_limit": 262144,
                 })
-            sandbox.exec_box("/usr/bin/env %s" % run_cmd)
-            res = self.read_meta(sandbox.options['meta'])
+            self.sandbox.exec_box("/usr/bin/env %s" % run_cmd)
+            res = self.read_meta(self.sandbox.options['meta'])
             if res['exitcode'] != 0:
-                return (res, sandbox)
-        return (res, sandbox)
+                return res 
+        return res
 
     def send_judged_testdata(self, res, testdata, msg):
         self.send({
@@ -179,7 +173,10 @@ class Judge:
             }
         })
 
+
     def verdict(self, msg, file_a, file_b):
+        sp.call("cp %s/verdicts/%s/%s %s"%(config.store_folder, msg['verdict']['id'], msg['verdict']['file_name'], self.sandbox.folder), shell=True)
+        self.compile(msg['verdict'])
         a = open(file_a, "r").readlines()
         b = open(file_b, "r").readlines()
         verdict = "WA" if a != b else "AC"
@@ -195,37 +192,37 @@ class Judge:
             cmd = cmd.replace("__MEMORY_LIMIT__", str(param['memory_limit']))
         return cmd
 
-    def exec(self, sandbox, testdata, msg):
+    def exec(self, testdata, msg):
         run_cmd = msg['execute_steps'][-1]['command']
         run_cmd = self.cmd_replace(run_cmd, {
             "file_name": msg['file_name'],
             "memory_limit": testdata['memory_limit'],
             })
-        sp.call("cp %s/testdata/%s/input %s"%(config.store_folder, testdata['id'], sandbox.folder), shell=True)
-        sandbox.options['input'] = "input"
-        sandbox.options['time_limit'] = testdata['time_limit'] / 1000
-        sandbox.options['mem_limit'] = testdata['memory_limit']
-        sandbox.options['fsize_limit'] = 65536
-        sandbox.options['output'] = "output"
-        sandbox.options["errput"] = "errput"
+        sp.call("cp %s/testdata/%s/input %s"%(config.store_folder, testdata['id'], self.sandbox.folder), shell=True)
+        self.sandbox.options['input'] = "input"
+        self.sandbox.options['time_limit'] = testdata['time_limit'] / 1000
+        self.sandbox.options['mem_limit'] = testdata['memory_limit']
+        self.sandbox.options['fsize_limit'] = 65536
+        self.sandbox.options['output'] = "output"
+        self.sandbox.options["errput"] = "errput"
         ### special option for each lang
         if map_lang[msg['execute_type']['lang']] == "Java":
-            sandbox.options['mem_limit'] = 0
-            sandbox.options['proc_limit'] = 16
+            self.sandbox.options['mem_limit'] = 0
+            self.sandbox.options['proc_limit'] = 16
         elif map_lang[msg['execute_type']['lang']] == "Javascript":
-            sandbox.options['mem_limit'] = 0
-        print(sandbox.options)
+            self.sandbox.options['mem_limit'] = 0
+        print(self.sandbox.options)
 
-        sandbox.set_options(**sandbox.options)
-        sandbox.exec_box("/usr/bin/env %s" % run_cmd)
-        res = self.read_meta(sandbox.options['meta'])
+        self.sandbox.set_options(**self.sandbox.options)
+        self.sandbox.exec_box("/usr/bin/env %s" % run_cmd)
+        res = self.read_meta(self.sandbox.options['meta'])
         ### judge if MLE occur
         res['score'] = 0
         if res['status'] == "AC":
             if res['memory'] > testdata['memory_limit']:
                 res['status'] == "MLE"
             else:
-                res['status'], res['score'] = self.verdict(msg, "%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(sandbox.folder))
+                res['status'], res['score'] = self.verdict(msg, "%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(self.sandbox.folder))
         self.send_judged_testdata(res, testdata, msg)
         return res
 
@@ -234,7 +231,9 @@ class Judge:
         print(msg)
         if msg['execute_type']['recompile'] == 0:
             print("Don't compile everytime!")
-            res, sandbox = self.compile(msg)
+            self.prepare_sandbox()
+            sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], self.sandbox.folder), shell=True)
+            res = self.compile(msg)
             if res['status'] != "AC":
                 for testdata in msg['testdata']:
                     self.send({
@@ -248,16 +247,30 @@ class Judge:
                         }
                     })
                 self.send({"cmd":"judged", "msg":""})
-                sandbox.delete_box()
+                self.sandbox.delete_box()
                 return
             for testdata in msg['testdata']:
-                res = self.exec(sandbox, testdata, msg)
-            sandbox.delete_box()
+                res = self.exec(testdata, msg)
+            self.sandbox.delete_box()
         else:
             for testdata in msg['testdata']:
-                res, sandbox = self.compile(msg)
-                self.exec(sandbox, testdata, msg)
-                sandbox.delete_box()
+                self.prepare_sandbox()
+                sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], self.sandbox.folder), shell=True)
+                res = self.compile(msg)
+                if res['status'] != "AC":
+                    self.send({
+                        'cmd': 'judged_testdata',
+                        'msg': {
+                            'submission_id': msg['submission_id'],
+                            'testdata_id': testdata['id'],
+                            'status': 'CE',
+                            'verdict': self.map_verdict_string['CE'],
+                            'score': 0,
+                        }
+                    })
+                else:
+                    self.exec(testdata, msg)
+                    self.sandbox.delete_box()
                     
         self.send({"cmd":"judged", "msg":""})
 
