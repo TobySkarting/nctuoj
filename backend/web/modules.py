@@ -19,5 +19,9 @@ class Pagination(tornado.web.UIModule):
         page['urls']['prev'] = page['url'] + '?' + urllib.parse.urlencode(page['get'])
         page['get']['page'] = _next
         page['urls']['next'] = page['url'] + '?' + urllib.parse.urlencode(page['get'])
+        page['get']['page'] = 1
+        page['urls']['first'] = page['url'] + '?' + urllib.parse.urlencode(page['get'])
+        page['get']['page'] = int(page['total'])
+        page['urls']['last'] = page['url'] + '?' + urllib.parse.urlencode(page['get'])
         return self.render_string('./template/modules/pagination.html', page=page)
 

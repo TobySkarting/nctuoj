@@ -97,48 +97,78 @@ ga('set', '&uid', "{{account['id']}}");
             </div>
         </nav>
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-2">
-                    <div class="row">
-                        <div class="computer only col-xs-12">
-                            <ul id="left-side" class="nav nav-pills nav-stacked">
-                                {% for x in group %}
-                                    <li role="presentation" {{ 'class=active' if str(x['id'])== str(current_group) else '' }} ><a href="/group/{{x['id']}}/bulletins/">{{x['name']}}</a></li>
-                                {% end %}
-                            </ul>
-                        </div>
-                        <div class="tablet mobile only col-xs-12">
-                            <div class="margin-bottom"></div>
-                            <div class="dropdown">
-                                {% set now_group = None %}
-                                {% for x in group %}
-                                    {% if str(x['id']) == str(current_group) %}
-                                        {% set now_group = x %}
-                                    {% end %}
-                                {% end %}
-                                <button class="btn btn-default btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    {% if now_group %}
-                                        {{ now_group['name'] }}
-                                    {% end %}
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu" style="width: 100%">
+            {% if account['id'] != 0 %}
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="row">
+                            <div class="computer only col-xs-12">
+                                <ul id="left-side" class="nav nav-pills nav-stacked">
                                     {% for x in group %}
-                                        <li><a href="/group/{{x['id']}}/bulletins/">{{x['name']}}</a></li>
+                                        <li role="presentation" {{ 'class=active' if str(x['id'])== str(current_group) else '' }} ><a href="/group/{{x['id']}}/bulletins/">{{x['name']}}</a></li>
                                     {% end %}
                                 </ul>
                             </div>
+                            <div class="tablet mobile only col-xs-12">
+                                <div class="margin-bottom"></div>
+                                <div class="dropdown">
+                                    {% set now_group = None %}
+                                    {% for x in group %}
+                                        {% if str(x['id']) == str(current_group) %}
+                                            {% set now_group = x %}
+                                        {% end %}
+                                    {% end %}
+                                    <button class="btn btn-default btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        {% if now_group %}
+                                            {{ now_group['name'] }}
+                                        {% end %}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" style="width: 100%">
+                                        {% for x in group %}
+                                            <li><a href="/group/{{x['id']}}/bulletins/">{{x['name']}}</a></li>
+                                        {% end %}
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <div class="col-md-10" style="padding-top: 15px;">
+                        {% block content %}
+                        {% end %}
+                    </div>
                 </div>
-                <div class="col-md-10" style="padding-top: 15px;">
-                    {% block content %}
-                    {% end %}
+            {% else %}
+                <div class="row">
+                    <div class="col-md-12" style="padding-top: 15px;">
+                        {% block content %}
+                        {% end %}
+                    </div>
                 </div>
-            </div>
+            {% end %}
         </div>
     </div>
-    <footer class="footer">
+    <footer class="footer" style="background-color: #E7E7E7">
+        <div class="row text-center">
+            <div class="col-md-offset-2 col-md-3">
+                <h3>Developer</h3>
+                <p>ChunKai, Chen @ <a href="http://fogworkshop.com/" target="_blank">fogworkshop</a></p>
+                <p>Ho-Lun, Wu @ <a href="Ho-Lun, Wu" target="_blank">fogworkshop</a></p>
+            </div>
+            <div class="col-md-2">
+                <h3>Contact us</h3>
+                <p>fogworkshop@gmail.com</p>
+            </div>
+            <div class="col-md-3">
+                <h3>Others</h3>
+                <p>Developer Diary</p>
+                <p>Feature</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                Copyright © 2015 <a href="http://fogworkshop.com/">fogworkshop</a>. All rights reserved.
+            </div>
+        </div>
     </footer>
 </body>
 </html>

@@ -7,7 +7,7 @@
         </li>
         {% if page['range'][0] !=  1 %}
         <li>
-            <a href="{{page['url']+'?page=1'}}">1</a>
+            <a href="{{page['urls']['first']}}">1</a>
         </li>
         <li>
             <a>...</a>
@@ -21,7 +21,7 @@
             <a>...</a>
         </li>
         <li>
-            <a href="{{page['url']+'?page='+str(page['total'])}}">{{page['total']}}</a>
+            <a href="{{page['urls']['last']}}">{{page['total']}}</a>
         </li>
         {% end %}
         <li {{ 'class=disabled' if page['urls']['next'] == page['urls'][int(page['current'])] else ''}}>

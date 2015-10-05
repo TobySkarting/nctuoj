@@ -35,15 +35,15 @@
   margin-bottom: 20px; }
 
 .footer {
-  height: 120px;
-  margin-top: -120px; }
+  height: 180px;
+  margin-top: -180px; }
 
 body {
   height: 100%; }
 
 .body {
   min-height: 100%;
-  margin-bottom: -120px;
-  padding-bottom: 120px; }
+  margin-bottom: -180px;
+  padding-bottom: 180px; }
 
 /*# sourceMappingURL=core.css.map */

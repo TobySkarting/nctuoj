@@ -6,6 +6,7 @@ import tornado
 class WebIndexHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self):
+        """
         data = {}
         data['bulletins'] = []
         for x in self.group:
@@ -16,5 +17,6 @@ class WebIndexHandler(WebRequestHandler):
                 res['group_name'] = x['name']
                 data['bulletins'].append(res)
         self.Render('index.html', data=data)
-        return
+        """
+        self.Render('index.html')
 
