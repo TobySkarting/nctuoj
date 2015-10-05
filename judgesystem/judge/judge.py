@@ -136,7 +136,6 @@ class Judge:
             "time_limit": 3,
         }
         ### special option for each lang
-
         if map_lang[msg['execute_type']['lang']] == "Java":
             self.sandbox.options['mem_limit'] = 0
             self.sandbox.options['proc_limit'] = 16
@@ -176,8 +175,33 @@ class Judge:
 
     def verdict(self, msg, file_a, file_b):
         sp.call("cp %s/verdicts/%s/%s %s"%(config.store_folder, msg['verdict']['id'], msg['verdict']['file_name'], self.sandbox.folder), shell=True)
+        sp.call("echo '' > %s/input"%(self.sandbox.folder), shell=True)
         self.compile(msg['verdict'])
-        return (verdict, score)
+        self.sandbox.options = {
+            "proc_limit": 4,
+            "meta": "%s/meta"%(self.sandbox.folder),
+            "mem_limit": 262144,
+            "time_limit": 3,
+            "output": "verdict",
+        }
+        run_cmd = msg['verdict']['execute_steps'][-1]['command']
+        run_cmd = self.cmd_replace(run_cmd, {
+            "file_name": msg['file_name'],
+            "memory_limit": 262144,
+            })
+
+        if map_lang[msg['execute_type']['lang']] == "Java":
+            self.sandbox.options['mem_limit'] = 0
+            self.sandbox.options['proc_limit'] = 16
+        elif map_lang[msg['execute_type']['lang']] == "Javascript":
+            self.sandbox.options['mem_limit'] = 0
+        self.sandbox.set_options(**self.sandbox.options)
+        self.sandbox.exec_box("/usr/bin/env %s" % run_cmd)
+        res = self.read_meta(self.sandbox.options['meta'])
+        f = open("%s/verdict"%(self.sandbox.folder), "r")
+        print(f.readlines())
+        f.close()
+        return ("AC", 1.0)
 
     def cmd_replace(self, cmd, param):
         if "file_name" in param:
@@ -217,7 +241,8 @@ class Judge:
             if res['memory'] > testdata['memory_limit']:
                 res['status'] == "MLE"
             else:
-                res['status'], res['score'] = self.verdict(msg, "%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(self.sandbox.folder))
+                sp.call("cp %s/testdata/%s/output %s/official_output"%(config.store_folder, testdata['id'], self.sandbox.folder), shell=True)
+                res['status'], res['score'] = self.verdict(msg, "%s/officaialoutput"%(config.store_folder), "%s/output"%(self.sandbox.folder))
         self.send_judged_testdata(res, testdata, msg)
         return res
 
