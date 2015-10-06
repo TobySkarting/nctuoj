@@ -32,6 +32,29 @@ map_lang = {
     10: "sh",
 }
 
+### error ###
+"""
+1. CE error
+2. OUTPUT
+3. verdict CE error
+4. verdict error
+"""
+### process ###
+"""
+prepare_verdict
+if compile every time:
+    for each testdata:
+        prepare_sandbox
+        compile
+        exec
+        verdict
+else:
+    prepare_sandbox
+    for each testdata:
+        compile
+        exec
+
+"""
 class DatetimeEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
@@ -62,6 +85,17 @@ class Judge:
 
 
     def receive(self):
+        def parse(msg):
+            data = msg.split("\r\n")
+            res = []
+            for x in data:
+                if len(x):
+                    try:
+                        res.append(json.loads(x))
+                    except:
+                        return None
+            return res
+
         sock = self.s
         data = ""
         sock.setblocking(0)
@@ -71,24 +105,18 @@ class Judge:
             except Exception as e:
                 err = e.args[0]
                 if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
-                    break
+                    res = parse(data)
+                    if res is not None:
+                        return res
                 else:
                     return []
             else:
                 data += tmp.decode()
                 if len(data)==0:
                     self.restart()
-
-
-        data = data.split("\r\n")
-        res = []
-        for x in data:
-            if len(x):
-                try:
-                    res.append(json.loads(x))
-                except:
-                    print("err: %s" % x)
-        return res
+                res = parse(data)
+                if res is not None:
+                    return res
 
 
 
@@ -174,9 +202,7 @@ class Judge:
 
 
     def verdict(self, msg, file_a, file_b):
-        sp.call("cp %s/verdicts/%s/%s %s"%(config.store_folder, msg['verdict']['id'], msg['verdict']['file_name'], self.sandbox.folder), shell=True)
-        sp.call("echo '' > %s/input"%(self.sandbox.folder), shell=True)
-        self.compile(msg['verdict'])
+        """
         self.sandbox.options = {
             "proc_limit": 4,
             "meta": "%s/meta"%(self.sandbox.folder),
@@ -201,6 +227,7 @@ class Judge:
         f = open("%s/verdict"%(self.sandbox.folder), "r")
         print(f.readlines())
         f.close()
+        """
         return ("AC", 1.0)
 
     def cmd_replace(self, cmd, param):
@@ -246,10 +273,48 @@ class Judge:
         self.send_judged_testdata(res, testdata, msg)
         return res
 
+    def prepare_verdict(self):
+        self.verdict_sandbox = Sandbox(os.getpid(), './isolate')
+        self.verdict_sandbox.folder = "/tmp/box/%s/box/"%(os.getpid()+65536)
+        print("Box: ", self.verdict_sandbox.folder)
+        self.verdict_sandbox.init_box()
+        sp.call("cp %s/verdicts/%s/%s %s"%
+                (config.store_folder, msg['verdict']['id'], msg['verdict']['file_name'], self.verdict_sandbox.folder), shell=True)
+        self.verdict_sandbox.options = {
+            "proc_limit": 4,
+            "meta": "%s/meta"%(self.verdict_sandbox.folder),
+            "output": "output",
+            "errput": "errput",
+            "mem_limit": 262144,
+            "time_limit": 3,
+        }
+        ### special option for each lang
+        if map_lang[msg['execute_type']['lang']] == "Java":
+            self.verdict_sandbox.options['mem_limit'] = 0
+            self.verdict_sandbox.options['proc_limit'] = 16
+        elif map_lang[msg['execute_type']['lang']] == "Go":
+            self.verdict_sandbox.options['proc_limit'] = 16
+        self.verdict_sandbox.set_options(**self.verdict_sandbox.options)
+        res = {
+            "status": "AC",
+            "exitcode": 0,
+        }
+        for step in range(len(msg['execute_steps']) - 1):
+            run_cmd = msg['execute_steps'][step]['command']
+            run_cmd = self.cmd_replace(run_cmd, {
+                "file_name": msg['file_name'],
+                "memory_limit": 262144,
+                })
+            self.sandbox.exec_box("/usr/bin/env %s" % run_cmd)
+            res = self.read_meta(self.sandbox.options['meta'])
+            if res['exitcode'] != 0:
+                return res 
+        return res
+        pass
 
     def judge(self, msg):
         print(msg)
-        """
+        self.prepare_verdict()
         if msg['execute_type']['recompile'] == 0:
             print("Don't compile everytime!")
             self.prepare_sandbox()
@@ -274,25 +339,27 @@ class Judge:
                 res = self.exec(testdata, msg)
             self.sandbox.delete_box()
         else:
-        """
-        for testdata in msg['testdata']:
-            self.prepare_sandbox()
-            sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], self.sandbox.folder), shell=True)
-            res = self.compile(msg)
-            if res['status'] != "AC":
-                self.send({
-                    'cmd': 'judged_testdata',
-                    'msg': {
-                        'submission_id': msg['submission_id'],
-                        'testdata_id': testdata['id'],
-                        'status': 'CE',
-                        'verdict': self.map_verdict_string['CE'],
-                        'score': 0,
-                    }
-                })
-            else:
-                self.exec(testdata, msg)
-                self.sandbox.delete_box()
+            for testdata in msg['testdata']:
+                self.prepare_sandbox()
+                sp.call("cp %s/submissions/%s/%s %s"%
+                        (config.store_folder, msg['submission_id'], msg['file_name'], self.sandbox.folder), shell=True)
+                res = self.compile(msg)
+                if res['status'] != "AC":
+                    self.send({
+                        'cmd': 'judged_testdata',
+                        'msg': {
+                            'submission_id': msg['submission_id'],
+                            'testdata_id': testdata['id'],
+                            'status': 'CE',
+                            'verdict': self.map_verdict_string['CE'],
+                            'score': 0,
+                        }
+                    })
+                    ### output err
+                    ### write command
+                else:
+                    self.exec(testdata, msg)
+                    self.sandbox.delete_box()
                     
         self.send({"cmd":"judged", "msg":""})
 

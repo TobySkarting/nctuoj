@@ -169,7 +169,7 @@ class JudgeCenter:
         time = 0
         memory = 0
         score = 0
-        verdict_priority = 999999
+        verdict_priority = 9 ### AC
         for x in testdata:
             if x['time_usage']: time += x['time_usage']
             if x['memory_usage']: memory = max(memory, x['memory_usage'])
@@ -178,10 +178,7 @@ class JudgeCenter:
         if verdict_priority == 999999:
             verdict_priority = self.map_verdict_priority[2]
         verdict = self.map_priority_verdict[verdict_priority]
-        if memory == 0:
-            cur.execute("UPDATE submissions SET verdict=%s, score=%s WHERE id=%s", (verdict_priority, score,id))
-        else:
-            cur.execute("UPDATE submissions SET verdict=%s, score=%s, time_usage=%s, memory_usage=%s WHERE id=%s", (verdict_priority, score,time,memory, id,))
+        cur.execute("UPDATE submissions SET verdict=%s, score=%s, time_usage=%s, memory_usage=%s WHERE id=%s", (verdict_priority, score, time, memory, id,))
         cur.execute("DELETE FROM wait_submissions WHERE submission_id=%s", (id,))
 
     def sock_update_submission_testdata(self, msg):
