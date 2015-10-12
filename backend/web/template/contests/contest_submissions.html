@@ -8,7 +8,6 @@
                     <tr>
                         <th>#</th>
                         <th>PID</th>
-                        <th>Submitter</th>
                         <th>Time</th>
                         <th>Memory</th>
                         <th>Verdict</th>
@@ -29,9 +28,8 @@
 <table class="hidden">
     <tbody class="template submission">
         <tr>
-            <td>%id%</td>
-            <td>%problem_id%</td>
-            <td>%user%</td>
+            <td><a href="/group/{{current_group}}/contests/{{contest_data['id']}}/submissions/%id%/">%id%</a></td>
+            <td><a href="/group/{{current_group}}/contests/{{contest_data['id']}}/problems/%problem_id%/">%problem_id%</a></td>
             <td>%time_usage%</td>
             <td>%memory_usage%</td>
             <td>%abbreviation%</td>
@@ -52,7 +50,7 @@ map_lang = Object;
 $(document).ready(function(){
     function flash_submission(){
         template_data = $(".template.submission").html();
-        replace_element = ["id", "problem_id", "user", "time_usage", "memory_usage", "compiler", "abbreviation", "score", "created_at"];
+        replace_element = ["id", "problem_id", "time_usage", "memory_usage", "compiler", "abbreviation", "score", "created_at"];
         {% if map_group_power['submission_manage'] in current_group_power %}
             replace_element.push("ip");
         {% end %}
@@ -61,7 +59,7 @@ $(document).ready(function(){
                 data = template_data;
                 element['compiler'] = map_lang[element['lang']];
                 $.each(replace_element, function(index, re_element){
-                    data = data.replace("%"+re_element+"%", element[re_element]);
+                    data = data.replace(RegExp("%"+re_element+"%", "g"), element[re_element]);
                 });
                 $(".submissions").append(data);
             });

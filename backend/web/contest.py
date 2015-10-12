@@ -102,7 +102,7 @@ class WebContestSubmissionsHandler(WebRequestHandler):
 
 class WebContestSubmissionHandler(WebRequestHandler):
     @tornado.gen.coroutine
-    def get(self, contest_id):
+    def get(self, contest_id, id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
         self.Render('./contests/contest_submission.html', contest_data=contest_data)
 

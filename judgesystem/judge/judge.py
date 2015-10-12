@@ -53,6 +53,7 @@ else:
     for each testdata:
         compile
         exec
+        verdict
 
 """
 class DatetimeEncoder(json.JSONEncoder):
@@ -70,6 +71,7 @@ class Judge:
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         times = 0
         delay = [5, 10, 30, 60, 300]
+        delay = [1, 1, 1, 1, 1]
         while True:
             try:
                 self.s.connect((config.judgecenter_host, config.judgecenter_port))
@@ -77,7 +79,7 @@ class Judge:
             except:
                 print("Cannot connect to judgecenter. Retry after %s second." % delay[times])
                 time.sleep(delay[times])
-                times = min(times+1, 4)
+                times = min(times+1, len(delay)-1)
 
         #self.s.setblocking(0)
         self.pool = [sys.stdin, self.s]
@@ -202,10 +204,9 @@ class Judge:
 
 
     def verdict(self, msg, file_a, file_b):
-        """
-        self.sandbox.options = {
+        self.verdict_sandbox.options = {
             "proc_limit": 4,
-            "meta": "%s/meta"%(self.sandbox.folder),
+            "meta": "%s/meta"%(self.verdict_sandbox.folder),
             "mem_limit": 262144,
             "time_limit": 3,
             "output": "verdict",
@@ -217,18 +218,23 @@ class Judge:
             })
 
         if map_lang[msg['execute_type']['lang']] == "Java":
-            self.sandbox.options['mem_limit'] = 0
-            self.sandbox.options['proc_limit'] = 16
+            self.verdict_sandbox.options['mem_limit'] = 0
+            self.verdict_sandbox.options['proc_limit'] = 16
         elif map_lang[msg['execute_type']['lang']] == "Javascript":
-            self.sandbox.options['mem_limit'] = 0
-        self.sandbox.set_options(**self.sandbox.options)
-        self.sandbox.exec_box("/usr/bin/env %s" % run_cmd)
-        res = self.read_meta(self.sandbox.options['meta'])
-        f = open("%s/verdict"%(self.sandbox.folder), "r")
-        print(f.readlines())
-        f.close()
-        """
-        return ("AC", 1.0)
+            self.verdict_sandbox.options['mem_limit'] = 0
+        self.verdict_sandbox.set_options(**self.verdict_sandbox.options)
+        self.verdict_sandbox.exec_box("/usr/bin/env %s" % run_cmd)
+        res = self.read_meta(self.verdict_sandbox.options['meta'])
+        f = open("%s/verdict"%(self.verdict_sandbox.folder), "r")
+        x = f.readline().split(" ")
+        if len(x) != 2:
+            return ("SE", 0.0)
+        if x[0] != "AC" and x[0] != "WA":
+            return ("SE", 0.0)
+        try:
+            return (x[0], float(x[1]))
+        except:
+            return ("SE", 0.0)
 
     def cmd_replace(self, cmd, param):
         if "file_name" in param:
@@ -273,8 +279,8 @@ class Judge:
         self.send_judged_testdata(res, testdata, msg)
         return res
 
-    def prepare_verdict(self):
-        self.verdict_sandbox = Sandbox(os.getpid(), './isolate')
+    def prepare_verdict(self, msg):
+        self.verdict_sandbox = Sandbox(os.getpid()+65536, './isolate')
         self.verdict_sandbox.folder = "/tmp/box/%s/box/"%(os.getpid()+65536)
         print("Box: ", self.verdict_sandbox.folder)
         self.verdict_sandbox.init_box()
@@ -305,63 +311,43 @@ class Judge:
                 "file_name": msg['file_name'],
                 "memory_limit": 262144,
                 })
-            self.sandbox.exec_box("/usr/bin/env %s" % run_cmd)
-            res = self.read_meta(self.sandbox.options['meta'])
+            self.verdict_sandbox.exec_box("/usr/bin/env %s" % run_cmd)
+            res = self.read_meta(self.verdict_sandbox.options['meta'])
             if res['exitcode'] != 0:
                 return res 
         return res
-        pass
 
     def judge(self, msg):
         print(msg)
-        self.prepare_verdict()
+        self.prepare_verdict(msg)
         if msg['execute_type']['recompile'] == 0:
-            print("Don't compile everytime!")
             self.prepare_sandbox()
             sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], self.sandbox.folder), shell=True)
-            res = self.compile(msg)
-            if res['status'] != "AC":
-                for testdata in msg['testdata']:
-                    self.send({
-                        'cmd': 'judged_testdata',
-                        'msg': {
-                            'submission_id': msg['submission_id'],
-                            'testdata_id': testdata['id'],
-                            'status': 'CE',
-                            'verdict': self.map_verdict_string['CE'],
-                            'score': 0,
-                        }
-                    })
-                self.send({"cmd":"judged", "msg":""})
-                self.sandbox.delete_box()
-                return
-            for testdata in msg['testdata']:
-                res = self.exec(testdata, msg)
-            self.sandbox.delete_box()
-        else:
-            for testdata in msg['testdata']:
+            compile_res = self.compile(msg)
+        for testdata in msg['testdata']:
+            if msg['execute_type']['recompile'] == 1:
                 self.prepare_sandbox()
-                sp.call("cp %s/submissions/%s/%s %s"%
-                        (config.store_folder, msg['submission_id'], msg['file_name'], self.sandbox.folder), shell=True)
-                res = self.compile(msg)
-                if res['status'] != "AC":
-                    self.send({
-                        'cmd': 'judged_testdata',
-                        'msg': {
-                            'submission_id': msg['submission_id'],
-                            'testdata_id': testdata['id'],
-                            'status': 'CE',
-                            'verdict': self.map_verdict_string['CE'],
-                            'score': 0,
-                        }
-                    })
-                    ### output err
-                    ### write command
-                else:
-                    self.exec(testdata, msg)
-                    self.sandbox.delete_box()
-                    
+                sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], self.sandbox.folder), shell=True)
+                compile_res = self.compile(msg)
+            if compile_res['status'] != "AC":
+                self.send({
+                    'cmd': 'judged_testdata',
+                    'msg': {
+                        'submission_id': msg['submission_id'],
+                        'testdata_id': testdata['id'],
+                        'status': 'CE',
+                        'verdict': self.map_verdict_string['CE'],
+                        'score': 0,
+                    }
+                })
+            else:
+                self.exec(testdata, msg)
+            if msg['execute_type']['recompile'] == 1:
+                self.sandbox.delete_box()
         self.send({"cmd":"judged", "msg":""})
+        if msg['execute_type']['recompile'] == 0:
+            self.sandbox.delete_box()
+        self.verdict_sandbox.delete_box()
 
     def SockHandler(self):
         MSGS = self.receive()
