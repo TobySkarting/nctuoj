@@ -1,0 +1,199 @@
+{% if map_group_power['submission_manage'] in current_group_power and data['verdict_abbreviation'] != 'Pending'%}
+    <a class="btn btn-default" _href="/api/group/{{current_group}}/submissions/{{data['id']}}/rejudge/" style="margin-bottom: 12px;" onclick="rejudge_submission(this);">Rejudge</a>
+    <script>
+    function rejudge_submission(ele){
+        ele = $(ele);
+        $.post(ele.attr("_href"), {'token': '{{account['token']}}'}, function(msg){
+            if(msg['status'] == 200){
+                location.href = location.href;
+            }else{
+                bootbox.alert(msg['msg']);
+            }
+        }, "json");
+    }
+    </script>
+{% end %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="text-center">Submission. #{{data['id']}}</h2>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-xs-2">
+                Problem
+            </div>
+            <div class="col-xs-2">
+                Submitter
+            </div>
+            <div class="col-xs-2">
+                Time(ms)
+            </div>
+            <div class="col-xs-2">
+                Memory(KiB)
+            </div>
+            <div class="col-xs-2">
+                Verdict
+            </div>
+            <div class="col-xs-2">
+                Score
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-2">
+                <a href="/group/{{current_group}}/problems/{{data['problem_id']}}/">{{data['problem_id']}}.{{data['problem_name']}}</a>
+            </div>
+            <div class="col-xs-2">
+                <a href="/users/{{data['user_id']}}/">{{data['submitter']}}</a>
+            </div>
+            <div class="col-xs-2">
+                {{data['time_usage'] if data['time_usage'] is not None else '--'}}
+            </div>
+            <div class="col-xs-2">
+                {{data['memory_usage'] if data['memory_usage'] is not None else '--'}}
+            </div>
+            <div class="col-xs-2">
+                {{data['verdict_abbreviation']}}
+            </div>
+            <div class="col-xs-2">
+                {{data['score'] if data['score'] is not None else '--'}}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        {% if map_group_power['submission_manage'] in current_group_power %}
+            <div class="row">
+                <div class="col-xs-3">
+                    Compiler
+                </div>
+                <div class="col-xs-3">
+                    Execute Type
+                </div>
+                <div class="col-xs-3">
+                    Code Length
+                </div>
+                <div class="col-xs-3">
+                    IP
+                </div>
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-xs-4">
+                    Compiler
+                </div>
+                <div class="col-xs-4">
+                    Execute Type
+                </div>
+                <div class="col-xs-4">
+                    Code Length
+                </div>
+            </div>
+        {% end %}
+    </div>
+    <div class="panel-body">
+        {% if map_group_power['submission_manage'] in current_group_power %}
+            <div class="row">
+                <div class="col-xs-3">
+                   {{map_lang[data['execute_lang']]}}
+                </div>
+                <div class="col-xs-3">
+                    <a href="/executes/{{data['execute_type_id']}}/">{{data['execute_description']}}</a>
+                </div>
+                <div class="col-xs-3">
+                    {{data['length']}}
+                </div>
+                <div class="col-xs-3">
+                    {{data['ip']}}
+                </div>
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-xs-4">
+                   {{map_lang[data['execute_lang']]}}
+                </div>
+                <div class="col-xs-4">
+                    <a href="/executes/{{data['execute_type_id']}}/">{{data['execute_description']}}</a>
+                </div>
+                <div class="col-xs-4">
+                    {{data['length']}}
+                </div>
+            </div>
+        {% end %}
+    </div>
+</div>
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Time</th>
+            <th>Memory</th>
+            <th>Verdict</th>
+            <th>Score</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for id, x in enumerate(data['testdata']) %}
+            <tr>
+                <td>{{id+1}}</td>
+                <td>{{x['time_usage']}}</td>
+                <td>{{x['memory_usage']}}</td>
+                <td>{{x['abbreviation']}}</td>
+                <td>{{x['score']}}</td>
+            </tr>
+        {% end %}
+    </tbody>
+</table>
+{% if data['user_id'] == account['id'] or map_group_power['submission_manage'] in current_group_power %}
+<form class="form" action="/api/group/{{current_group}}/submissions/0/submit/">
+    <input type="hidden" name="id" value="{{data['problem_id']}}">
+    <input type="hidden" name="token" value="{{account['token']}}">
+    <input type="hidden" name="execute_type_id" value="{{data['execute_type_id']}}">
+    <input type="hidden" name="file_name" value="{{data['file_name']}}">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{data['file_name']}}
+                </div>
+                <div class="panel-body edit">
+                    <textarea class="form-control" name="plain_code" rows=25>{{data['code']}}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+</div>
+<script>
+$( document ).ready(function(){
+    $("button").prop("disabled", false);
+    $(".selectpicker").selectpicker();
+    $("form").submit(function(){
+        var data = new FormData($(this)[0]);
+        form = $(this);
+        $("button").prop("disabled", true);
+        $.ajax({
+            url: form.attr("action"),
+            type: "post",
+            data: data,
+            dataType: "json",
+            processData: false,
+            contentType: false,
+            success: function(msg){
+                $("button").prop("disabled", false);
+                if(msg['status'] == 200){
+                    location.href = "/group/{{current_group}}/submissions/"+msg['msg']+"/";
+                } else {
+                    bootbox.alert(msg['msg']);
+                }
+            }
+        });
+        return false;
+    });
+});
+</script>
+{% end %}

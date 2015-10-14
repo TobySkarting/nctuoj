@@ -34,9 +34,10 @@
 .margin-bottom {
   margin-bottom: 20px; }
 
-.footer {
-  height: 180px;
-  margin-top: -180px; }
+@media only screen and (min-width: 992px) {
+  .footer {
+    height: 180px;
+    margin-top: -180px; } }
 
 body {
   height: 100%; }

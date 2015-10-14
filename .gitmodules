@@ -16,3 +16,6 @@
 [submodule "http/moment"]
 	path = http/moment
 	url = https://github.com/moment/moment/
+[submodule "codemirror"]
+	path = codemirror
+	url = https://github.com/codemirror/codemirror

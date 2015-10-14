@@ -119,6 +119,17 @@ class ContestService(BaseService):
             sql, param = self.gen_insert_sql('map_contest_problem', meta)
             yield from self.db.execute(sql, param)
         return (None, data['id'])
+    def get_contest_submission(self, data={}):
+        required_args = ['id', 'submission_id']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        err, res = yield from self.get_contest(data)
+        if err: return (err, None)
+        err, submission_res = yield from Service.Submission.get_submission({'id': data['submission_id']})
+        if err: return (err, None)
+        if res['start'] < submission_res['created_at'] and submission_res['created_at'] < res['end']:
+            return (None, submission_res)
+        return (403, None)
 
     def get_contest_submission_list(self, data={}):
         required_args = ['id']

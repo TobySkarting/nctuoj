@@ -46,8 +46,11 @@ td.mobile.only, th.mobile.only
     margin-bottom: 20px
 
 .footer
-    height: 180px
-    margin-top: -180px
+    @include breakpoint(computer)
+        height: 180px
+        margin-top: -180px
+
+
 
 body
     height: 100%

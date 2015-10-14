@@ -213,17 +213,21 @@ class Judge:
         }
         run_cmd = msg['verdict']['execute_steps'][-1]['command']
         run_cmd = self.cmd_replace(run_cmd, {
-            "file_name": msg['file_name'],
+            "file_name": msg['verdict']['file_name'],
             "memory_limit": 262144,
             })
+        print(run_cmd)
+        print(msg['verdict'])
 
-        if map_lang[msg['execute_type']['lang']] == "Java":
+        if map_lang[msg['verdict']['execute_type']['lang']] == "Java":
             self.verdict_sandbox.options['mem_limit'] = 0
             self.verdict_sandbox.options['proc_limit'] = 16
-        elif map_lang[msg['execute_type']['lang']] == "Javascript":
+        elif map_lang[msg['verdict']['execute_type']['lang']] == "Javascript":
             self.verdict_sandbox.options['mem_limit'] = 0
         self.verdict_sandbox.set_options(**self.verdict_sandbox.options)
-        self.verdict_sandbox.exec_box("/usr/bin/env %s" % run_cmd)
+        sp.call("cp %s %s/output"%(file_a, self.verdict_sandbox.folder), shell=True)
+        sp.call("cp %s %s/user_output"%(file_b, self.verdict_sandbox.folder), shell=True)
+        self.verdict_sandbox.exec_box("/usr/bin/env %s output user_output" % (run_cmd))
         res = self.read_meta(self.verdict_sandbox.options['meta'])
         f = open("%s/verdict"%(self.verdict_sandbox.folder), "r")
         x = f.readline().split(" ")
@@ -274,8 +278,8 @@ class Judge:
             if res['memory'] > testdata['memory_limit']:
                 res['status'] == "MLE"
             else:
-                sp.call("cp %s/testdata/%s/output %s/official_output"%(config.store_folder, testdata['id'], self.sandbox.folder), shell=True)
-                res['status'], res['score'] = self.verdict(msg, "%s/officaialoutput"%(config.store_folder), "%s/output"%(self.sandbox.folder))
+                #sp.call("cp %s/testdata/%s/output %s/official_output"%(config.store_folder, testdata['id'], self.sandbox.folder), shell=True)
+                res['status'], res['score'] = self.verdict(msg, "%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(self.sandbox.folder))
         self.send_judged_testdata(res, testdata, msg)
         return res
 
@@ -295,20 +299,20 @@ class Judge:
             "time_limit": 3,
         }
         ### special option for each lang
-        if map_lang[msg['execute_type']['lang']] == "Java":
+        if map_lang[msg['verdict']['execute_type']['lang']] == "Java":
             self.verdict_sandbox.options['mem_limit'] = 0
             self.verdict_sandbox.options['proc_limit'] = 16
-        elif map_lang[msg['execute_type']['lang']] == "Go":
+        elif map_lang[msg['verdict']['execute_type']['lang']] == "Go":
             self.verdict_sandbox.options['proc_limit'] = 16
         self.verdict_sandbox.set_options(**self.verdict_sandbox.options)
         res = {
             "status": "AC",
             "exitcode": 0,
         }
-        for step in range(len(msg['execute_steps']) - 1):
-            run_cmd = msg['execute_steps'][step]['command']
+        for step in range(len(msg['verdict']['execute_steps']) - 1):
+            run_cmd = msg['verdict']['execute_steps'][step]['command']
             run_cmd = self.cmd_replace(run_cmd, {
-                "file_name": msg['file_name'],
+                "file_name": msg['verdict']['file_name'],
                 "memory_limit": 262144,
                 })
             self.verdict_sandbox.exec_box("/usr/bin/env %s" % run_cmd)

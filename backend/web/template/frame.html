@@ -111,16 +111,14 @@ ga('set', '&uid', "{{account['id']}}");
                             <div class="tablet mobile only col-xs-12">
                                 <div class="margin-bottom"></div>
                                 <div class="dropdown">
-                                    {% set now_group = None %}
+                                    {% set now_group = "SELECT ONE GROUP" %}
                                     {% for x in group %}
                                         {% if str(x['id']) == str(current_group) %}
-                                            {% set now_group = x %}
+                                            {% set now_group = x['name'] %}
                                         {% end %}
                                     {% end %}
                                     <button class="btn btn-default btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        {% if now_group %}
-                                            {{ now_group['name'] }}
-                                        {% end %}
+                                        {{ now_group }}
                                         <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" style="width: 100%">
@@ -147,26 +145,28 @@ ga('set', '&uid', "{{account['id']}}");
             {% end %}
         </div>
     </div>
-    <footer class="footer" style="background-color: #E7E7E7">
-        <div class="row text-center">
-            <div class="col-md-offset-2 col-md-3">
-                <h3>Developer</h3>
-                <p>ChunKai, Chen @ <a href="http://fogworkshop.com/" target="_blank">fogworkshop</a></p>
-                <p>Ho-Lun, Wu @ <a href="http://fogworkshop.com/" target="_blank">fogworkshop</a></p>
+    <footer class="footer text-center" style="background-color: #E7E7E7">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-offset-2 col-md-3">
+                    <h3>Developer</h3>
+                    <p>ChunKai, Chen @ <a href="http://fogworkshop.com/" target="_blank">fogworkshop</a></p>
+                    <p>Ho-Lun, Wu @ <a href="http://fogworkshop.com/" target="_blank">fogworkshop</a></p>
+                </div>
+                <div class="col-md-2">
+                    <h3>Contact us</h3>
+                    <p>fogworkshop@gmail.com</p>
+                </div>
+                <div class="col-md-3">
+                    <h3>Others</h3>
+                    <p>Developer Diary</p>
+                    <p>Feature</p>
+                </div>
             </div>
-            <div class="col-md-2">
-                <h3>Contact us</h3>
-                <p>fogworkshop@gmail.com</p>
-            </div>
-            <div class="col-md-3">
-                <h3>Others</h3>
-                <p>Developer Diary</p>
-                <p>Feature</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                Copyright © 2015 <a href="http://fogworkshop.com/" target="_blank">fogworkshop</a>. All rights reserved.
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    Copyright © 2015 <a href="http://fogworkshop.com/" target="_blank">fogworkshop</a>. All rights reserved.
+                </div>
             </div>
         </div>
     </footer>
