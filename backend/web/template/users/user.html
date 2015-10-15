@@ -93,7 +93,16 @@
 require(["jquery", "bootbox"], function($, bootbox){
     $(".user_group_toggle_button").click(function(){
         user = {{data['id']}};
-        bootbox.alert(' '+$(this).attr("data-group-id") + user);
+        $.ajax({
+            url: "/api/users/{{data['id']}}/group/"+$(this).attr("data-group-id")+"/problems/",
+            data: {token: "{{account['token']}}"},
+            dataType: "json",
+            success: function(msg){
+                $.each(msg['msg'], function(index, element){
+                    
+                });
+            }
+        });
     });
     $(".token_explain").click(function(){
         bootbox.alert("Token allow you to post api by yourself.");

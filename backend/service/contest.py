@@ -146,12 +146,9 @@ class ContestService(BaseService):
         SELECT s.*, u.account as user, e.lang, v.abbreviation
         FROM submissions as s, users as u, execute_types as e, map_verdict_string as v, map_contest_problem as mp, map_contest_user as mu
         WHERE """;
-        if 'account' in data and data['account']:
-            try:
-                user_id = (yield from self.db.execute("SELECT id FROM users WHERE account=%s", (data['account'],)))[0][0]['id']
-            except:
-                user_id = 0
-            sql += "AND user_id=%s " % (user_id)
+
+        if not data.get('admin'):
+            sql += "u.id=%s AND "%(int(data['user_id']))
         sql += """
         u.id=s.user_id AND mu.user_id=u.id 
         AND mu.contest_id=%s AND mp.contest_id=mu.contest_id  
@@ -162,7 +159,7 @@ class ContestService(BaseService):
         """;
         res, res_cnt = yield from self.db.execute(sql, (res['id'], start, end,))
         map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
-        if not data.get('admin') and res:
+        if not data.get('admin'):
             for submission in res:
                 if submission['created_at'] >= freeze_time:
                     submission['verdict'] = map_string_verdict['Pending']

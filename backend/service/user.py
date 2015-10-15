@@ -169,8 +169,6 @@ class UserService(BaseService):
         print('RESCNT', res_cnt)
         if res_cnt == 0:
             return ('User Not Exist', None)
-        print('=========================')
-        print(res)
         hpwd, id = res[0]["passwd"], res[0]["id"]
         ### check passwd
         if self.hash_pwd(data['passwd']) != hpwd:

@@ -76,8 +76,8 @@ class WebContestEditHandler(WebRequestHandler):
         meta['group_id'] = self.current_group
         if not (yield from self.check_edit(meta)):
             return
-        err, data = yield from Service.Contest.get_contest(meta)
-        self.Render('./contests/contest_edit.html', data=data)
+        err, contest_data = yield from Service.Contest.get_contest(meta)
+        self.Render('./contests/contest_edit.html', contest_data=contest_data)
 
 class WebContestProblemHandler(WebRequestHandler):
     @tornado.gen.coroutine
@@ -98,8 +98,7 @@ class WebContestSubmissionsHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
-        err, data = yield from Service.Contest.get_contest_submission_list({"id": contest_id, "user_id": self.account['account']})
-        self.Render('./contests/contest_submissions.html', contest_data=contest_data, data=data)
+        self.Render('./contests/contest_submissions.html', contest_data=contest_data)
 
 class WebContestSubmissionHandler(WebRequestHandler):
     @tornado.gen.coroutine

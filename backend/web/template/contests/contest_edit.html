@@ -1,18 +1,18 @@
-{% extends './../frame.html' %}
-{% block content %}
-{% if int(data['id']) != 0 %}
-<h1>Edit Contest.{{data['id']}}</h1>
-<a class="btn btn-default" href="/group/{{current_group}}/contests/{{data['id']}}/" style="margin-bottom: 12px;">Back</a>
+{% extends './contest_frame.html' %}
+{% block contest_content %}
+{% if int(contest_data['id']) != 0 %}
+<h1>Edit Contest.{{contest_data['id']}}</h1>
+<a class="btn btn-default" href="/group/{{current_group}}/contests/{{contest_data['id']}}/" style="margin-bottom: 12px;">Back</a>
 {% else %}
 <h1>New Contest</h1>
 <a class="btn btn-default" href="/group/{{current_group}}/contests/" style="margin-bottom: 12px;">Back</a>
 {% end %}
-<form class="form" id="contest_content" action="/api/group/{{current_group}}/contests/{{data['id']}}/" method="post">
+<form class="form" id="contest_content" action="/api/group/{{current_group}}/contests/{{contest_data['id']}}/" method="post">
     <input type="hidden" name="token" value="{{account['token']}}">
     <div class="row">
         <div class="col-md-3 form-group">
             <label class="control-label">Name</label>
-            <input class="form-control" type="text" name="title" value="{{data['title']}}">
+            <input class="form-control" type="text" name="title" value="{{contest_data['title']}}">
         </div>
         <div class="col-md-3 form-group">
             <div>
@@ -38,9 +38,9 @@
             <div class="form-group">
                 <label class="control-label">Register</label>
                 <div class="input-group" >
-                    <input type="text" class="datetimepicker form-control" name="register_start" value="{{data['register_start']}}">
+                    <input type="text" class="datetimepicker form-control" name="register_start" value="{{contest_data['register_start']}}">
                     <div class="input-group-addon">to</div>
-                    <input type="text" class="datetimepicker form-control" name="register_end" value="{{data['register_end']}}">
+                    <input type="text" class="datetimepicker form-control" name="register_end" value="{{contest_data['register_end']}}">
                 </div>
             </div>
         </div>
@@ -48,16 +48,16 @@
             <div class="form-group">
                 <label class="control-label">Contest</label>
                 <div class="input-group" >
-                    <input type="text" class="datetimepicker form-control" name="start" value="{{data['start']}}">
+                    <input type="text" class="datetimepicker form-control" name="start" value="{{contest_data['start']}}">
                     <div class="input-group-addon">to</div>
-                    <input type="text" class="datetimepicker form-control" name="end" value="{{data['end']}}">
+                    <input type="text" class="datetimepicker form-control" name="end" value="{{contest_data['end']}}">
                 </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label class="control-label">Freeze</label>
-                <input type="number" class="form-control" name="freeze" value="{{data['freeze']}}" placeholder="freeze the scoreboard X minutes before the end(it won't effect if freeze time error)">
+                <input type="number" class="form-control" name="freeze" value="{{contest_data['freeze']}}" placeholder="freeze the scoreboard X minutes before the end(it won't effect if freeze time error)">
             </div>
         </div>
     </div>
@@ -68,15 +68,15 @@
                     Description
                 </div>
                 <div class="panel-body edit">
-                    <textarea class="form-control" rows=10 name="description">{{data['description']}}</textarea>
+                    <textarea class="form-control" rows=10 name="description">{{contest_data['description']}}</textarea>
                 </div>
             </div>
         </div>
     </div>
     <button type="submit" class="btn btn-success">Submit</button>
 </form>
-{% if int(data['id']) != 0 %}
-    <form class="form" id="contest_problem" method="post" action="/api/group/{{current_group}}/contests/{{data['id']}}/problems/">
+{% if int(contest_data['id']) != 0 %}
+    <form class="form" id="contest_problem" method="post" action="/api/group/{{current_group}}/contests/{{contest_data['id']}}/problems/">
         <input type="hidden" name="token" value="{{account['token']}}">
         <div class="row">
             <div class="col-md-12">
@@ -92,7 +92,7 @@
                             <th>Delete</th>
                         </thead-->
                         <tbody>
-                            {% for id, x in enumerate(data['problem']) %}
+                            {% for id, x in enumerate(contest_data['problem']) %}
                                 <tr>
                                     <td class="col-xs-2"><input name="problems[]" type="number" class="form-control" value="{{x['id']}}"></td>
                                     <td class="col-xs-8"><input name="scores[]" class="form-control" value="{{x['score']}}"></td>
@@ -142,7 +142,7 @@ require(["jquery", "bootbox", "bootstrap-select", "bootstrap-datetimepicker"], f
 <script>
 require(["jquery", "bootbox", "bootstrap-select", "bootstrap-datetimepicker"], function($, bootbox){
     $(".select").selectpicker();
-    $("[name=visible]").selectpicker('val', {{data["visible"]}});
+    $("[name=visible]").selectpicker('val', {{contest_data["visible"]}});
     $('.datetimepicker').datetimepicker({
         format: 'YYYY-MM-DD HH:mm:ss'
     });
