@@ -118,7 +118,7 @@
         </tbody>
     </table>
 <script>
-$(document).ready(function(){
+require(["jquery", "bootbox", "bootstrap-select", "bootstrap-datetimepicker"], function($, bootbox){
     $("#contest_problem").submit(function(){
         form = $(this);
         $.ajax({
@@ -140,7 +140,7 @@ $(document).ready(function(){
 </script>
 {% end %}
 <script>
-$(document).ready(function(){
+require(["jquery", "bootbox", "bootstrap-select", "bootstrap-datetimepicker"], function($, bootbox){
     $(".select").selectpicker();
     $("[name=visible]").selectpicker('val', {{data["visible"]}});
     $('.datetimepicker').datetimepicker({

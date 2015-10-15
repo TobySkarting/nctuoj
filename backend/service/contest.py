@@ -119,6 +119,7 @@ class ContestService(BaseService):
             sql, param = self.gen_insert_sql('map_contest_problem', meta)
             yield from self.db.execute(sql, param)
         return (None, data['id'])
+
     def get_contest_submission(self, data={}):
         required_args = ['id', 'submission_id']
         err = self.check_required_args(required_args, data)
@@ -141,19 +142,27 @@ class ContestService(BaseService):
         start = res['start']
         end = res['end']
         freeze_time = min(end, end-datetime.timedelta(minutes=res['freeze']))
-        res, res_cnt = yield from self.db.execute('''
+        sql = """
         SELECT s.*, u.account as user, e.lang, v.abbreviation
         FROM submissions as s, users as u, execute_types as e, map_verdict_string as v, map_contest_problem as mp, map_contest_user as mu
-        WHERE 
-        u.id=s.user_id AND u.id=%s AND mu.user_id=u.id 
+        WHERE """;
+        if 'account' in data and data['account']:
+            try:
+                user_id = (yield from self.db.execute("SELECT id FROM users WHERE account=%s", (data['account'],)))[0][0]['id']
+            except:
+                user_id = 0
+            sql += "AND user_id=%s " % (user_id)
+        sql += """
+        u.id=s.user_id AND mu.user_id=u.id 
         AND mu.contest_id=%s AND mp.contest_id=mu.contest_id  
         AND mp.problem_id=s.problem_id 
         AND e.id=s.execute_type_id AND v.id=s.verdict 
         AND %s<=s.created_at AND s.created_at<=%s 
         ORDER BY s.id DESC;
-        ''', (data['user_id'], res['id'], start, end, ))
+        """;
+        res, res_cnt = yield from self.db.execute(sql, (res['id'], start, end,))
         map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
-        if not data.get('admin'):
+        if not data.get('admin') and res:
             for submission in res:
                 if submission['created_at'] >= freeze_time:
                     submission['verdict'] = map_string_verdict['Pending']

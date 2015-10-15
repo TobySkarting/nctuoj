@@ -39,7 +39,7 @@
     </div>
 </div>
 <script>
-$( document ).ready(function(){
+require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
     $("button").prop("disabled", false);
     $(".selectpicker").selectpicker();
     $("form").submit(function(){

@@ -1,5 +1,6 @@
 {% extends './contest_frame.html' %}
 {% block contest_content %}
+{{data}}
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
@@ -42,31 +43,4 @@
         </tr>
     </tbody>
 </table>
-<script>
-map_lang = Object;
-{% for x in map_lang %}
-    map_lang[{{x}}] = "{{map_lang[x]}}";
-{% end %}
-$(document).ready(function(){
-    function flash_submission(){
-        template_data = $(".template.submission").html();
-        replace_element = ["id", "problem_id", "time_usage", "memory_usage", "compiler", "abbreviation", "score", "created_at"];
-        {% if map_group_power['submission_manage'] in current_group_power %}
-            replace_element.push("ip");
-        {% end %}
-        $.get("http://nctuoj.twbbs.org/api/group/{{current_group}}/contests/{{contest_data['id']}}/submissions/", {token: '{{account["token"]}}'}, function(msg){
-            $.each(msg['msg'], function(index, element){
-                data = template_data;
-                element['compiler'] = map_lang[element['lang']];
-                $.each(replace_element, function(index, re_element){
-                    data = data.replace(RegExp("%"+re_element+"%", "g"), element[re_element]);
-                });
-                $(".submissions").append(data);
-            });
-
-        }, "json");
-    }
-    flash_submission();
-});
-</script>
 {% end %}

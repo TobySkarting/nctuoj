@@ -98,15 +98,14 @@ class WebContestSubmissionsHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
-        self.Render('./contests/contest_submissions.html', contest_data=contest_data)
+        err, data = yield from Service.Contest.get_contest_submission_list({"id": contest_id, "user_id": self.account['account']})
+        self.Render('./contests/contest_submissions.html', contest_data=contest_data, data=data)
 
 class WebContestSubmissionHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id, id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
         err, data = yield from Service.Contest.get_contest_submission({"id": contest_id, "submission_id": id})
-        if err:
-            self.write_error(500, 'Something happened')
         self.Render('./contests/contest_submission.html', contest_data=contest_data, data=data)
 
 class WebContestScoreboardHandler(WebRequestHandler):
