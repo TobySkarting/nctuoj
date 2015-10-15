@@ -19,7 +19,7 @@
     </form>
 </div>
 <script>
-$(document).ready(function(){
+require(["jquery", "bootbox"], function(){
     $("form").submit(function(){
         form = $(this);
         $.ajax({

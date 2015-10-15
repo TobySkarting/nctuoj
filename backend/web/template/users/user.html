@@ -90,7 +90,7 @@
     </div>
 </div>
 <script>
-$(document).ready(function(){
+require(["jquery", "bootbox"], function($, bootbox){
     $(".user_group_toggle_button").click(function(){
         user = {{data['id']}};
         bootbox.alert(' '+$(this).attr("data-group-id") + user);

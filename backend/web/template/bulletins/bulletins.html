@@ -1,10 +1,8 @@
 {% extends './../frame.html' %}
 {% block content %}
-
 {% if map_group_power["bulletin_manage"] in current_group_power %}
     <a class="btn btn-default margin-bottom" href="/group/{{current_group}}/bulletins/0/edit/">New</a>
 {% end %}
-
 <div class="row">
     {% for x in data %}
         <div class="col-xs-12">
@@ -14,31 +12,8 @@
                     {% if map_group_power["bulletin_manage"] in current_group_power %}
                         <span style="float: right;">
                             <a class="btn btn-default btn-xs" href="/group/{{current_group}}/bulletins/{{x['id']}}/edit/">Edit</a>
-                            <a class="btn btn-default btn-xs" onclick="delete_bulletin(this)" data-href="/api/group/{{current_group}}/bulletins/{{x['id']}}/" data-method="delete">Delete</a> 
+                            <a class="btn btn-default btn-xs delete bulletin" data-href="/api/group/{{current_group}}/bulletins/{{x['id']}}/" data-method="delete">Delete</a> 
                         </span>
-                        <script>
-                        function delete_bulletin(ele){
-                            bootbox.confirm("Are you sure?", function(result) {
-                                if(result){
-                                    $.ajax({
-                                        url: $(ele).attr("data-href"),
-                                        type: $(ele).attr("data-method"),
-                                        data: {
-                                            "token": '{{account['token']}}'
-                                        },
-                                        dataType: "json",
-                                        success: function(msg){
-                                            if(msg['status'] == 200){
-                                                location.href = location.href;
-                                            } else {
-                                                alert(msg['msg']);
-                                            }
-                                        }
-                                    });
-                                }
-                            }); 
-                        }
-                        </script>
                     {% end %}
                 </div>
                 <div class="panel-body">{% raw md(x['content']) %}</div>
@@ -47,7 +22,33 @@
         </div>
     {% end %}
 </div>
-
+{% if map_group_power["bulletin_manage"] in current_group_power %}
+    <script>
+    require(["jquery", "bootbox"], function($, bootbox){
+        $(".btn.delete.bulletin").click(function(){
+            ele = $(this);
+            bootbox.confirm("Are you sure?", function(result){
+                if(result){
+                    $.ajax({
+                        url: $(ele).attr("data-href"),
+                        type: $(ele).attr("data-method"),
+                        data: {
+                            "token": '{{account['token']}}'
+                        },
+                        dataType: "json",
+                        success: function(msg){
+                            if(msg['status'] == 200){
+                                location.href = location.href;
+                            } else {
+                                alert(msg['msg']);
+                            }
+                        }
+                    });
+                }
+            }); 
+        });
+    });
+    </script>
+{% end %}
 {% module Pagination(page) %}
-
 {% end %}

@@ -33,7 +33,7 @@
     </div>
 </div>
 <script>
-$(document).ready(function(){
+require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
     $("selectpicker").selectpicker();
     $("form").submit(function(){
         var data = new FormData($(this)[0]);
@@ -49,7 +49,7 @@ $(document).ready(function(){
             success: function(msg){
                 $("button").prop("disabled", false);
                 if(msg['status'] == 200){
-                    bootbox.alert("success");
+                    location.href = "/verdicts/" + msg['msg'] + "/";
                 } else {
                     bootbox.alert(msg['msg']);
                 }

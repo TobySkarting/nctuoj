@@ -80,24 +80,26 @@ function new_testdata(){
 
 <script>
 function delete_testdata(id){
-    $.ajax({
-        url: "/api/group/{{current_group}}/testdata/"+id+"/",
-        type: "delete",
-        data: {
-            "token": "{{account['token']}}",
-            "problem_id": "{{data['id']}}",
-        },
-        dataType:"json",
-        success: function(msg){
-            if(msg['status'] == 200){
-                location.href=location.href;
-            } else {
+    require(["jquery"], function($){
+        $.ajax({
+            url: "/api/group/{{current_group}}/testdata/"+id+"/",
+            type: "delete",
+            data: {
+                "token": "{{account['token']}}",
+                "problem_id": "{{data['id']}}",
+            },
+            dataType:"json",
+            success: function(msg){
+                if(msg['status'] == 200){
+                    location.href=location.href;
+                } else {
+                }
             }
-        }
+        });
     });
 }
 var clear_progress;
-$( document ).ready(function(){
+require(["jquery", "bootbox"], function($, bootbox){
     $("form").submit(function(){
         $(".testdata_update").prop("disabled", true);
         $(".testdata_delete").prop("disabled", true);

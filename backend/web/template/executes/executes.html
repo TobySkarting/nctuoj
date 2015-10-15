@@ -17,8 +17,7 @@
     <tbody>
         {% for x in data %}
             <tr execute-id={{x['id']}}>
-                <td>{{map_lang[x['lang']]}}</td>
-                <td>{%raw md(x['description'])%}</td>
+                <td>{{map_lang[x['lang']]}}</td> <td>{%raw md(x['description'])%}</td>
                 <td><a class="btn btn-default btn-xs" href="/executes/{{x['id']}}/">View</div></td>
                 <td><a href="/users/{{x['setter_user_id']}}/">{{x['setter_user']}}</a></td>
                 <td priority={{x['priority']}}>{{x['priority']}}</td>
@@ -53,40 +52,40 @@
         </tr>
     </tbody>
 </table>
-
-{% if map_power['execute_manage'] in account['power'] %}
+    {% if map_power['execute_manage'] in account['power'] %}
     <script>
-    var fixer = function(e, ui) {
-        ui.children().each(function() {
-            $(this).width($(this).width());
-        });
-        return ui;
-    };
-    $('#executes tbody').sortable({
-        helper: fixer,
-        update: update_priority
-    }).disableSelection();
-    function update_priority(){
-        trs = $('#executes tbody tr');
-        data = Object();
-        data.token = "{{account['token']}}";
-        data.id = Array();
-        data.priority = Array();
-        $.each(trs, function(i, tr){
-            $(tr).find('[priority]').text(i+1);
-            data.id.push($(tr).attr('execute-id'));
-            data.priority.push(i+1);
-        });
-        $.post('/api/executes/', data, function(msg){
-            if(msg['status'] == 200){
-            }else{
-                bootbox.alert(msg['msg']);
+        require(["jquery", "jqueryui"], function($){
+            var fixer = function(e, ui) {
+                ui.children().each(function() {
+                    $(this).width($(this).width());
+                });
+                return ui;
+            };
+            $('#executes tbody').sortable({
+                helper: fixer,
+                update: update_priority
+            }).disableSelection();
+            function update_priority(){
+                trs = $('#executes tbody tr');
+                data = Object();
+                data.token = "{{account['token']}}";
+                data.id = Array();
+                data.priority = Array();
+                $.each(trs, function(i, tr){
+                    $(tr).find('[priority]').text(i+1);
+                    data.id.push($(tr).attr('execute-id'));
+                    data.priority.push(i+1);
+                });
+                $.post('/api/executes/', data, function(msg){
+                    if(msg['status'] == 200){
+                    }else{
+                        bootbox.alert(msg['msg']);
+                    }
+                }, "json");
+                return true;
             }
-        }, "json");
-        return true;
-    }
+        });
     </script>
+    {% end %}
 {% end %}
-        
 
-{% end %}

@@ -98,7 +98,7 @@
 </form>
 
 <script>
-$( document ).ready(function(){
+require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
     $("[name=visible]").selectpicker().selectpicker('val', {{data["visible"]}});
     $("[name=verdict_id]").selectpicker().selectpicker('val', {{data["verdict_id"]}});
     $("[name=verdict_execute_type_id]").selectpicker();

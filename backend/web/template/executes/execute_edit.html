@@ -29,12 +29,12 @@
                         {% for x in data['steps'] %}
                             <tr>
                                 <td><input class="form-control" name="command[]" value="{{x['command']}}"></td>
-                                <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div</td>
+                                <td><div onclick="delete_execute(this);" class="btn btn-danger btn-sm">Delete</div</td>
                             </tr>
                         {% end %}
                     </tbody>
                 </table>
-                <div onclick="$('tbody:not(.template)').append($('.execute.step.template').html());" class="btn btn-success">New</div>
+                <div class="btn btn-success new execute">New</div>
             </div>
         </div>
     </div>
@@ -44,12 +44,21 @@
     <tbody class="template execute step">
         <tr>
             <td><input class="form-control" name="command[]" value=""></td>
-            <td><div onclick="$(this).parent().parent().remove();" class="btn btn-danger btn-sm">Delete</div></td>
+            <td><div onclick="delete_execute(this);" class="btn btn-danger btn-sm">Delete</div></td>
         </tr>
     </tbody>
 </table>
 <script>
-$( document ).ready(function(){
+
+function delete_execute(ele){
+    require(["jquery"], function($){
+        $(ele).parent().parent().remove();
+    });
+}
+require(["jquery", "bootbox", "bootstrap-select"], function(jquery, bootbox){
+    $(".new.execute").click(function(){
+        $('tbody:not(.template)').append($('.execute.step.template').html());
+    });
     $(".select").selectpicker();
     $(".select").selectpicker('val', {{data['lang']}});
     $("form").submit(function(){

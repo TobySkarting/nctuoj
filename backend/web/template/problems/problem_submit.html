@@ -5,7 +5,7 @@
         <form action="/api/group/{{current_group}}/submissions/0/submit/">
             <input type="hidden" name="id" value="{{data['id']}}">
             <input type="hidden" name="token" value="{{account['token']}}">
-            <a href="/group/{{current_group}}/problems/{{data['id']}}/"><h1>{{data['id']}}.{{data['title']}}</h1></a>
+            <h1><a href="/group/{{current_group}}/problems/{{data['id']}}/">{{data['id']}}.{{data['title']}}</a></h1>
             <div class="form-inline margin-bottom">
                 <label class="control-label">Execute Type:</label>
                 <select class="selectpicker" name="execute_type_id">
@@ -39,7 +39,7 @@
     </div>
 </div>
 <script>
-$( document ).ready(function(){
+require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
     $("button").prop("disabled", false);
     $(".selectpicker").selectpicker();
     $("form").submit(function(){

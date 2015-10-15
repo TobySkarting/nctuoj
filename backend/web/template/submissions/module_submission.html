@@ -2,14 +2,16 @@
     <a class="btn btn-default" _href="/api/group/{{current_group}}/submissions/{{data['id']}}/rejudge/" style="margin-bottom: 12px;" onclick="rejudge_submission(this);">Rejudge</a>
     <script>
     function rejudge_submission(ele){
-        ele = $(ele);
-        $.post(ele.attr("_href"), {'token': '{{account['token']}}'}, function(msg){
-            if(msg['status'] == 200){
-                location.href = location.href;
-            }else{
-                bootbox.alert(msg['msg']);
-            }
-        }, "json");
+        require(["jquery", "bootbox"], function(){
+            ele = $(ele);
+            $.post(ele.attr("_href"), {'token': '{{account['token']}}'}, function(msg){
+                if(msg['status'] == 200){
+                    location.href = location.href;
+                }else{
+                    bootbox.alert(msg['msg']);
+                }
+            }, "json");
+        });
     }
     </script>
 {% end %}
@@ -169,7 +171,7 @@
     <button type="submit" class="btn btn-success">Submit</button>
 </div>
 <script>
-$( document ).ready(function(){
+require(["jquery", "bootbox", "bootstrap-select"], function(){
     $("button").prop("disabled", false);
     $(".selectpicker").selectpicker();
     $("form").submit(function(){

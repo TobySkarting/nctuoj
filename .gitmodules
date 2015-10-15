@@ -19,3 +19,6 @@
 [submodule "http/codemirror"]
 	path = http/codemirror
 	url = https://github.com/codemirror/codemirror
+[submodule "http/requirejs"]
+	path = http/requirejs
+	url = https://github.com/jrburke/requirejs.git
