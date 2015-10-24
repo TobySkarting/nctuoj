@@ -49,7 +49,6 @@
         </div>
     </nav>
     <div class="container-fluid">
-        {% if account['id'] != 0 %}
             <div class="row">
                 <div class="col-md-2">
                     <div class="row">
@@ -87,13 +86,5 @@
                     {% end %}
                 </div>
             </div>
-        {% else %}
-            <div class="row">
-                <div class="col-md-12" style="padding-top: 15px;">
-                    {% block content %}
-                    {% end %}
-                </div>
-            </div>
-        {% end %}
     </div>
 {% end %}
