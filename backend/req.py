@@ -100,6 +100,9 @@ class ApiRequestHandler(RequestHandler):
                 self.account = data
         if self.request.method != 'GET':
             if self.account['id'] == 0 and self.request.uri not in config.API_URI_WITHOUT_SIGNIN:
+                print(self.request.uri)
+                print(config.API_URI_WITHOUT_SIGNIN)
+                print("======")
                 self.render(403, 'Permission Denied')
                 return
         id = self.account['id']
@@ -108,6 +111,8 @@ class ApiRequestHandler(RequestHandler):
         err, self.account['power'] = yield from Service.User.get_user_power_info(id)
         err, self.group = yield from Service.User.get_user_group_info(id)
         err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
+
+
 
         in_group = self.current_group in (x['id'] for x in self.group)
         if not in_group and self.current_group != 0:

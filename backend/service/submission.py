@@ -11,8 +11,8 @@ import time
 import tornado
 
 class SubmissionService(BaseService):
-    def __init__(self, db, rs, ftp):
-        super().__init__(db, rs, ftp)
+    def __init__(self, db, rs):
+        super().__init__(db, rs)
         SubmissionService.inst = self
     
     def get_submission_list(self, data):

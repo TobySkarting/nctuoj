@@ -5,8 +5,8 @@ import subprocess as sp
 from req import Service
 
 class ProblemService(BaseService):
-    def __init__(self, db, rs, ftp):
-        super().__init__(db, rs, ftp)
+    def __init__(self, db, rs):
+        super().__init__(db, rs)
         ProblemService.inst = self
 
     def get_problem_list(self, data={}):

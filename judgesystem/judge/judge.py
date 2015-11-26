@@ -1,11 +1,10 @@
-### sudo python3 -E judge.py
+#!/usr/bin/env python3
 
 import socket
 import os
 import select
 import config
 import psycopg2
-from ftp import FTP
 import select
 import json
 import sys
@@ -67,7 +66,6 @@ class DatetimeEncoder(json.JSONEncoder):
 
 class Judge:
     def __init__(self):
-        self.ftp = FTP(config.ftp_server, config.ftp_port, config.ftp_user, config.ftp_password)
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         times = 0
         delay = [5, 10, 30, 60, 300]

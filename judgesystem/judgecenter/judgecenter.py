@@ -1,14 +1,14 @@
+#!/usr/bin/env python3 
 ### http://www.binarytides.com/python-socket-server-code-example/
 import os
 import socket
 import select
 import config
-import psycopg2
-import psycopg2.extras
-import ftp
 import sys
 import json
 import time
+import psycopg2
+import psycopg2.extras
 from myredis import MyRedis
 from map import *
 import datetime
@@ -29,7 +29,6 @@ class JudgeCenter:
         self.rs = MyRedis(host=config.redis_host, port=config.redis_port, db=config.redis_db)
         self.db = psycopg2.connect( host=config.db_host, dbname=config.db_dbname, user=config.db_user, password=config.db_password) 
         self.db.autocommit = True
-        # self.ftp = ftp.FTP(config.ftp_server, config.ftp_port, config.ftp_user, config.ftp_password)
 
         self.recv_buffer_len = 4
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -292,5 +291,4 @@ class JudgeCenter:
 if __name__ == "__main__":
     print("====start====")
     judgecenter = JudgeCenter()
-    #judgecenter.insert_submission()
     judgecenter.run()

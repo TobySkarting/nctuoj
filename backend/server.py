@@ -7,7 +7,6 @@ from req import Service
 ### my app
 import config
 import pg
-from ftp import FTP
 import mysql
 import myredis
 
@@ -141,7 +140,6 @@ if __name__ == '__main__':
     #        host=config.DBHOST)
     db = pg.AsyncPG(config.DBNAME, config.DBUSER, config.DBPASSWORD, host=config.DBHOST, dbtz='+8')
     rs = myredis.MyRedis(db=1)
-    ftp = FTP(config.FTPSERVER, config.FTPPORT, config.FTPUSER, config.FTPPASSWD)
     rs.flushdb()
     ui_modules = {
             "Pagination": web.modules.Pagination,
@@ -248,17 +246,17 @@ if __name__ == '__main__':
     global srv
     srv = tornado.httpserver.HTTPServer(app)
     srv.listen(config.PORT)
-    Service.User =          UserService(db, rs, ftp)
-    Service.Problem =       ProblemService(db, rs, ftp)
-    Service.Submission =    SubmissionService(db, rs, ftp)
-    Service.Testdata =      TestdataSerivce(db, rs, ftp)
-    Service.Bulletin =      BulletinService(db, rs, ftp)
-    Service.Execute =       ExecuteService(db, rs, ftp)
-    Service.Contest =       ContestService(db, rs, ftp)
-    Service.Verdict =       VerdictService(db, rs, ftp)
-    Service.Group =         GroupService(db, rs, ftp)
-    Service.Tags =          TagService(db, rs, ftp)
-    Service.VerdictString = VerdictStringService(db, rs, ftp)
+    Service.User =          UserService(db, rs)
+    Service.Problem =       ProblemService(db, rs)
+    Service.Submission =    SubmissionService(db, rs)
+    Service.Testdata =      TestdataSerivce(db, rs)
+    Service.Bulletin =      BulletinService(db, rs)
+    Service.Execute =       ExecuteService(db, rs)
+    Service.Contest =       ContestService(db, rs)
+    Service.Verdict =       VerdictService(db, rs)
+    Service.Group =         GroupService(db, rs)
+    Service.Tags =          TagService(db, rs)
+    Service.VerdictString = VerdictStringService(db, rs)
     print('Server Started')
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)

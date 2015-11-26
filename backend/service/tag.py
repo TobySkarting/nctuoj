@@ -3,8 +3,8 @@ from map import *
 from service.base import BaseService
 
 class TagService(BaseService):
-    def __init__(self, db, rs, ftp):
-        super().__init__(db, rs, ftp)
+    def __init__(self, db, rs):
+        super().__init__(db, rs)
 
         TagService.inst = self
 

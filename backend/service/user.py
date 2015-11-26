@@ -6,8 +6,8 @@ import random
 import datetime
 
 class UserService(BaseService):
-    def __init__(self, db, rs, ftp):
-        super().__init__(db, rs, ftp)
+    def __init__(self, db, rs):
+        super().__init__(db, rs)
         UserService.inst = self
 
     def hash_pwd(self, pwd):

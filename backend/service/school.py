@@ -2,8 +2,8 @@ from req import Service
 from service.base import BaseService
 
 class SchoolService(BaseService):
-    def __init__(self, db, rs, ftp):
-        super().__init__(db, rs, ftp)
+    def __init__(self, db, rs):
+        super().__init__(db, rs)
         SchoolService.inst = self
 
     def get_school_list(self):

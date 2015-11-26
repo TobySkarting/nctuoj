@@ -4,8 +4,8 @@ from map import *
 import os
 
 class TestdataSerivce(BaseService):
-    def __init__(self, db, rs, ftp):
-        super().__init__(db, rs, ftp)
+    def __init__(self, db, rs):
+        super().__init__(db, rs)
         TestdataSerivce.inst = self
 
     def get_testdata_list(self):

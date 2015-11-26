@@ -6,8 +6,8 @@ import datetime
 from functools import reduce
 
 class ContestService(BaseService):
-    def __init__(self, db, rs, ftp):
-        super().__init__(db, rs, ftp)
+    def __init__(self, db, rs):
+        super().__init__(db, rs)
         ContestService.inst = self
 
     def get_current_contest(self):
