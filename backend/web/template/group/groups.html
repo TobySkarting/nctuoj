@@ -1,0 +1,23 @@
+{% extends './../frame.html' %}
+{% block content %}
+<div class="panel panel-default">
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for x in data %}
+                <tr>
+					<td>{{x['id']}}</td>
+					<td>{{x['name']}}</td>
+                </tr>
+            {% end %}
+        </tbody>
+    </table>
+</div>
+{% module Pagination(page) %}
+{% end %}
+

@@ -17,7 +17,7 @@
     <button class="col-sm-offset-4 btn btn-success" type="submit">SignIn</button>
 </form>
 <script>
-require(["jquery", "bootbox"], function(){
+require(["jquery", "bootbox"], function($, bootbox){
     $("form").submit(function(){
         form = $(this);
         $.ajax({

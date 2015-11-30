@@ -22,3 +22,6 @@
 [submodule "http/requirejs"]
 	path = http/requirejs
 	url = https://github.com/jrburke/requirejs.git
+[submodule "http/loadCSS"]
+	path = http/loadCSS
+	url = https://github.com/filamentgroup/loadCSS

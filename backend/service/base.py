@@ -11,7 +11,7 @@ class BaseService:
         for a in args:
             if a not in data:
                 return 'Error: %s should exist' % a
-            if data[a] is None:
+            if not data[a]:
                 return 'Error: %s should not be empty.' % a
         return None
 

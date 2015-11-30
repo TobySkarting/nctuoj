@@ -1,5 +1,6 @@
 config.py
 __pycache__
+*.pyc
 *.sw[po]
 *.log
 .sass-cache

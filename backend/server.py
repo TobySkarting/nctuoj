@@ -89,6 +89,7 @@ from web.verdict        import WebVerdictTypesHandler
 from web.verdict        import WebVerdictTypeHandler
 
 from web.group          import WebGroupHandler
+from web.group          import WebGroupsHandler
 
 from web.about          import WebAboutHandler
 
@@ -187,6 +188,8 @@ if __name__ == '__main__':
         ('/api/verdicts/(\d+)/',                                        ApiVerdictTypeHandler),
         ('/api/tags/',                                                  ApiTagsHandler),
         ('/api/tags/(\d+)/',                                            ApiTagHandler),
+
+        ('/groups/',                                                    WebGroupsHandler),
 
         ('/group/(\d+)/',                                               WebGroupHandler),
         ('/group/\d+/bulletins/',                                       WebBulletinsHandler),

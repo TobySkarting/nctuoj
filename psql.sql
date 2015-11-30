@@ -86,6 +86,7 @@ INSERT INTO map_user_power (user_id, power) VALUES (1, 4);
 CREATE TABLE groups (
     id              serial          NOT NULL    PRIMARY KEY,
     name            varchar(255)    NOT NULL,
+	type			integer			NOT NULL DEFAULT 0,
     description     varchar(255)    NOT NULL,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
@@ -155,22 +156,23 @@ CREATE TABLE execute_types (
     recompile       integer         NOT NULL    DEFAULT 0   CHECK(recompile = ANY('{0,1}')), 
     setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     priority        integer         NOT NULL    DEFAULT 999,
+	cm_mode			varchar(255)	DEFAULT '',
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER execute_types_updated_row BEFORE UPDATE ON execute_types FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX on execute_types (priority);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C', 0, 1, 1);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++', 1, 1, 2);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++11', 1, 1, 3);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Java', 2, 1, 4);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Python2', 3, 1, 5);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Python3', 4, 1, 6);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Go', 5, 1, 7);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Perl', 6, 1, 8);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Javascript', 7, 1, 9);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Ruby', 9, 1, 10);
-INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic shell', 10, 1, 11);
+INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic C', 0, 1, 1, 'text/x-csrc');
+INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic C++', 1, 1, 2, 'text/x-c++src');
+INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic C++11', 1, 1, 3, 'text/x-c++src');
+INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Java', 2, 1, 4, 'text/x-java');
+INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Python2', 3, 1, 5, 'text/x-python');
+INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Python3', 4, 1, 6, 'text/x-python');
+INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Go', 5, 1, 7, 'text/x-go');
+INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Perl', 6, 1, 8, 'text/x-perl');
+INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Javascript', 7, 1, 9, 'text/javascript');
+INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Ruby', 9, 1, 10, 'text/x-ruby');
+INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic shell', 10, 1, 11, 'text/x-sh');
 --map_lang = {
 --0: "C",
 --1: "C++",

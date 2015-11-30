@@ -185,12 +185,18 @@ class UserService(BaseService):
         return id(str)
         '''
         ### check required arguemts
-        required_args = ['account', 'student_id', 'passwd', 'repasswd', 'email', 'school_id']
+        print("XDDDDDDDDDDDDDDDDDDDDDDDD")
+        print(data)
+        required_args = ['email', 'account', 'student_id', 'passwd', 'repasswd', 'school_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         ### check data valadation
         if data['passwd'] != data['repasswd']:
             return ('Confirm Two Password', None)
+
+        res, res_cnt = yield from self.db.execute("SELECT * FROM schools WHERE id=%s", (data['school_id'],))
+        if res_cnt == 0:
+            return ('Invalid School', None)
 
         ### check conflict
         res, res_cnt = yield from self.db.execute('SELECT id FROM users ' 
@@ -210,7 +216,7 @@ class UserService(BaseService):
         res, res_cnt = yield from self.db.execute('SELECT id FROM users '
                 'WHERE account = %s', (data['account'],))
         if res_cnt == 0:
-            return ('Something Wrong', None)
+            return ('Something Wrong!!!', None)
         id = res[0]["id"]
         self.rs.delete('user_list_count')
         return (None, str(id))

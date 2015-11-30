@@ -8,12 +8,10 @@ class GroupService(BaseService):
 
         GroupService.inst = self
 
-    def get_group_list(self):
-        res = self.rs.get('group_list')
-        if res: return (None, res)
-        res, res_cnt = yield from self.db.execute('SELECT * FROM groups ORDER BY id;')
-        self.rs.set('group_list', res)
-        self.rs.set('group_list_count', res_cnt)
+    def get_group_list(self, data={}):
+        required_args = ['page', 'count']
+        err = self.check_required_args(required_args, data)
+        res, res_cnt = yield from self.db.execute('SELECT * FROM groups ORDER BY id LIMIT %s OFFSET %s;', (data['count'], int(data['page']-1)*int(data['count']),))
         return (None, res)
 
 
@@ -21,8 +19,8 @@ class GroupService(BaseService):
         res = self.rs.get('group_list_count')
         if res: return (None, res)
         res, res_cnt = yield from self.db.execute('SELECT COUNT(*) FROM groups;')
-        self.rs.set('group_list_count', res)
-        return (None, res)
+        self.rs.set('group_list_count', res[0]['count'])
+        return (None, res[0]['count'])
 
     def get_group(self, data={}):
         required_args = ['id']

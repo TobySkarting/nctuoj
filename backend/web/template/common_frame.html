@@ -12,7 +12,6 @@
                 "jqueryui": {"deps": ['jquery']},
                 "bootstrap-select": {"deps": ['bootstrap']},
                 "bootstrap-datetimepicker": {"deps": ['bootstrap', 'moment']},
-                "codemirror": {},
             },
             paths: {
                 "jquery" : "/asset/jQuery/jquery.min",
@@ -22,8 +21,14 @@
                 "moment": "/asset/moment/min/moment.min",
                 "bootstrap-select": "/asset/bootstrap-select/dist/js/bootstrap-select.min",
                 "bootstrap-datetimepicker": "/asset/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min",
-                "codemirror": "/asset/codemirror/lib/codemirror",
+				"loadCSS": "/asset/loadCSS/loadCSS",
+				"onloadCSS": "/asset/loadCSS/onloadCSS",
             },
+			packages: [{
+				name: "codemirror",
+				location: '/asset/codemirror/',
+				main: 'lib/codemirror'
+			}],
             urlArgs: "date=2015/10/14 23:35",
         });
     </script>

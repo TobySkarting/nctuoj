@@ -27,13 +27,11 @@
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Global<span class="caret"></span></a>
                         <ul class="dropdown-menu">
+							<li><a href="/groups/">Group</a></li>
                             <li><a href="/executes/">Execute Type</a></li>
                             <li><a href="/verdicts/">Verdict Type</a></li>
                             {% if map_power['user_manage'] in account['power'] %}
                                 <li><a href="/users/">User</a></li>
-                            {% end %}
-                            {% if map_power['group_manage'] in account['power'] %}
-                                <li><a href="/groups/">Group</a></li>
                             {% end %}
                         </ul>
                     </li>
