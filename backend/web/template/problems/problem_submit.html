@@ -8,7 +8,7 @@
             <h1><a href="/group/{{current_group}}/problems/{{data['id']}}/">{{data['id']}}.{{data['title']}}</a></h1>
             <div class="form-inline margin-bottom">
                 {% set x = data['execute'][0] %}
-                <input type="hidden" class="execute_type" value="{{x['id']}}">
+                <input type="hidden" class="execute_type" name="execute_type_id" value="{{x['id']}}">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="dropdown" width="100%">
