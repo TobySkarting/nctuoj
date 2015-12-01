@@ -3,6 +3,7 @@
 {% if map_power['execute_manage'] in account['power'] %}
     <a class="btn btn-default" href="/executes/0/edit/" style="margin-bottom: 12px;">New</a>
 {% end %}
+<div class="table-responsive">
 <table class="table table-hover table-striped table-condensed" id="executes">
     <thead>
         <tr>
@@ -26,6 +27,8 @@
         {% end %}
     </tbody>
 </table>
+</div>
+<div class="table-responsive">
 <table class="table table-hover table-striped">
     <thead>
         <tr>
@@ -52,6 +55,7 @@
         </tr>
     </tbody>
 </table>
+</div>
     {% if map_power['execute_manage'] in account['power'] %}
     <script>
         require(["jquery", "jqueryui"], function($){
