@@ -77,6 +77,14 @@
 							<option>yeti</option>
 							<option>zenburn</option>
 						</select>
+                        <label class="control-label">Editor Mode</label>
+                        <select class="selectpicker" name="editor-mode">
+                            <option>Normal</option>
+                            <option>Vim</option>
+                            <option>Sublime</option>
+                            <option>Emacs</option>
+                        </select>
+                        <label class="control-label">F11 to fullscreen</label>
                     </div>
                 </div>
                 <div class="panel-body edit">
@@ -103,14 +111,30 @@ require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, Code
 		}
 		return lang_list;
 	}
-	require(gen_support_lang_list(support_lang).concat(['loadCSS', 'onloadCSS', 
-			'codemirror/addon/edit/matchbrackets']), function(){
+    var keymap_js_list = ['codemirror/keymap/vim', 'codemirror/keymap/sublime', 'codemirror/keymap/emacs'];
+	require(gen_support_lang_list(support_lang).
+            concat(keymap_js_list).
+            concat(['codemirror/addon/edit/matchbrackets', 
+                'codemirror/addon/display/fullscreen',
+                'codemirror/addon/dialog/dialog',
+                'loadCSS', 'onloadCSS']), function(){
 		console.log(CodeMirror.mimeModes);
 		var codemirror = CodeMirror.fromTextArea($('[name=plain_code]')[0], {
 			lineNumbers: true,
 			mode: map_lang_mode[$('[name=execute_type_id]').val()],
 			matchBrackets: true,
-			theme: "default"
+			theme: "default",
+            tabSize: 4,
+            indentUnit: 4,
+            indentWithTabs: true,
+            autofocus: true,
+            extraKeys: {
+                "F11": function(cm){
+                    onloadCSS(loadCSS('/asset/codemirror/addon/display/fullscreen.css'), function(){
+                        cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                    });
+                },
+            },
 		});
 		$('[name=execute_type_id]').change(function(){
 			codemirror.setOption("mode", map_lang_mode[$(this).val()]);
@@ -122,6 +146,9 @@ require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, Code
 				codemirror.setOption("theme", theme);
 			});
 		});
+        $('[name=editor-mode]').change(function(){
+            codemirror.setOption("keyMap", $(this).val().toLowerCase());
+        });
 	});
     $("button").prop("disabled", false);
     $(".selectpicker").selectpicker();
@@ -149,4 +176,5 @@ require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, Code
     });
 });
 </script>
+<link rel="stylesheet" href="/asset/codemirror/addon/dialog/dialog.css" media=all>
 {% end %}
