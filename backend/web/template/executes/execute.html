@@ -9,7 +9,10 @@
     <div class="col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                Lang: {{map_lang[data['lang']]}}
+                <label class="panel-title">Lang: </label>
+                <span class="panel-title">{{map_lang[data['lang']]}}</span>
+                <label class="right panel-title" style="padding-left: 5em">CM Mode: </label>
+                <span class="panel-title">{{data['cm_mode']}}</span>
             </div>
             <div class="panel-body">
                 {% raw md(data['description']) %}
