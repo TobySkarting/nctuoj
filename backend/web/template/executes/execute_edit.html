@@ -12,12 +12,16 @@
         <div class="col-xs-12">
             <div class="edit panel panel-default">
                 <div class="panel-heading">
-                    Lang: 
-                    <select class="select" name="lang">
-                        {% for x in map_lang %}
+                    <div class="form-inline">
+                        <label class="control-label">Lang: </label>
+                        <select class="select" name="lang">
+                            {% for x in map_lang %}
                             <option value={{x}}>{{map_lang[x]}}</option>
-                        {% end %}
-                    </select>
+                            {% end %}
+                        </select>
+                        <label class="control-label">CM Mode: </label>
+                        <input class="form-control" name="cm_mode" value={{data['cm_mode']}}>
+                    </div>
                 </div>
                 <div class="panel-body edit"><textarea class="form-control" rows=5 name="description">{% raw data['description'] %}</textarea></div>
                 <table class="table table-hover table-striped table-condensed">

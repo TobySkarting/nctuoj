@@ -26,6 +26,7 @@ class ExecuteService(BaseService):
             res['id'] = 0
             res['lang'] = 0
             res['description'] = ''
+            res['cm_mode'] = ''
             return (None, res)
         res = self.rs.get('execute@%s'%(str(data['id'])))
         if res: return (None, res)

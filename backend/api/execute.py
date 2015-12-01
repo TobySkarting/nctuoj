@@ -46,7 +46,7 @@ class ApiExecuteTypeHandler(ApiRequestHandler):
         check_meta['id'] = id
         if not (yield from self.check_edit(check_meta)):
             return
-        args = ["description", "lang", "command[]"]
+        args = ["description", "lang", "command[]", "cm_mode"]
         meta = self.get_args(args)
         meta["setter_user_id"] = self.account['id']
         meta['id'] = id

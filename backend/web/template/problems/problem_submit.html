@@ -142,12 +142,14 @@ require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, Code
 		$('[name=theme]').change(function(){
 			var theme = $(this).val();
 			onloadCSS(loadCSS('/asset/codemirror/theme/' + theme.split(' ')[0] + '.css'), function(){
-				console.log(theme);
 				codemirror.setOption("theme", theme);
 			});
 		});
         $('[name=editor-mode]').change(function(){
-            codemirror.setOption("keyMap", $(this).val().toLowerCase());
+            var editor_mode = $(this).val().toLowerCase();
+            onloadCSS(loadCSS('/asset/codemirror/addon/dialog/dialog.css'), function(){
+                codemirror.setOption("keyMap", editor_mode);
+            });
         });
 	});
     $("button").prop("disabled", false);
@@ -176,5 +178,4 @@ require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, Code
     });
 });
 </script>
-<link rel="stylesheet" href="/asset/codemirror/addon/dialog/dialog.css" media=all>
 {% end %}
