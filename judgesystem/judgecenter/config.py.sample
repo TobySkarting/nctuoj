@@ -9,4 +9,7 @@ ftp_password = ""
 judgecenter_host = ""
 judgecenter_port = 3118
 judgecenter_listen = 10
-
+redis_host = ''
+redis_port = 6379
+redis_db = 1
+DATA_EXPIRE_SECOND = 86400
