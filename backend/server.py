@@ -6,7 +6,7 @@ import tornado.web
 from req import Service 
 ### my app
 import config
-import pg
+# import pg
 import mysql
 import myredis
 
@@ -14,6 +14,8 @@ import myredis
 import time
 import signal
 import logging
+import momoko
+import psycopg2.extras
 
 ### service class
 from service.user       import UserService
@@ -26,6 +28,7 @@ from service.contest    import ContestService
 from service.verdict    import VerdictService
 from service.group      import GroupService
 from service.tag        import TagService
+from service.school     import SchoolService
 from service.verdictstring import VerdictStringService
 
 
@@ -135,11 +138,18 @@ if __name__ == '__main__':
             filename=config.LOG_FILE_PATH,
             filemode='a')
     '''
-    #db = mysql.AsyncMysql(user=config.DBUSER,
-    #        database=config.DBNAME,
-    #        passwd=config.DBPASSWORD,
-    #        host=config.DBHOST)
-    db = pg.AsyncPG(config.DBNAME, config.DBUSER, config.DBPASSWORD, host=config.DBHOST, dbtz='+8')
+    db = momoko.Pool(
+            dsn = 'dbname=%s user=%s password=%s host=%s port=%s'%(config.DBNAME, config.DBUSER, config.DBPASSWORD, config.DBHOST, config.DBPORT),
+            size = config.DBMIN_SIZE,
+            max_size = config.DBMAX_SIZE,
+            ioloop = tornado.ioloop.IOLoop.instance(),
+            setsession = ("SET TIME ZONE +8",),
+            raise_connect_errors=False,
+            cursor_factory = psycopg2.extras.RealDictCursor 
+            )
+    future = db.connect()
+    tornado.ioloop.IOLoop.instance().add_future(future, lambda f: tornado.ioloop.IOLoop.instance().stop())
+    tornado.ioloop.IOLoop.instance().start()
     rs = myredis.MyRedis(db=1)
     rs.flushdb()
     ui_modules = {
@@ -259,8 +269,9 @@ if __name__ == '__main__':
     Service.Verdict =       VerdictService(db, rs)
     Service.Group =         GroupService(db, rs)
     Service.Tags =          TagService(db, rs)
+    Service.School =        SchoolService(db, rs)
     Service.VerdictString = VerdictStringService(db, rs)
-    print('Server Started')
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
+    print('Server Started')
     tornado.ioloop.IOLoop().instance().start()

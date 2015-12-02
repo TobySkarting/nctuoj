@@ -35,14 +35,19 @@
     <div class="form-group">
         <label class="col-sm-4 control-label">School</label>
         <div class="col-sm-4">
-            <input type="number" min="0" class="form-control" name="school_id">
+            <select class="select" name="school_id">
+                {% for x in school %}
+                    <option value="{{x['id']}}">{{x['name']}}</option>
+                {% end %}
+            </select>
         </div>
     </div>
     
     <button class="col-sm-offset-4 btn btn-success" type="submit">SignUp</button>
 </form>
 <script>
-require(["jquery", "bootbox"], function($, bootbox){
+require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
+    $(".select").selectpicker();
     $("form").submit(function(){
         form = $(this);
         $.ajax({

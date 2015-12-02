@@ -28,8 +28,8 @@ class ProblemService(BaseService):
         sql += """ (p.group_id=%s) """
         sql += """ ORDER BY p.id limit %s OFFSET %s """
 
-        res, res_cnt = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
-        return (None, res)
+        res  = yield self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
+        return (None, res.fetchall())
         
     ### Should be improvement
     def get_problem_list_count(self, data={}):
@@ -44,10 +44,11 @@ class ProblemService(BaseService):
         #    sql += "WHERE (p.group_id=%s OR p.visible = 2)"
         #else:
         sql += "WHERE p.group_id=%s"
-        res, res_cnt = yield from self.db.execute(sql, (data['group_id'],))
+        res = yield self.db.execute(sql, (data['group_id'],))
+        res = res.fetchone()
         self.rs.set('problem_list_count@%s'
-                % (str(data['group_id'])), res[0]['count'])
-        return (None, res[0]['count'])
+                % (str(data['group_id'])), res['count'])
+        return (None, res['count'])
 
     def get_problem(self, data={}):
         required_args = ['id']
@@ -65,10 +66,10 @@ class ProblemService(BaseService):
         res = self.rs.get('problem@%s' % str(data['id']))
         if not res:
             sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
-            res, res_cnt = yield from self.db.execute(sql, (data["id"], ))
-            if res_cnt == 0:
+            res = yield self.db.execute(sql, (data["id"], ))
+            if res.rowcount == 0:
                 return ('No problem id', None)
-            res = res[0]
+            res = res.fetchone()
             self.rs.set('problem@%s' % str(data['id']), res)
         err, res['execute'] = yield from Service.Execute.get_problem_execute({'problem_id': data['id']})
         err, res['testdata'] = yield from Service.Testdata.get_testdata_list_by_problem({'problem_id': data['id']})
@@ -100,14 +101,14 @@ class ProblemService(BaseService):
             self.reset_rs_problem_count(data['group_id'])
             data.pop('id')
             sql, parma = self.gen_insert_sql("problems", data)
-            id = (yield from self.db.execute(sql, parma))[0][0]['id']
+            id = (yield self.db.execute(sql, parma)).fetchone()['id']
         else:
             self.reset_rs_problem_count(data['group_id'])
             id = data.pop('id')
             self.rs.delete('problem@%s' % str(id))
             sql, parma = self.gen_update_sql("problems", data)
-            yield from self.db.execute("%s WHERE id = %s" % (sql, id), parma)
-            yield from self.db.execute('DELETE FROM verdicts WHERE problem_id=%s AND id!=%s;', (id, data['verdict_id'],))
+            yield self.db.execute("%s WHERE id = %s" % (sql, id), parma)
+            yield self.db.execute('DELETE FROM verdicts WHERE problem_id=%s AND id!=%s;', (id, data['verdict_id'],))
         if new_verdict:
             meta['id'] = data['verdict_id']
             meta['title'] = 'special judge for problem %s'%(id)
@@ -125,7 +126,7 @@ class ProblemService(BaseService):
         err, data = yield from self.get_problem(data)
         if err: return (err, None)
         self.reset_rs_problem_count(data['group_id'])
-        yield from self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id']),))
+        yield self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id']),))
         self.rs.delete('problem@%s' % str(data['id']))
         self.rs.delete('problem@%s@execute' % str(data['id']))
         return (None, None)
@@ -134,9 +135,9 @@ class ProblemService(BaseService):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res, res_cnt = yield from self.db.execute('SELECT s.id FROM submissions as s WHERE s.problem_id=%s ORDER BY s.id;', (data['id'],))
+        res = yield self.db.execute('SELECT s.id FROM submissions as s WHERE s.problem_id=%s ORDER BY s.id;', (data['id'],))
         for x in res: self.rs.delete('submission@%s'%(str(x['id'])))
-        yield from self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s, verdict=%s WHERE id IN %s;', (None, None, None, 1, tuple(x['id'] for x in res)))
-        yield from self.db.execute('DELETE FROM map_submission_testdata WHERE submission_id IN %s;', (tuple(x['id'] for x in res),))
-        yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES '+','.join('(%s)'%x['id'] for x in res))
+        yield self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s, verdict=%s WHERE id IN %s;', (None, None, None, 1, tuple(x['id'] for x in res)))
+        yield self.db.execute('DELETE FROM map_submission_testdata WHERE submission_id IN %s;', (tuple(x['id'] for x in res),))
+        yield self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES '+','.join('(%s)'%x['id'] for x in res))
         return (None, str(data['id']))

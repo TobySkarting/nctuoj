@@ -17,7 +17,8 @@ class VerdictService(BaseService):
         if 'problem_id' in data and data['problem_id']:
             sql += ' AND (v.problem_id=%s OR v.problem_id=0)'
             param = (data['problem_id'],)
-        res, res_cnt = yield from self.db.execute(sql, param)
+        res = yield self.db.execute(sql, param)
+        res = res.fetchall()
         self.rs.set('verdict_list', res)
         return (None, res)
 
@@ -33,21 +34,16 @@ class VerdictService(BaseService):
             return (None, res)
         res = self.rs.get('verdict@%s'%str(data['id']))
         if res: return (None, res)
-        res, res_cnt = yield from self.db.execute('SELECT v.*, u.account as setter_user FROM verdicts as v, users as u WHERE v.id=%s AND v.setter_user_id=u.id;', (data['id'],))
-        if res_cnt == 0:
+        res = yield self.db.execute('SELECT v.*, u.account as setter_user FROM verdicts as v, users as u WHERE v.id=%s AND v.setter_user_id=u.id;', (data['id'],))
+        if res.rowcount == 0:
             return ('No Verdict ID', None)
-        res = res[0]
+        res = res.fetchone()
         err, res['execute_type'] = yield from Service.Execute.get_execute({'id': res['execute_type_id']})
 
         folder = '/mnt/nctuoj/data/verdicts/%s/' % str(res['id'])
         file_path = '%s/%s' % (folder, res['file_name'])
-        #if not os.path.isfile(file_path):
-            #remote_folder = '/mnt/nctuoj/data/verdicts/%s/' % str(res['id'])
-            #remote_path = '%s/%s' % (remote_folder, res['file_name'])
-            #yield self.ftp.get(remote_path, file_path)
         try: os.makedirs(folder)
         except: pass
-
         with open(file_path) as f:
             res['code'] = f.read()
         res['code_line'] = len(open(file_path).readlines())
@@ -67,26 +63,23 @@ class VerdictService(BaseService):
             code_file = data.pop('code_file')
             data.pop('id')
             sql, param = self.gen_insert_sql('verdicts', data)
-            id = (yield from self.db.execute(sql, param))[0][0]['id']
+            id = (yield self.db.execute(sql, param)).fetchone()['id']
         else:
             code_file = data.pop('code_file')
             if code_file: data['file_name'] = code_file['filename']
             sql, param = self.gen_update_sql('verdicts', data)
             id = data.pop('id')
-            yield from self.db.execute(sql+' WHERE id=%s;', param+(id,))
+            yield self.db.execute(sql+' WHERE id=%s;', param+(id,))
         
         if code_file:
             folder = '/mnt/nctuoj/data/verdicts/%s/' % str(id)
-            #remote_folder = '/mnt/nctuoj/data/verdicts/%s/' % str(id)
             file_path = '%s/%s' % (folder, data['file_name'])
-            #remote_path = '%s/%s' % (remote_folder, data['file_name'])
             try: shutil.rmtree(folder)
             except: pass
             try: os.makedirs(folder)
             except: pass
             with open(file_path, 'wb+') as f:
                 f.write(code_file['body'])
-            #yield self.ftp.put(file_path, remote_path)
         self.rs.delete('verdict@%s'%(str(id)))
         self.rs.delete('verdict_list')
         return (None, str(id))
@@ -95,7 +88,7 @@ class VerdictService(BaseService):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        yield from self.db.execute('DELETE FROM verdicts WHERE id=%s;', (data['id'],))
+        yield self.db.execute('DELETE FROM verdicts WHERE id=%s;', (data['id'],))
         self.rs.delete('verdict_list')
         self.rs.delete('verdict@%s'%(str(data['id'])))
         return (None, str(data['id']))
