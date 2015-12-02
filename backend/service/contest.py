@@ -11,7 +11,7 @@ class ContestService(BaseService):
         ContestService.inst = self
 
     def get_current_contest(self):
-        res, res_cnt = yield from self.db.execute('SELECT id FROM contests WHERE start<=%s AND %s<="end";', (datetime.datetime.now(), datetime.datetime.now(), ))
+        res = yield self.db.execute('SELECT id FROM contests WHERE start<=%s AND %s<="end";', (datetime.datetime.now(), datetime.datetime.now(), ))
         return (None, list(set(int(x['id']) for x in res)))
 
     def get_contest_list(self, data={}):
@@ -29,8 +29,8 @@ class ContestService(BaseService):
         sql += " (c.group_id=%s) "
         sql += " ORDER BY c.id limit %s OFFSET %s "
 
-        res, res_cnt = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
-        return (None, res)
+        res = yield self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
+        return (None, res.fetchall())
         
     def get_contest_list_count(self, data={}):
         required_args = ['group_id']
@@ -40,10 +40,11 @@ class ContestService(BaseService):
                 % (str(data['group_id'])))
         if res: return (None, res)
         sql = "SELECT COUNT(*) FROM contests as c WHERE c.group_id=%s;"
-        res, res_cnt = yield from self.db.execute(sql, (data['group_id'],))
+        res = yield self.db.execute(sql, (data['group_id'],))
+        res = res.fetchone()
         self.rs.set('contest_list_count@%s'
-                % (str(data['group_id'])), res[0]['count'])
-        return (None, res[0]['count'])
+                % (str(data['group_id'])), res['count'])
+        return (None, res['count'])
 
     def get_contest(self, data={}):
         required_args = ['id']
@@ -62,10 +63,10 @@ class ContestService(BaseService):
         
         res = self.rs.get('contest@%s'%str(data['id']))
         if not res:
-            res, res_cnt = yield from self.db.execute('SELECT c.*, u.account as setter_user FROM contests as c, users as u WHERE c.setter_user_id=u.id AND c.id=%s;', (data['id'], ))
-            if res_cnt == 0:
+            res = yield self.db.execute('SELECT c.*, u.account as setter_user FROM contests as c, users as u WHERE c.setter_user_id=u.id AND c.id=%s;', (data['id'], ))
+            if res.rowcount == 0:
                 return ('No Contest ID', None)
-            res = res[0]
+            res = res.fetchone()
             self.rs.set('contest@%s'%str(data['id']), res)
         err, res['problem'] = yield from self.get_contest_problem_list(data)
         err, res['user'] = yield from self.get_contest_user(data)
@@ -76,8 +77,8 @@ class ContestService(BaseService):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res, res_cnt = yield from self.db.execute('SELECT p.id, p.title, m.score, m.penalty FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s ORDER BY m.id ASC;', (data['id'],))
-        return (None, res)
+        res = yield self.db.execute('SELECT p.id, p.title, m.score, m.penalty FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s ORDER BY m.id ASC;', (data['id'],))
+        return (None, res.fetchall())
 
     def post_contest(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id', 'visible', 'title', 'description', 'register_start', 'register_end', 'start', 'freeze', 'end', 'type']
@@ -94,14 +95,14 @@ class ContestService(BaseService):
         if int(data['id']) == 0:
             data.pop('id')
             sql, param = self.gen_insert_sql('contests', data)
-            insert_id = (yield from self.db.execute(sql, param))[0][0]['id']
+            insert_id = (yield self.db.execute(sql, param)).fetchone()['id']
             return (None, str(insert_id))
         else:
             err, res = yield from self.get_contest(data)
             if err: return (err, None)
             data.pop('id')
             sql, param = self.gen_update_sql('contests', data)
-            yield from self.db.execute(sql+' WHERE id=%s AND group_id=%s;', param+(res['id'], res['group_id'],))
+            yield self.db.execute(sql+' WHERE id=%s AND group_id=%s;', param+(res['id'], res['group_id'],))
             self.rs.delete('contest@%s'%str(res['id']))
             return (None, res['id'])
 
@@ -110,14 +111,14 @@ class ContestService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         self.rs.delete('contest@%sproblem'%str(data['id']))
-        yield from self.db.execute('DELETE FROM map_contest_problem WHERE contest_id=%s;', (data['id'],))
+        yield self.db.execute('DELETE FROM map_contest_problem WHERE contest_id=%s;', (data['id'],))
         for problem, score in zip(data['problems'], data['scores']):
             meta = {}
             meta['contest_id'] = data['id']
             meta['problem_id'] = problem
             meta['score'] = score
             sql, param = self.gen_insert_sql('map_contest_problem', meta)
-            yield from self.db.execute(sql, param)
+            yield self.db.execute(sql, param)
         return (None, data['id'])
 
     def get_contest_submission(self, data={}):
@@ -157,7 +158,8 @@ class ContestService(BaseService):
         AND %s<=s.created_at AND s.created_at<=%s 
         ORDER BY s.id DESC;
         """;
-        res, res_cnt = yield from self.db.execute(sql, (res['id'], start, end,))
+        res = yield self.db.execute(sql, (res['id'], start, end,))
+        res = res.fetchall()
         map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
         if not data.get('admin'):
             for submission in res:
@@ -174,7 +176,7 @@ class ContestService(BaseService):
         if err: return (err, None)
         if int(data['user_id']) in res:
             return ('You have registered', None)
-        yield from self.db.execute('INSERT INTO map_contest_user (contest_id, user_id) VALUES(%s, %s);', (data['id'], data['user_id'],))
+        yield self.db.execute('INSERT INTO map_contest_user (contest_id, user_id) VALUES(%s, %s);', (data['id'], data['user_id'],))
         self.rs.delete('contest@%s@user'%(str(data['id'])))
         return (None, str(data['id']))
 
@@ -186,7 +188,7 @@ class ContestService(BaseService):
         if err: return (err, None)
         if int(data['id']) not in res:
             return ('You have not registered yet', None)
-        yield from self.db.execute('DELETE FROM map_contest_user WHERE contest_id=%s AND user_id=%s;', (data['id'], data['user_id'],))
+        yield self.db.execute('DELETE FROM map_contest_user WHERE contest_id=%s AND user_id=%s;', (data['id'], data['user_id'],))
         self.rs.delete('contest@%s@user'%(str(data['id'])))
         return (None, str(data['id']))
 
@@ -194,7 +196,7 @@ class ContestService(BaseService):
         required_args = ['id', 'group_id']
         err, res = yield from self.get_contest(data)
         if err: return (err, None)
-        yield from self.db.execute('DELETE FROM contests WHERE id=%s;', (res['id'],))
+        yield self.db.execute('DELETE FROM contests WHERE id=%s;', (res['id'],))
         self.rs.delete('contest@%s'%str(res['id']))
         self.rs.delete('contest@%s@problem'%str(res['id']))
         return (None, None)
@@ -205,7 +207,8 @@ class ContestService(BaseService):
         if err: return (err, None)
         res = self.rs.get('contest@%s@user'%(str(data['id'])))
         if res: return (None, res)
-        res, res_cnt = yield from self.db.execute('SELECT * FROM map_contest_user WHERE contest_id=%s;', (data['id'],))
+        res = yield self.db.execute('SELECT * FROM map_contest_user WHERE contest_id=%s;', (data['id'],))
+        res = res.fetchall()
         self.rs.set('contest@%s@user'%(str(data['id'])), res)
         return (None, res)
 
@@ -213,19 +216,21 @@ class ContestService(BaseService):
         required_args = ['user_id', 'problem', 'start', 'end']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res, res_cnt = yield from self.db.execute('SELECT COUNT(*) FROM submissions WHERE user_id=%s AND problem_id=%s AND %s<=created_at AND created_at<=%s;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
-        if res[0]['count'] == 0: ### not submit yet
+        res = yield self.db.execute('SELECT COUNT(*) FROM submissions WHERE user_id=%s AND problem_id=%s AND %s<=created_at AND created_at<=%s;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
+        res = res.fetchone()
+        if res['count'] == 0: ### not submit yet
             res = {}
             res['score'] = None
             res['verdict'] = 0
             res['submitted'] = 0
             res['penalty'] = 0
             return (None, res)
-        res, res_cnt = yield from self.db.execute('SELECT * FROM submissions WHERE user_id=%s AND problem_id=%s AND %s<=created_at AND created_at<=%s AND verdict=7 ORDER BY id LIMIT 1;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
-        if res_cnt != 0:
-            data['end'] = min(data['end'], res[0]['created_at'])
-        res, res_cnt = yield from self.db.execute('SELECT verdict, COUNT(*) as submitted, MAX(s.score) as score FROM (SELECT FROM submissions WHERE s.user_id=%s AND s.problem_id=%s AND %s<=s.created_at AND s.created_at<=%s) as s, (SELECT m.id FROM map_verdict_string as m WHERE m.priority=(SELECT MAX(m.priority) FROM map_verdict_string as m WHERE m.id=s.verdict)) as verdict;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
-        res = res[0]
+        res = yield self.db.execute('SELECT * FROM submissions WHERE user_id=%s AND problem_id=%s AND %s<=created_at AND created_at<=%s AND verdict=7 ORDER BY id LIMIT 1;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
+        if res.rowcount != 0:
+            res = res.fetchone()
+            data['end'] = min(data['end'], res['created_at'])
+        res = yield self.db.execute('SELECT verdict, COUNT(*) as submitted, MAX(s.score) as score FROM (SELECT FROM submissions WHERE s.user_id=%s AND s.problem_id=%s AND %s<=s.created_at AND s.created_at<=%s) as s, (SELECT m.id FROM map_verdict_string as m WHERE m.priority=(SELECT MAX(m.priority) FROM map_verdict_string as m WHERE m.id=s.verdict)) as verdict;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
+        res = res.fetchone()
         res['penalty'] = (res['submitted']-1) * data['problem']['penalty']  
         if score != '':
             pass
