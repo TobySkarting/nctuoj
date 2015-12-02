@@ -6,7 +6,7 @@ import tornado.web
 from req import Service 
 ### my app
 import config
-import pg
+# import pg
 import mysql
 import myredis
 
@@ -141,20 +141,21 @@ if __name__ == '__main__':
     #        database=config.DBNAME,
     #        passwd=config.DBPASSWORD,
     #        host=config.DBHOST)
-    db = pg.AsyncPG(config.DBNAME, config.DBUSER, config.DBPASSWORD, host=config.DBHOST, dbtz='+8')
-    ioloop = tornado.ioloop.IOLoop().instance()
+    # db = pg.AsyncPG(config.DBNAME, config.DBUSER, config.DBPASSWORD, host=config.DBHOST, dbtz='+8')
+    # ioloop = tornado.ioloop.IOLoop().instance()
+    db = None
     db = momoko.Pool(
             dsn = 'dbname=%s user=%s password=%s host=%s port=%s'%(config.DBNAME, config.DBUSER, config.DBPASSWORD, config.DBHOST, config.DBPORT),
             size = config.DBMIN_SIZE,
             max_size = config.DBMAX_SIZE,
-            ioloop = ioloop,
+            ioloop = tornado.ioloop.IOLoop.instance(),
             setsession = ("SET TIME ZONE +8",),
             raise_connect_errors=False,
             cursor_factory = psycopg2.extras.RealDictCursor 
             )
     future = db.connect()
-    ioloop.add_future(future, lambda f: ioloop.stop())
-    ioloop.start()
+    tornado.ioloop.IOLoop.instance().add_future(future, lambda f: tornado.ioloop.IOLoop.instance().stop())
+    tornado.ioloop.IOLoop.instance().start()
     rs = myredis.MyRedis(db=1)
     rs.flushdb()
     ui_modules = {
@@ -275,7 +276,7 @@ if __name__ == '__main__':
     Service.Group =         GroupService(db, rs)
     Service.Tags =          TagService(db, rs)
     Service.VerdictString = VerdictStringService(db, rs)
-    print('Server Started')
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
-    ioloop.start()
+    print('Server Started')
+    tornado.ioloop.IOLoop().instance().start()
