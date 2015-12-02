@@ -29,13 +29,13 @@ class SubmissionService(BaseService):
             sql += "AND problem_id=%s " % (int(data['problem_id']))
         if 'account' in data and data['account']:
             try:
-                user_id = (yield from self.db.execute("SELECT id FROM users WHERE account=%s", (data['account'],)))[0][0]['id']
+                user_id = (yield self.db.execute("SELECT id FROM users WHERE account=%s", (data['account'],))).fetchone()['id']
             except:
                 user_id = 0
             sql += "AND user_id=%s " % (user_id)
         sql += " ORDER BY s.id DESC LIMIT %s OFFSET %s"
-        res, res_cnt = yield from self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"])))
-        return (None, res)
+        res = yield self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"])))
+        return (None, res.fetchall())
 
     def get_submission_list_count(self, data):
         subsql = "SELECT count(*) FROM submissions as s "
@@ -49,8 +49,8 @@ class SubmissionService(BaseService):
         else:
             cond = cond[:-4]
         sql = "SELECT count(*) FROM submissions " + cond
-        res, res_cnt = yield from self.db.execute(sql)
-        return (None, res[0]['count'])
+        res = yield self.db.execute(sql)
+        return (None, res.fetchone()['count'])
 
     def get_submission(self, data):
         #if int(data['id']) == 0:
@@ -58,23 +58,19 @@ class SubmissionService(BaseService):
 
         #res = self.rs.get('submission@%s'%(str(data['id'])))
         #if res: return (None, res)
-        res, res_cnt = yield from self.db.execute("""
+        res = yield self.db.execute("""
         SELECT s.*, e.lang as execute_lang, e.description as execute_description, u.account as submitter, p.title as problem_name, p.group_id as problem_group_id, v.abbreviation as verdict_abbreviation, v.description as verdict_description  
         FROM submissions as s, execute_types as e, users as u, problems as p, map_verdict_string as v 
         WHERE s.id=%s AND e.id=s.execute_type_id AND u.id=s.user_id AND s.problem_id=p.id AND s.verdict=v.id 
         """, (data['id'],))
-        if res_cnt == 0:
+        if res.rowcount == 0:
             return ('No Submission ID', None)
-        res = res[0]
-        res['testdata'], res_cnt = yield from self.db.execute('SELECT m.*, v.* FROM map_submission_testdata as m, map_verdict_string as v WHERE submission_id=%s AND v.id=m.verdict ORDER BY testdata_id;', (data['id'],))
+        res = res.fetchone()
+        res['testdata'] = yield self.db.execute('SELECT m.*, v.* FROM map_submission_testdata as m, map_verdict_string as v WHERE submission_id=%s AND v.id=m.verdict ORDER BY testdata_id;', (data['id'],))
+        res['testdata'].fetchall()
 
         folder = '/mnt/nctuoj/data/submissions/%s/' % str(res['id'])
         file_path = '%s/%s' % (folder, res['file_name'])
-        #if not os.path.isfile(file_path):
-            #remote_folder = '/mnt/nctuoj/data/submissions/%s/' % str(res['id'])
-            #remote_path = '%s/%s' % (remote_folder, res['file_name'])
-            #yield self.ftp.get(remote_path, file_path)
-
         with open(file_path) as f:
             res['code'] = f.read()
         res['code_line'] = len(open(file_path).readlines())
@@ -89,8 +85,8 @@ class SubmissionService(BaseService):
             return ('No code', None)
         meta = { x: data[x] for x in required_args }
         ### check problem has execute_type
-        res, res_cnt = yield from self.db.execute("SELECT * FROM map_problem_execute WHERE problem_id=%s and execute_type_id=%s", (data['problem_id'], data['execute_type_id'],))
-        if res_cnt == 0:
+        res = yield self.db.execute("SELECT * FROM map_problem_execute WHERE problem_id=%s and execute_type_id=%s", (data['problem_id'], data['execute_type_id'],))
+        if res.rowcount == 0:
             return ('No execute type', None)
         err, data['execute'] = yield from Service.Execute.get_execute({'id': data['execute_type_id']})
         ### get file name and length
@@ -109,8 +105,9 @@ class SubmissionService(BaseService):
             meta['length'] = len(data['plain_code'])
         ### save to db
         sql, parma = self.gen_insert_sql("submissions", meta)
-        id = (yield from self.db.execute(sql, parma))[0][0]['id']
-        res, res_cnt = yield from self.db.execute('SELECT id FROM testdata WHERE problem_id=%s;', (data['problem_id'],))
+        id = (yield self.db.execute(sql, parma)).fetchone()['id']
+        # res = yield self.db.execute('SELECT id FROM testdata WHERE problem_id=%s;', (data['problem_id'],))
+        # res = res.fetchall()
         ### save file
         folder = '/mnt/nctuoj/data/submissions/%s/' % str(id)
         #remote_folder = '/mnt/nctuoj/data/submissions/%s/' % str(id)
@@ -128,7 +125,7 @@ class SubmissionService(BaseService):
             else:
                 f.write(data['plain_code'].encode())
         #yield self.ftp.put(file_path, remote_path)
-        yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (id,))
+        yield self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (id,))
         return (None, id) 
 
     def post_rejudge(self, data={}):
@@ -136,7 +133,7 @@ class SubmissionService(BaseService):
         err =self.check_required_args(required_args, data)
         if err: return (err, None)
         self.rs.delete('submission@%s'%(str(data['id'])))
-        yield from self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (data['id'],))
-        yield from self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s, verdict=%s WHERE id=%s;', (None, None, None, 1, data['id']))
-        yield from self.db.execute('DELETE FROM map_submission_testdata WHERE submission_id=%s;', (data['id'],))
+        yield self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (data['id'],))
+        yield self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s, verdict=%s WHERE id=%s;', (None, None, None, 1, data['id']))
+        yield self.db.execute('DELETE FROM map_submission_testdata WHERE submission_id=%s;', (data['id'],))
         return (None, str(data['id']))
