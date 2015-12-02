@@ -192,8 +192,6 @@ class UserService(BaseService):
         return id(str)
         '''
         ### check required arguemts
-        print("XDDDDDDDDDDDDDDDDDDDDDDDD")
-        print(data)
         required_args = ['email', 'account', 'student_id', 'passwd', 'repasswd', 'school_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)

@@ -68,7 +68,8 @@ class WebUserSignHandler(WebRequestHandler):
         elif action == "signup":
             if self.account['id'] != 0:
                 self.redirect('/')
-            self.Render('./users/user_signup.html')
+            err, school = yield from Service.School.get_school_list()
+            self.Render('./users/user_signup.html', school=school)
         else:
             self.write_error(404)
 

@@ -28,6 +28,7 @@ from service.contest    import ContestService
 from service.verdict    import VerdictService
 from service.group      import GroupService
 from service.tag        import TagService
+from service.school     import SchoolService
 from service.verdictstring import VerdictStringService
 
 
@@ -275,6 +276,7 @@ if __name__ == '__main__':
     Service.Verdict =       VerdictService(db, rs)
     Service.Group =         GroupService(db, rs)
     Service.Tags =          TagService(db, rs)
+    Service.School =        SchoolService(db, rs)
     Service.VerdictString = VerdictStringService(db, rs)
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
