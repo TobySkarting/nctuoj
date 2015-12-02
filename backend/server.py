@@ -6,7 +6,6 @@ import tornado.web
 from req import Service 
 ### my app
 import config
-# import pg
 import mysql
 import myredis
 
