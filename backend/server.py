@@ -138,13 +138,6 @@ if __name__ == '__main__':
             filename=config.LOG_FILE_PATH,
             filemode='a')
     '''
-    #db = mysql.AsyncMysql(user=config.DBUSER,
-    #        database=config.DBNAME,
-    #        passwd=config.DBPASSWORD,
-    #        host=config.DBHOST)
-    # db = pg.AsyncPG(config.DBNAME, config.DBUSER, config.DBPASSWORD, host=config.DBHOST, dbtz='+8')
-    # ioloop = tornado.ioloop.IOLoop().instance()
-    db = None
     db = momoko.Pool(
             dsn = 'dbname=%s user=%s password=%s host=%s port=%s'%(config.DBNAME, config.DBUSER, config.DBPASSWORD, config.DBHOST, config.DBPORT),
             size = config.DBMIN_SIZE,
