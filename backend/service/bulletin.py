@@ -12,16 +12,16 @@ class BulletinService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         sql = "SELECT bulletins.*, users.account as setter_user FROM bulletins, users WHERE bulletins.group_id = %s and bulletins.setter_user_id = users.id order by bulletins.id DESC limit %s offset %s"
-        res, res_cnt = yield from self.db.execute(sql, (data["group_id"], data['count'], (int(data["page"])-1)*data["count"],))
+        res = yield self.db.execute(sql, (data["group_id"], data['count'], (int(data["page"])-1)*data["count"],))
         err, total = yield from self.get_bulletin_list_count(data)
-        return (None, res)
+        return (None, res.fetchall())
 
     def get_bulletin_list_count(self, data={}):
         required_args = ['group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        res, res_cnt = yield from self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s", (data['group_id'],))
-        return (None, res[0]['count'])
+        res = yield self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s", (data['group_id'],))
+        return (None, res.fetchone()['count'])
 
     def get_bulletin(self, data={}):
         required_args = ['group_id', 'id']
@@ -35,11 +35,10 @@ class BulletinService(BaseService):
             return (None, res)
 
         sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND b.id=%s AND b.group_id=%s;"
-        res, res_cnt = yield from self.db.execute(sql, (data["id"], data['group_id'],))
-        if res_cnt == 0:
+        res = yield self.db.execute(sql, (data["id"], data['group_id'],))
+        if res.rowcount == 0:
             return ('Error bulletin id', None)
-        res = res[0]
-        return (None, res)
+        return (None, res.fetchone())
     
     def get_latest_bulletin(self, data={}):
         required_args = ['group_id']
@@ -48,10 +47,11 @@ class BulletinService(BaseService):
         res = self.rs.get('latest_bulletin@%s' % str(data["group_id"]))
         if res: return (None, res)
         sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND group_id=%s ORDER BY b.id DESC LIMIT 1"
-        res, res_cnt = yield from self.db.execute(sql, (data["group_id"],))
-        if res_cnt == 0: return ('Empty', None)
-        self.rs.set('latest_bulletin@%s' % str(data["group_id"]), res[0])
-        return (None, res[0])
+        res = yield self.db.execute(sql, (data["group_id"],))
+        if res.rowcount == 0: return ('Empty', None)
+        res = res.fetchone()
+        self.rs.set('latest_bulletin@%s' % str(data["group_id"]), res)
+        return (None, res)
 
     def post_bulletin(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id', 'title', 'content']
@@ -60,19 +60,19 @@ class BulletinService(BaseService):
         if int(data['id']) == 0:
             data.pop('id')
             sql, parma = self.gen_insert_sql("bulletins", data)
-            insert_id = (yield from self.db.execute(sql, parma))[0][0]['id']
+            insert_id = (yield self.db.execute(sql, parma)).fetchone()['id']
             return (None, str(insert_id))
         else:
             err, res = yield from self.get_bulletin(data)
             if err: return (err, None)
             data.pop('id')
             sql, parma = self.gen_update_sql("bulletins", data)
-            yield from self.db.execute("%s WHERE id=%%s AND group_id=%%s;"%sql, parma+(res['id'],res['group_id'],))
+            yield self.db.execute("%s WHERE id=%%s AND group_id=%%s;"%sql, parma+(res['id'],res['group_id'],))
             return (None, None)
 
     def delete_bulletin(self, data={}):
         required_args = ['id', 'group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        yield from self.db.execute("DELETE FROM bulletins WHERE id=%s AND group_id=%s", (data['id'],data['group_id'],))
+        yield self.db.execute("DELETE FROM bulletins WHERE id=%s AND group_id=%s", (data['id'],data['group_id'],))
         return (None, None)
