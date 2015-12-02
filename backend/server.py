@@ -14,6 +14,8 @@ import myredis
 import time
 import signal
 import logging
+import momoko
+import psycopg2.extras
 
 ### service class
 from service.user       import UserService
@@ -140,6 +142,19 @@ if __name__ == '__main__':
     #        passwd=config.DBPASSWORD,
     #        host=config.DBHOST)
     db = pg.AsyncPG(config.DBNAME, config.DBUSER, config.DBPASSWORD, host=config.DBHOST, dbtz='+8')
+    ioloop = tornado.ioloop.IOLoop().instance()
+    db = momoko.Pool(
+            dsn = 'dbname=%s user=%s password=%s host=%s port=%s'%(config.DBNAME, config.DBUSER, config.DBPASSWORD, config.DBHOST, config.DBPORT),
+            size = config.DBMIN_SIZE,
+            max_size = config.DBMAX_SIZE,
+            ioloop = ioloop,
+            setsession = ("SET TIME ZONE +8",),
+            raise_connect_errors=False,
+            cursor_factory = psycopg2.extras.RealDictCursor 
+            )
+    future = db.connect()
+    ioloop.add_future(future, lambda f: ioloop.stop())
+    ioloop.start()
     rs = myredis.MyRedis(db=1)
     rs.flushdb()
     ui_modules = {
@@ -263,4 +278,4 @@ if __name__ == '__main__':
     print('Server Started')
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
-    tornado.ioloop.IOLoop().instance().start()
+    ioloop.start()
