@@ -112,18 +112,21 @@
     </div>
 </div>
 <script>
+var map_lang_mode = Object();
+{% for x in data['execute'] %}
+map_lang_mode["{{x['id']}}"] = "{{x['cm_mode']}}";
+{% end %}
+var codemirror;
 function change_lang(ele){
     require(["jquery"], function($){
+        console.log(codemirror);
         $("input.execute_type").val($(ele).attr("data-id"));
         $("button.execute_type").html($(ele).attr("data-maplang")+"|"+$(ele).attr("data-description"));
+			codemirror.setOption("mode", map_lang_mode[$(ele).attr("data-id")]);
     });
 }
 require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, CodeMirror, bootbox){
 	var support_lang = ['clike', 'python', 'perl', 'javascript', 'ruby', 'go', 'shell'];
-	var map_lang_mode = Object();
-	{% for x in data['execute'] %}
-	map_lang_mode["{{x['id']}}"] = "{{x['cm_mode']}}";
-	{% end %}
 	var gen_support_lang_list = function(langs){
 		var lang_list = Array();
 		for(var lang in langs){
@@ -141,7 +144,7 @@ require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, Code
                 'codemirror/addon/dialog/dialog',
                 'loadCSS', 'onloadCSS']), function(){
 		console.log(CodeMirror.mimeModes);
-		var codemirror = CodeMirror.fromTextArea($('[name=plain_code]')[0], {
+		codemirror = CodeMirror.fromTextArea($('[name=plain_code]')[0], {
 			lineNumbers: true,
 			mode: map_lang_mode[$('[name=execute_type_id]').val()],
 			matchBrackets: true,
@@ -158,11 +161,9 @@ require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, Code
                 },
             },
 		});
-		$('[name=execute_type_id]').change(function(){
-			codemirror.setOption("mode", map_lang_mode[$(this).val()]);
-		});
 		$('[name=theme]').change(function(){
 			var theme = $(this).val();
+            console.log(theme);
 			onloadCSS(loadCSS('/asset/codemirror/theme/' + theme.split(' ')[0] + '.css'), function(){
 				codemirror.setOption("theme", theme);
 			});
@@ -177,6 +178,8 @@ require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, Code
     $("button").prop("disabled", false);
     $(".selectpicker").selectpicker();
     $("form").submit(function(){
+        console.log($('plain_code').val());
+        codemirror.save();
         var data = new FormData($(this)[0]);
         form = $(this);
         $("button").prop("disabled", true);
