@@ -9,7 +9,7 @@
 				<label class="control-label">Account:</label>
 				<input class="form-control" name="account" type="text" value="{{page['get']['account'] or ''}}">
 				<button class="btn btn-success">Go</button>
-				<button class="btn btn-warning" type="button" onclick="$(this).parent().children('input').val('');$(this).parent().submit()">Reset</button>
+				<button class="btn btn-warning" type="button" onclick="$(this).parent().children('input').val('');$(this).parent().parent().submit()">Reset</button>
 			</div>
         </form>
     </div>
