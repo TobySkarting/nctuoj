@@ -154,28 +154,30 @@
     <div class="col-md-12">
 		<div class="panel panel-default table-responsive">
             <div class="panel-heading">Testdata</div>
-            <table class="table table-hover table-striped table-condensed">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Time Limit</th>
-                        <th>Memory Limit</th>
-                        <th>Output Limit</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for id, x in enumerate(data['testdata']) %}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-condensed">
+                    <thead>
                         <tr>
-                            <td>{{id+1}}</td>
-                            <td>{{x['time_limit']}} msec</td>
-                            <td>{{x['memory_limit']}} Kb</td>
-                            <td>{{x['output_limit']}} Kb</td>
-                            <td>{{x['score']}}</td>
+                            <th>#</th>
+                            <th>Time Limit</th>
+                            <th>Memory Limit</th>
+                            <th>Output Limit</th>
+                            <th>Score</th>
                         </tr>
-                    {% end %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for id, x in enumerate(data['testdata']) %}
+                            <tr>
+                                <td>{{id+1}}</td>
+                                <td>{{x['time_limit']}} msec</td>
+                                <td>{{x['memory_limit']}} Kb</td>
+                                <td>{{x['output_limit']}} Kb</td>
+                                <td>{{x['score']}}</td>
+                            </tr>
+                        {% end %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
