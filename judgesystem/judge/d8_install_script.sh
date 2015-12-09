@@ -8,5 +8,9 @@ export PATH=$PATH:`pwd`/depot_tools
 echo $PATH
 fetch v8
 gclient sync
+cd v8
 make native -j 4 library=shared
 sudo cp out/native/d8 /usr/local/bin/
+sudo cp out/native/*.bin /usr/local/bin/
+sudo cp out/native/lib.target/* /usr/local/lib
+sudo cp out/native/lib.target/* /usr/lib
