@@ -219,6 +219,7 @@ class UserService(BaseService):
         if res.rowcount == 0:
             return ('Something Wrong!!!', None)
         id = res.fetchone()["id"]
+        yield self.db.execute("INSERT INTO map_group_user (group_id, user_id) values (1, %s)", (id,))
         self.rs.delete('user_list_count')
         return (None, str(id))
 
