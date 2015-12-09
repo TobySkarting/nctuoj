@@ -23,7 +23,7 @@ class UserService(BaseService):
 
     def get_user_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
-        res = yield self.db.execute("SELECT * FROM users ORDER BY id LIMIT %s OFFSET %s", (data['count'], (int(data['page'])-1)*int(data['count']),))
+        res = (yield self.db.execute("SELECT * FROM users ORDER BY id LIMIT %s OFFSET %s", (data['count'], (int(data['page'])-1)*int(data['count']),))).fetchall()
         for x in res:
             err, x["power"] = yield from self.get_user_power_info(x["id"])
         return (None, res)
