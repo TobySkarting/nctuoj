@@ -40,18 +40,20 @@
                             <td>Account</td>
                             <td>{{data['account']}}</td>
                         </tr>
-                        <tr>
-                            <td>School</td>
-                            <td>{{data['school_id']}}</td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td>{{data['email']}}</td>
-                        </tr>
-                        <tr>
-                            <td>StudentID</td>
-                            <td>{{data['student_id']}}</td>
-                        </tr>
+                        {% if data['id'] == account['id'] %}
+                            <tr>
+                                <td>School</td>
+                                <td>{{data['school_id']}}</td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td>{{data['email']}}</td>
+                            </tr>
+                            <tr>
+                                <td>StudentID</td>
+                                <td>{{data['student_id']}}</td>
+                            </tr>
+                        {% end %}
                     </tbody>
                 </table>
             </div>
