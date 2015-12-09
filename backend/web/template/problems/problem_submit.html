@@ -1,5 +1,11 @@
 {% extends './../frame.html' %}
 {% block content %}
+{% set textarea = 'plain_code' %}
+{% set execute = data['execute'] %}
+{% set cm_theme = 'cm_theme' %}
+{% set cm_mode = 'cm_mode' %}
+{% set cm_default_execute_id = data['execute'][0]['id'] %}
+{% include ../codemirror/cm_init.html %}
 <div class="row">
     <div class="col-md-12">
         <form action="/api/group/{{current_group}}/submissions/0/submit/">
@@ -45,61 +51,9 @@
 						<label class="control-label">File Name:</label>
 						<input class="form-control" type="text" name="plain_file_name">
 						<label class="control-label">Theme:</label>
-						<select class="selectpicker" name="theme">
-							<option>default</option>
-							<option>3024-day</option>
-							<option>3024-night</option>
-							<option>abcdef</option>
-							<option>ambiance</option>
-							<option>base16-dark</option>
-							<option>base16-light</option>
-							<option>bespin</option>
-							<option>blackboard</option>
-							<option>cobalt</option>
-							<option>colorforth</option>
-							<option>dracula</option>
-							<option>eclipse</option>
-							<option>elegant</option>
-							<option>erlang-dark</option>
-							<option>hopscotch</option>
-							<option>icecoder</option>
-							<option>isotope</option>
-							<option>lesser-dark</option>
-							<option>liquibyte</option>
-							<option>material</option>
-							<option>mbo</option>
-							<option>mdn-like</option>
-							<option>midnight</option>
-							<option>monokai</option>
-							<option>neat</option>
-							<option>neo</option>
-							<option>night</option>
-							<option>paraiso-dark</option>
-							<option>paraiso-light</option>
-							<option>pastel-on-dark</option>
-							<option>railscasts</option>
-							<option>rubyblue</option>
-							<option>seti</option>
-							<option>solarized dark</option>
-							<option>solarized light</option>
-							<option>the-matrix</option>
-							<option>tomorrow-night-bright</option>
-							<option>tomorrow-night-eighties</option>
-							<option>ttcn</option>
-							<option>twilight</option>
-							<option>vibrant-ink</option>
-							<option>xq-dark</option>
-							<option>xq-light</option>
-							<option>yeti</option>
-							<option>zenburn</option>
-						</select>
+                        {% include ./../codemirror/cm_theme.html %}
                         <label class="control-label">Editor Mode</label>
-                        <select class="selectpicker" name="editor-mode">
-                            <option>Normal</option>
-                            <option>Vim</option>
-                            <option>Sublime</option>
-                            <option>Emacs</option>
-                        </select>
+                        {% include ./../codemirror/cm_mode.html %}
                         <label class="control-label">F11 to fullscreen</label>
                     </div>
                 </div>
@@ -112,69 +66,15 @@
     </div>
 </div>
 <script>
-var map_lang_mode = Object();
-{% for x in data['execute'] %}
-map_lang_mode["{{x['id']}}"] = "{{x['cm_mode']}}";
-{% end %}
-var codemirror;
 function change_lang(ele){
     require(["jquery"], function($){
         console.log(codemirror);
         $("input.execute_type").val($(ele).attr("data-id"));
         $("button.execute_type").html($(ele).attr("data-maplang")+"|"+$(ele).attr("data-description"));
-			codemirror.setOption("mode", map_lang_mode[$(ele).attr("data-id")]);
+        cm_set_mode($(ele).attr("data-id"));
     });
 }
 require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, CodeMirror, bootbox){
-	var support_lang = ['clike', 'python', 'perl', 'javascript', 'ruby', 'go', 'shell'];
-	var gen_support_lang_list = function(langs){
-		var lang_list = Array();
-		for(var lang in langs){
-			lang = langs[lang];
-			lang = 'codemirror/mode/' + lang + '/' + lang;
-			lang_list.push(lang);
-		}
-		return lang_list;
-	}
-    var keymap_js_list = ['codemirror/keymap/vim', 'codemirror/keymap/sublime', 'codemirror/keymap/emacs'];
-	require(gen_support_lang_list(support_lang).
-            concat(keymap_js_list).
-            concat(['codemirror/addon/edit/matchbrackets', 
-                'codemirror/addon/display/fullscreen',
-                'codemirror/addon/dialog/dialog',
-                'loadCSS', 'onloadCSS']), function(){
-		console.log(CodeMirror.mimeModes);
-		codemirror = CodeMirror.fromTextArea($('[name=plain_code]')[0], {
-			lineNumbers: true,
-			mode: map_lang_mode[$('[name=execute_type_id]').val()],
-			matchBrackets: true,
-			theme: "default",
-            tabSize: 4,
-            indentUnit: 4,
-            indentWithTabs: true,
-            autofocus: true,
-            extraKeys: {
-                "F11": function(cm){
-                    onloadCSS(loadCSS('/asset/codemirror/addon/display/fullscreen.css'), function(){
-                        cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-                    });
-                },
-            },
-		});
-		$('[name=theme]').change(function(){
-			var theme = $(this).val();
-            console.log(theme);
-			onloadCSS(loadCSS('/asset/codemirror/theme/' + theme.split(' ')[0] + '.css'), function(){
-				codemirror.setOption("theme", theme);
-			});
-		});
-        $('[name=editor-mode]').change(function(){
-            var editor_mode = $(this).val().toLowerCase();
-            onloadCSS(loadCSS('/asset/codemirror/addon/dialog/dialog.css'), function(){
-                codemirror.setOption("keyMap", editor_mode);
-            });
-        });
-	});
     $("button").prop("disabled", false);
     $(".selectpicker").selectpicker();
     $("form").submit(function(){
