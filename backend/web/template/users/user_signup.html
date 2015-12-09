@@ -35,7 +35,7 @@
     <div class="form-group">
         <label class="col-sm-4 control-label">School</label>
         <div class="col-sm-4">
-            <select class="select" name="school_id">
+            <select class="select form-control" name="school_id">
                 {% for x in school %}
                     <option value="{{x['id']}}">{{x['name']}}</option>
                 {% end %}
