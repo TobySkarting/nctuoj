@@ -35,7 +35,7 @@ class ExecuteService(BaseService):
         res = yield self.db.execute(sql, (data["id"], ))
         if res.rowcount == 0:
             return ('Error execute id', None)
-        res = res.fetchall()
+        res = res.fetchone()
         res['steps'] = yield self.db.execute("SELECT execute_steps.* FROM execute_steps WHERE execute_type_id=%s ORDER BY id", (res['id'],))
         res['steps'].fetchall()
         for id, x in enumerate(res['steps']):
