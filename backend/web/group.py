@@ -6,7 +6,8 @@ import math
 class WebGroupHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
-        self.Render('group/group.html')
+        err, data = yield from Service.Group.get_group({"id": id})
+        self.Render('group/group.html', data=data)
 
     @tornado.gen.coroutine
     def post(self, id):

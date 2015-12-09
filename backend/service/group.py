@@ -46,6 +46,7 @@ class GroupService(BaseService):
         for x in res:
             err, x['group_power'] = yield from Service.User.get_user_group_power_info(x['id'], data['id'])
             x.pop('passwd')
+            x.pop('token')
         self.rs.set('group@%s@user'%(str(data['id'])), res)
         return (None, res)
 
