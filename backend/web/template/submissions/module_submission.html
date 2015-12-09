@@ -171,7 +171,8 @@
     <button type="submit" class="btn btn-success">Submit</button>
 </div>
 <script>
-require(["jquery", "bootbox", "bootstrap-select"], function(){
+var codemirror;
+require(["jquery", "bootbox", "bootstrap-select", "codemirror"], function($, CodeMirror){
     $("button").prop("disabled", false);
     $(".selectpicker").selectpicker();
     $("form").submit(function(){
