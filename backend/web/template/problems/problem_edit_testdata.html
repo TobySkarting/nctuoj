@@ -6,7 +6,7 @@
 <script>
 function new_testdata(){
     $(".new_testdata").prop("disabled", true);
-    $.post("/api/group/{{current_group}}/testdata/0/", {'token': '{{account['token']}}', 'problem_id': '{{data["id"]}}' }, function(msg){
+    $.post("/api/groups/{{current_group}}/testdata/0/", {'token': '{{account['token']}}', 'problem_id': '{{data["id"]}}' }, function(msg){
         $(".new_testdata").prop("disabled", false);
         if(msg['status'] == 200){
             location.href = location.href;
@@ -35,7 +35,7 @@ function new_testdata(){
     </thead>
     <tbody>
         {% for id, x in enumerate(data['testdata']) %}
-            <form class="form" action="/api/group/{{current_group}}/testdata/{{x['id']}}/">
+            <form class="form" action="/api/groups/{{current_group}}/testdata/{{x['id']}}/">
                 <input type="hidden" name="problem_id" value="{{data['id']}}">
                 <input type="hidden" name="token" value="{{account['token']}}">
                 <tr>
@@ -82,7 +82,7 @@ function new_testdata(){
 function delete_testdata(id){
     require(["jquery"], function($){
         $.ajax({
-            url: "/api/group/{{current_group}}/testdata/"+id+"/",
+            url: "/api/groups/{{current_group}}/testdata/"+id+"/",
             type: "delete",
             data: {
                 "token": "{{account['token']}}",

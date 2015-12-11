@@ -2,7 +2,7 @@
 {% block content %}
 
 {% if map_group_power["problem_manage"] in current_group_power %}
-    <a class="btn btn-default margin-bottom" href="/group/{{current_group}}/problems/0/basic/edit/">New</a>
+    <a class="btn btn-default margin-bottom" href="/groups/{{current_group}}/problems/0/basic/edit/">New</a>
 {% end %}
 
 {% module Pagination(page) %}
@@ -24,14 +24,14 @@
                 <tr>
                     <td>
                         {% if (map_group_power['problem_manage'] in current_group_power) or int(x['visible']) > 0 %}
-                            <a href='/group/{{current_group}}/problems/{{x['id']}}/'>{{x['id']}}</a>
+                            <a href='/groups/{{current_group}}/problems/{{x['id']}}/'>{{x['id']}}</a>
                         {% else %}
                             {{x['id']}}
                         {% end %}
                     </td>
                     <td>
                         {% if (map_group_power['problem_manage'] in current_group_power) or int(x['visible']) > 0 %}
-                            <a href='/group/{{current_group}}/problems/{{x['id']}}/'>{{x['title']}}</a>
+                            <a href='/groups/{{current_group}}/problems/{{x['id']}}/'>{{x['title']}}</a>
                         {% else %}
                         {% end %}
                     </td>

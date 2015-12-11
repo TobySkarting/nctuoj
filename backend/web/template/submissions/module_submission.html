@@ -1,5 +1,5 @@
 {% if map_group_power['submission_manage'] in current_group_power and data['verdict_abbreviation'] != 'Pending'%}
-    <a class="btn btn-default" _href="/api/group/{{current_group}}/submissions/{{data['id']}}/rejudge/" style="margin-bottom: 12px;" onclick="rejudge_submission(this);">Rejudge</a>
+    <a class="btn btn-default" _href="/api/groups/{{current_group}}/submissions/{{data['id']}}/rejudge/" style="margin-bottom: 12px;" onclick="rejudge_submission(this);">Rejudge</a>
     <script>
     function rejudge_submission(ele){
         require(["jquery", "bootbox"], function(){
@@ -46,7 +46,7 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-xs-2">
-                <a href="/group/{{current_group}}/problems/{{data['problem_id']}}/">{{data['problem_id']}}.{{data['problem_name']}}</a>
+                <a href="/groups/{{current_group}}/problems/{{data['problem_id']}}/">{{data['problem_id']}}.{{data['problem_name']}}</a>
             </div>
             <div class="col-xs-2">
                 <a href="/users/{{data['user_id']}}/">{{data['submitter']}}</a>
@@ -151,7 +151,7 @@
     </tbody>
 </table>
 {% if data['user_id'] == account['id'] or map_group_power['submission_manage'] in current_group_power %}
-<form class="form" action="/api/group/{{current_group}}/submissions/0/submit/">
+<form class="form" action="/api/groups/{{current_group}}/submissions/0/submit/">
     <input type="hidden" name="id" value="{{data['problem_id']}}">
     <input type="hidden" name="token" value="{{account['token']}}">
     <input type="hidden" name="execute_type_id" value="{{data['execute_type_id']}}">
@@ -189,7 +189,7 @@ require(["jquery", "bootbox", "bootstrap-select", "codemirror"], function($, Cod
             success: function(msg){
                 $("button").prop("disabled", false);
                 if(msg['status'] == 200){
-                    location.href = "/group/{{current_group}}/submissions/"+msg['msg']+"/";
+                    location.href = "/groups/{{current_group}}/submissions/"+msg['msg']+"/";
                 } else {
                     bootbox.alert(msg['msg']);
                 }

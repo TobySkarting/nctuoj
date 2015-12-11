@@ -67,7 +67,7 @@ class RequestHandler(tornado.web.RequestHandler):
     @tornado.gen.coroutine
     def prepare(self):
         try:
-            self.current_group = int(re.search(r'.*/group/(\d+).*', self.request.uri).groups(1)[0])
+            self.current_group = int(re.search(r'.*/groups/(\d+).*', self.request.uri).groups(1)[0])
         except:
             self.current_group = 0
         self.map_power = map_power
@@ -143,7 +143,7 @@ class WebRequestHandler(RequestHandler):
         kwargs['current_group'] = self.current_group
         kwargs['current_group_power'] = self.current_group_power
         kwargs['current_group_active'] = self.current_group_active
-        print("This function in req.py's render: ", kwargs)
+        # print("This function in req.py's render: ", kwargs)
         self.render('./web/template/'+templ, **kwargs)
 
     @tornado.gen.coroutine
@@ -152,7 +152,7 @@ class WebRequestHandler(RequestHandler):
         ### No group => 0
         ### No user => 0 (guest)
         try:
-            self.current_group_active = re.search(r'/group/\d+/(\w+)/.*', self.request.uri).groups(1)[0]
+            self.current_group_active = re.search(r'/groups/\d+/(\w+)/.*', self.request.uri).groups(1)[0]
         except:
             self.current_group_active = "bulletins"
 
@@ -186,7 +186,7 @@ class WebRequestHandler(RequestHandler):
         if self.current_contest:
             err, contest_group_power = yield from Service.User.get_user_group_power_info(id, self.current_contest['group_id'])
             if len(contest_group_power) == 0:
-                if re.search(r'/group/\d+/*', self.request.uri) is not None and re.search(r'/group/\d+/contests/(\w*)/', self.request.uri) is None:
+                if re.search(r'/groups/\d+/*', self.request.uri) is not None and re.search(r'/groups/\d+/contests/(\w*)/', self.request.uri) is None:
                     self.redirect('/group/%s/contests/%s/'%(str(self.current_contest['group_id']), str(self.current_contest['id'])))
 
 

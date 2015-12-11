@@ -8,17 +8,17 @@
 </div>
 <div class="row margin-bottom">
     <div class="col-md-2">
-        <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['id']}}/submit/">Submit</a>
+        <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/problems/{{data['id']}}/submit/">Submit</a>
     </div>
     <div class="col-md-2">
-        <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/submissions/?problem_id={{data['id']}}&account={{account['account']}}">Submissions</a>
+        <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/submissions/?problem_id={{data['id']}}&account={{account['account']}}">Submissions</a>
     </div>
     {% if map_group_power["problem_manage"] in current_group_power and int(current_group) == int(data['group_id']) %}
         <div class="col-md-2">
-            <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/{{data['id']}}/basic/edit/">Edit</a>
+            <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/problems/{{data['id']}}/basic/edit/">Edit</a>
         </div>
         <div class="col-md-2">
-            <a class="btn btn-default btn-block btn-sm" onclick="delete_problem(this)" data-href="/api/group/{{current_group}}/problems/{{data['id']}}/basic/" data-method="delete">Delete</a> 
+            <a class="btn btn-default btn-block btn-sm" onclick="delete_problem(this)" data-href="/api/groups/{{current_group}}/problems/{{data['id']}}/basic/" data-method="delete">Delete</a> 
         </div>
         <div class="col-md-2">
             <a class="btn btn-default btn-block btn-sm" onclick="rejudge_problem(this);" >Rejudge</a>
@@ -37,7 +37,7 @@
                             dataType: "json",
                             success: function(msg){
                                 if(msg['status'] == 200){
-                                    location.href = '/group/{{current_group}}/problems/';
+                                    location.href = '/groups/{{current_group}}/problems/';
                                 } else {
                                 bootbox.alert(msg['msg'], function(){});
                                 }
@@ -50,12 +50,12 @@
         function rejudge_problem(ele){
             require(["jquery", "bootbox"], function($, bootbox){
                 form = $(ele);
-                $.post('/api/group/{{current_group}}/problems/{{data["id"]}}/rejudge/', 
+                $.post('/api/groups/{{current_group}}/problems/{{data["id"]}}/rejudge/', 
                     {'token': '{{account['token']}}'},
                     function(msg){
                     if(msg['status'] == 200){
                         bootbox.alert("Rejudged.", function(){
-                            location.href="/group/{{current_group}}/submissions/?problem_id={{data['id']}}";
+                            location.href="/groups/{{current_group}}/submissions/?problem_id={{data['id']}}";
                         });
                     }else{
                         bootbox.alert(msg['msg'], function(){});
@@ -66,7 +66,7 @@
         </script>
     {% end %}
     <div class="col-md-2">
-        <a class="btn btn-default btn-block btn-sm" href="/group/{{current_group}}/problems/">Back to List</a>
+        <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/problems/">Back to List</a>
     </div>
 </div>
 <div class="row">

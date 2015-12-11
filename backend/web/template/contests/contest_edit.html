@@ -2,12 +2,12 @@
 {% block contest_content %}
 {% if int(contest_data['id']) != 0 %}
 <h1>Edit Contest.{{contest_data['id']}}</h1>
-<a class="btn btn-default" href="/group/{{current_group}}/contests/{{contest_data['id']}}/" style="margin-bottom: 12px;">Back</a>
+<a class="btn btn-default" href="/groups/{{current_group}}/contests/{{contest_data['id']}}/" style="margin-bottom: 12px;">Back</a>
 {% else %}
 <h1>New Contest</h1>
-<a class="btn btn-default" href="/group/{{current_group}}/contests/" style="margin-bottom: 12px;">Back</a>
+<a class="btn btn-default" href="/groups/{{current_group}}/contests/" style="margin-bottom: 12px;">Back</a>
 {% end %}
-<form class="form" id="contest_content" action="/api/group/{{current_group}}/contests/{{contest_data['id']}}/" method="post">
+<form class="form" id="contest_content" action="/api/groups/{{current_group}}/contests/{{contest_data['id']}}/" method="post">
     <input type="hidden" name="token" value="{{account['token']}}">
     <div class="row">
         <div class="col-md-3 form-group">

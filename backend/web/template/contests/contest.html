@@ -70,7 +70,7 @@
             <div class="panel-body">
                 {% for id, x in enumerate(contest_data['problem']) %}
                     <h4>
-                        <a href="/group/{{current_group}}/contests/{{contest_data['id']}}/problems/{{x['id']}}/">p{{chr(id+65)}}.{{x['id']}} {{x['title']}}</a>
+                        <a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{x['id']}}/">p{{chr(id+65)}}.{{x['id']}} {{x['title']}}</a>
                     </h4>
                 {% end %}
             </div>
