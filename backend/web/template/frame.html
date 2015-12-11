@@ -22,6 +22,13 @@
                         <li><a href="/group/{{current_group}}/contests/">Contests</a></li>
                         {% if map_group_power['group_manage'] in current_group_power %}
                             <li><a href="/group/{{current_group}}/manage/">Manage</a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Global<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/group/{{current_group}}/manage/">basic</a></li>
+                                    <li><a href="/group/{{current_group}}/manage/member/">Member</a></li>
+                                </ul>
+                            </li>
                         {% end %}
                     {% end %}
                 </ul>
