@@ -8,10 +8,10 @@
 {% include ../codemirror/cm_init.html %}
 <div class="row">
     <div class="col-md-12">
-        <form action="/api/group/{{current_group}}/submissions/0/submit/">
+        <form action="/api/groups/{{current_group}}/submissions/0/submit/">
             <input type="hidden" name="id" value="{{data['id']}}">
             <input type="hidden" name="token" value="{{account['token']}}">
-            <h1><a href="/group/{{current_group}}/problems/{{data['id']}}/">{{data['id']}}.{{data['title']}}</a></h1>
+            <h1><a href="/groups/{{current_group}}/problems/{{data['id']}}/">{{data['id']}}.{{data['title']}}</a></h1>
             <div class="form-inline margin-bottom">
                 {% set x = data['execute'][0] %}
                 <input type="hidden" class="execute_type" name="execute_type_id" value="{{x['id']}}">
@@ -93,7 +93,7 @@ require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, Code
             success: function(msg){
                 $("button").prop("disabled", false);
                 if(msg['status'] == 200){
-                    location.href = "/group/{{current_group}}/submissions/"+msg['msg']+"/";
+                    location.href = "/groups/{{current_group}}/submissions/"+msg['msg']+"/";
                 } else {
                     bootbox.alert(msg['msg']);
                 }
