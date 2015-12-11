@@ -1,7 +1,7 @@
 {% extends './../frame.html' %}
 {% block content %}
 
-<form method="post" action="/api/group/{{current_group}}/bulletins/{{data['id']}}/">
+<form method="post" action="/api/groups/{{current_group}}/bulletins/{{data['id']}}/">
     <input type="hidden" name="token" value="{{account['token']}}">
     <div class="form-group">
         <label for="title">Title</label>
@@ -25,7 +25,7 @@ require(["jquery", "bootbox"], function($, bootbox){
             dataType: "json",
             success: function(msg){
                 if(msg['status'] == 200){
-                    location.href = "/group/{{current_group}}/bulletins/";
+                    location.href = "/groups/{{current_group}}/bulletins/";
                     return false;
                 } else {
                     bootbox.alert(msg['msg'])

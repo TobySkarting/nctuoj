@@ -159,36 +159,36 @@ if __name__ == '__main__':
         ('/',                                                           WebIndexHandler),
         ('/api/users/',                                                 ApiUsersHandler),
         ('/api/users/(\d+)/',                                           ApiUserHandler),
-        ('/api/users/(\d+)/group/(\d+)/(problems)/',                    ApiUserGroupHandler),
+        ('/api/users/(\d+)/groups/(\d+)/(problems)/',                    ApiUserGroupHandler),
         ('/api/users/(sign\w*)/',                                       ApiUserSignHandler),
         ('/api/users/(resettoken)/',                                    ApiUserSignHandler),
         
-        ('/api/group/\d+/',                                             ApiGroupHandler),
-        ('/api/group/\d+/(\d+)/',                                       ApiGroupUserHandler),
-        ('/api/group/\d+/bulletins/',                                   ApiBulletinsHandler),
-        ('/api/group/\d+/bulletins/(\d+)/',                             ApiBulletinHandler),
+        ('/api/groups/\d+/',                                             ApiGroupHandler),
+        ('/api/groups/\d+/(\d+)/',                                       ApiGroupUserHandler),
+        ('/api/groups/\d+/bulletins/',                                   ApiBulletinsHandler),
+        ('/api/groups/\d+/bulletins/(\d+)/',                             ApiBulletinHandler),
 
-        ('/api/group/\d+/problems/',                                    ApiProblemsHandler),
-        ('/api/group/\d+/problems/(\d+)/',                              ApiProblemHandler),
-        ('/api/group/\d+/problems/(\d+)/(\w*)/',                        ApiProblemHandler),
-        ### /api/group/\d+/problems/(\d+)/(\w*)/
-        ### /api/group/\d+/problems/(\d+)/(execute)/
-        ### /api/group/\d+/problems/(\d+)/(tag)/
-        ### /api/group/\d+/problems/(\d+)/(testdata)/
-        ('/api/group/\d+/problems/(\d+)/(\w*)/(\d+)/',                  ApiProblemHandler),
-        ### /api/group/\d+/problems/(\d+)/(testdata)/(\d+)/'
-        ('/api/group/\d+/testdata/(\d+)/',                              ApiTestdataHandler),
-        ('/api/group/\d+/submissions/',                                 ApiSubmissionsHandler),
-        ('/api/group/\d+/submissions/(\d+)/',                           ApiSubmissionHandler),
-        ('/api/group/\d+/submissions/(\d+)/(\w*)/',                     ApiSubmissionHandler),
+        ('/api/groups/\d+/problems/',                                    ApiProblemsHandler),
+        ('/api/groups/\d+/problems/(\d+)/',                              ApiProblemHandler),
+        ('/api/groups/\d+/problems/(\d+)/(\w*)/',                        ApiProblemHandler),
+        ### /api/groups/\d+/problems/(\d+)/(\w*)/
+        ### /api/groups/\d+/problems/(\d+)/(execute)/
+        ### /api/groups/\d+/problems/(\d+)/(tag)/
+        ### /api/groups/\d+/problems/(\d+)/(testdata)/
+        ('/api/groups/\d+/problems/(\d+)/(\w*)/(\d+)/',                  ApiProblemHandler),
+        ### /api/groups/\d+/problems/(\d+)/(testdata)/(\d+)/'
+        ('/api/groups/\d+/testdata/(\d+)/',                              ApiTestdataHandler),
+        ('/api/groups/\d+/submissions/',                                 ApiSubmissionsHandler),
+        ('/api/groups/\d+/submissions/(\d+)/',                           ApiSubmissionHandler),
+        ('/api/groups/\d+/submissions/(\d+)/(\w*)/',                     ApiSubmissionHandler),
 
-        ('/api/group/\d+/contests/',                                    ApiContestsHandler),
+        ('/api/groups/\d+/contests/',                                    ApiContestsHandler),
         ### TODO
-        ('/api/group/\d+/contests/(\d+)/',                              ApiContestHandler),
-        ('/api/group/\d+/contests/(\d+)/problems/',                     ApiContestProblemsHandler),
-        ('/api/group/\d+/contests/(\d+)/submissions/',                  ApiContestSubmissionsHandler),
-        ('/api/group/\d+/contests/(\d+)/scoreboard/',                   ApiContestScoreboardHandler),
-        ('/api/group/\d+/contests/(\d+)/(\w+)/',                        ApiContestHandler),
+        ('/api/groups/\d+/contests/(\d+)/',                              ApiContestHandler),
+        ('/api/groups/\d+/contests/(\d+)/problems/',                     ApiContestProblemsHandler),
+        ('/api/groups/\d+/contests/(\d+)/submissions/',                  ApiContestSubmissionsHandler),
+        ('/api/groups/\d+/contests/(\d+)/scoreboard/',                   ApiContestScoreboardHandler),
+        ('/api/groups/\d+/contests/(\d+)/(\w+)/',                        ApiContestHandler),
         ('/api/time/',                                                  ApiTimeHandler),
 
         ('/api/executes/',                                              ApiExecuteTypesHandler),
@@ -201,35 +201,35 @@ if __name__ == '__main__':
 
         ('/groups/',                                                    WebGroupsHandler),
 
-        ('/group/(\d+)/',                                               WebGroupHandler),
-        ('/group/(\d+)/manage/(\w*/)?',                                 WebGroupManageHandler),
-        ('/group/\d+/bulletins/',                                       WebBulletinsHandler),
-        ('/group/\d+/bulletins/(\d+)/(\w*)/',                           WebBulletinHandler),
+        ('/groups/(\d+)/',                                               WebGroupHandler),
+        ('/groups/(\d+)/manage/(\w*/)?',                                 WebGroupManageHandler),
+        ('/groups/\d+/bulletins/',                                       WebBulletinsHandler),
+        ('/groups/\d+/bulletins/(\d+)/(\w*)/',                           WebBulletinHandler),
 
-        ('/group/\d+/problems/',                                        WebProblemsHandler),
-        ('/group/\d+/problems/(\d+)/',                                  WebProblemHandler),
-        ('/group/\d+/problems/(\d+)/(\w*)/',                            WebProblemHandler),
-        ('/group/\d+/problems/(\d+)/(\w*)/edit/',                       WebProblemEditHandler),
-        ### /group/\d+/problems/\d+/basic/edit/
-        ### /group/\d+/problems/\d+/tag/edit/
-        ### /group/\d+/problems/\d+/execute/edit/
-        ### /group/\d+/problems/\d+/testdata/edit/
-        ### /group/\d+/problems/\d+/submit/
+        ('/groups/\d+/problems/',                                        WebProblemsHandler),
+        ('/groups/\d+/problems/(\d+)/',                                  WebProblemHandler),
+        ('/groups/\d+/problems/(\d+)/(\w*)/',                            WebProblemHandler),
+        ('/groups/\d+/problems/(\d+)/(\w*)/edit/',                       WebProblemEditHandler),
+        ### /groups/\d+/problems/\d+/basic/edit/
+        ### /groups/\d+/problems/\d+/tag/edit/
+        ### /groups/\d+/problems/\d+/execute/edit/
+        ### /groups/\d+/problems/\d+/testdata/edit/
+        ### /groups/\d+/problems/\d+/submit/
 
-        ('/group/\d+/submissions/',                                     WebSubmissionsHandler),
-        ('/group/\d+/submissions/(\d+)/',                               WebSubmissionHandler),
+        ('/groups/\d+/submissions/',                                     WebSubmissionsHandler),
+        ('/groups/\d+/submissions/(\d+)/',                               WebSubmissionHandler),
 
-        ('/group/\d+/contests/',                                        WebContestsHandler),
-        ('/group/\d+/contests/(\d+)/',                                  WebContestHandler),
+        ('/groups/\d+/contests/',                                        WebContestsHandler),
+        ('/groups/\d+/contests/(\d+)/',                                  WebContestHandler),
         ### TODO
-        ('/group/\d+/contests/(\d+)/edit/',                             WebContestEditHandler),
-        ('/group/\d+/contests/(\d+)/problems/(\d+)/',                   WebContestProblemHandler),
-        ('/group/\d+/contests/(\d+)/problems/(\d+)/(\w*)/',             WebContestProblemHandler),
-        ('/group/\d+/contests/(\d+)/submissions/',                      WebContestSubmissionsHandler),
-        ('/group/\d+/contests/(\d+)/submissions/(\d+)/',                WebContestSubmissionHandler),
-        ('/group/\d+/contests/(\d+)/scoreboard/',                       WebContestScoreboardHandler),
+        ('/groups/\d+/contests/(\d+)/edit/',                             WebContestEditHandler),
+        ('/groups/\d+/contests/(\d+)/problems/(\d+)/',                   WebContestProblemHandler),
+        ('/groups/\d+/contests/(\d+)/problems/(\d+)/(\w*)/',             WebContestProblemHandler),
+        ('/groups/\d+/contests/(\d+)/submissions/',                      WebContestSubmissionsHandler),
+        ('/groups/\d+/contests/(\d+)/submissions/(\d+)/',                WebContestSubmissionHandler),
+        ('/groups/\d+/contests/(\d+)/scoreboard/',                       WebContestScoreboardHandler),
 
-        #('/group/\d+/contests/(\d+)/rank/',                             WebContestRankHandler),
+        #('/groups/\d+/contests/(\d+)/rank/',                             WebContestRankHandler),
 
 
         

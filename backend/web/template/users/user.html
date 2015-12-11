@@ -96,7 +96,7 @@ require(["jquery", "bootbox"], function($, bootbox){
     $(".user_group_toggle_button").click(function(){
         user = {{data['id']}};
         $.ajax({
-            url: "/api/users/{{data['id']}}/group/"+$(this).attr("data-group-id")+"/problems/",
+            url: "/api/users/{{data['id']}}/groups/"+$(this).attr("data-group-id")+"/problems/",
             data: {token: "{{account['token']}}"},
             dataType: "json",
             success: function(msg){

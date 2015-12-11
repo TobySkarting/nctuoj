@@ -28,8 +28,8 @@
 <table class="hidden">
     <tbody class="template submission">
         <tr>
-            <td><a href="/group/{{current_group}}/contests/{{contest_data['id']}}/submissions/%id%/">%id%</a></td>
-            <td><a href="/group/{{current_group}}/contests/{{contest_data['id']}}/problems/%problem_id%/">%problem_id%</a></td>
+            <td><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/%id%/">%id%</a></td>
+            <td><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/%problem_id%/">%problem_id%</a></td>
             <td>%time_usage%</td>
             <td>%memory_usage%</td>
             <td>%abbreviation%</td>
@@ -54,7 +54,7 @@ require(["jquery"], function($){
         {% if map_group_power['submission_manage'] in current_group_power %}
             replace_element.push("ip");
         {% end %}
-        $.get("http://nctuoj.twbbs.org/api/group/{{current_group}}/contests/{{contest_data['id']}}/submissions/", {token: '{{account["token"]}}'}, function(msg){
+        $.get("http://nctuoj.twbbs.org/api/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/", {token: '{{account["token"]}}'}, function(msg){
             $.each(msg['msg'], function(index, element){
                 data = template_data;
                 element['compiler'] = map_lang[element['lang']];

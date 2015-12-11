@@ -1,7 +1,7 @@
 {% extends './../frame.html' %}
 {% block content %}
 {% if map_group_power["contest_manage"] in current_group_power %}
-    <a class="btn btn-default margin-bottom" href="/group/{{current_group}}/contests/0/edit/">New</a>
+    <a class="btn btn-default margin-bottom" href="/groups/{{current_group}}/contests/0/edit/">New</a>
 {% end %}
 
 {% module Pagination(page) %}
@@ -26,14 +26,14 @@
             {% for x in data %}
                 <tr>
                     {% if (map_group_power['contest_manage'] in current_group_power) or int(x['visible']) %}
-                        <td><a href='/group/{{current_group}}/contests/{{x['id']}}/'>{{x['id']}}</a></td>
-                        <td><a href='/group/{{current_group}}/contests/{{x['id']}}/'>{{x['title']}}</a></td>
+                        <td><a href='/groups/{{current_group}}/contests/{{x['id']}}/'>{{x['id']}}</a></td>
+                        <td><a href='/groups/{{current_group}}/contests/{{x['id']}}/'>{{x['title']}}</a></td>
                         <td>{{x['register_start']}}<br>{{x['register_end']}}</td>
                         <td>{{x['start']}}<br>{{x['end']}}</td>
                         <td>Type</td>
                         <td>
                             {% if datetime.datetime.now() > x['end'] %}
-                                <a href="/group/{{current_group}}/contests/{{x['id']}}/">End</a>
+                                <a href="/groups/{{current_group}}/contests/{{x['id']}}/">End</a>
                             {% else %}
                                 {% if int(x['id']) not in registered_contest %}
                                     <div class="btn btn-default" onclick="register({{x['id']}})">Register</div>
@@ -51,7 +51,7 @@
                         <td></td>
                     {% end %}
                     {% if map_group_power['contest_manage'] in current_group_power %}
-                        <td><a class="btn btn-xs btn-warning" href="/group/{{current_group}}/contests/{{x['id']}}/edit/">Edit</a></td>
+                        <td><a class="btn btn-xs btn-warning" href="/groups/{{current_group}}/contests/{{x['id']}}/edit/">Edit</a></td>
                         <td><div class="btn btn-xs btn-danger" onclick="delete_contest({{x['id']}});">Delete</div></td>
                     {% end %}
                 </tr>
@@ -65,14 +65,14 @@
             bootbox.confirm("Do you want to delete this contest?", function(res){
                 if(res){
                     $.ajax({
-                        url: '/api/group/{{current_group}}/contests/'+id+'/',
+                        url: '/api/groups/{{current_group}}/contests/'+id+'/',
                         type: 'DELETE',
                         dataType: 'json',
                         data: {'token': '{{account['token']}}'},
                         success: function(msg){
                             if(msg['status'] == 200){
                                 bootbox.alert('Deleted', function(){
-                                    location.href = '/group/{{current_group}}/contests/';
+                                    location.href = '/groups/{{current_group}}/contests/';
                                 });
                             }else{
                                 bootbox.alert(msg['msg']);
@@ -86,7 +86,7 @@
     function register(contest_id){
         data = Object();
         data.token = '{{account['token']}}';
-        $.post('/api/group/{{current_group}}/contests/'+contest_id+'/register/', data, function(msg){
+        $.post('/api/groups/{{current_group}}/contests/'+contest_id+'/register/', data, function(msg){
             if(msg['status'] == 200){
                 bootbox.alert('Successfully registered', function(){location.href=location.href;});
             }else{
@@ -97,7 +97,7 @@
     function unregister(contest_id){
         data = Object();
         data.token = '{{account['token']}}';
-        $.post('/api/group/{{current_group}}/contests/'+contest_id+'/unregister/', data, function(msg){
+        $.post('/api/groups/{{current_group}}/contests/'+contest_id+'/unregister/', data, function(msg){
             if(msg['status'] == 200){
                 bootbox.alert('Successfully unregistered', function(){location.href=location.href;});
             }else{

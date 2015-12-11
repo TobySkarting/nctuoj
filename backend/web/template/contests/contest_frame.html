@@ -10,15 +10,15 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/group/{{current_group}}/">NCTU Online Judge</a>
+                <a class="navbar-brand" href="/groups/{{current_group}}/">NCTU Online Judge</a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a href="/group/{{current_group}}/contests/{{contest_data['id']}}/">Tasks</a></li>
-                    <li><a href="/group/{{current_group}}/contests/{{contest_data['id']}}/submissions/">Submissions</a></li>
-                    <li><a href="/group/{{current_group}}/contests/{{contest_data['id']}}/scoreboard/">Scoreboard</a></li>
+                    <li><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/">Tasks</a></li>
+                    <li><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/">Submissions</a></li>
+                    <li><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/scoreboard/">Scoreboard</a></li>
                     {% if map_group_power['contest_manage'] in current_group_power %}
-                        <li><a href="/group/{{current_group}}/contests/{{contest_data['id']}}/edit/">Edit</a></li>
+                        <li><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/edit/">Edit</a></li>
                     {% end %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

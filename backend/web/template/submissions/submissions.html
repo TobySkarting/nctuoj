@@ -37,8 +37,8 @@
                 <tbody>
                     {% for x in data %}
                         <tr>
-                            <td><a href="/group/{{current_group}}/submissions/{{x['id']}}/">{{x['id']}}</a></td>
-                            <td><a href="/group/{{current_group}}/problems/{{x['problem_id']}}/">{{x['problem_id']}}</a></td>
+                            <td><a href="/groups/{{current_group}}/submissions/{{x['id']}}/">{{x['id']}}</a></td>
+                            <td><a href="/groups/{{current_group}}/problems/{{x['problem_id']}}/">{{x['problem_id']}}</a></td>
                             <td><a href="/users/{{x['user_id']}}/">{{x['user']}}</a></td>
                             <td>{{x['time_usage'] if x['time_usage'] is not None else "--"}}</td>
                             <td>{{x['memory_usage'] if x['memory_usage'] is not None else "--"}}</td>
