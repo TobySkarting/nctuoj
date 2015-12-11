@@ -91,6 +91,7 @@ from web.verdict        import WebVerdictTypesHandler
 from web.verdict        import WebVerdictTypeHandler
 
 from web.group          import WebGroupHandler
+from web.group          import WebGroupManageHandler
 from web.group          import WebGroupsHandler
 
 from web.about          import WebAboutHandler
@@ -201,6 +202,7 @@ if __name__ == '__main__':
         ('/groups/',                                                    WebGroupsHandler),
 
         ('/group/(\d+)/',                                               WebGroupHandler),
+        ('/group/(\d+)/manage/(\w*/)?',                                 WebGroupManageHandler),
         ('/group/\d+/bulletins/',                                       WebBulletinsHandler),
         ('/group/\d+/bulletins/(\d+)/(\w*)/',                           WebBulletinHandler),
 
