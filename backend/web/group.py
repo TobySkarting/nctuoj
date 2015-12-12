@@ -7,7 +7,7 @@ class WebGroupHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
         err, data = yield from Service.Group.get_group({"id": id})
-        self.Render('group/group.html', data=data)
+        self.render('group/group.html', data=data)
 
 class WebGroupManageHandler(WebRequestHandler):
     @tornado.gen.coroutine
@@ -16,9 +16,9 @@ class WebGroupManageHandler(WebRequestHandler):
         if not action:
             action = "basic/"
         if action == "basic/":
-            self.Render('group/group_manage_basic.html', data=data)
+            self.render('group/group_manage_basic.html', data=data)
         elif action == "member/":
-            self.Render('group/group_manage_member.html', data=data)
+            self.render('group/group_manage_member.html', data=data)
         else:
             self.write_error(404)
 
@@ -51,5 +51,5 @@ class WebGroupsHandler(WebRequestHandler):
         page['current'] = meta['page']
         page['url'] = '/groups/'
         page['get'] = {}
-        self.Render('./group/groups.html', data=data, page=page)
+        self.render('./group/groups.html', data=data, page=page)
 

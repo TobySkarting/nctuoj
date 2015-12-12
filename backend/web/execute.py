@@ -8,7 +8,7 @@ class WebExecuteTypesHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self):
         err, data = yield from Service.Execute.get_execute_list()
-        self.Render('./executes/executes.html', data=data)
+        self.render('./executes/executes.html', data=data)
         pass
 
 class WebExecuteTypeHandler(WebRequestHandler):
@@ -20,7 +20,7 @@ class WebExecuteTypeHandler(WebRequestHandler):
         if action == "view":
             err, data = yield from Service.Execute.get_execute(meta)
             if err: self.write_error(500, err)
-            else: self.Render('./executes/execute.html', data=data)
+            else: self.render('./executes/execute.html', data=data)
         elif action == "edit":
             ### check power
             if self.map_power['execute_manage'] not in self.account['power']:
@@ -28,6 +28,6 @@ class WebExecuteTypeHandler(WebRequestHandler):
                 return
             err, data = yield from Service.Execute.get_execute(meta)
             if err: self.write_error(500, err)
-            else: self.Render('./executes/execute_edit.html', data=data)
+            else: self.render('./executes/execute_edit.html', data=data)
         else:
             self.write_error(404)

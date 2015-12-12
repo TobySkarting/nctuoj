@@ -16,7 +16,7 @@ class WebIndexHandler(WebRequestHandler):
             if res:
                 res['group_name'] = x['name']
                 data['bulletins'].append(res)
-        self.Render('index.html', data=data)
+        self.render('index.html', data=data)
         """
-        self.Render('index.html')
+        self.render('index.html')
 

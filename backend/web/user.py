@@ -39,7 +39,7 @@ class WebUsersHandler(WebRequestHandler):
         page['current'] = meta['page']
         page['url'] = '/users/'
         page['get'] = {}
-        self.Render('./users/users.html', data=data, page=page)
+        self.render('./users/users.html', data=data, page=page)
 
 
 class WebUserHandler(WebRequestHandler):
@@ -53,7 +53,7 @@ class WebUserHandler(WebRequestHandler):
         if err:
             self.write_error(500, err)
             return
-        self.Render('./users/user.html', data=meta)
+        self.render('./users/user.html', data=meta)
 
 class WebUserEditHandler(WebRequestHandler):
     @tornado.gen.coroutine
@@ -69,7 +69,7 @@ class WebUserSignHandler(WebRequestHandler):
         if action == "signin":
             if self.account['id'] != 0:
                 self.redirect('/')
-            self.Render('./users/user_signin.html')
+            self.render('./users/user_signin.html')
         elif action == "signout":
             Service.User.SignOut(self)
             self.redirect('/')
@@ -77,7 +77,7 @@ class WebUserSignHandler(WebRequestHandler):
             if self.account['id'] != 0:
                 self.redirect('/')
             err, school = yield from Service.School.get_school_list()
-            self.Render('./users/user_signup.html', school=school)
+            self.render('./users/user_signup.html', school=school)
         else:
             self.write_error(404)
 

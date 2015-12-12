@@ -39,7 +39,7 @@ class ApiUserHandler(ApiRequestHandler):
             if int(id) != int(self.account['id']):
                 sefl.render('403', 'Permission Denied')
                 return 
-            args = ['account', 'school_id', 'student_id', 'email', 'npasswd', 'rpasswd', 'passwd']
+            args = ['account', 'name', 'school_id', 'student_id', 'email', 'npasswd', 'rpasswd', 'passwd']
             meta = self.get_args(args)
             err, res = yield from Service.User.post_user_basic_info(meta)
             if err: self.render(500, err)

@@ -10,7 +10,7 @@ class WebVerdictTypesHandler(WebRequestHandler):
     def get(self):
         err, data = yield from Service.Verdict.get_verdict_list()
         if err: self.write_error(500, err)
-        else: self.Render('./verdicts/verdicts.html', data=data)
+        else: self.render('./verdicts/verdicts.html', data=data)
 
 class WebVerdictTypeHandler(WebRequestHandler):
     def check_view(self, meta):
@@ -42,7 +42,7 @@ class WebVerdictTypeHandler(WebRequestHandler):
                 return
             err, data = yield from Service.Verdict.get_verdict(meta)
             if err: self.write_error(500, err)
-            else: self.Render('./verdicts/verdict.html', data=data)
+            else: self.render('./verdicts/verdict.html', data=data)
         elif action == "edit":
             ### check power
             if map_power['verdict_manage'] not in self.account['power']:
@@ -54,6 +54,6 @@ class WebVerdictTypeHandler(WebRequestHandler):
                 return
             err, data['execute_types'] = yield from Service.Execute.get_execute_list()
             if err: self.write_error(500, err)
-            else: self.Render('./verdicts/verdict_edit.html', data=data)
+            else: self.render('./verdicts/verdict_edit.html', data=data)
         else:
             self.write_error(404)
