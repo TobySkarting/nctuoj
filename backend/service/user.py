@@ -51,7 +51,7 @@ class UserService(BaseService):
     def get_user_basic_info(self, id):
         res = self.rs.get("user_basic@%s" % str(id))
         if res: return (None, res)
-        res = yield self.db.execute("SELECT * FROM users where id=%s", (id,))
+        res = yield self.db.execute("SELECT u.*, s.name as school FROM users as u, schools as s where u.id=%s AND u.school_id = s.id", (id,))
         if res.rowcount == 0:
             return ('ID Not Exist', None)
         res = res.fetchone()
@@ -73,7 +73,7 @@ class UserService(BaseService):
         return (None, data)
 
     def post_user_basic_info(self, data={}):
-        required_args = ['id', 'account', 'school_id', 'email', 'student_id', 'passwd']
+        required_args = ['id', 'account', 'name', 'school_id', 'email', 'student_id', 'passwd']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         id = data.pop('id')
