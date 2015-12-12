@@ -188,7 +188,7 @@ class UserService(BaseService):
         return id(str)
         '''
         ### check required arguemts
-        required_args = ['email', 'account', 'student_id', 'passwd', 'repasswd', 'school_id']
+        required_args = ['email', 'account', 'name', 'student_id', 'passwd', 'repasswd', 'school_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         ### check data valadation
@@ -201,8 +201,8 @@ class UserService(BaseService):
 
         ### check conflict
         res = yield self.db.execute('SELECT id FROM users ' 
-                'WHERE account = %s OR student_id = %s', 
-                (data['account'], data['student_id'],))
+                'WHERE account = %s OR student_id = %s OR name = %s', 
+                (data['account'], data['student_id'], data['name']))
         if res.rowcount != 0:
             return ('User Exist', None)
 

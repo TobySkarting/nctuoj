@@ -57,7 +57,7 @@ class ApiUserSignHandler(ApiRequestHandler):
             else:
                 self.render()
         elif action == 'signup':
-            args = ['email', 'account', 'passwd', 'repasswd', 'school_id', 'student_id']
+            args = ['email', 'account', 'passwd', 'repasswd', 'name', 'school_id', 'student_id']
             meta = self.get_args(args)
             passwd = meta['passwd']
             err, id = yield from Service.User.SignUp(meta)
