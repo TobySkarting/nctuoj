@@ -102,6 +102,7 @@ from web.about          import WebAboutHandler
 from web.user           import WebUsersHandler
 from web.user           import WebUserSignHandler
 from web.user           import WebUserHandler
+from web.user           import WebUserEditHandler
 #from web.problem import WebProblemHandler
 #from web.problem import WebProblemListHandler
 
@@ -243,8 +244,9 @@ if __name__ == '__main__':
         ### user list only admin
         ('/users/',                                                     WebUsersHandler),       
         ('/users/(\d+)/',                                               WebUserHandler),
-        ('/users/(sign\w*)/?',                                          WebUserSignHandler),
-        ('/users/(\d+)/(\w*)/?',                                        WebUserHandler),
+        ('/users/(sign\w*)/',                                           WebUserSignHandler),
+        ('/users/(\d+)/',                                               WebUserHandler),
+        ('/users/(\d+)/edit/',                                          WebUserEditHandler),
 
 
         ('/about/',                                                     WebAboutHandler),

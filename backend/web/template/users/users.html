@@ -54,6 +54,7 @@ function update(id, power_type){
         url: '/api/users/'+id+'/',
         type: "POST",
         data: {
+            'query': "power",
             'power': power_type,
             'token': "{{account['token']}}"
         },

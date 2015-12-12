@@ -75,10 +75,13 @@
                 </div>
             </div>
         </div>
+        <div class="row margin-bottom">
+            <a class="btn btn-default btn-block" href="/users/{{account['id']}}/edit/">Reset Password</a>
+        </div>
         {% end %}
     </div>
     <!-- Each Group -->
-    <div class="col-md-8">
+    <div class="col-md-8 margin-bottom">
         {% for x in data['group']  %}
             {% if x in group %}
                 <div class="panel panel-default">

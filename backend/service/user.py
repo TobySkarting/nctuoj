@@ -73,14 +73,14 @@ class UserService(BaseService):
         return (None, data)
 
     def post_user_basic_info(self, data={}):
-        required_args = ['id', 'account', 'name', 'school_id', 'email', 'student_id', 'passwd']
+        required_args = ['id', 'passwd', 'npasswd', 'rpasswd']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         id = data.pop('id')
         passwd = data.pop('passwd')
         npasswd = data.pop('npasswd')
         rpasswd = data.pop('rpasswd')
-        res = yield self.db.execute('SELECT passwd FROM users WHERE id=%ss;', (id,))
+        res = yield self.db.execute('SELECT passwd FROM users WHERE id=%s;', (id,))
         if res.rowcount == 0: return ('User id not exist', None)
         hpasswd = res.fetchone()['passwd']
         if self.hash_pwd(passwd) != hpasswd: return ('Wrong Password', None)
