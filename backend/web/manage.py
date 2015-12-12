@@ -5,5 +5,5 @@ import tornado
 class WebGroupManageHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self):
-        self.Render('about/about.html')
+        self.render('about/about.html')
         return

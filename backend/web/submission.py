@@ -36,7 +36,7 @@ class WebSubmissionsHandler(WebRequestHandler):
         page['url'] = '/groups/%s/submissions/' % meta['group_id']
         args = ['account', 'problem_id']
         page['get'] = self.get_args(args)
-        self.Render('./submissions/submissions.html', data=data, page=page)
+        self.render('./submissions/submissions.html', data=data, page=page)
 
 class WebSubmissionHandler(WebRequestHandler):
     @tornado.gen.coroutine
@@ -44,4 +44,4 @@ class WebSubmissionHandler(WebRequestHandler):
         err, data = yield from Service.Submission.get_submission({'id': id})
         if err:
             self.write_error(500, err)
-        self.Render('./submissions/submission.html', data=data)
+        self.render('./submissions/submission.html', data=data)

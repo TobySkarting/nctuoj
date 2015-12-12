@@ -127,9 +127,9 @@ class WebRequestHandler(RequestHandler):
 
     def write_error(self, status_code, err=None, **kwargs):
         kwargs['err'] = err
-        self.Render('./err/'+str(status_code)+'.html', **kwargs)
+        self.render('./err/'+str(status_code)+'.html', **kwargs)
 
-    def Render(self, templ, **kwargs):
+    def render(self, templ, **kwargs):
         kwargs['md'] = md
         kwargs['map_power'] = self.map_power
         kwargs['map_group_power'] = self.map_group_power
@@ -144,7 +144,7 @@ class WebRequestHandler(RequestHandler):
         kwargs['current_group_power'] = self.current_group_power
         kwargs['current_group_active'] = self.current_group_active
         # print("This function in req.py's render: ", kwargs)
-        self.render('./web/template/'+templ, **kwargs)
+        super().render('./web/template/'+templ, **kwargs)
 
     @tornado.gen.coroutine
     def prepare(self):

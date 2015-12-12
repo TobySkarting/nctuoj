@@ -41,7 +41,7 @@ class WebBulletinsHandler(WebRequestHandler):
         page['current'] = meta['page']
         page['url'] = '/groups/%s/bulletins/' % meta['group_id']
         page['get'] = {}
-        self.Render('./bulletins/bulletins.html', data=data, page=page)
+        self.render('./bulletins/bulletins.html', data=data, page=page)
 
 class WebBulletinHandler(WebRequestHandler):
     @tornado.gen.coroutine
@@ -53,7 +53,7 @@ class WebBulletinHandler(WebRequestHandler):
         if action == "view":
             err, data = yield from Service.Bulletin.get_bulletin(meta)
             if err: self.write_error(500, err)
-            else: self.Render('./bulletins/bulletin.html', data=data)
+            else: self.render('./bulletins/bulletin.html', data=data)
         elif action == "edit":
             ### check power
             if map_group_power['bulletin_manage'] not in self.current_group_power:
@@ -61,7 +61,7 @@ class WebBulletinHandler(WebRequestHandler):
                 return
             err, data = yield from Service.Bulletin.get_bulletin(meta)
             if err: self.write_error(500, err)
-            else: self.Render('./bulletins/bulletin_edit.html', data=data)
+            else: self.render('./bulletins/bulletin_edit.html', data=data)
         else:
             self.write_error(404)
 
