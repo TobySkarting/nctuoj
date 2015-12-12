@@ -1,0 +1,50 @@
+{% extends './../frame.html' %}
+{% block content %}
+
+<form class="form-horizontal" action="/api/users/{{account['id']}}/" method="post">
+    <input type="hidden" name="query" value="basic_info">
+    <input type="hidden" name="token" value="{{account['token']}}">
+    <div class="form-group">
+        <label class="col-sm-4 control-label">Password</label>
+        <div class="col-sm-4">
+            <input type="password" class="form-control" name="passwd">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-4 control-label">New Password</label>
+        <div class="col-sm-4">
+            <input type="password" class="form-control" name="npasswd">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-4 control-label">Repeat New Password</label>
+        <div class="col-sm-4">
+            <input type="password" class="form-control" name="rpasswd">
+        </div>
+    </div>
+    <button class="col-sm-offset-4 btn btn-success" type="submit">Submit</button>
+</form>
+<script>
+require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
+    $(".select").selectpicker();
+    $("form").submit(function(){
+        form = $(this);
+        $.ajax({
+            url: form.attr("action"),
+            type: form.attr("method"),
+            data: form.serialize(),
+            dataType: "json",
+            success: function(msg){
+                if(msg['status'] == 200){
+                    location.href = "/";
+                } else {
+                    bootbox.alert(msg['msg'])
+                }
+            }
+        });
+        return false;
+    });
+});
+</script>
+
+{% end %}

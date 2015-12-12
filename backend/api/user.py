@@ -25,22 +25,26 @@ class ApiUserHandler(ApiRequestHandler):
         pass
     @tornado.gen.coroutine
     def post(self, id):
-        args = ['basic_info', 'power']
+        print("adfasdfdasfadfdasf")
+        args = ['query']
         meta = self.get_args(args)
-        print('META', meta)
-        if meta['power']:
+        if meta['query'] == "power":
+            args = ['power']
+            meta = self.get_args(args)
             if self.map_power['user_manage'] not in self.account['power']:
                 self.render(403, "Permission Denied")
                 return
             yield from Service.User.post_user_power(id, meta['power'])
             self.render()
             return
-        if meta['basic_info']:
+        elif meta['query'] == "basic_info":
+            print(id, self.account['id'])
             if int(id) != int(self.account['id']):
                 sefl.render('403', 'Permission Denied')
                 return 
-            args = ['account', 'name', 'school_id', 'student_id', 'email', 'npasswd', 'rpasswd', 'passwd']
+            args = ['npasswd', 'rpasswd', 'passwd']
             meta = self.get_args(args)
+            meta['id'] = id
             err, res = yield from Service.User.post_user_basic_info(meta)
             if err: self.render(500, err)
             else: self.render(200, res)
