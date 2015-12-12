@@ -55,6 +55,14 @@ class WebUserHandler(WebRequestHandler):
             return
         self.Render('./users/user.html', data=meta)
 
+class WebUserEditHandler(WebRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, id):
+        err, meta = yield from Service.User.get_user_basic_info(id)
+        if err:
+            self.write_error(500, err)
+            return
+
 class WebUserSignHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, action):
