@@ -33,7 +33,7 @@ class WebContestsHandler(WebRequestHandler):
         page = {}
         page['total'] = page_count
         page['current'] = meta['page']
-        page['url'] = '/group/%s/contests/' % meta['group_id']
+        page['url'] = '/groups/%s/contests/' % meta['group_id']
         page['get'] = {}
         self.Render('./contests/contests.html', data=data, page=page)
 

@@ -19,17 +19,17 @@ class WebBulletinsHandler(WebRequestHandler):
         try:
             meta["page"] = int(meta["page"])
         except:
-            self.redirect('/group/%s/bulletins/'%meta['group_id'])
+            self.redirect('/groups/%s/bulletins/'%meta['group_id'])
             return
         ### modify page in range (1, page_count)
         err, count = yield from Service.Bulletin.get_bulletin_list_count(meta)
         if err: print(err)
         page_count = max(math.ceil(count / meta['count']), 1)
         if int(meta['page']) < 1:
-            self.redirect('/group/%s/bulletins/'%meta['group_id'])
+            self.redirect('/groups/%s/bulletins/'%meta['group_id'])
             return
         if int(meta['page']) > page_count:
-            self.redirect('/group/%s/bulletins/?page=%s'%(meta['group_id'], str(page_count)))
+            self.redirect('/groups/%s/bulletins/?page=%s'%(meta['group_id'], str(page_count)))
             return
         ### get data
         err, data = yield from Service.Bulletin.get_bulletin_list(meta)
@@ -39,7 +39,7 @@ class WebBulletinsHandler(WebRequestHandler):
         page = {}
         page['total'] = page_count
         page['current'] = meta['page']
-        page['url'] = '/group/%s/bulletins/' % meta['group_id']
+        page['url'] = '/groups/%s/bulletins/' % meta['group_id']
         page['get'] = {}
         self.Render('./bulletins/bulletins.html', data=data, page=page)
 

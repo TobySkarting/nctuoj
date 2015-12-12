@@ -33,7 +33,7 @@ class WebProblemsHandler(WebRequestHandler):
         page = {}
         page['total'] = page_count
         page['current'] = meta['page']
-        page['url'] = '/group/%s/problems/' % meta['group_id']
+        page['url'] = '/groups/%s/problems/' % meta['group_id']
         page['get'] = {}
         self.Render('./problems/problems.html', data=data, page=page)
 class WebProblemHandler(WebRequestHandler):
