@@ -35,7 +35,7 @@ class WebContestsHandler(WebRequestHandler):
         page['current'] = meta['page']
         page['url'] = '/groups/%s/contests/' % meta['group_id']
         page['get'] = {}
-        self.Render('./contests/contests.html', data=data, page=page)
+        self.render('./contests/contests.html', data=data, page=page)
 
 class WebContestHandler(WebRequestHandler):
     def check_view(self, meta):
@@ -56,7 +56,7 @@ class WebContestHandler(WebRequestHandler):
         if not (yield from self.check_view(meta)):
             return
         err, data = yield from Service.Contest.get_contest(meta)
-        self.Render('./contests/contest.html', contest_data=data)
+        self.render('./contests/contest.html', contest_data=data)
 
 class WebContestEditHandler(WebRequestHandler):
     def check_edit(self, meta):
@@ -77,7 +77,7 @@ class WebContestEditHandler(WebRequestHandler):
         if not (yield from self.check_edit(meta)):
             return
         err, contest_data = yield from Service.Contest.get_contest(meta)
-        self.Render('./contests/contest_edit.html', contest_data=contest_data)
+        self.render('./contests/contest_edit.html', contest_data=contest_data)
 
 class WebContestProblemHandler(WebRequestHandler):
     @tornado.gen.coroutine
@@ -88,9 +88,9 @@ class WebContestProblemHandler(WebRequestHandler):
         err, data = yield from Service.Problem.get_problem(meta)
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
         if action == None:
-            self.Render('./contests/contest_problem.html', data=data, contest_data=contest_data)
+            self.render('./contests/contest_problem.html', data=data, contest_data=contest_data)
         elif action == "submit":
-            self.Render('./contests/contest_problem_submit.html', data=data, contest_data=contest_data)
+            self.render('./contests/contest_problem_submit.html', data=data, contest_data=contest_data)
         else:
             self.write_error(404)
 
@@ -98,17 +98,17 @@ class WebContestSubmissionsHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
-        self.Render('./contests/contest_submissions.html', contest_data=contest_data)
+        self.render('./contests/contest_submissions.html', contest_data=contest_data)
 
 class WebContestSubmissionHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id, id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
         err, data = yield from Service.Contest.get_contest_submission({"id": contest_id, "submission_id": id})
-        self.Render('./contests/contest_submission.html', contest_data=contest_data, data=data)
+        self.render('./contests/contest_submission.html', contest_data=contest_data, data=data)
 
 class WebContestScoreboardHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
-        self.Render('./contests/contest_scoreboard.html', contest_data=contest_data)
+        self.render('./contests/contest_scoreboard.html', contest_data=contest_data)

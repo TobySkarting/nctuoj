@@ -35,7 +35,7 @@ class WebProblemsHandler(WebRequestHandler):
         page['current'] = meta['page']
         page['url'] = '/groups/%s/problems/' % meta['group_id']
         page['get'] = {}
-        self.Render('./problems/problems.html', data=data, page=page)
+        self.render('./problems/problems.html', data=data, page=page)
 class WebProblemHandler(WebRequestHandler):
     def check_view(self, meta={}):
         err, data = yield from Service.Problem.get_problem(meta)
@@ -56,9 +56,9 @@ class WebProblemHandler(WebRequestHandler):
             return
         err, data = yield from Service.Problem.get_problem(meta)
         if action == None:
-            self.Render('./problems/problem.html', data=data)
+            self.render('./problems/problem.html', data=data)
         elif action == "submit":
-            self.Render('./problems/problem_submit.html', data=data)
+            self.render('./problems/problem_submit.html', data=data)
         else:
             self.write_error(404)
 
@@ -90,12 +90,12 @@ class WebProblemEditHandler(WebRequestHandler):
 
         if not action: action = "basic"
         if action == "basic":
-            self.Render('./problems/problem_edit.html', data=data)
+            self.render('./problems/problem_edit.html', data=data)
         elif action == "tag":
-            self.Render('./problems/problem_edit_tag.html', data=data)
+            self.render('./problems/problem_edit_tag.html', data=data)
         elif action == "execute":
-            self.Render('./problems/problem_edit_execute.html', data=data)
+            self.render('./problems/problem_edit_execute.html', data=data)
         elif action == "testdata":
-            self.Render('./problems/problem_edit_testdata.html', data=data)
+            self.render('./problems/problem_edit_testdata.html', data=data)
         else:
             self.write_error(404)
