@@ -33,7 +33,7 @@ class WebSubmissionsHandler(WebRequestHandler):
         page = {}
         page['total'] = page_count
         page['current'] = meta['page']
-        page['url'] = '/group/%s/submissions/' % meta['group_id']
+        page['url'] = '/groups/%s/submissions/' % meta['group_id']
         args = ['account', 'problem_id']
         page['get'] = self.get_args(args)
         self.Render('./submissions/submissions.html', data=data, page=page)
