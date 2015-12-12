@@ -52,6 +52,7 @@ CREATE TABLE users (
     account         varchar(32)     NOT NULL,
     passwd          varchar(32)     NOT NULL,
     email           varchar(255)    NOT NULL,
+    name            varchar(32)     NOT NULL,
     student_id      varchar(32)     NOT NULL,
     school_id       integer         NOT NULL    REFERENCES schools(id)  ON DELETE CASCADE,
     token           varchar(64)     NOT NULL,
@@ -61,6 +62,7 @@ CREATE TABLE users (
 CREATE TRIGGER users_updated_row BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE UNIQUE INDEX on users (token);
 CREATE UNIQUE INDEX on users (account);
+CREATE UNIQUE INDEX on users (name);
 CREATE UNIQUE INDEX on users (student_id);
 INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '1', 'P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr');
 INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('user', 'ee11cbb19052e40b07aac0ca060c23ee', 'user@gmail.com', '0000001', '1', 'TOKEN@user@a35668De30ED26b0cff046EBFD108964');
