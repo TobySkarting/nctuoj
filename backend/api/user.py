@@ -25,7 +25,6 @@ class ApiUserHandler(ApiRequestHandler):
         pass
     @tornado.gen.coroutine
     def post(self, id):
-        print("adfasdfdasfadfdasf")
         args = ['query']
         meta = self.get_args(args)
         if meta['query'] == "power":
