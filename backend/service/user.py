@@ -17,7 +17,7 @@ class UserService(BaseService):
 
     def gen_token(self, account):
         token = "%s"%hashlib.md5(("%s@%s"%(account, str(time.time()))).encode()).hexdigest()
-        token = 'NCTUOJ@%s@'%hash(account) + ''.join( _ if random.random() < 0.5 else _.upper() for _ in token)
+        token = 'NCTUOJ@%s@'%abs(hash(account)) + ''.join( _ if random.random() < 0.5 else _.upper() for _ in token)
         return token
 
 

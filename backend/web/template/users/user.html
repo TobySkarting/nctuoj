@@ -129,7 +129,7 @@ require(["jquery", "bootbox"], function($, bootbox){
                 bootbox.prompt({
                     title: 'password',
                     callback: function(passwd){
-                        $.post('/api/user/resettoken/',{
+                        $.post('/api/users/resettoken/',{
                             'token': "{{account['token']}}",
                             'passwd': passwd}, function(msg){
                                 if(msg['status'] == 200){
