@@ -27,6 +27,7 @@
                         <th>Memory</th>
                         <th>Verdict</th>
                         <th>Compiler</th>
+                        <th>Length</th>
                         <th>Score</th>
                         <th>Submit Time</th>
                         {% if len(current_group_power) %}
@@ -44,6 +45,7 @@
                             <td>{{x['memory_usage'] if x['memory_usage'] is not None else "--"}}</td>
                             <td>{{x['abbreviation']}}</td>
                             <td><a href="/executes/{{x['execute_type_id']}}/">{{map_lang[x['lang']]}}</a></td>
+                            <td>{{x['length']}}</td>
                             <td>{{x['score'] if x['score'] is not None else '--' }}</td>
                             <td>{{x['created_at']}}</td>
                             {% if len(current_group_power) %}
