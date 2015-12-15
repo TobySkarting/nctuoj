@@ -1,6 +1,41 @@
 {% extends './../frame.html' %}
 {% block content %}
-Member
-{{data['info']}}
+
+<div class="row">
+    <div class="col-md-12">
+		<div class="panel panel-default table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Group</th>
+                        <th>Bulletin</th>
+                        <th>Problme</th>
+                        <th>Submission</th>
+                        <th>Contest</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in data['members'] %}
+                        <tr>
+                            <td><a href="">{{x['id']}}</a></td>
+                            <td><a href="">{{x['student_id']}}</a></td>
+                            <td><a href="">{{x['name']}}</a></td>
+                            {% for i in range(1, 6) %}
+                                {% if i in x['group_power'] %}
+                                    <td class="col-md-1"><a class="btn btn-success btn-sm">YES</a></td>
+                                {% else %}
+                                    <td class="col-md-1"><a class="btn btn-danger btn-sm">NO</a></td>
+                                {% end %}
+                            {% end %}
+                        </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% end %}
 
