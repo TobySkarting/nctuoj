@@ -138,6 +138,7 @@ class UserService(BaseService):
             yield self.db.execute('DELETE FROM map_group_user_power WHERE user_id=%s AND group_id=%s AND power=%s;', (uid, gid, power,))
         else:
             yield self.db.execute('INSERT INTO map_group_user_power (user_id, group_id, power) VALUES(%s, %s, %s);', (uid, gid, power))
+        self.rs.delete('user_group_power@%s@%s' % (str(uid), str(gid)))
 
     def get_user_contest(self, id):
         #res = self.rs.get('user@%scontest'%(str(id)))
