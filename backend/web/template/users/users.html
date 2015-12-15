@@ -1,52 +1,58 @@
 {% extends './../frame.html' %}
 {% block content %}
 
-<table class="table table-hover table-striped table-condensed">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Account</th>
-            <th>Student ID</th>
-            <th>User</th>
-            <th>Group</th>
-            <th>Execute</th>
-            <th>Verdict</th>
-            <th>Created At</th>
-        </tr>
-        <tr>
-        </tr>
-    </thead>
-    <tbody>
-        {% for x in data %}
-            <tr>
-                <td><a href="/users/{{x['id']}}/">{{x["id"]}}</a></td>
-                <td><a href="/users/{{x['id']}}/">{{x["account"]}}</a></td>
-                <td>{{x["student_id"]}}</td>
-                <td>
-                    <div onclick="update({{x['id']}}, 1);" class="btn btn-sm {{ "btn-success" if map_power['user_manage'] in x['power'] else "btn-danger"}}">
-                        {{ "Yes" if map_power['user_manage'] in x['power'] else "No"}}
-                    </div>
-                </td>
-                <td>
-                    <div onclick="update({{x['id']}}, 2);" class="btn btn-sm {{ "btn-success" if map_power['group_manage'] in x['power'] else "btn-danger"}}">
-                        {{ "Yes" if map_power['group_manage'] in x['power'] else "No"}}
-                    </div>
-                </td>
-                <td>
-                    <div onclick="update({{x['id']}}, 3);" class="btn btn-sm {{ "btn-success" if map_power['execute_manage'] in x['power'] else "btn-danger"}}">
-                        {{ "Yes" if map_power['execute_manage'] in x['power'] else "No"}}
-                    </div>
-                </td>
-                <td>
-                    <div onclick="update({{x['id']}}, 4);" class="btn btn-sm {{ "btn-success" if map_power['verdict_manage'] in x['power'] else "btn-danger"}}">
-                        {{ "Yes" if map_power['verdict_manage'] in x['power'] else "No"}}
-                    </div>
-                </td>
-                <td>{{x["created_at"]}}</td>
-            </tr>
-        {% end %}
-    </tbody>
-</table>
+<div class="row">
+    <div class="col-md-12">
+		<div class="panel panel-default table-responsive">
+            <table class="table table-hover table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Account</th>
+                        <th>Student ID</th>
+                        <th>User</th>
+                        <th>Group</th>
+                        <th>Execute</th>
+                        <th>Verdict</th>
+                        <th>Created At</th>
+                    </tr>
+                    <tr>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in data %}
+                        <tr>
+                            <td class="col-md-1"><a href="/users/{{x['id']}}/">{{x["id"]}}</a></td>
+                            <td class="col-md-2"><a href="/users/{{x['id']}}/">{{x["account"]}}</a></td>
+                            <td class="col-md-2">{{x["student_id"]}}</td>
+                            <td class="col-md-1">
+                                <div onclick="update({{x['id']}}, 1);" class="btn btn-sm {{ "btn-success" if map_power['user_manage'] in x['power'] else "btn-danger"}}">
+                                    {{ "Yes" if map_power['user_manage'] in x['power'] else "No"}}
+                                </div>
+                            </td>
+                            <td class="col-md-1">
+                                <div onclick="update({{x['id']}}, 2);" class="btn btn-sm {{ "btn-success" if map_power['group_manage'] in x['power'] else "btn-danger"}}">
+                                    {{ "Yes" if map_power['group_manage'] in x['power'] else "No"}}
+                                </div>
+                            </td>
+                            <td class="col-md-1">
+                                <div onclick="update({{x['id']}}, 3);" class="btn btn-sm {{ "btn-success" if map_power['execute_manage'] in x['power'] else "btn-danger"}}">
+                                    {{ "Yes" if map_power['execute_manage'] in x['power'] else "No"}}
+                                </div>
+                            </td>
+                            <td class="col-md-1">
+                                <div onclick="update({{x['id']}}, 4);" class="btn btn-sm {{ "btn-success" if map_power['verdict_manage'] in x['power'] else "btn-danger"}}">
+                                    {{ "Yes" if map_power['verdict_manage'] in x['power'] else "No"}}
+                                </div>
+                            </td>
+                            <td class="col-md-2">{{x["created_at"]}}</td>
+                        </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% module Pagination(page) %}
 <script>
 function update(id, power_type){
