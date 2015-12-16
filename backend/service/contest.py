@@ -152,8 +152,13 @@ class ContestService(BaseService):
             sql += '''( CASE WHEN (s.verdict = %s OR s.created_at >= %s) THEN 0 ELSE (CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) END) AS verdict '''
         sql += '''FROM submissions as s, contests as c 
         WHERE c.id = %s AND %s <= s.created_at AND s.created_at <= %s ORDER BY s.id;'''
-        res = yield self.db.execute(sql, (map_string_verdict['Pending']['id'], freeze_time, map_string_verdict['AC']['id'], data['id'], start, end))
-        res = res.fetchall()
+        submissions = yield self.db.execute(sql, (map_string_verdict['Pending']['id'], freeze_time, map_string_verdict['AC']['id'], data['id'], start, end))
+        submissions = submissions.fetchall()
+        err, users = yield from self.get_contest_user(data)
+        res = {
+                'submissions': submissions,
+                'users': users
+                }
         return (None, res)
 
     def get_contest_submission_list(self, data={}):
@@ -230,7 +235,7 @@ class ContestService(BaseService):
         if err: return (err, None)
         res = self.rs.get('contest@%s@user'%(str(data['id'])))
         if res: return (None, res)
-        res = yield self.db.execute('SELECT * FROM map_contest_user WHERE contest_id=%s;', (data['id'],))
+        res = yield self.db.execute('SELECT u.id, u.account, u.name  FROM users AS u, map_contest_user AS m WHERE m.contest_id=%s AND u.id = m.user_id;', (data['id'],))
         res = res.fetchall()
         self.rs.set('contest@%s@user'%(str(data['id'])), res)
         return (None, res)

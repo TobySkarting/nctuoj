@@ -25,3 +25,6 @@
 [submodule "http/loadCSS"]
 	path = http/loadCSS
 	url = https://github.com/filamentgroup/loadCSS
+[submodule "http/pdf.js"]
+	path = http/pdf.js
+	url = https://github.com/mozilla/pdf.js
