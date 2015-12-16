@@ -115,6 +115,31 @@
     </div>
 </div>
 {% else %}
+<div class="col-md-12 margin-bottom" id="pdf" style="background-color: black; padding-top: 15px;">
+</div>
+<script>
+require(['jquery', 'pdf'], function($){
+    PDFJS.workerSrc ='/asset/pdf.js/build/generic/build/pdf.worker.js';
+    PDFJS.getDocument('/resource/problems/{{ data["id"] }}/pdf.pdf?{{ data["updated_at"] }}').then(function(pdf){
+        var pdf_div = $('#pdf');
+        for(i=1;i<=pdf.numPages;i++){
+            pdf.getPage(i).then(function(page){
+                var pdf_canvas = $('<canvas style="width:100%; margin-bottom:16px; display:block;"></canvas>');
+                pdf_div.append(pdf_canvas);
+                var ctx = pdf_canvas[0].getContext('2d');
+                var offset = pdf_canvas.offset();
+                var viewport = page.getViewport(pdf_canvas.width() / page.getViewport(1.0).width);
+                pdf_canvas.attr('width', viewport.width);
+                pdf_canvas.attr('height', viewport.height);
+                page.render({
+                    'canvasContext':ctx,
+                    'viewport':viewport,
+                });
+            });
+        }
+    });
+});
+</script>
 {% end %}
 <div class="row">
     <div class="col-md-6">

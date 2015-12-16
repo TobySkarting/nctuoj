@@ -250,6 +250,7 @@ if __name__ == '__main__':
 
 
         ('/about/',                                                     WebAboutHandler),
+        ('/resource/(.*)', tornado.web.StaticFileHandler, {'path': '/mnt/nctuoj/data'}),
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/(google4e9e359eaf9accab.html)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/.*',                                                         Web404Handler),

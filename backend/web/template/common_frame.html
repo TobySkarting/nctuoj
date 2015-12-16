@@ -13,6 +13,7 @@
                 "jqueryui": {"deps": ['jquery']},
                 "bootstrap-select": {"deps": ['bootstrap']},
                 "bootstrap-datetimepicker": {"deps": ['bootstrap', 'moment']},
+                "pdf": {"deps": ["pdf.worker"]}
             },
             paths: {
                 "jquery" : "/asset/jQuery/jquery.min",
@@ -24,12 +25,14 @@
                 "bootstrap-datetimepicker": "/asset/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min",
 				"loadCSS": "/asset/loadCSS/loadCSS",
 				"onloadCSS": "/asset/loadCSS/onloadCSS",
+                "pdf": "/asset/pdf.js/build/pdf",
+                "pdf.worker": "/asset/pdf.js/build/pdf.worker"
             },
 			packages: [{
 				name: "codemirror",
 				location: '/asset/codemirror/',
 				main: 'lib/codemirror'
-			}],
+            }],
             urlArgs: "date=2015/10/14 23:35",
         });
     </script>
