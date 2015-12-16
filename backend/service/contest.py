@@ -87,9 +87,8 @@ class ContestService(BaseService):
         if not data['freeze'] or data['freeze'] == '': data['freeze'] = 0
         #try: data['freeze'] = datetime.timedelta(minutes=int(data['freeze']))
         #except: return ('freeze time error', None) 
-        print('FREEZE',data['freeze'])
-        #if data['end'] - data['start'] < data['freeze']:
-        #    return ('freeze time too long', None)
+        # if data['end'] - data['start'] < datetime.timedelta(minutes=data['freeze']):
+           # return ('freeze time too long', None)
         self.rs.delete('contest_list_count@%s' 
                 % (str(data['group_id'])))
         if int(data['id']) == 0:
@@ -134,6 +133,29 @@ class ContestService(BaseService):
                 return ('No Submission id', None)
         return (None, submission_res)
 
+    def get_contest_submissions_scoreboard(self, data={}):
+        '''
+        0 -> pending
+        1 -> ac
+        -1 -> wa
+        '''
+        required_args = ['id', 'current_group_power']
+        err = self.check_required_args(required_args, data)
+        if err: return (err, None)
+        err, res = yield from self.get_contest(data)
+        start = res['start']
+        end = res['end']
+        freeze_time = min(end, end-datetime.timedelta(minutes=res['freeze']))
+        _, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
+        sql = '''SELECT s.user_id, s.problem_id, s.created_at,'''  
+        if map_group_power['contest_manage'] in data['current_group_power']:
+            sql += '''( CASE WHEN (s.verdict = %s OR s.created_at >= %s) THEN 0 ELSE (CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) END) AS verdict '''
+        sql += '''FROM submissions as s, contests as c 
+        WHERE c.id = %s AND %s <= s.created_at AND s.created_at <= %s ORDER BY s.id;'''
+        res = yield self.db.execute(sql, (map_string_verdict['Pending']['id'], freeze_time, map_string_verdict['AC']['id'], data['id'], start, end))
+        res = res.fetchall()
+        return (None, res)
+
     def get_contest_submission_list(self, data={}):
         required_args = ['id', 'user_id', 'current_group_power']
         err = self.check_required_args(required_args, data)
@@ -162,11 +184,11 @@ class ContestService(BaseService):
         res = yield self.db.execute(sql, (res['id'], start, end,))
         res = res.fetchall()
         map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
-        if not data.get('admin'):
-            for submission in res:
-                if submission['created_at'] >= freeze_time:
-                    submission['verdict'] = map_string_verdict['Pending']
-                    submission['abbreviation'] = 'Pending'
+        # if map_group_power['contest_manage'] not in data['current_group_power'] :
+            # for submission in res:
+                # if submission['created_at'] >= freeze_time:
+                    # submission['verdict'] = map_string_verdict['Pending']
+                    # submission['abbreviation'] = 'Pending'
         return (None, res)
 
     def register(self, data={}):

@@ -192,6 +192,7 @@ class ApiContestScoreboardHandler(ApiRequestHandler):
         args = ['start', 'end']
         meta = self.get_args(args)
         meta['id'] = id
-        err, data = yield from Service.Contest.get_contest_scoreboard(meta)
+        meta['current_group_power'] = self.current_group_power
+        err, data = yield from Service.Contest.get_contest_submissions_scoreboard(meta)
         if err: self.render(500, err)
         else: self.render(200, data)
