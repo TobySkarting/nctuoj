@@ -21,7 +21,7 @@ require(["jquery", "bootbox"], function($, bootbox){
     $.urlParam = function(name){
         var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
         try{
-            return results[1];
+            return decodeURIComponent(results[1]);
         } catch(err) {
             return 0;
         }

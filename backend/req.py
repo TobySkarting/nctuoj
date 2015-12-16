@@ -12,6 +12,7 @@ import re
 from map import *
 import config
 import markdown as markdown
+from urllib.parse import quote
 
 def md(s):
     if s is None: s = ''
@@ -127,7 +128,7 @@ class WebRequestHandler(RequestHandler):
 
     def write_error(self, status_code, err=None, **kwargs):
         if status_code == 403 and self.account['id'] == 0:
-            self.redirect("/users/signin/?next_url=%s"%self.request.uri[1:])
+            self.redirect("/users/signin/?next_url=%s" % quote(self.request.uri[1:], safe=''))
             print(self.request.uri)
             return
         kwargs['err'] = err
