@@ -60,30 +60,34 @@
     </table>
 </div>
 <script>
-    {% if map_group_power['contest_manage'] in current_group_power %}
-        function delete_contest(id){
-            bootbox.confirm("Do you want to delete this contest?", function(res){
-                if(res){
-                    $.ajax({
-                        url: '/api/groups/{{current_group}}/contests/'+id+'/',
-                        type: 'DELETE',
-                        dataType: 'json',
-                        data: {'token': '{{account['token']}}'},
-                        success: function(msg){
-                            if(msg['status'] == 200){
-                                bootbox.alert('Deleted', function(){
-                                    location.href = '/groups/{{current_group}}/contests/';
-                                });
-                            }else{
-                                bootbox.alert(msg['msg']);
-                            }
+var delete_contest, register, unregister;
+{% if map_group_power['contest_manage'] in current_group_power %}
+require(['jquery', 'bootbox'], function($, bootbox){
+    delete_contest = function(id){
+        bootbox.confirm("Do you want to delete this contest?", function(res){
+            if(res){
+                $.ajax({
+                    url: '/api/groups/{{current_group}}/contests/'+id+'/',
+                    type: 'DELETE',
+                    dataType: 'json',
+                    data: {'token': '{{account['token']}}'},
+                    success: function(msg){
+                        if(msg['status'] == 200){
+                            bootbox.alert('Deleted', function(){
+                                location.href = '/groups/{{current_group}}/contests/';
+                            });
+                        }else{
+                            bootbox.alert(msg['msg']);
                         }
-                    }); 
-                }
-            });
-        }
-    {% end %}
-    function register(contest_id){
+                    }
+                }); 
+            }
+        });
+    }
+});
+{% end %}
+require(['jquery', 'bootbox'], function($, bootbox){
+    register = function(contest_id){
         data = Object();
         data.token = '{{account['token']}}';
         $.post('/api/groups/{{current_group}}/contests/'+contest_id+'/register/', data, function(msg){
@@ -94,7 +98,7 @@
             }
         }, "json");
     }
-    function unregister(contest_id){
+    unregister = function(contest_id){
         data = Object();
         data.token = '{{account['token']}}';
         $.post('/api/groups/{{current_group}}/contests/'+contest_id+'/unregister/', data, function(msg){
@@ -105,5 +109,7 @@
             }
         }, "json");
     }
+}
+);
 </script>
 {% end %}

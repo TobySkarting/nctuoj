@@ -43,7 +43,7 @@ class WebContestHandler(WebRequestHandler):
         if err:
             self.write_error(500)
             return False
-        if map_group_power['contest_manage'] in self.current_group_power or int(data['visible']) != 0:
+        if map_group_power['contest_manage'] in self.current_group_power or int(data['visible']) > 0:
             return True
         self.write_error(403)
         return False
@@ -53,6 +53,7 @@ class WebContestHandler(WebRequestHandler):
         meta = {}
         meta['id'] = id
         meta['group_id'] = self.current_group
+        print('META', meta)
         if not (yield from self.check_view(meta)):
             return
         err, data = yield from Service.Contest.get_contest(meta)
@@ -98,13 +99,19 @@ class WebContestSubmissionsHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
+        if err: 
+            self.write_wrror(500, err)
+            return
         self.render('./contests/contest_submissions.html', contest_data=contest_data)
 
 class WebContestSubmissionHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id, id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
-        err, data = yield from Service.Contest.get_contest_submission({"id": contest_id, "submission_id": id})
+        err, data = yield from Service.Contest.get_contest_submission({"id": contest_id, 'user_id': self.account['id'], 'current_group_power': self.current_group_power, "submission_id": id})
+        if err:
+            self.write_error(500, err)
+            return
         self.render('./contests/contest_submission.html', contest_data=contest_data, data=data)
 
 class WebContestScoreboardHandler(WebRequestHandler):

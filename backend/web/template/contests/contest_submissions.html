@@ -54,7 +54,7 @@ require(["jquery"], function($){
         {% if map_group_power['submission_manage'] in current_group_power %}
             replace_element.push("ip");
         {% end %}
-        $.get("http://nctuoj.twbbs.org/api/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/", {token: '{{account["token"]}}'}, function(msg){
+        $.get("/api/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/", {token: '{{account["token"]}}'}, function(msg){
             $.each(msg['msg'], function(index, element){
                 data = template_data;
                 element['compiler'] = map_lang[element['lang']];
