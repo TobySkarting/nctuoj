@@ -4,6 +4,7 @@ import os
 import config
 import datetime
 from functools import reduce
+from map import *
 
 class ContestService(BaseService):
     def __init__(self, db, rs):
@@ -70,7 +71,6 @@ class ContestService(BaseService):
             self.rs.set('contest@%s'%str(data['id']), res)
         err, res['problem'] = yield from self.get_contest_problem_list(data)
         err, res['user'] = yield from self.get_contest_user(data)
-        print('RES', res)
         return (None, res)
 
     def get_contest_problem_list(self, data={}):
@@ -122,19 +122,20 @@ class ContestService(BaseService):
         return (None, data['id'])
 
     def get_contest_submission(self, data={}):
-        required_args = ['id', 'submission_id']
+        required_args = ['id', 'user_id', 'current_group_power', 'submission_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         err, res = yield from self.get_contest(data)
         if err: return (err, None)
         err, submission_res = yield from Service.Submission.get_submission({'id': data['submission_id']})
         if err: return (err, None)
-        if res['start'] < submission_res['created_at'] and submission_res['created_at'] < res['end']:
-            return (None, submission_res)
-        return (403, None)
+        if map_group_power['contest_manage'] not in data['current_group_power']:
+            if int(submission_res['user_id']) != int(data['user_id']):
+                return ('No Submission id', None)
+        return (None, submission_res)
 
     def get_contest_submission_list(self, data={}):
-        required_args = ['id']
+        required_args = ['id', 'user_id', 'current_group_power']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         #res = self.rs.get('contest@%s@submission'%(str(data['id'])))
@@ -148,7 +149,7 @@ class ContestService(BaseService):
         FROM submissions as s, users as u, execute_types as e, map_verdict_string as v, map_contest_problem as mp, map_contest_user as mu
         WHERE """;
 
-        if not data.get('admin'):
+        if map_group_power['contest_manage'] not in data['current_group_power']:
             sql += "u.id=%s AND "%(int(data['user_id']))
         sql += """
         u.id=s.user_id AND mu.user_id=u.id 
