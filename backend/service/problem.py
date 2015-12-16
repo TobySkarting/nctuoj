@@ -88,6 +88,7 @@ class ProblemService(BaseService):
         verdict_code = data.pop('verdict_code')
         verdict_execute_type_id = data.pop('verdict_execute_type_id')
         if int(data['verdict_id']) == 0:
+            print('verdict')
             new_verdict = True
             meta = {}
             meta['id'] = 0
@@ -97,6 +98,12 @@ class ProblemService(BaseService):
             meta['code_file'] = verdict_code
             err, data['verdict_id'] = yield from Service.Verdict.post_verdict(meta)
             if err: return (err, None)
+
+        pdf_file = data.pop('pdf_file')
+        # if data.get('pdf'):
+            # if pdf_file is None:
+                # return ('pdf file should be uploaded', None)
+
         if int(data['id']) == 0:
             self.reset_rs_problem_count(data['group_id'])
             data.pop('id')
@@ -117,6 +124,15 @@ class ProblemService(BaseService):
             meta['code_file'] = None
             err, data['verdict_id'] = yield from Service.Verdict.post_verdict(meta)
             if err: return (err, None)
+
+        if pdf_file:
+            folder = '/mnt/nctuoj/data/problems/%s' % id
+            file_path = '%s/pdf.pdf' % folder
+            try: os.makedirs(folder)
+            except: pass
+            with open(file_path, 'wb+') as f:
+                f.write(pdf_file['body'])
+        
         return (None, id)
 
     def delete_problem(self, data={}):

@@ -43,6 +43,17 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-md-6 form-group">
+            <label class="control-label">Pdf</label>
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <input name="pdf" type="checkbox" {% if data['pdf'] %} checked {% end %}>
+                </span>
+                <input name="pdf_file" type="file" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">Description</div>

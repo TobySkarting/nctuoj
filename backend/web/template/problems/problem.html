@@ -69,6 +69,7 @@
         <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/problems/">Back to List</a>
     </div>
 </div>
+{% if not data['pdf'] %}
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
@@ -113,6 +114,8 @@
         </div>
     </div>
 </div>
+{% else %}
+{% end %}
 <div class="row">
     <div class="col-md-6">
         <div class="panel panel-default">
