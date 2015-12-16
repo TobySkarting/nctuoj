@@ -38,17 +38,16 @@ class SubmissionService(BaseService):
         return (None, res.fetchall())
 
     def get_submission_list_count(self, data):
-        subsql = "SELECT count(*) FROM submissions as s "
-        cond = " WHERE "
+        sql = "SELECT count(*) FROM submissions as s, problems as p"
+        sql += " WHERE s.problem_id = p.id AND p.group_id=%s"%(data['group_id'])
         if 'problem_id' in data and data['problem_id']:
-            cond += "problem_id=%s AND " % (int(data['problem_id']))
-        if 'user_id' in data and data['user_id']:
-            cond += "user_id=%s AND " % (int(data['user_id']))
-        if cond == " WHERE ":
-            cond = ""
-        else:
-            cond = cond[:-4]
-        sql = "SELECT count(*) FROM submissions " + cond
+            sql += " AND problem_id=%s " % (int(data['problem_id']))
+        if 'account' in data and data['account']:
+            try:
+                user_id = (yield self.db.execute("SELECT id FROM users WHERE account=%s", (data['account'],))).fetchone()['id']
+            except:
+                user_id = 0
+            sql += " AND user_id=%s " % (user_id)
         res = yield self.db.execute(sql)
         return (None, res.fetchone()['count'])
 

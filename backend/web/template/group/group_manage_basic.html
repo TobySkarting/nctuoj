@@ -1,6 +1,33 @@
 {% extends './../frame.html' %}
 {% block content %}
-Basic
-{{data['info']}}
+<div class="row">
+    <div class="col-md-12">
+        <form class="form">
+            <div class="form-group">
+                <label class="control-label">Name</label>
+                <input class="form-control" type="text" value="{{data['name']}}">
+            </div>
+            <div class="form-group">
+                <label class="control-label">Descripion</label>
+                <input class="form-control" type="text" value="{{data['description']}}">
+            </div>
+            <div class="form-group">
+                <label class="control-label">Info</label>
+                <textarea class="form-control" rows=25>{{data['info']}}</textarea>
+            </div>
+            <button class="btn btn-success">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+
+require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
+    $("form").submit(function(){
+        bootbox.alert("XD");
+        return false;
+    });
+});
+</script>
 {% end %}
 

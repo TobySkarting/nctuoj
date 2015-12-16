@@ -12,6 +12,7 @@ import re
 from map import *
 import config
 import markdown as markdown
+from urllib.parse import quote
 
 def md(s):
     if s is None: s = ''
@@ -126,6 +127,10 @@ class WebRequestHandler(RequestHandler):
         super().set_secure_cookie(name, value, expires_days, version, **kwargs)
 
     def write_error(self, status_code, err=None, **kwargs):
+        if status_code == 403 and self.account['id'] == 0:
+            self.redirect("/users/signin/?next_url=%s" % quote(self.request.uri[1:], safe=''))
+            print(self.request.uri)
+            return
         kwargs['err'] = err
         self.render('./err/'+str(status_code)+'.html', **kwargs)
 
@@ -170,6 +175,7 @@ class WebRequestHandler(RequestHandler):
             self.clear_cookie('id')
         if id == 0:
             self.account['token'] = ""
+        
         self.account["id"] = id
         err, self.registered_contest = yield from Service.User.get_user_contest(id)
         err, self.current_contest = yield from Service.User.get_user_current_contest(id)

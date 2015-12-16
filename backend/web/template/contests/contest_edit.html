@@ -1,11 +1,9 @@
 {% extends './contest_frame.html' %}
 {% block contest_content %}
 {% if int(contest_data['id']) != 0 %}
-<h1>Edit Contest.{{contest_data['id']}}</h1>
-<a class="btn btn-default" href="/groups/{{current_group}}/contests/{{contest_data['id']}}/" style="margin-bottom: 12px;">Back</a>
+    <h1>Edit Contest.{{contest_data['id']}}</h1>
 {% else %}
-<h1>New Contest</h1>
-<a class="btn btn-default" href="/groups/{{current_group}}/contests/" style="margin-bottom: 12px;">Back</a>
+    <h1>New Contest</h1>
 {% end %}
 <form class="form" id="contest_content" action="/api/groups/{{current_group}}/contests/{{contest_data['id']}}/" method="post">
     <input type="hidden" name="token" value="{{account['token']}}">
@@ -56,7 +54,7 @@
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label class="control-label">Freeze</label>
+                <label class="control-label">Freeze(How many minutes will scoreboard stop update after contest begin)</label>
                 <input type="number" class="form-control" name="freeze" value="{{contest_data['freeze']}}" placeholder="freeze the scoreboard X minutes before the end(it won't effect if freeze time error)">
             </div>
         </div>
@@ -75,22 +73,21 @@
     </div>
     <button type="submit" class="btn btn-success">Submit</button>
 </form>
+<hr>
 {% if int(contest_data['id']) != 0 %}
-    <form class="form" id="contest_problem" method="post" action="/api/group/{{current_group}}/contests/{{contest_data['id']}}/problems/">
+    <form class="form" id="contest_problem" method="post" action="/api/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/">
         <input type="hidden" name="token" value="{{account['token']}}">
         <div class="row">
             <div class="col-md-12">
+                <h2>Problem</h2>
+                <div onclick="$('tbody:not(.template)').append($('.contest.problem.template').html());" class="btn btn-default margin-bottom">New</div>
                 <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h2>Problem</h2>
-                        <div onclick="$('tbody:not(.template)').append($('.contest.problem.template').html());" class="btn btn-default">New</div>
-                    </div>
                     <table class="table table-hover table-striped table-condensed">
-                        <!--thead>
-                            <th>#</th>
-                            <th>Score</th>
-                            <th>Delete</th>
-                        </thead-->
+                        <thead>
+                            <th class="text-center">#</th>
+                            <th class="text-center">Score</th>
+                            <th class="text-center">Delete</th>
+                        </thead>
                         <tbody>
                             {% for id, x in enumerate(contest_data['problem']) %}
                                 <tr>
@@ -101,10 +98,8 @@
                             {% end %}
                         </tbody>
                     </table>
-                    <div class="panel-footer">
-                        <button type="submit" class="btn btn-success">Submit</button>
-                    </div>
                 </div>
+                <button type="submit" class="btn btn-success">Submit</button>
             </div>
         </div>
     </form>
@@ -128,9 +123,13 @@ require(["jquery", "bootbox", "bootstrap-select", "bootstrap-datetimepicker"], f
             dataType: "json",
             success: function(msg){
                 if(msg['status'] == 200){
-                    bootbox.alert("Updated!");
+                    bootbox.alert("Updated!", function(){
+                        location.href = location.href;
+                    });
                 } else {
-                    bootbox.alert(msg['msg']);
+                    bootbox.alert(msg['msg'], function(){
+                        location.href = location.href;
+                    });
                 }
             }
         });
@@ -155,7 +154,7 @@ require(["jquery", "bootbox", "bootstrap-select", "bootstrap-datetimepicker"], f
             dataType: "json",
             success: function(msg){
                 if(msg['status'] == 200){
-                    location.href = "/group/{{current_group}}/contests/" + msg['msg'] + "/";
+                    location.href = "/groups/{{current_group}}/contests/" + msg['msg'] + "/";
                 } else {
                     bootbox.alert(msg['msg']);
                 }

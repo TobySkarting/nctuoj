@@ -18,6 +18,14 @@
 </form>
 <script>
 require(["jquery", "bootbox"], function($, bootbox){
+    $.urlParam = function(name){
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        try{
+            return decodeURIComponent(results[1]);
+        } catch(err) {
+            return 0;
+        }
+    }
     $("form").submit(function(){
         form = $(this);
         $.ajax({
@@ -27,7 +35,11 @@ require(["jquery", "bootbox"], function($, bootbox){
             dataType: "json",
             success: function(msg){
                 if(msg['status'] == 200){
-                    location.href = "/";
+                    if($.urlParam("next_url")){
+                        location.href = "/"+$.urlParam("next_url");
+                    } else {
+                        location.href = "/";
+                    }
                 } else {
                     bootbox.alert(msg['msg'])
                 }
