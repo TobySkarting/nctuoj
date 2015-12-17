@@ -246,6 +246,7 @@ INSERT INTO verdicts (title, execute_type_id, file_name, setter_user_id) VALUES 
 CREATE TABLE problems (
     id              serial          NOT NULL    PRIMARY KEY,
     title           varchar(255)    ,
+    pdf             boolean         DEFAULT FALSE,
     description     text            ,
     input           text            ,
     output          text            ,
