@@ -155,9 +155,11 @@ class ContestService(BaseService):
         submissions = yield self.db.execute(sql, (map_string_verdict['Pending']['id'], freeze_time, map_string_verdict['AC']['id'], data['id'], start, end))
         submissions = submissions.fetchall()
         err, users = yield from self.get_contest_user(data)
+        err, problems = yield from self.get_contest_problem_list(data)
         res = {
                 'submissions': submissions,
-                'users': users
+                'users': users,
+                'problems': problems
                 }
         return (None, res)
 
