@@ -1,4 +1,13 @@
 {% extends './contest_frame.html' %}
 {% block contest_content %}
 Scoreboard
+<script>
+require(["jquery"], function($){
+    function get_scoreboard(){
+        $.get("/api/groups/{{current_group}}/contests/{{contest_data['id']}}/scoreboard/", {token: '{{account["token"]}}'}, function(msg){
+        }, "json");
+    }
+    get_scoreboard();
+});
+</script>
 {% end %}
