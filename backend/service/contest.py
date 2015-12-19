@@ -142,17 +142,19 @@ class ContestService(BaseService):
         required_args = ['id', 'current_group_power']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
+        admin = map_group_power['contest_manage'] in data['current_group_power']
         err, res = yield from self.get_contest(data)
         start = res['start']
         end = res['end']
         freeze_time = min(end, end-datetime.timedelta(minutes=res['freeze']))
         _, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
         sql = '''SELECT s.user_id, s.problem_id, s.created_at,'''  
-        if map_group_power['contest_manage'] in data['current_group_power']:
-            sql += '''( CASE WHEN (s.verdict = %s OR s.created_at >= %s) THEN 0 ELSE (CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) END) AS verdict '''
-        sql += '''FROM submissions as s, contests as c 
-        WHERE c.id = %s AND %s <= s.created_at AND s.created_at <= %s ORDER BY s.id;'''
-        submissions = yield self.db.execute(sql, (map_string_verdict['Pending']['id'], freeze_time, map_string_verdict['AC']['id'], data['id'], start, end))
+        if not admin:
+            sql += '''(CASE WHEN (s.verdict = %s OR s.created_at >= %s) THEN 0 ELSE (CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) END) AS verdict '''
+        else:
+            sql += '''(CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) AS verdict '''
+        sql += '''FROM submissions as s, contests as c WHERE c.id = %s AND %s <= s.created_at AND s.created_at <= %s ORDER BY s.id;'''
+        submissions = yield self.db.execute(sql, ((map_string_verdict['Pending']['id'], freeze_time) if not admin else tuple()) + (map_string_verdict['AC']['id'], data['id'], start, end))
         submissions = submissions.fetchall()
         err, users = yield from self.get_contest_user(data)
         err, problems = yield from self.get_contest_problem_list(data)
@@ -179,7 +181,7 @@ class ContestService(BaseService):
         WHERE """;
 
         if map_group_power['contest_manage'] not in data['current_group_power']:
-            sql += "u.id=%s AND "%(int(data['user_id']))
+            sql += "u.id=%s AND " % (int(data['user_id']))
         sql += """
         u.id=s.user_id AND mu.user_id=u.id 
         AND mu.contest_id=%s AND mp.contest_id=mu.contest_id  
@@ -190,7 +192,7 @@ class ContestService(BaseService):
         """;
         res = yield self.db.execute(sql, (res['id'], start, end,))
         res = res.fetchall()
-        map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
+        # map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
         # if map_group_power['contest_manage'] not in data['current_group_power'] :
             # for submission in res:
                 # if submission['created_at'] >= freeze_time:

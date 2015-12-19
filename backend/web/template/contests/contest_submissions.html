@@ -1,31 +1,37 @@
 {% extends './contest_frame.html' %}
 {% block contest_content %}
-<div class="panel panel-default table-responsive">
-    <table class="table table-hover table-striped">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>PID</th>
-                <th>Time</th>
-                <th>Memory</th>
-                <th>Verdict</th>
-                <th>Compiler</th>
-                <th>Score</th>
-                <th>Submit Time</th>
-                {% if map_group_power['submission_manage'] in current_group_power %}
-                    <th>IP</th>
-                {% end %}
-            </tr>
-        </thead>
-        <tbody class="submissions">
-        </tbody>
-    </table>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>PID</th>
+                        <th>User</th>
+                        <th>Time</th>
+                        <th>Memory</th>
+                        <th>Verdict</th>
+                        <th>Compiler</th>
+                        <th>Score</th>
+                        <th>Submit Time</th>
+                        {% if map_group_power['submission_manage'] in current_group_power %}
+                            <th>IP</th>
+                        {% end %}
+                    </tr>
+                </thead>
+                <tbody class="submissions">
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 <table class="hidden">
     <tbody class="template submission">
         <tr>
             <td><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/%id%/">%id%</a></td>
             <td><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/%problem_id%/">%problem_id%</a></td>
+            <td>%user%</td>
             <td>%time_usage%</td>
             <td>%memory_usage%</td>
             <td>%abbreviation%</td>
@@ -46,7 +52,7 @@ map_lang = Object;
 require(["jquery"], function($){
     function flash_submission(){
         template_data = $(".template.submission").html();
-        replace_element = ["id", "problem_id", "time_usage", "memory_usage", "compiler", "abbreviation", "score", "created_at"];
+        replace_element = ["id", "user", "problem_id", "time_usage", "memory_usage", "compiler", "abbreviation", "score", "created_at"];
         {% if map_group_power['submission_manage'] in current_group_power %}
             replace_element.push("ip");
         {% end %}
