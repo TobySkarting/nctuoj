@@ -24,15 +24,15 @@ th, td{
         </thead>
         <tbody>
             {% for x in data['users'] %}
-                <tr>
-                    <td id="rank_{{x['id']}}"></td>
+                <tr id="user_{{x['id']}}">
+                    <td data-type="rank"></td>
                     <td>{{x['name']}}</td>
-                    <td>--</td>
-                    <td>--</td>
+                    <td data-type="score">--</td>
+                    <td data-type="penalty">--</td>
                     {% for id, x in enumerate(data['problems']) %}
-                        <td>--/--</td>
+                        <td data-type="problem_{{chr(id+65)}}">--/--</td>
                     {% end %}
-                    <td>--/--</td>
+                    <td data-type="total">--/--</td>
                 </tr>
             {% end %}
         </tbody>
@@ -66,6 +66,26 @@ require(["jquery"], function($){
     function get_scoreboard(){
         $.get("/api/groups/{{current_group}}/contests/{{contest_data['id']}}/scoreboard/", {token: '{{account["token"]}}'}, function(msg){
             msg = msg['msg'];
+            score_board = new Object();
+            msg['users'].forEach(function(user){
+                score_board[user['id']] = new Object();
+                msg['problems'].forEach(function(problem, index){
+                    score_board[user['id']][problem['id']] = new Object();
+                    score_board[user['id']][problem['id']]['try'] = 0;
+                    score_board[user['id']][problem['id']]['first_ac_time'] = 0;
+                    console.log(score_board[user['id']]);
+                });
+            });
+            msg['submissions'].forEach(function(submission){
+
+                if(score_board[submission['user_id']][submission['problem_id']]['first_ac_time'] == 0){
+                    score_board[submission['user_id']][submission['problem_id']]['try'] += 1;
+                    if(submission['verdict'] == 1)
+                        score_board[submission['user_id']][submission['problem_id']]['first_ac_time'] = 1;
+                }
+                console.log(submission);
+            });
+            console.log(score_board);
         }, "json");
     }
     get_scoreboard();
