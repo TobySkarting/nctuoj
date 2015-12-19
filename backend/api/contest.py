@@ -168,7 +168,8 @@ class ApiContestSubmissionsHandler(ApiRequestHandler):
         if err:
             self.render(500, err)
             return False
-        if int(meta['group_id']) == int(data['group_id']) and (map_group_power['contest_manage'] in self.current_group_power or (int(meta['id']) in current_contest and int(self.current_contest['id']) in current_contest)):
+        # if int(meta['group_id']) == int(data['group_id']) and (map_group_power['contest_manage'] in self.current_group_power or (int(meta['id']) in current_contest and int(self.current_contest['id']) in current_contest)):
+        if int(meta['group_id']) == int(data['group_id']):
             return True
         self.render(403, 'Permission Denied')
         return False
