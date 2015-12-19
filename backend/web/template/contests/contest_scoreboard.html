@@ -1,32 +1,50 @@
 {% extends './contest_frame.html' %}
 {% block contest_content %}
-Scoreboard
+<h1 class="text-center">
+    {{contest_data['title']}}-Scoreboard
+</h1>
 <style>
 th, td{
     text-align: center !important;
 }
 </style>
-{{data}}
 <div class="panel panel-default table-responsive">
-    <table class="table table-hover table-striped table-bordered table-condensed">
+    <table class="table table-hover table-bordered table-condensed">
         <thead>
             <tr>
                 <th id="head-rank">Rank</th>
                 <th id="head-user">User</th>
-                <th id="head-solve">Solve</th>
-                <th id="head-time">Time</th>
+                <th id="head-score">Score</th>
+                <th id="head-penalty">Penalty</th>
                 {% for id, x in enumerate(data['problems']) %}
                     <th><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{x['id']}}/">{{ chr(id+65) }}</a></th>
                 {% end %}
                 <th id="head-total">Total att/solve</th>
             </tr>
         </thead>
-        <!--tfoot>
+        <tbody>
+            {% for x in data['users'] %}
+                <tr>
+                    <td id="rank_{{x['id']}}"></td>
+                    <td>{{x['name']}}</td>
+                    <td>--</td>
+                    <td>--</td>
+                    {% for id, x in enumerate(data['problems']) %}
+                        <td>--/--</td>
+                    {% end %}
+                    <td>--/--</td>
+                </tr>
+            {% end %}
+        </tbody>
+        <tfoot>
             <tr>
                 <td></td>
                 <td>First AC</td>
                 <td></td>
                 <td></td>
+                {% for id, x in enumerate(data['problems']) %}
+                    <td>--/--</td>
+                {% end %}
                 <td></td>
             </tr>
             <tr>
@@ -34,28 +52,23 @@ th, td{
                 <td>Total att/solve</td>
                 <td></td>
                 <td></td>
+                {% for id, x in enumerate(data['problems']) %}
+                    <td>--/--</td>
+                {% end %}
                 <td></td>
             </tr>
-        </tfoot-->
+        </tfoot>
     </table>
 </div>
 <script>
 
-/*
 require(["jquery"], function($){
-    first = true;
     function get_scoreboard(){
         $.get("/api/groups/{{current_group}}/contests/{{contest_data['id']}}/scoreboard/", {token: '{{account["token"]}}'}, function(msg){
             msg = msg['msg'];
-            if(first){
-                msg['problems'].forEach(function(ele, index, arr){
-                    $("#head-total").before("<th><a href='/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/"+ele['id'] +"/'>" + String.fromCharCode(index+65) + "</a></th>");
-                });
-            }
         }, "json");
     }
     get_scoreboard();
 });
-*/
 </script>
 {% end %}
