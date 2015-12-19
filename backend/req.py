@@ -189,6 +189,7 @@ class WebRequestHandler(RequestHandler):
             self.write_error(403)
             return
         
+        """ if a person in contest """
         if self.current_contest:
             err, contest_group_power = yield from Service.User.get_user_group_power_info(id, self.current_contest['group_id'])
             if len(contest_group_power) == 0:

@@ -117,5 +117,10 @@ class WebContestSubmissionHandler(WebRequestHandler):
 class WebContestScoreboardHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id):
+        meta = {
+            "id": contest_id,
+            "current_group_power": self.current_group_power
+        }
+        err, data = yield from Service.Contest.get_contest_submissions_scoreboard(meta)
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
-        self.render('./contests/contest_scoreboard.html', contest_data=contest_data)
+        self.render('./contests/contest_scoreboard.html', data=data, contest_data=contest_data)

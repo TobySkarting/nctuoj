@@ -189,8 +189,7 @@ class ApiContestSubmissionsHandler(ApiRequestHandler):
 class ApiContestScoreboardHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
-        args = ['start', 'end']
-        meta = self.get_args(args)
+        meta = {}
         meta['id'] = id
         meta['current_group_power'] = self.current_group_power
         err, data = yield from Service.Contest.get_contest_submissions_scoreboard(meta)
