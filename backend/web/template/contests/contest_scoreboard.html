@@ -1,10 +1,52 @@
 {% extends './contest_frame.html' %}
 {% block contest_content %}
 Scoreboard
+<style>
+th, td{
+    text-align: center !important;
+}
+</style>
+<div class="panel panel-default table-responsive">
+    <table class="table table-hover table-striped table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th id="head-rank">Rank</th>
+                <th id="head-user">User</th>
+                <th id="head-solve">Solve</th>
+                <th id="head-time">Time</th>
+                <th id="head-total">Total att/solve</th>
+            </tr>
+        </thead>
+        <!--tfoot>
+            <tr>
+                <td></td>
+                <td>First AC</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>Total att/solve</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot-->
+    </table>
+</div>
 <script>
+
 require(["jquery"], function($){
+    first = true;
     function get_scoreboard(){
         $.get("/api/groups/{{current_group}}/contests/{{contest_data['id']}}/scoreboard/", {token: '{{account["token"]}}'}, function(msg){
+            msg = msg['msg'];
+            if(first){
+                msg['problems'].forEach(function(ele, index, arr){
+                    $("#head-total").before("<th><a href='/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/"+ele['id'] +"/'>" + String.fromCharCode(index+65) + "</a></th>");
+                });
+            }
         }, "json");
     }
     get_scoreboard();

@@ -1,29 +1,25 @@
 {% extends './contest_frame.html' %}
 {% block contest_content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>PID</th>
-                        <th>Time</th>
-                        <th>Memory</th>
-                        <th>Verdict</th>
-                        <th>Compiler</th>
-                        <th>Score</th>
-                        <th>Submit Time</th>
-                        {% if map_group_power['submission_manage'] in current_group_power %}
-                            <th>IP</th>
-                        {% end %}
-                    </tr>
-                </thead>
-                <tbody class="submissions">
-                </tbody>
-            </table>
-        </div>
-    </div>
+<div class="panel panel-default table-responsive">
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>PID</th>
+                <th>Time</th>
+                <th>Memory</th>
+                <th>Verdict</th>
+                <th>Compiler</th>
+                <th>Score</th>
+                <th>Submit Time</th>
+                {% if map_group_power['submission_manage'] in current_group_power %}
+                    <th>IP</th>
+                {% end %}
+            </tr>
+        </thead>
+        <tbody class="submissions">
+        </tbody>
+    </table>
 </div>
 <table class="hidden">
     <tbody class="template submission">
