@@ -153,7 +153,7 @@ class ContestService(BaseService):
             sql += '''(CASE WHEN (s.verdict = %s OR s.created_at >= %s) THEN 0 ELSE (CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) END) AS verdict '''
         else:
             sql += '''(CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) AS verdict '''
-        sql += '''FROM submissions as s, contests as c WHERE c.id = %s AND %s <= s.created_at AND s.created_at <= %s ORDER BY s.id;'''
+        sql += '''FROM submissions as s, contests as c, map_contest_user as mu WHERE c.id = %s AND mu.contest_id = c.id AND mu.user_id = s.user_id AND %s <= s.created_at AND s.created_at <= %s ORDER BY s.id;'''
         submissions = yield self.db.execute(sql, ((map_string_verdict['Pending']['id'], freeze_time) if not admin else tuple()) + (map_string_verdict['AC']['id'], data['id'], start, end))
         submissions = submissions.fetchall()
         err, users = yield from self.get_contest_user(data)
