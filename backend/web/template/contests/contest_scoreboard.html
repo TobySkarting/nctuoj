@@ -7,6 +7,23 @@
 th, td{
     text-align: center !important;
 }
+.ac{
+    background-color: #51DA3F;
+}
+@keyframes pending-bring {
+    0%   {background-color: #FF8D39;}
+    50%  {background-color: #FFC397;}
+    100%   {background-color: #FF8D39;}
+}
+.pending{
+    /* background-color: #FF8D39; */
+    animation-name: pending-bring;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+.wa{
+    background-color: #FF4A39;
+}
 </style>
 <div class="panel panel-default table-responsive">
     <table class="table table-hover table-bordered table-condensed">
@@ -19,7 +36,7 @@ th, td{
                 {% for id, x in enumerate(data['problems']) %}
                     <th><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{x['id']}}/">{{ chr(id+65) }}</a></th>
                 {% end %}
-                <th id="head-total">Total att/solve</th>
+                <th id="head-total">Total att/sol</th>
             </tr>
         </thead>
         <tbody>
@@ -29,31 +46,21 @@ th, td{
                     <td>{{x['name']}}</td>
                     <td data-type="score">--</td>
                     <td data-type="penalty">--</td>
-                    {% for id, x in enumerate(data['problems']) %}
-                        <td data-type="problem_{{chr(id+65)}}">--/--</td>
+                    {% for y in data['problems'] %}
+                        <td data-type="problem_{{y['id']}}">--/--</td>
                     {% end %}
                     <td data-type="total">--/--</td>
                 </tr>
             {% end %}
         </tbody>
         <tfoot>
-            <tr>
+            <tr id="problem">
                 <td></td>
-                <td>First AC</td>
-                <td></td>
-                <td></td>
-                {% for id, x in enumerate(data['problems']) %}
-                    <td>--/--</td>
-                {% end %}
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>Total att/solve</td>
+                <td><b>AC/att/sol</b></td>
                 <td></td>
                 <td></td>
-                {% for id, x in enumerate(data['problems']) %}
-                    <td>--/--</td>
+                {% for x in data['problems'] %}
+                    <td data-type="problem_{{x['id']}}">{{x['id']}}</td>
                 {% end %}
                 <td></td>
             </tr>
@@ -62,8 +69,8 @@ th, td{
 </div>
 <script>
 
-require(["jquery"], function($){
-    function get_scoreboard(){
+function get_scoreboard(){
+    require(["jquery"], function($){
         $.get("/api/groups/{{current_group}}/contests/{{contest_data['id']}}/scoreboard/", {token: '{{account["token"]}}'}, function(msg){
             msg = msg['msg'];
             score_board = new Object();
@@ -73,22 +80,72 @@ require(["jquery"], function($){
                     score_board[user['id']][problem['id']] = new Object();
                     score_board[user['id']][problem['id']]['try'] = 0;
                     score_board[user['id']][problem['id']]['first_ac_time'] = 0;
-                    console.log(score_board[user['id']]);
+                    score_board[user['id']][problem['id']]['pending'] = 0;
+                    score_board[user['id']]['attempted'] = 0;
+                    score_board[user['id']]['solved'] = 0;
                 });
             });
-            msg['submissions'].forEach(function(submission){
-
-                if(score_board[submission['user_id']][submission['problem_id']]['first_ac_time'] == 0){
-                    score_board[submission['user_id']][submission['problem_id']]['try'] += 1;
-                    if(submission['verdict'] == 1)
-                        score_board[submission['user_id']][submission['problem_id']]['first_ac_time'] = 1;
-                }
-                console.log(submission);
+            msg['problems'].forEach(function(problem){
+                score_board[problem['id']] = new Object();
+                score_board[problem['id']]['first_ac_time'] = 0;
+                score_board[problem['id']]['attempted'] = 0;
+                score_board[problem['id']]['solved'] = 0;
             });
-            console.log(score_board);
+            msg['submissions'].forEach(function(submission, index){
+                if(score_board[submission['user_id']][submission['problem_id']]['first_ac_time'] == 0){
+                    score_board[submission['user_id']]['attempted'] += 1;
+                    score_board[submission['problem_id']]['attempted'] += 1;
+                    score_board[submission['user_id']][submission['problem_id']]['try'] += 1;
+                    if(submission['verdict'] == 1){
+                        score_board[submission['user_id']][submission['problem_id']]['first_ac_time'] = submission['created_at'];
+                        score_board[submission['user_id']]['solved'] += 1;
+                        score_board[submission['problem_id']]['solved'] += 1;
+                        if(score_board[submission['problem_id']]['first_ac_time'] == 0)
+                            score_board[submission['problem_id']]['first_ac_time'] = submission['created_at'];
+                    } else if(submission['verdict'] == 0){
+                        score_board[submission['user_id']][submission['problem_id']]['pending'] = 1;
+                    }
+                }
+            });
+            msg['users'].forEach(function(user){
+                tr = $("#user_"+user['id']);
+                msg['problems'].forEach(function(problem){
+                    td = tr.children("td[data-type=problem_"+problem['id']+"]");
+                    value = score_board[user['id']][problem['id']];
+                    str = ""
+                    if(value['try']){
+                        td.removeClass();
+                        str += value['try'];
+                        if(value['pending']){
+                            td.addClass("pending");
+                        } else {
+                            td.addClass("wa");
+                        }
+                    }
+                    if(value['first_ac_time']){
+                        td.removeClass();
+                        str += "/" + value['first_ac_time'];
+                        td.addClass("ac");
+                    }
+                    td.html(str);
+                });
+                td = tr.children("td[data-type=total]");
+                value = score_board[user['id']];
+                td.html(""+value['attempted'] + "/" + value['solved']);
+
+                console.log(tr);
+            });
+            tr = $("#problem");
+            msg['problems'].forEach(function(problem){
+                td = tr.children("td[data-type=problem_"+problem['id']+"]");
+                value = score_board[problem['id']];
+                td.html(""+value['first_ac_time']+"/"+value['attempted']+"/"+value['solved']);
+            });
+            setTimeout(function(){get_scoreboard();}, 1000);
+
         }, "json");
-    }
-    get_scoreboard();
-});
+    });
+}
+get_scoreboard();
 </script>
 {% end %}
