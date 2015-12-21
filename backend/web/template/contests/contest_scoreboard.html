@@ -72,46 +72,50 @@ th, td{
 function get_scoreboard(){
     require(["jquery"], function($){
         $.get("/api/groups/{{current_group}}/contests/{{contest_data['id']}}/scoreboard/", {token: '{{account["token"]}}'}, function(msg){
+    var start = new Date().getTime();
             msg = msg['msg'];
             score_board = new Object();
+            score_board['users'] = new Object();
+            score_board['problemss'] = new Object();
             msg['users'].forEach(function(user){
-                score_board[user['id']] = new Object();
+                score_board['users'][user['id']] = new Object();
                 msg['problems'].forEach(function(problem, index){
-                    score_board[user['id']][problem['id']] = new Object();
-                    score_board[user['id']][problem['id']]['try'] = 0;
-                    score_board[user['id']][problem['id']]['first_ac_time'] = 0;
-                    score_board[user['id']][problem['id']]['pending'] = 0;
-                    score_board[user['id']]['attempted'] = 0;
-                    score_board[user['id']]['solved'] = 0;
+                    score_board['users'][user['id']][problem['id']] = new Object();
+                    score_board['users'][user['id']][problem['id']]['try'] = 0;
+                    score_board['users'][user['id']][problem['id']]['first_ac_time'] = 0;
+                    score_board['users'][user['id']][problem['id']]['pending'] = 0;
+                    score_board['users'][user['id']]['attempted'] = 0;
+                    score_board['users'][user['id']]['solved'] = 0;
                 });
             });
             msg['problems'].forEach(function(problem){
-                score_board[problem['id']] = new Object();
-                score_board[problem['id']]['first_ac_time'] = 0;
-                score_board[problem['id']]['attempted'] = 0;
-                score_board[problem['id']]['solved'] = 0;
+                score_board['problemss'][problem['id']] = new Object();
+                score_board['problemss'][problem['id']]['first_ac_time'] = 0;
+                score_board['problemss'][problem['id']]['attempted'] = 0;
+                score_board['problemss'][problem['id']]['solved'] = 0;
             });
             msg['submissions'].forEach(function(submission, index){
-                if(score_board[submission['user_id']][submission['problem_id']]['first_ac_time'] == 0){
-                    score_board[submission['user_id']]['attempted'] += 1;
-                    score_board[submission['problem_id']]['attempted'] += 1;
-                    score_board[submission['user_id']][submission['problem_id']]['try'] += 1;
+                if(score_board['users'][submission['user_id']][submission['problem_id']]['first_ac_time'] == 0){
+                    score_board['users'][submission['user_id']]['attempted'] += 1;
+                    score_board['problemss'][submission['problem_id']]['attempted'] += 1;
+                    score_board['users'][submission['user_id']][submission['problem_id']]['try'] += 1;
                     if(submission['verdict'] == 1){
-                        score_board[submission['user_id']][submission['problem_id']]['first_ac_time'] = submission['created_at'];
-                        score_board[submission['user_id']]['solved'] += 1;
-                        score_board[submission['problem_id']]['solved'] += 1;
-                        if(score_board[submission['problem_id']]['first_ac_time'] == 0)
-                            score_board[submission['problem_id']]['first_ac_time'] = submission['created_at'];
+                        score_board['users'][submission['user_id']][submission['problem_id']]['first_ac_time'] = submission['created_at'];
+                        score_board['users'][submission['user_id']]['solved'] += 1;
+                        score_board['problemss'][submission['problem_id']]['solved'] += 1;
+                        if(score_board['problemss'][submission['problem_id']]['first_ac_time'] == 0)
+                            score_board['problemss'][submission['problem_id']]['first_ac_time'] = submission['created_at'];
                     } else if(submission['verdict'] == 0){
-                        score_board[submission['user_id']][submission['problem_id']]['pending'] = 1;
+                        score_board['users'][submission['user_id']][submission['problem_id']]['pending'] = 1;
                     }
                 }
             });
             msg['users'].forEach(function(user){
                 tr = $("#user_"+user['id']);
+                score_board['users'][user['id']]['penalty'] = 0;
                 msg['problems'].forEach(function(problem){
                     td = tr.children("td[data-type=problem_"+problem['id']+"]");
-                    value = score_board[user['id']][problem['id']];
+                    value = score_board['users'][user['id']][problem['id']];
                     str = ""
                     if(value['try']){
                         td.removeClass();
@@ -126,23 +130,53 @@ function get_scoreboard(){
                         td.removeClass();
                         str += "/" + value['first_ac_time'];
                         td.addClass("ac");
+                        score_board['users'][user['id']]['penalty'] += 20 * (value['try']-1) + value['first_ac_time'];
                     }
                     td.html(str);
                 });
                 td = tr.children("td[data-type=total]");
-                value = score_board[user['id']];
+                value = score_board['users'][user['id']];
                 td.html(""+value['attempted'] + "/" + value['solved']);
-
-                console.log(tr);
+                td = tr.children("td[data-type=score]");
+                td.html("" + value['solved']);
+                td = tr.children("td[data-type=penalty]");
+                td.html("" + value['penalty']);
             });
             tr = $("#problem");
             msg['problems'].forEach(function(problem){
                 td = tr.children("td[data-type=problem_"+problem['id']+"]");
-                value = score_board[problem['id']];
+                value = score_board['problemss'][problem['id']];
                 td.html(""+value['first_ac_time']+"/"+value['attempted']+"/"+value['solved']);
             });
+            var users = Object.keys(score_board['users']).sort(function(a, b){
+                if(score_board['users'][a] == score_board['users'][b]){
+                    return penalty_board['users'][a]['penalty'] > penalty_board['users'][b]['penalty'];
+                }
+                return score_board['users'][a]['solved'] < score_board['users'][b]['solved'];
+            });
+            console.log(users);
+            score_board['users'][users[0]]['rank'] = 1;
+            now_rank = 1;
+            for(i=1;i<users.length;i++){
+                if(score_board['users'][users[i]]['score'] == score_board['users'][users[i-1]]['score']){
+                    if(score_board['users'][users[i]]['penalty'] == score_board['users'][users[i-1]]['penalty']){
+                    }else{
+                        now_rank++;
+                    }
+                }else{
+                    now_rank++;
+                }
+                score_board['users'][users[i]]['rank'] = now_rank;
+            }
+            users.forEach(function(user_id){
+                tr = $("#user_"+user_id);
+                td = tr.children("[data-type=rank]");
+                td.html(score_board['users'][user_id]['rank']);
+            });
+            console.log(score_board);
+            var end = new Date().getTime();
+            console.log(end-start);
             setTimeout(function(){get_scoreboard();}, 1000);
-
         }, "json");
     });
 }
