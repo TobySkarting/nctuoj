@@ -149,11 +149,11 @@ class ContestService(BaseService):
         end = res['end']
         freeze_time = min(end, end-datetime.timedelta(minutes=res['freeze']))
         _, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
-        sql = '''SELECT s.user_id, s.problem_id, s.created_at, '''  
+        sql = '''SELECT s.id, s.user_id, s.problem_id, CEIL(extract('epoch' FROM (s.created_at - c.start)) / 60) as created_at, s.verdict as t_verdict, '''  
         if not admin:
             sql += '''(CASE WHEN (s.verdict = %s OR s.created_at >= %s) THEN 0 ELSE (CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) END) AS verdict '''
         else:
-            sql += '''(CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) AS verdict '''
+            sql += '''(CASE WHEN (s.verdict = %s) THEN 0 ELSE (CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) END) AS verdict '''
         sql += '''FROM submissions as s, contests as c, map_contest_user as mu, map_contest_problem as mp 
         WHERE
         c.id = %s AND 
@@ -163,10 +163,8 @@ class ContestService(BaseService):
         %s <= s.created_at AND 
         s.created_at <= %s ORDER BY s.id;
         '''
-        submissions = yield self.db.execute(sql, ((map_string_verdict['Pending']['id'], freeze_time) if not admin else tuple()) + (map_string_verdict['AC']['id'], data['id'], start, end))
+        submissions = yield self.db.execute(sql, (map_string_verdict['Pending']['id'],) + ((freeze_time,) if not admin else tuple()) + (map_string_verdict['AC']['id'], data['id'], start, end))
         submissions = submissions.fetchall()
-        for x in submissions:
-            x['created_at'] = math.ceil((x['created_at']-start).total_seconds()/60)
         err, users = yield from self.get_contest_user(data)
         err, problems = yield from self.get_contest_problem_list(data)
         res = {
