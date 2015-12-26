@@ -56,7 +56,7 @@ class ProblemService(BaseService):
         if err: return (err, None)
 
         if int(data['id']) == 0:
-            col = ["id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at"]
+            col = ["id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at","pdf"]
             res = { x: "" for x in col }
             res['id'] = 0
             res['visible'] = 0
