@@ -21,34 +21,25 @@
         </thead>
         <tbody>
             {% for x in data %}
-                <tr>
-                    <td>
-                        {% if (map_group_power['problem_manage'] in current_group_power) or int(x['visible']) > 0 %}
+                {% if (map_group_power['problem_manage'] in current_group_power) or int(x['visible']) > 0 %}
+                    <tr>
+                        <td>
                             <a href='/groups/{{current_group}}/problems/{{x['id']}}/'>{{x['id']}}</a>
-                        {% else %}
-                            {{x['id']}}
-                        {% end %}
-                    </td>
-                    <td>
-                        {% if (map_group_power['problem_manage'] in current_group_power) or int(x['visible']) > 0 %}
+                        </td>
+                        <td>
                             <a href='/groups/{{current_group}}/problems/{{x['id']}}/'>{{x['title']}}</a>
-                        {% else %}
-                        {% end %}
-                    </td>
-                    <td class="tablet computer only">
-                        <a href='/users/{{x['setter_user_id']}}/'>{{x['setter_user']}}</a>
-                    </td>
-                    <td class="tablet computer only">
-                        {% if (map_group_power['problem_manage'] in current_group_power) or int(x['visible']) > 0%}
+                        </td>
+                        <td class="tablet computer only">
+                            <a href='/users/{{x['setter_user_id']}}/'>{{x['setter_user']}}</a>
+                        </td>
+                        <td class="tablet computer only">
                             {{x['source']}}
-                        {% end %}
-                    </td>
-                    {% if map_group_power['problem_manage'] in current_group_power %}
+                        </td>
                         <td>
                             {{map_visible[x['visible']]}}
                         </td>
-                    {% end %}
-                </tr>
+                    </tr>
+                {% end %}
             {% end %}
         </tbody>
     </table>
