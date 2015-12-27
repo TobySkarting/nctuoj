@@ -47,7 +47,7 @@ function new_testdata(){
                         <input name="input" class="input hidden" type="file" onchange="$(this).parent().find('a.btn-file').html($(this).val()!=''?$(this).val():'上傳');">
                     </td>
                     <td>
-                        <a class="btn btn-default btn-sm">
+                        <a class="btn btn-default btn-sm" href="/resource/data/testdata/{{x['id']}}/input" download>
                             下載
                         </a>
                     </td>
@@ -58,7 +58,7 @@ function new_testdata(){
                         <input name="output" class="output hidden" type="file" onchange="$(this).parent().find('a.btn-file').html($(this).val()!=''?$(this).val():'上傳');">
                     </td>
                     <td>
-                        <a class="btn btn-default btn-sm">
+                        <a class="btn btn-default btn-sm" href="/resource/data/testdata/{{x['id']}}/output" download>
                             下載
                         </a>
                     </td>
