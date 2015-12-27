@@ -17,7 +17,7 @@ class TestdataSerivce(BaseService):
         if err: return (err, None)
         res = self.rs.get('testdata_list@problem@%s'%(str(data['problem_id'])))
         if res: return (None, res)
-        res = yield self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s ORDER BY id ASC) as t2 where t.id=t2.id;", (data['problem_id'],))
+        res = yield self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC;", (data['problem_id'],))
         res = res.fetchall()
         self.rs.set('testdata_list@problem@%s'%(str(data['problem_id'])), res)
         return (None, res)
