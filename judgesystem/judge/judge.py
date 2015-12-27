@@ -256,7 +256,8 @@ class Judge:
         sp.call("cp %s/testdata/%s/input %s"%(config.store_folder, testdata['id'], self.sandbox.folder), shell=True)
         self.sandbox.options['input'] = "input"
         self.sandbox.options['time_limit'] = testdata['time_limit'] / 1000
-        self.sandbox.options['mem_limit'] = testdata['memory_limit']
+        self.sandbox.options['mem_limit'] = min(testdata['memory_limit'] * 20, 262144)
+        #self.sandbox.options['mem_limit'] = 262144
         self.sandbox.options['fsize_limit'] = 65536
         self.sandbox.options['output'] = "output"
         self.sandbox.options["errput"] = "errput"
@@ -274,10 +275,15 @@ class Judge:
         res['score'] = 0
         if res['status'] == "AC":
             if res['memory'] > testdata['memory_limit']:
-                res['status'] == "MLE"
+                res['status'] = "MLE"
             else:
                 #sp.call("cp %s/testdata/%s/output %s/official_output"%(config.store_folder, testdata['id'], self.sandbox.folder), shell=True)
                 res['status'], res['score'] = self.verdict(msg, "%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(self.sandbox.folder))
+        elif res['status'] == "RE":
+            print("RE", res)
+            if "exitsig" in res and int(res['exitsig']) == 11:
+                res['status'] = "MLE"
+                res['memory'] = testdata['memory_limit']
         self.send_judged_testdata(res, testdata, msg)
         return res
 
