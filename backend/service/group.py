@@ -26,6 +26,12 @@ class GroupService(BaseService):
     def get_group(self, data={}):
         required_args = ['id']
         err = self.check_required_args(required_args, data)
+        if int(data['id']) == 0:
+            col = ["id", "name", "description", "type"]
+            res = { x: "" for x in col }
+            res['id'] = 0
+            res['type'] = 0
+            return (None, res)
         if err: return (err, None)
         res = self.rs.get('group@%s'%(str(data['id'])))
         if res is None:
@@ -47,7 +53,6 @@ class GroupService(BaseService):
             err, x['group_power'] = yield from Service.User.get_user_group_power_info(x['id'], data['id'])
             x.pop('passwd')
             x.pop('token')
-        self.rs.set('group@%s@user'%(str(data['id'])), res)
         return (None, res)
 
     def post_group(self, data={}):

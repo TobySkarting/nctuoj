@@ -1,7 +1,11 @@
 {% extends './../frame.html' %}
 {% block content %}
+{% if map_power['group_manage'] in account['power'] %}
+    <a href="/groups/0/manage/" class="btn btn-default" style="margin-bottom: 12px;">New</a>
+{% end %}
+{% set user_group_list = list({x['id'] for x in group }) %}
 <div class="form-inline margin-bottom">
-    <label class="control-label">Group ID:</label>
+    <label class="control-label">ID</label>
     <input class="form-control" type="number">
     <label class="control-label">Name</label>
     <input class="form-control" type="text">
@@ -15,17 +19,40 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Type</th>
-                <th>Apply</th>
+                {% if account['id'] != 0 %}
+                    <th>Apply</th>
+                {% end %}
             </tr>
         </thead>
         <tbody>
             {% for x in data %}
                 <tr>
-					<td>{{x['id']}}</td>
-					<td>{{x['name']}}</td>
-                    <td>{{x['description']}}</td>
-                    <td>{{x['type']}}</td>
-                    <td><div class="btn btn-warning btn-xs">Apply</div></td>
+                    {% if x['id'] in user_group_list %}
+                        <td>{{x['id']}}</td>
+                        <td>{{x['name']}}</td>
+                        <td>{{x['description']}}</td>
+                        <td>{{map_group_type[x['type']]}}</td>
+                        <td><div class="btn btn-success btn-xs">Enter</div></td>
+                    {% else %}
+                        {% if map_group_type[x['type']] != "Private" %}
+                            <td>{{x['id']}}</td>
+                            <td>{{x['name']}}</td>
+                            <td>{{x['description']}}</td>
+                            <td>{{map_group_type[x['type']]}}</td>
+                        {% else %}
+                            <td>{{x['id']}}</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{map_group_type[x['type']]}}</td>
+                        {% end %}
+                        {% if map_group_type[x['type']] == "Public" %}
+                            <td><div class="btn btn-warning btn-xs">Enter</div></td>
+                        {% elif map_group_type[x['type']] == "Inpublic" %}
+                            <td><div class="btn btn-warning btn-xs">Apply</div></td>
+                        {% elif map_group_type[x['type']] == "Private" %}
+                            <td></td>
+                        {% end %}
+                    {% end %}
                 </tr>
             {% end %}
         </tbody>

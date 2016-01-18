@@ -73,6 +73,7 @@ class RequestHandler(tornado.web.RequestHandler):
             self.current_group = 0
         self.map_power = map_power
         self.map_group_power = map_group_power
+        self.map_group_type = map_group_type
         self.map_lang = map_lang
         x_real_ip = self.request.headers.get("X-Real-IP")
         remote_ip = x_real_ip or self.request.remote_ip
@@ -138,6 +139,7 @@ class WebRequestHandler(RequestHandler):
         kwargs['md'] = md
         kwargs['map_power'] = self.map_power
         kwargs['map_group_power'] = self.map_group_power
+        kwargs['map_group_type'] = self.map_group_type
         kwargs['map_lang'] = self.map_lang
         kwargs['map_visible'] = map_visible
         kwargs['account'] = self.account

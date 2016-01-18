@@ -45,3 +45,8 @@ map_default_file_name = {
     9: 'main.rb',
     10:'main.sh',
 }
+map_group_type = {
+    -1: "Private",
+     0: "Public",
+     1: "Inpublic"
+}
