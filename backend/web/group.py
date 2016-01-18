@@ -6,8 +6,7 @@ import math
 class WebGroupHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
-        err, data = yield from Service.Group.get_group({"id": id})
-        self.render('group/group.html', data=data)
+        self.redirect('/groups/%s/bulletins/'%(id))
 
 class WebGroupManageHandler(WebRequestHandler):
     @tornado.gen.coroutine

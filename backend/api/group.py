@@ -4,6 +4,13 @@ import tornado
 from map import *
 
 class ApiGroupHandler(ApiRequestHandler):
+    def check_edit(self, meta={}):
+        if meta['id'] == 0 and map_power['group_manage'] in self.account['power']:
+            return True
+        if map_group_power['group_manage'] not in self.current_group_power:
+            self.render(403, 'Permission Denied')
+            return False
+        return True
 
     @tornado.gen.coroutine
     def get(self):
@@ -18,18 +25,19 @@ class ApiGroupHandler(ApiRequestHandler):
         args = ['name', 'description']
         meta = self.get_args(args)
         meta['id'] = self.current_group
-        if not self.check_edit():
+        if not self.check_edit(meta):
+            self.render(403)
             return
         err, data = yield from Service.Group.post_group(meta)
         if err: self.render(500, err)
-        else: self.render(200, data)
+        else: self.render(200, {"id": data})
 
     @tornado.gen.coroutine
     def delete(self):
         meta = {}
         meta['id'] = self.current_group
         if not self.check_edit():
-            return
+            self.render(403)
         err, res = yield from Service.Group.delete_group(meta)
         if err: self.render(500, err)
         else: self.render(200, res)
@@ -56,6 +64,7 @@ class ApiGroupUserHandler(ApiRequestHandler):
         meta['user_id'] = user_id
         meta['group_id'] = self.current_group
         if not self.check_edit():
+            self.render(403)
             return
         if meta['power'] is None:
             err, res = yield from Service.Group.post_group_user(meta)

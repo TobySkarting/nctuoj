@@ -3,17 +3,14 @@
 <div class="row">
     <div class="col-md-12">
         <form class="form">
+            <input type="hidden" name="token" value="{{account['token']}}">
             <div class="form-group">
                 <label class="control-label">Name</label>
-                <input class="form-control" type="text" value="{{data['name']}}">
+                <input name="name" class="form-control" type="text" value="{{data['name']}}">
             </div>
             <div class="form-group">
-                <label class="control-label">Descripion</label>
-                <input class="form-control" type="text" value="{{data['description']}}">
-            </div>
-            <div class="form-group">
-                <label class="control-label">Info</label>
-                <textarea class="form-control" rows=25>{{data['info']}}</textarea>
+                <label class="control-label">Description</label>
+                <input name="description" class="form-control" type="text" value="{{data['description']}}">
             </div>
             <button class="btn btn-success">Submit</button>
         </form>
@@ -24,7 +21,14 @@
 
 require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
     $("form").submit(function(){
-        bootbox.alert("XD");
+        data = $(this).serialize();
+        $.post('/api/groups/{{current_group}}/', data, function(msg){
+            if(msg['status'] == 200){
+                location.href = "/groups/" + msg['msg']['id'] + "/manage/";
+            } else {
+                bootbox.alert(msg['msg']);
+            }
+        }, "json");
         return false;
     });
 });
