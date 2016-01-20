@@ -35,11 +35,9 @@
                         <td class="tablet computer only">
                             {{x['source']}}
                         </td>
-                        {% if (map_group_power['problem_manage'] in current_group_power) %}
-                            <td>
-                                {{map_visible[x['visible']]}}
-                            </td>
-                        {% end %}
+                        <td>
+                            {{map_visible[x['visible']]}}
+                        </td>
                     </tr>
                 {% end %}
             {% end %}

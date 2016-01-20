@@ -101,12 +101,16 @@ class UserService(BaseService):
         pass
 
     def get_user_group_info(self, id):
-        #res = self.rs.get('user_group@%s' % str(id))
-        #if res: return (None, res)
         res = yield self.db.execute("SELECT g.* FROM groups as g, map_group_user as m where m.user_id=%s and g.id=m.group_id ORDER BY g.id", (id,))
         res = res.fetchall()
-        #self.rs.set('user_group@%s' % str(id), res)
         return (None, res)
+
+    def post_user_group(self, uid, gid):
+        res = yield self.db.execute("INSERT INTO map_group_user (user_id, group_id) VALUES (%s, %s)", (uid, gid,))
+        return (None, res)
+
+    def post_pre_user_group(self, uid, gid):
+        pass
 
     def get_user_power_info(self, id):
         res = self.rs.get('user_power@%s' % str(id))
