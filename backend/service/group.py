@@ -75,7 +75,6 @@ class GroupService(BaseService):
         required_args = ['user_id', 'group_id']
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
-        data.pop('power')
         sql, param = self.gen_insert_sql('map_group_user', data)
         res = yield self.db.execute(sql, param)
         print(sql, param, res.rowcount)

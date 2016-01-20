@@ -4,13 +4,15 @@
     <a href="/groups/0/manage/" class="btn btn-default" style="margin-bottom: 12px;">New</a>
 {% end %}
 {% set user_group_list = list({x['id'] for x in group }) %}
-<div class="form-inline margin-bottom">
+
+<!--div class="form-inline margin-bottom">
     <label class="control-label">ID</label>
     <input class="form-control" type="number">
     <label class="control-label">Name</label>
     <input class="form-control" type="text">
     <button class="btn btn-success">Query</button>
-</div>
+</div-->
+
 <div class="panel panel-default">
     <table class="table table-hover table-striped">
         <thead>
@@ -26,38 +28,51 @@
         </thead>
         <tbody>
             {% for x in data %}
-                <tr>
-                    {% if x['id'] in user_group_list %}
+                {% if x['id'] in user_group_list %}
+                    <tr>
                         <td>{{x['id']}}</td>
                         <td>{{x['name']}}</td>
                         <td>{{x['description']}}</td>
                         <td>{{map_group_type[x['type']]}}</td>
-                        <td><div class="btn btn-success btn-xs">Enter</div></td>
-                    {% else %}
-                        {% if map_group_type[x['type']] != "Private" %}
+                        <td><a class="btn btn-success btn-xs" href="/groups/{{x['id']}}/">Enter</a></td>
+                    </tr>
+                {% else %}
+                    {% if map_group_type[x['type']] != "Private" %}
+                        <tr>
                             <td>{{x['id']}}</td>
                             <td>{{x['name']}}</td>
                             <td>{{x['description']}}</td>
                             <td>{{map_group_type[x['type']]}}</td>
-                        {% else %}
-                            <td>{{x['id']}}</td>
-                            <td></td>
-                            <td></td>
-                            <td>{{map_group_type[x['type']]}}</td>
-                        {% end %}
-                        {% if map_group_type[x['type']] == "Public" %}
-                            <td><div class="btn btn-warning btn-xs">Enter</div></td>
-                        {% elif map_group_type[x['type']] == "Inpublic" %}
-                            <td><div class="btn btn-warning btn-xs">Apply</div></td>
-                        {% elif map_group_type[x['type']] == "Private" %}
-                            <td></td>
-                        {% end %}
+                            {% if map_group_type[x['type']] == "Public" %}
+                                <td><a class="btn btn-warning btn-xs" onclick="add_group({{x['id']}});">Enter</a></td>
+                            {% elif map_group_type[x['type']] == "Inpublic" %}
+                                <td><a class="btn btn-warning btn-xs">Apply</a></td>
+                            {% end %}
+                        </tr>
                     {% end %}
-                </tr>
+                    </tr>
+                {% end %}
             {% end %}
         </tbody>
     </table>
 </div>
+<script>
+function add_group(group){
+    require(["jquery", "bootbox"], function($, bootbox){
+        $.post(
+            "/api/users/{{account['id']}}/",{
+                token: "{{account['token']}}",
+                query: "add_group",
+                group_id: group,
+            }, function(msg){
+                if(msg['status'] == 200)
+                    location.href = "/groups/" + group + "/";
+            },
+            "json"
+        )
+    });
+}
+</script>
 {% module Pagination(page) %}
 {% end %}
 
