@@ -39,6 +39,7 @@
                                     <div class="btn btn-default" onclick="register({{x['id']}})">Register</div>
                                 {% else %}
                                     <div class="btn btn-default" onclick="unregister({{x['id']}})">Registered</div>
+                                    <a href="/groups/{{current_group}}/contests/{{x['id']}}/">Enter</a>
                                 {% end %}
                             {% end %}
                         </td>
