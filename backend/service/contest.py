@@ -160,6 +160,7 @@ class ContestService(BaseService):
         mu.contest_id = c.id AND 
         mu.user_id = s.user_id AND 
         mp.problem_id = s.problem_id AND
+        mp.contest_id = c.id AND
         %s <= s.created_at AND 
         s.created_at <= %s ORDER BY s.id;
         '''
