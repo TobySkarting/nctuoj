@@ -192,11 +192,13 @@ class WebRequestHandler(RequestHandler):
             return
         
         """ if a person in contest """
+        """
         if self.current_contest:
             err, contest_group_power = yield from Service.User.get_user_group_power_info(id, self.current_contest['group_id'])
             if len(contest_group_power) == 0:
                 if re.search(r'/groups/\d+/*', self.request.uri) is not None and re.search(r'/groups/\d+/contests/(\w*)/', self.request.uri) is None:
                     self.redirect('/groups/%s/contests/%s/'%(str(self.current_contest['group_id']), str(self.current_contest['id'])))
+        """
 
 
 
