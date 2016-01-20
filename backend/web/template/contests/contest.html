@@ -1,5 +1,6 @@
 {% extends './contest_frame.html' %}
 {% block contest_content %}
+{% import datetime %}
 <div class="row margin-bottom">
     <div class="col-md-12 text-center">
         <h3>
@@ -61,21 +62,23 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Problem
-            </div>
-            <div class="panel-body">
-                {% for id, x in enumerate(contest_data['problem']) %}
-                    <h4>
-                        <a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{x['id']}}/">p{{chr(id+65)}}.{{x['id']}} {{x['title']}}</a>
-                    </h4>
-                {% end %}
+{% if datetime.datetime.now() > contest_data['start'] or map_group_power['contest_manage'] in current_group_power %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Problem
+                </div>
+                <div class="panel-body">
+                    {% for id, x in enumerate(contest_data['problem']) %}
+                        <h4>
+                            <a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{x['id']}}/">p{{chr(id+65)}}.{{x['id']}} {{x['title']}}</a>
+                        </h4>
+                    {% end %}
+                </div>
             </div>
         </div>
     </div>
-</div>
+{% end %}
 
 {% end %}

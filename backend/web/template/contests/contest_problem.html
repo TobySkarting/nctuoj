@@ -1,15 +1,19 @@
 {% extends './contest_frame.html' %}
 {% block contest_content %}
+{% import datetime %}
 
-<div class="row">
-    <div class="col-md-12">
-        <h2 class="text-center">{{data['id']}}.{{data['title']}}</h2>
+{% if datetime.datetime.now() > contest_data['start'] or map_group_power['contest_manage'] in current_group_power %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center">{{data['id']}}.{{data['title']}}</h2>
+        </div>
     </div>
-</div>
-<div class="row margin-bottom">
-    <div class="col-md-2">
-        <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{data['id']}}/submit/">Submit</a>
+    <div class="row margin-bottom">
+        <div class="col-md-2">
+            <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{data['id']}}/submit/">Submit</a>
+        </div>
     </div>
-</div>
-{% include "./../problems/module_problem.html" %}
+    {% include "./../problems/module_problem.html" %}
+{% end %}
+
 {% end %}

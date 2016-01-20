@@ -36,10 +36,10 @@
                                 <a href="/groups/{{current_group}}/contests/{{x['id']}}/">End</a>
                             {% else %}
                                 {% if int(x['id']) not in registered_contest %}
-                                    <div class="btn btn-default" onclick="register({{x['id']}})">Register</div>
+                                    <div class="btn btn-default btn-sm" onclick="register({{x['id']}})">Register</div>
                                 {% else %}
-                                    <div class="btn btn-default" onclick="unregister({{x['id']}})">Registered</div>
-                                    <a href="/groups/{{current_group}}/contests/{{x['id']}}/">Enter</a>
+                                    <div class="btn btn-default btn-sm" onclick="unregister({{x['id']}})">Registered</div>
+                                    <a class="btn btn-success btn-sm" href="/groups/{{current_group}}/contests/{{x['id']}}/">Enter</a>
                                 {% end %}
                             {% end %}
                         </td>

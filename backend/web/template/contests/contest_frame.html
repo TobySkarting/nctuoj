@@ -1,5 +1,6 @@
 {% extends './../common_frame.html' %}
 {% block frame_content %}
+{% import datetime %}
     <nav class="navbar navbar-default" style="margin: 0px;">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -15,8 +16,10 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/">Tasks</a></li>
-                    <li><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/">Submissions</a></li>
-                    <li><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/scoreboard/">Scoreboard</a></li>
+                    {% if datetime.datetime.now() > contest_data['start'] or map_group_power['contest_manage'] in current_group_power %}
+                        <li><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/">Submissions</a></li>
+                        <li><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/scoreboard/">Scoreboard</a></li>
+                    {% end %}
                     {% if map_group_power['contest_manage'] in current_group_power %}
                         <li><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/edit/">Edit</a></li>
                     {% end %}

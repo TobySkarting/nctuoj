@@ -2,6 +2,7 @@ from req import WebRequestHandler
 from req import Service
 import tornado
 import math
+import datetime
 from map import *
 
 
@@ -53,7 +54,6 @@ class WebContestHandler(WebRequestHandler):
         meta = {}
         meta['id'] = id
         meta['group_id'] = self.current_group
-        print('META', meta)
         if not (yield from self.check_view(meta)):
             return
         err, data = yield from Service.Contest.get_contest(meta)
