@@ -142,8 +142,8 @@
         {% for id, x in enumerate(data['testdata']) %}
             <tr>
                 <td>{{id+1}}</td>
-                <td>{{x['time_usage']}}</td>
-                <td>{{x['memory_usage']}}</td>
+                <td>{{x['time_usage'] if x['time_usage'] is not None else '--'}}</td>
+                <td>{{x['memory_usage'] if x['memory_usage'] is not None else '--'}}</td>
                 <td>
                     {% if "msg" in x %}
                         <a onclick="show_msg(this);" style="cursor: pointer;">
@@ -154,7 +154,7 @@
                         {{x['abbreviation']}}
                     {% end %}
                 </td>
-                <td>{{x['score']}}</td>
+                <td>{{x['score'] if x['score'] is not None else '--'}}</td>
             </tr>
         {% end %}
     </tbody>
