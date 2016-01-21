@@ -45,7 +45,9 @@
                 {% for x in data['users'] %}
                     <tr id="user_{{x['id']}}">
                         <td data-type="rank"></td>
-                        <td>{{x['name']}}</td>
+                        <td>
+                            <a href="/users/{{x['id']}}/">{{x['account']}}</a>
+                        </td>
                         <td data-type="score">--</td>
                         <td data-type="penalty">--</td>
                         {% for y in data['problems'] %}

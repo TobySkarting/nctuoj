@@ -200,8 +200,13 @@ class ContestService(BaseService):
         AND %s<=s.created_at AND s.created_at<=%s 
         ORDER BY s.id DESC;
         """;
-        res = yield self.db.execute(sql, (res['id'], start, end,))
-        res = res.fetchall()
+        submissions = yield self.db.execute(sql, (res['id'], start, end,))
+        submissions = submissions.fetchall()
+        err, problems = yield from self.get_contest_problem_list(data)
+        res = {
+                'submissions': submissions,
+                'problems': problems
+                }
         # map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
         # if map_group_power['contest_manage'] not in data['current_group_power'] :
             # for submission in res:

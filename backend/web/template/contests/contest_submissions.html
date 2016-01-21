@@ -57,7 +57,8 @@ require(["jquery"], function($){
             replace_element.push("ip");
         {% end %}
         $.get("/api/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/", {token: '{{account["token"]}}'}, function(msg){
-            $.each(msg['msg'], function(index, element){
+            msg = msg['msg'];
+            $.each(msg['submissions'], function(index, element){
                 data = template_data;
                 element['compiler'] = map_lang[element['lang']];
                 $.each(replace_element, function(index, re_element){
