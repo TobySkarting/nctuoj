@@ -11,7 +11,7 @@
         <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/problems/{{data['id']}}/submit/">Submit</a>
     </div>
     <div class="col-md-2 margin-bottom">
-        <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/submissions/?problem_id={{data['id']}}&account={{account['account']}}">Submissions</a>
+        <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/submissions/?problem_id={{data['id']}}">Submissions</a>
     </div>
     {% if map_group_power["problem_manage"] in current_group_power and int(current_group) == int(data['group_id']) %}
         <div class="col-md-2 margin-bottom">
