@@ -67,9 +67,17 @@ class SubmissionService(BaseService):
         res = res.fetchone()
         res['testdata'] = yield self.db.execute('SELECT m.*, v.* FROM map_submission_testdata as m, map_verdict_string as v WHERE submission_id=%s AND v.id=m.verdict ORDER BY testdata_id;', (data['id'],))
         res['testdata'] = res['testdata'].fetchall()
-
-
         folder = '/mnt/nctuoj/data/submissions/%s/' % str(res['id'])
+        for x in res['testdata']:
+            try:
+                with open('%s/testdata_%s'%(folder, x['testdata_id'])) as f:
+                    x['msg'] = f.read()
+                    print(x)
+            except:
+                pass
+            print(x)
+
+
         file_path = '%s/%s' % (folder, res['file_name'])
         with open(file_path) as f:
             res['code'] = f.read()

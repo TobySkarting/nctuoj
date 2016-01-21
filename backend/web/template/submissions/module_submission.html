@@ -144,7 +144,16 @@
                 <td>{{id+1}}</td>
                 <td>{{x['time_usage']}}</td>
                 <td>{{x['memory_usage']}}</td>
-                <td>{{x['abbreviation']}}</td>
+                <td>
+                    {% if "msg" in x %}
+                        <a onclick="show_msg(this);" style="cursor: pointer;">
+                            {{x['abbreviation']}}
+                            <textarea hidden>{{x['msg'] if "msg" in x else ""}}</textarea>
+                        </a>
+                    {% else %}
+                        {{x['abbreviation']}}
+                    {% end %}
+                </td>
                 <td>{{x['score']}}</td>
             </tr>
         {% end %}
@@ -198,6 +207,23 @@ require(["jquery", "bootbox", "bootstrap-select", "codemirror"], function($, Cod
         return false;
     });
 });
-//setTimeout(function(){location.reload(0);}, 1000);
+function show_msg(ele){
+    require(["jquery", "bootbox"], function($, bootbox){
+        console.log($(ele).children("textarea").html());
+        bootbox.dialog({
+            message: "<textarea class='form-control' style='resize:none' rows=15>"+$(ele).children("textarea").html()+"</textarea>",
+            title: "Message",
+            buttons: {
+                success: {
+                    label: "Close",
+                    className: "btn-success",
+                    callback: function() {
+                    }
+                },
+            }
+        });
+    });
+}
+
 </script>
 {% end %}
