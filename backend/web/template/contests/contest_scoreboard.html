@@ -75,7 +75,7 @@
         require(["jquery"], function($){
             $.get("/api/groups/{{current_group}}/contests/{{contest_data['id']}}/scoreboard/", {token: '{{account["token"]}}'}, function(msg){
                 var start = new Date().getTime();
-                try{
+                //try{
                     msg = msg['msg'];
                     score_board = new Object();
                     score_board['users'] = new Object();
@@ -152,8 +152,8 @@
                         td.html(""+value['first_ac_time']+"/"+value['attempted']+"/"+value['solved']);
                     });
                     var users = Object.keys(score_board['users']).sort(function(a, b){
-                        if(score_board['users'][a] == score_board['users'][b]){
-                            return penalty_board['users'][a]['penalty'] > penalty_board['users'][b]['penalty'];
+                        if(score_board['users'][a]['solved'] == score_board['users'][b]['solved']){
+                            return score_board['users'][a]['penalty'] > score_board['users'][b]['penalty'];
                         }
                         return score_board['users'][a]['solved'] < score_board['users'][b]['solved'];
                     });
@@ -197,9 +197,9 @@
 
                         }
                     }
-                } catch(err) {
-                    location.href = location.href;
-                }
+                //} catch(err) {
+                //    location.href = location.href;
+                //}
             }, "json");
         });
     }
