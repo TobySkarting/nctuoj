@@ -5,7 +5,13 @@
 {% if datetime.datetime.now() > contest_data['start'] or map_group_power['contest_manage'] in current_group_power %}
     <div class="row">
         <div class="col-md-12">
-            <h2 class="text-center">{{data['id']}}.{{data['title']}}</h2>
+            <h2 class="text-center">
+                {% for id, x in enumerate(contest_data['problem']) %}
+                    {% if x['id'] == data['id'] %}
+                        {{chr(id+65)}}.{{data['title']}}
+                    {% end %}
+                {% end %}
+            </h2>
         </div>
     </div>
     {% if datetime.datetime.now() > contest_data['end'] %}

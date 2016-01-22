@@ -46,7 +46,17 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-xs-2">
-                <a href="/groups/{{current_group}}/problems/{{data['problem_id']}}/">{{data['problem_id']}}.{{data['problem_name']}}</a>
+                {% if contest_data != None %}
+                    <a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{data['problem_id']}}/">
+                        {% for id, x in enumerate(contest_data['problem']) %}
+                            {% if x['id'] == data['problem_id'] %}
+                                {{chr(id+65)}}.{{data['problem_name']}}
+                            {% end %}
+                        {% end %}
+                    </a>
+                {% else %}
+                    <a href="/groups/{{current_group}}/problems/{{data['problem_id']}}/">{{data['problem_id']}}.{{data['problem_name']}}</a>
+                {% end %}
             </div>
             <div class="col-xs-2">
                 <a href="/users/{{data['user_id']}}/">{{data['submitter']}}</a>
