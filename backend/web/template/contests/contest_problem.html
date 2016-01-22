@@ -8,11 +8,32 @@
             <h2 class="text-center">{{data['id']}}.{{data['title']}}</h2>
         </div>
     </div>
-    <div class="row margin-bottom">
-        <div class="col-md-2">
-            <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{data['id']}}/submit/">Submit</a>
+    {% if datetime.datetime.now() > contest_data['end'] %}
+        <font style="color: red">比賽時間已結束，<a href="/groups/{{current_group}}/problems/{{data['id']}}/">回到一班題目頁面</a>。</font>
+    {% elif (contest_data['id'] in registered_contest or map_group_power['contest_manage'] in current_group_power) %}
+        <div class="row margin-bottom">
+            <div class="col-md-2">
+                <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{data['id']}}/submit/" style="cursor: pointer">Submit</a>
+            </div>
         </div>
-    </div>
+    {% else %}
+        <font style="color: red">你尚未註冊此比賽，<a onclick="register({{contest_data['id']}});">點選此處註冊</a>。</font>
+<script>
+require(['jquery', 'bootbox'], function($, bootbox){
+    register = function(contest_id){
+        data = Object();
+        data.token = '{{account['token']}}';
+        $.post('/api/groups/{{current_group}}/contests/'+contest_id+'/register/', data, function(msg){
+            if(msg['status'] == 200){
+                bootbox.alert('Successfully registered', function(){location.href=location.href;});
+            }else{
+                bootbox.alert(msg['msg']);
+            }
+        }, "json");
+    }
+})
+</script>
+    {% end %}
     {% include "./../problems/module_problem.html" %}
 {% end %}
 
