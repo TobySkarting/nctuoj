@@ -30,7 +30,7 @@
     <tbody class="template submission">
         <tr>
             <td><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/%id%/">%id%</a></td>
-            <td><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/%problem_id%/">%problem_id%</a></td>
+            <td><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/%problem_id%/">%problem%</a></td>
             <td>%user%</td>
             <td>%time_usage%</td>
             <td>%memory_usage%</td>
@@ -52,15 +52,20 @@ map_lang = Object;
 require(["jquery"], function($){
     function flash_submission(){
         template_data = $(".template.submission").html();
-        replace_element = ["id", "user", "problem_id", "time_usage", "memory_usage", "compiler", "abbreviation", "score", "created_at"];
+        replace_element = ["id", "user", "problem", "problem_id", "time_usage", "memory_usage", "compiler", "abbreviation", "score", "created_at"];
         {% if map_group_power['submission_manage'] in current_group_power %}
             replace_element.push("ip");
         {% end %}
         $.get("/api/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/", {token: '{{account["token"]}}'}, function(msg){
             msg = msg['msg'];
+            map_problem = Object;
+            $.each(msg['problems'], function(index, element){
+                map_problem[element['id']] = String.fromCharCode(index+65) + "." + element['title'];
+            });
             $.each(msg['submissions'], function(index, element){
                 data = template_data;
                 element['compiler'] = map_lang[element['lang']];
+                element['problem'] = map_problem[element['problem_id']];
                 $.each(replace_element, function(index, re_element){
                     data = data.replace(RegExp("%"+re_element+"%", "g"), element[re_element]);
                 });
