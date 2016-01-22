@@ -46,7 +46,7 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-xs-2">
-                {% if contest_data != None %}
+                {% if 'contest_data' in globals() %}
                     <a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{data['problem_id']}}/">
                         {% for id, x in enumerate(contest_data['problem']) %}
                             {% if x['id'] == data['problem_id'] %}
