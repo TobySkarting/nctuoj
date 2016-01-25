@@ -15,7 +15,7 @@
         </div>
     </div>
     {% if datetime.datetime.now() > contest_data['end'] %}
-        <font style="color: red">比賽時間已結束，<a href="/groups/{{current_group}}/problems/{{data['id']}}/">回到一班題目頁面</a>。</font>
+        <font style="color: red">比賽時間已結束，<a href="/groups/{{current_group}}/problems/{{data['id']}}/">回到一般題目頁面</a>。</font>
     {% elif (contest_data['id'] in registered_contest or map_group_power['contest_manage'] in current_group_power) %}
         <div class="row margin-bottom">
             <div class="col-md-2">
