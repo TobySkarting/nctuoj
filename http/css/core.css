@@ -1,3 +1,6 @@
+.monospace {
+  font-family: "Courier New"; }
+
 .computer.only, .mobile.only, .tablet.only {
   display: none; }
 
