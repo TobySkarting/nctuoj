@@ -155,9 +155,17 @@
                     });
                     var users = Object.keys(score_board['users']).sort(function(a, b){
                         if(score_board['users'][a]['solved'] == score_board['users'][b]['solved']){
-                            return score_board['users'][a]['penalty'] > score_board['users'][b]['penalty'];
+                            if(score_board['users'][a]['penalty'] == score_board['users'][b]['penalty'])
+                                return 0;
+                            else if(score_board['users'][a]['penalty'] < score_board['users'][b]['penalty'])
+                                return -1;
+                            else 
+                                return 1;
+                        } else if(score_board['users'][a]['solved'] < score_board['users'][b]['solved']){
+                            return 1;
+                        } else {
+                            return -1;
                         }
-                        return score_board['users'][a]['solved'] < score_board['users'][b]['solved'];
                     });
                     score_board['users'][users[0]]['rank'] = 1;
                     now_rank = 1;
