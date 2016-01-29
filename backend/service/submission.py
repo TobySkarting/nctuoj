@@ -59,9 +59,9 @@ class SubmissionService(BaseService):
         #res = self.rs.get('submission@%s'%(str(data['id'])))
         #if res: return (None, res)
         res = yield self.db.execute("""
-        SELECT s.*, e.lang as execute_lang, e.description as execute_description, u.account as submitter, p.title as problem_name, p.group_id as problem_group_id, v.abbreviation as verdict_abbreviation, v.description as verdict_description  
-        FROM submissions as s, execute_types as e, users as u, problems as p, map_verdict_string as v 
-        WHERE s.id=%s AND e.id=s.execute_type_id AND u.id=s.user_id AND s.problem_id=p.id AND s.verdict=v.id 
+        SELECT s.*, u.account as submitter, p.title as problem_name, p.group_id as problem_group_id
+        FROM submissions as s, users as u, problems as p
+        WHERE s.id=%s AND u.id=s.user_id AND s.problem_id=p.id 
         """, (data['id'],))
         if res.rowcount == 0:
             return ('No Submission ID', None)
