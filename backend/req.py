@@ -75,6 +75,8 @@ class RequestHandler(tornado.web.RequestHandler):
         self.map_group_power = map_group_power
         self.map_group_type = map_group_type
         self.map_lang = map_lang
+        self.map_execute_types = yield from Service.Common.get_execute_type()
+        self.map_verdict_types = yield from Service.Common.get_verdict_type()
         x_real_ip = self.request.headers.get("X-Real-IP")
         remote_ip = x_real_ip or self.request.remote_ip
         self.remote_ip = remote_ip
@@ -142,6 +144,8 @@ class WebRequestHandler(RequestHandler):
         kwargs['map_group_type'] = self.map_group_type
         kwargs['map_lang'] = self.map_lang
         kwargs['map_visible'] = map_visible
+        kwargs['map_execute_types'] = self.map_execute_types
+        kwargs['map_verdict_types'] = self.map_verdict_types
         kwargs['account'] = self.account
         kwargs['title'] = kwargs["title"] + " | NCTUOJ" if "title" in kwargs else "NCTUOJ"
         kwargs['group'] = self.group

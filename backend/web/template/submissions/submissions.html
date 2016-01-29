@@ -37,8 +37,8 @@
                     <td><a href="/users/{{x['user_id']}}/">{{x['user']}}</a></td>
                     <td>{{x['time_usage'] if x['time_usage'] is not None else "--"}}</td>
                     <td>{{x['memory_usage'] if x['memory_usage'] is not None else "--"}}</td>
-                    <td>{{x['abbreviation']}}</td>
-                    <td><a href="/executes/{{x['execute_type_id']}}/">{{map_lang[x['lang']]}}</a></td>
+                    <td>{{map_verdict_types[x['verdict']]['abbreviation']}}</td>
+                    <td><a href="/executes/{{x['execute_type_id']}}/">{{map_lang[map_execute_types[x['execute_type_id']]['lang']]}}</a></td>
                     <td>{{x['length']}}</td>
                     <td>{{x['score'] if x['score'] is not None else '--' }}</td>
                     <td>{{x['created_at']}}</td>

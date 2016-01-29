@@ -99,10 +99,16 @@ class WebContestSubmissionsHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
+        meta = {}
+        meta['id'] = contest_id
+        meta['group_id'] = self.current_group
+        meta['user_id'] = self.account['id']
+        meta['current_group_power'] = self.current_group_power
+        err, data = yield from Service.Contest.get_contest_submission_list(meta)
         if err: 
             self.write_wrror(500, err)
             return
-        self.render('./contests/contest_submissions.html', contest_data=contest_data)
+        self.render('./contests/contest_submissions.html', contest_data=contest_data, data=data)
 
 class WebContestSubmissionHandler(WebRequestHandler):
     @tornado.gen.coroutine

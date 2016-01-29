@@ -17,6 +17,7 @@ import momoko
 import psycopg2.extras
 
 ### service class
+from service.common     import CommonService
 from service.user       import UserService
 from service.problem    import ProblemService
 from service.submission import SubmissionService
@@ -263,6 +264,7 @@ if __name__ == '__main__':
     global srv
     srv = tornado.httpserver.HTTPServer(app)
     srv.listen(config.PORT)
+    Service.Common =        CommonService(db, rs)
     Service.User =          UserService(db, rs)
     Service.Problem =       ProblemService(db, rs)
     Service.Submission =    SubmissionService(db, rs)

@@ -20,9 +20,9 @@ class SubmissionService(BaseService):
         err = self.check_required_args(required_args, data)
         if err: return (err, None)
         sql = """
-        SELECT s.*, u.account as user, e.lang, v.abbreviation
-        FROM submissions as s, users as u, execute_types as e, problems as p, map_verdict_string as v 
-        WHERE p.id=s.problem_id AND u.id=s.user_id AND e.id=s.execute_type_id AND v.id=s.verdict
+        SELECT s.*, u.account as user
+        FROM submissions as s, users as u, problems as p
+        WHERE p.id=s.problem_id AND u.id=s.user_id 
         """
         sql += " AND p.group_id=%s  "
         if 'problem_id' in data and data['problem_id']:
@@ -35,7 +35,8 @@ class SubmissionService(BaseService):
             sql += "AND user_id=%s " % (user_id)
         sql += " ORDER BY s.id DESC LIMIT %s OFFSET %s"
         res = yield self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"])))
-        return (None, res.fetchall())
+        res = res.fetchall()
+        return (None, res)
 
     def get_submission_list_count(self, data):
         sql = "SELECT count(*) FROM submissions as s, problems as p"
