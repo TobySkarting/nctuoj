@@ -138,37 +138,39 @@
         {% end %}
     </div>
 </div>
-<table class="table table-hover table-striped">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Time</th>
-            <th>Memory</th>
-            <th>Verdict</th>
-            <th>Score</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for id, x in enumerate(data['testdata']) %}
+<div class="panel panel-default">
+    <table class="table table-hover table-striped">
+        <thead>
             <tr>
-                <td>{{id+1}}</td>
-                <td>{{x['time_usage'] if x['time_usage'] is not None else '--'}}</td>
-                <td>{{x['memory_usage'] if x['memory_usage'] is not None else '--'}}</td>
-                <td>
-                    {% if "msg" in x %}
-                        <a onclick="show_msg(this);" style="cursor: pointer;">
-                            {{x['abbreviation']}}
-                            <textarea hidden>{{x['msg'] if "msg" in x else ""}}</textarea>
-                        </a>
-                    {% else %}
-                        {{x['abbreviation']}}
-                    {% end %}
-                </td>
-                <td>{{x['score'] if x['score'] is not None else '--'}}</td>
+                <th>#</th>
+                <th>Time</th>
+                <th>Memory</th>
+                <th>Verdict</th>
+                <th>Score</th>
             </tr>
-        {% end %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for id, x in enumerate(data['testdata']) %}
+                <tr>
+                    <td>{{id+1}}</td>
+                    <td>{{x['time_usage'] if x['time_usage'] is not None else '--'}}</td>
+                    <td>{{x['memory_usage'] if x['memory_usage'] is not None else '--'}}</td>
+                    <td>
+                        {% if "msg" in x %}
+                            <a onclick="show_msg(this);" style="cursor: pointer;">
+                                {{map_verdict_types[data['verdict']]['abbreviation']}}
+                                <textarea hidden>{{x['msg'] if "msg" in x else ""}}</textarea>
+                            </a>
+                        {% else %}
+                            {{map_verdict_types[data['verdict']]['abbreviation']}}
+                        {% end %}
+                    </td>
+                    <td>{{x['score'] if x['score'] is not None else '--'}}</td>
+                </tr>
+            {% end %}
+        </tbody>
+    </table>
+</div>
 {% if data['user_id'] == account['id'] or map_group_power['submission_manage'] in current_group_power %}
 <form class="form" action="/api/groups/{{current_group}}/submissions/0/submit/">
     <input type="hidden" name="id" value="{{data['problem_id']}}">
