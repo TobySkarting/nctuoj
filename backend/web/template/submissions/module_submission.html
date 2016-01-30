@@ -126,10 +126,10 @@
         {% else %}
             <div class="row">
                 <div class="col-xs-4">
-                   {{map_lang[data['execute_lang']]}}
+                   {{map_lang[map_execute_types[data['execute_type_id']]['lang']]}}
                 </div>
                 <div class="col-xs-4">
-                    <a href="/executes/{{data['execute_type_id']}}/">{{data['execute_description']}}</a>
+                    <a href="/executes/{{data['execute_type_id']}}/">{{map_execute_types[data['execute_type_id']]['description']}}</a>
                 </div>
                 <div class="col-xs-4">
                     {{data['length']}}
