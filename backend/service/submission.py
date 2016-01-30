@@ -70,17 +70,12 @@ class SubmissionService(BaseService):
         res['testdata'] = res['testdata'].fetchall()
         folder = '/mnt/nctuoj/data/submissions/%s/' % str(res['id'])
         for x in res['testdata']:
-            try:
-                with open('%s/testdata_%s'%(folder, x['testdata_id'])) as f:
-                    x['msg'] = f.read()
-                    print(x)
-            except:
-                pass
+            try: x['msg'] = open('%s/testdata_%s'%(folder, x['testdata_id'])).read()
+            except: pass
 
 
         file_path = '%s/%s' % (folder, res['file_name'])
-        with open(file_path) as f:
-            res['code'] = f.read()
+        res['code'] = open(file_path).read()
         res['code_line'] = len(open(file_path).readlines())
         #self.rs.set('submission@%s'%(str(data['id'])), res)
         return (None, res)
