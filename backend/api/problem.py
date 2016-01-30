@@ -77,7 +77,6 @@ class ApiProblemHandler(ApiRequestHandler):
             if action == "basic":
                 args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible", 'verdict_id', 'verdict_code[file]', 'verdict_execute_type_id', 'pdf', 'pdf_file[file]']
                 meta = self.get_args(args)
-                print('META: ', meta)
                 meta['group_id'] = self.current_group
                 meta['setter_user_id'] = self.account['id']
                 meta['id'] = id

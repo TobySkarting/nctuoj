@@ -90,7 +90,7 @@ class JudgeCenter:
         msg = res['msg'] = {}
         msg['submission_id'] = submission_id
         cur = self.cursor()
-        cur.execute('SELECT s.problem_id, p.verdict_id, s.execute_type_id, s.file_name FROM submissions as s, problems as p WHERE s.id=%s;', (submission_id,))
+        cur.execute('SELECT s.problem_id, p.verdict_id, s.execute_type_id, s.file_name FROM submissions as s, problems as p WHERE s.id=%s and s.problem_id=p.id;', (submission_id,))
         msg.update(dict(cur.fetchone()))
         cur.execute('SELECT * FROM execute_types WHERE id=%s;', (msg['execute_type_id'],))
         msg['execute_type'] = dict(cur.fetchone())
@@ -170,7 +170,7 @@ class JudgeCenter:
         score = 0
         verdict_priority = 9 ### AC
         for x in testdata:
-            if x['time_usage']: time += x['time_usage']
+            if x['time_usage']: time = max(time, x['time_usage'])
             if x['memory_usage']: memory = max(memory, x['memory_usage'])
             if x['score']: score += x['score']
             verdict_priority = min(verdict_priority, self.map_verdict_priority[x['verdict']])

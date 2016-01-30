@@ -23,7 +23,7 @@ class Sandbox:
             meta['fsize_limit'] = 65535         #--fsize
             self._meta = meta
             self.set_env(LD_LIBRARY_PATH='/usr/local/lib/')
-            self.set_env(PATH='$GOROOT/bin:/usr/lib/jvm/java-7-openjdk-amd64/bin/:/usr/lib/ghc')
+            self.set_env(PATH='$GOROOT/bin:/usr/lib/jvm/java-8-oracle/bin/:/usr/lib/ghc')
 
         def set_env(self, **kwargs):
             for var in kwargs:
@@ -90,7 +90,7 @@ class Sandbox:
                     cmd += '--dir=%s=%s '%(out, _in) 
                 else:
                     cmd += '--dir=%s '%(out)
-        cmd += '--extra-time=0.20 '
+        cmd += '--extra-time=0.20 --stack=0 '
         cmd += '--run -- %s'%exec_cmd
         print("Run: ", exec_cmd)
         print("Final: ", cmd)

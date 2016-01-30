@@ -142,7 +142,7 @@ class Judge:
                 res[x[0]] = x[1]
         if res['status'] == "TO":
             res['status'] = "TLE"
-            res['time'] = int(1000*float(res['time-wall']))
+            res['time'] = max(int(1000*float(res['time-wall'])), res['time'])
         if res['status'] == "SG":
             res['status'] = "RE" 
         print(res)
@@ -158,8 +158,8 @@ class Judge:
         self.sandbox.options = {
             "proc_limit": 4,
             "meta": "%s/meta"%(self.sandbox.folder),
-            #"output": "output",
-            #"errput": "errput",
+            "output": "compile_msg",
+            "errput": "compile_msg",
             "mem_limit": 262144,
             "time_limit": 3,
         }
@@ -281,9 +281,9 @@ class Judge:
                 res['status'], res['score'] = self.verdict(msg, "%s/testdata/%s/output"%(config.store_folder, testdata['id']), "%s/output"%(self.sandbox.folder))
         elif res['status'] == "RE":
             print("RE", res)
-            if "exitsig" in res and int(res['exitsig']) == 11:
-                res['status'] = "MLE"
-                res['memory'] = testdata['memory_limit']
+            #if "exitsig" in res and int(res['exitsig']) == 11:
+            #    res['status'] = "MLE"
+            #    res['memory'] = testdata['memory_limit']
         self.send_judged_testdata(res, testdata, msg)
         return res
 
@@ -337,6 +337,7 @@ class Judge:
                 self.prepare_sandbox()
                 sp.call("cp %s/submissions/%s/%s %s"%(config.store_folder, msg['submission_id'], msg['file_name'], self.sandbox.folder), shell=True)
                 compile_res = self.compile(msg)
+            ### Compile done
             if compile_res['status'] != "AC":
                 self.send({
                     'cmd': 'judged_testdata',
@@ -348,13 +349,14 @@ class Judge:
                         'score': 0,
                     }
                 })
+                sp.call("cp %s/compile_msg %s/submissions/%s/testdata_%s"%(self.sandbox.folder, config.store_folder, msg['submission_id'], testdata['id']), shell=True)
             else:
                 self.exec(testdata, msg)
             if msg['execute_type']['recompile'] == 1:
                 self.sandbox.delete_box()
         self.send({"cmd":"judged", "msg":""})
-        if msg['execute_type']['recompile'] == 0:
-            self.sandbox.delete_box()
+        #if msg['execute_type']['recompile'] == 0:
+        #    self.sandbox.delete_box()
         self.verdict_sandbox.delete_box()
 
     def SockHandler(self):
