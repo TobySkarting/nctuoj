@@ -31,3 +31,6 @@
 [submodule "judgesystem/judge/code/isolate"]
 	path = judgesystem/judge/code/isolate
 	url = https://github.com/cms-dev/isolate
+[submodule "http/ckeditor-dev"]
+	path = http/ckeditor-dev
+	url = https://github.com/ckeditor/ckeditor-dev.git

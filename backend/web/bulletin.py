@@ -33,8 +33,6 @@ class WebBulletinsHandler(WebRequestHandler):
             return
         ### get data
         err, data = yield from Service.Bulletin.get_bulletin_list(meta)
-        for x in data:
-            x['content'] = x['content'].replace('\n', '<br>')
         ### about pagination 
         page = {}
         page['total'] = page_count
