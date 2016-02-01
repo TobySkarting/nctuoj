@@ -110,7 +110,6 @@ class ProblemService(BaseService):
         }, {
             'name': 'title',
             'type': str,
-            'xss': True,
         }, {
             'name': 'description',
             'type': str,
