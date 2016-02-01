@@ -1,5 +1,6 @@
 from req import Service
 from service.base import BaseService
+from utils.form import form_validation
 from map import *
 import os
 
@@ -13,7 +14,12 @@ class TestdataSerivce(BaseService):
 
     def get_testdata_list_by_problem(self, data={}):
         required_args = ['problem_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+problem_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         res = self.rs.get('testdata_list@problem@%s'%(str(data['problem_id'])))
         if res: return (None, res)
@@ -24,7 +30,12 @@ class TestdataSerivce(BaseService):
 
     def get_testdata(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         res = self.rs.get('testdata@%s'%(str(data['id'])))
         if res: return (None, res)
@@ -40,7 +51,22 @@ class TestdataSerivce(BaseService):
 
     def post_testdata(self, data={}):
         required_args = ['id', 'problem_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+group_id',
+            'type': int,
+        }, {
+            'name': '+problem_id',
+            'type': int,
+        }, {
+            'name': 'input',
+        }, {
+            'name': 'output',
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         self.rs.delete('testdata@%s'%(str(data['id'])))
         self.rs.delete('testdata_list@problem@%s'%(str(data['problem_id'])))
@@ -58,9 +84,23 @@ class TestdataSerivce(BaseService):
             return (None, id)
         else:
             required_args = ['time_limit', 'memory_limit', 'output_limit', 'score']
-            err = self.check_required_args(required_args, data)
+            required_args = [{
+                'name': '+score',
+                'type': int,
+            }, {
+                'name': '+time_limit',
+                'type': int,
+            }, {
+                'name': '+memory_limit',
+                'type': int,
+            }, {
+                'name': '+output_limit',
+                'type': int,
+            }]
+            # err = self.check_required_args(required_args, data)
+            err = form_validation(data, required_args)
             if err: return (err, None)
-            meta = { x: data[x] for x in required_args }
+            meta = { x['name']: data[x['name']] for x in required_args }
             sql, parma = self.gen_update_sql("testdata", meta)
             yield self.db.execute("%s WHERE id=%s" % (sql, data['id']), parma)
 
@@ -78,7 +118,15 @@ class TestdataSerivce(BaseService):
 
     def delete_testdata(self, data={}):
         required_args = ['id', 'problem_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+problem_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         self.rs.delete('testdata@%s'%(str(data['id'])))
         self.rs.delete('testdata_list@problem@%s'%(data['problem_id']))
