@@ -4,6 +4,7 @@ import config
 import subprocess as sp
 import time
 from req import Service
+from utils.form import form_validation
 
 class ProblemService(BaseService):
     def __init__(self, db, rs):
@@ -12,7 +13,18 @@ class ProblemService(BaseService):
 
     def get_problem_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+group_id',
+            'type': int,
+        }, {
+            'name': '+page',
+            'type': int,
+        }, {
+            'name': '+count',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         sql = """
             SELECT 
@@ -31,7 +43,12 @@ class ProblemService(BaseService):
     ### Should be improvement
     def get_problem_list_count(self, data={}):
         required_args = ['group_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+group_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         res = self.rs.get('problem_list_count@%s' 
                 % (str(data['group_id'])))
@@ -46,9 +63,13 @@ class ProblemService(BaseService):
 
     def get_problem(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
-
         if int(data['id']) == 0:
             col = ["id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at","pdf"]
             res = { x: "" for x in col }
@@ -76,7 +97,67 @@ class ProblemService(BaseService):
 
     def post_problem(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id']
-        err = self.check_required_args(required_args, data)
+        args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible", 'verdict_id', 'verdict_code[file]', 'verdict_execute_type_id', 'pdf', 'pdf_file[file]']
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+group_id',
+            'type': int,
+        }, {
+            'name': '+setter_user_id',
+            'type': int,
+        }, {
+            'name': 'title',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'description',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'input',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'output',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'sample_input',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'sample_output',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'hint',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'source',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': '+visible',
+            'type': int,
+        }, {
+            'name': '+verdict_id',
+            'type': int,
+        }, {
+            'name': 'verdict_code',
+        }, {
+            'name': 'verdict_execute_type_id',
+            'type': int,
+        }, {
+            'name': 'pdf',
+            'type': bool,
+        }, {
+            'name': 'pdf_file',
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         new_verdict = False
         verdict_code = data.pop('verdict_code')
@@ -131,7 +212,12 @@ class ProblemService(BaseService):
 
     def delete_problem(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': 'id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         err, data = yield from self.get_problem(data)
         if err: return (err, None)
@@ -143,7 +229,12 @@ class ProblemService(BaseService):
     
     def post_rejudge_problem(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': 'id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute('SELECT s.id FROM submissions as s WHERE s.problem_id=%s ORDER BY s.id;', (data['id'],))
         res = res.fetchall()
