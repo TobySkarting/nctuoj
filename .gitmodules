@@ -34,3 +34,6 @@
 [submodule "http/ckeditor"]
 	path = http/ckeditor
 	url = https://github.com/ckeditor/ckeditor-releases
+[submodule "http/jets"]
+	path = http/jets
+	url = https://github.com/NeXTs/Jets.js
