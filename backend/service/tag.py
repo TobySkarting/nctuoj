@@ -1,6 +1,7 @@
 from req import Service
 from map import *
 from service.base import BaseService
+from utils.form import form_validation
 
 class TagService(BaseService):
     def __init__(self, db, rs):
@@ -19,7 +20,12 @@ class TagService(BaseService):
 
     def get_tag(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         res = self.rs.get('tag@%s'%(str(data['id'])))
         res = yield self.db.execute('SELECT * FROM tags WHERE id=%s;', (data['id'],))
@@ -31,23 +37,35 @@ class TagService(BaseService):
 
     def post_tag(self, data={}):
         required_args = ['id', 'tag']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+tag',
+            'type': str,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         if int(data['id']) == 0:
             sql, param = self.gen_insert_sql('tags', data)
             id = yield self.db.execute(sql, param)
             id = id.fetchone()['id']
-            return (None, id)
         else:
             id = data.pop('id')
             self.rs.delete('tag@%s'%(id))
             sql ,param = self.gen_update_sql('tags', data)
             yield self.db.execute(sql, param)
-            return (None, id)
+        return (None, id)
 
     def delete_tag(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         self.rs.delete('tag@%s'%(str(data['id'])))
         yield self.db.execute('DELETE FROM tags WHERE id=%s', (data['id'],))
@@ -55,7 +73,15 @@ class TagService(BaseService):
 
     def post_problem_tag(self, data={}):
         required_args = ['tag_id', 'problem_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+tag_id',
+            'type': str,
+        }, {
+            'name': '+problem_id',
+            'type': str,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         self.rs.delete('tag@problem@%s'%(data['problem_id']))
         yield self.db.execute('INSERT INTO map_problem_tag (tag_id, problem_id) VALUES(%s, %s);', (data['tag_id'], data['problem_id']))
@@ -63,7 +89,15 @@ class TagService(BaseService):
 
     def delete_problem_tag(self, data={}):
         required_args = ['tag_id', 'problem_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+tag_id',
+            'type': str,
+        }, {
+            'name': '+problem_id',
+            'type': str,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         self.rs.delete('tag@problem@%s'%(data['problem_id']))
         res = yield self.db.execute('DELETE FROM map_problem_tag WHERE tag_id=%s AND problem_id=%s RETURNING id;', (data['tag_id'], data['problem_id']))
@@ -73,7 +107,12 @@ class TagService(BaseService):
 
     def get_problem_tag(self, data={}):
         required_args = ['problem_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+problem_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         res = self.rs.get('tag@problem@%s'%(str(data['problem_id'])))
         if res: return (None, res)
