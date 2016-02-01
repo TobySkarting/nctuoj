@@ -8,15 +8,9 @@ class CommonService(BaseService):
         CommonService.inst = self
 
     def get_execute_type(self):
-        res = (yield self.db.execute("SELECT * FROM execute_types order by id")).fetchall()
-        ret = {}
-        for x in res:
-            ret[x['id']] = x
-        return ret
+        res ={ x['id']: x for x in (yield self.db.execute("SELECT * FROM execute_types order by id"))}
+        return res
 
     def get_verdict_type(self):
-        res = (yield self.db.execute("SELECT * FROM map_verdict_string order by id")).fetchall()
-        ret = {}
-        for x in res:
-            ret[x['id']] = x
-        return ret
+        res = { x['id']: x for x in (yield self.db.execute("SELECT * FROM map_verdict_string order by id"))}
+        return res
