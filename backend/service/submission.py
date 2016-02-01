@@ -19,13 +19,13 @@ class SubmissionService(BaseService):
     def get_submission_list(self, data):
         required_args = ['group_id', 'page', 'count']
         required_args = [{
-            'name': 'group_id',
+            'name': '+group_id',
             'type': int,
         }, {
-            'name': 'page',
+            'name': '+page',
             'type': int,
         }, {
-            'name': 'count',
+            'name': '+count',
             'type': int,
         }]
         # err = self.check_required_args(required_args, data)
@@ -52,7 +52,7 @@ class SubmissionService(BaseService):
 
     def get_submission_list_count(self, data):
         required_args = [{
-            'name': 'group_id',
+            'name': '+group_id',
             'type': int,
         }]
         err = form_validation(data, required_args)
@@ -77,10 +77,10 @@ class SubmissionService(BaseService):
         #res = self.rs.get('submission@%s'%(str(data['id'])))
         #if res: return (None, res)
         required_args = [{
-            'name': 'id',
+            'name': '+id',
             'type': int,
         }, {
-            'name': 'group_id',
+            'name': '+group_id',
             'type': int,
         }]
         err = form_validation(data, required_args)
@@ -110,16 +110,16 @@ class SubmissionService(BaseService):
     def post_submission(self, data):
         required_args = ['problem_id', 'execute_type_id', 'user_id', 'ip']
         required_args = [{
-            'name': 'problem_id',
+            'name': '+problem_id',
             'type': int,
         }, {
-            'name': 'execute_type_id',
+            'name': '+execute_type_id',
             'type': int,
         }, {
-            'name': 'user_id',
+            'name': '+user_id',
             'type': int,
         }, {
-            'name': 'ip',
+            'name': '+ip',
             'type': str,
         }]
         # err = self.check_required_args(required_args, data)
@@ -175,7 +175,7 @@ class SubmissionService(BaseService):
     def post_rejudge(self, data={}):
         required_args = ['id']
         required_args = [{
-            'name': 'id',
+            'name': '+id',
             'type': int,
         }]
         # err =self.check_required_args(required_args, data)
