@@ -24,7 +24,7 @@ def form_validation(form, schema):
     '''
     for item in schema:
         require = True if item['name'][0] == '+' else False
-        name = item['name'][1:] if require else item['name']
+        name = item['name'] = item['name'][1:] if require else item['name']
 
         ### check require
         if require and name not in form:
