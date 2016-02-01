@@ -41,6 +41,7 @@ class ApiSubmissionHandler(ApiRequestHandler):
     def get(self, id):
         meta = {}
         meta['id'] = id
+        meta['group_id'] = self.current_group
         err, data = yield from Service.Submission.get_submission(meta)
         if err: self.render(500, err)
         else: self.render(200, data)

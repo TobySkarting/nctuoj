@@ -2,6 +2,7 @@ from service.base import BaseService
 from req import Service
 from map import map_default_file_name
 from map import map_group_power
+from utils.form import form_validation
 import re
 import shutil
 import os
@@ -16,8 +17,19 @@ class SubmissionService(BaseService):
         SubmissionService.inst = self
     
     def get_submission_list(self, data):
-        required_args = ['page', 'count']
-        err = self.check_required_args(required_args, data)
+        required_args = ['group_id', 'page', 'count']
+        required_args = [{
+            'name': 'group_id',
+            'type': int,
+        }, {
+            'name': 'page',
+            'type': int,
+        }, {
+            'name': 'count',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         sql = """
         SELECT s.*, u.account as user
@@ -39,6 +51,12 @@ class SubmissionService(BaseService):
         return (None, res)
 
     def get_submission_list_count(self, data):
+        required_args = [{
+            'name': 'group_id',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
         sql = "SELECT count(*) FROM submissions as s, problems as p"
         sql += " WHERE s.problem_id = p.id AND p.group_id=%s"%(data['group_id'])
         if 'problem_id' in data and data['problem_id']:
@@ -58,11 +76,20 @@ class SubmissionService(BaseService):
 
         #res = self.rs.get('submission@%s'%(str(data['id'])))
         #if res: return (None, res)
+        required_args = [{
+            'name': 'id',
+            'type': int,
+        }, {
+            'name': 'group_id',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
         res = yield self.db.execute("""
         SELECT s.*, u.account as submitter, p.title as problem_name, p.group_id as problem_group_id
         FROM submissions as s, users as u, problems as p
-        WHERE s.id=%s AND u.id=s.user_id AND s.problem_id=p.id 
-        """, (data['id'],))
+        WHERE s.id=%s AND p.group_id=%s AND u.id=s.user_id AND s.problem_id=p.id 
+        """, (data['id'], data['group_id'], ))
         if res.rowcount == 0:
             return ('No Submission ID', None)
         res = res.fetchone()
@@ -82,11 +109,25 @@ class SubmissionService(BaseService):
 
     def post_submission(self, data):
         required_args = ['problem_id', 'execute_type_id', 'user_id', 'ip']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': 'problem_id',
+            'type': int,
+        }, {
+            'name': 'execute_type_id',
+            'type': int,
+        }, {
+            'name': 'user_id',
+            'type': int,
+        }, {
+            'name': 'ip',
+            'type': str,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return(err, None)
         if data['code_file'] == None and len(data['plain_code']) == 0:
             return ('No code', None)
-        meta = { x: data[x] for x in required_args }
+        meta = { x['name']: data[x['name']] for x in required_args }
         ### check problem has execute_type
         res = yield self.db.execute("SELECT * FROM map_problem_execute WHERE problem_id=%s and execute_type_id=%s", (data['problem_id'], data['execute_type_id'],))
         if res.rowcount == 0:
@@ -133,7 +174,12 @@ class SubmissionService(BaseService):
 
     def post_rejudge(self, data={}):
         required_args = ['id']
-        err =self.check_required_args(required_args, data)
+        required_args = [{
+            'name': 'id',
+            'type': int,
+        }]
+        # err =self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         self.rs.delete('submission@%s'%(str(data['id'])))
         yield self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (data['id'],))

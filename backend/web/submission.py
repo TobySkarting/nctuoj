@@ -41,7 +41,7 @@ class WebSubmissionsHandler(WebRequestHandler):
 class WebSubmissionHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
-        err, data = yield from Service.Submission.get_submission({'id': id})
+        err, data = yield from Service.Submission.get_submission({'id': id, 'group_id': self.current_group})
         if err:
             self.write_error(500, err)
         self.render('./submissions/submission.html', data=data)
