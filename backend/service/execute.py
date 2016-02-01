@@ -1,5 +1,6 @@
 from service.base import BaseService
 import config
+from utils.form import form_validation
 
 class ExecuteService(BaseService):
     def __init__(self, db, rs):
@@ -19,7 +20,12 @@ class ExecuteService(BaseService):
     
     def get_execute(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         if int(data['id']) == 0:
             res = {}
@@ -43,10 +49,30 @@ class ExecuteService(BaseService):
         return (None, res)
 
     def post_execute(self, data={}):
-        self.rs.delete('execute_list')
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+setter_user_id',
+            'type': int,
+        }, {
+            'name': '+lang',
+            'type': int,
+        }, {
+            'name': 'description',
+            'type': str,
+        }, {
+            'name': 'command',
+            'type': list,
+        }, {
+            'name': 'cm_mode',
+            'type': str,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
+        self.rs.delete('execute_list')
         command = data.pop('command')
         id = None
         if int(data['id']) == 0:
@@ -69,7 +95,12 @@ class ExecuteService(BaseService):
 
     def post_execute_priority(self, data={}):
         required_args = ['priority']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+priority',
+            'type': dict,
+        }] 
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         priority = data['priority']
         err, execute_list = yield from self.get_execute_list()
@@ -96,7 +127,12 @@ class ExecuteService(BaseService):
 
     def delete_execute(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         yield self.db.execute('DELETE FROM execute_types WHERE id=%s;', (data['id'],))
         ### ???
@@ -106,7 +142,12 @@ class ExecuteService(BaseService):
 
     def get_problem_execute(self, data={}):
         required_args = ['problem_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+problem_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         res = self.rs.get('execute@problem@%s'%str(data['problem_id']))
         if res: return (None, res)
@@ -119,7 +160,12 @@ class ExecuteService(BaseService):
 
     def post_problem_execute(self, data={}):
         required_args = ['problem_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+problem_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         yield from self.delete_problem_execute(data)
         if data['execute']:
@@ -129,7 +175,12 @@ class ExecuteService(BaseService):
 
     def delete_problem_execute(self, data={}):
         required_args = ['problem_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+problem_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         self.rs.delete('execute@problem@%s' % str(data['problem_id']))
         yield self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['problem_id'],))
