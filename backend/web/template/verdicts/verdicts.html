@@ -5,7 +5,7 @@
 {% end %}
 <div class="col-md-4 input-group">
     <span class="input-group-addon">Problem ID</span>
-    <input type="number" class="form-control" placeholder="problem ID" name="problem_id">
+    <input type="search" class="form-control" placeholder="problem ID" id="problem_id" value="0">
 </div>
 <table class="table table-hover table-striped table-condensed">
     <thead>
@@ -15,31 +15,25 @@
             <th>Created At</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="content">
         {% for x in data %}
-            <tr problem-id="{{x['problem_id']}}">
-                <td>{{x['title']}}</td>
-                <td><a class='btn btn-xs btn-default' href="/verdicts/{{x['id']}}/">View</a></td>
-                <td>{{x['created_at']}}</td>
-            </tr>
+        <tr>
+            <td style="display: none;">{{ x['problem_id'] }}</td>
+            <td>{{x['title']}}</td>
+            <td><a class='btn btn-xs btn-default' href="/verdicts/{{x['id']}}/">View</a></td>
+            <td>{{x['created_at']}}</td>
+        </tr>
         {% end %}
     </tbody>
 </table>
 <script> 
-require(["jquery", "bootbox"], function(){
-    $('tbody > tr').each(function(){
-        if($(this).attr('problem-id') != 0)
-            $(this).hide();
+require(["jquery", "jets"], function($, Jets){
+    var jets = new Jets({
+        searchTag: '#problem_id',
+        contentTag: '#content',
+        searchSelector: '^',
+        cols: [0]
     });
-    $('[name="problem_id"]').keypress(function(){
-        problem_id = $(this).val();
-        if(problem_id == '') problem_id = 0;
-        $('tbody > tr').each(function(){
-            if($(this).attr('problem-id') == problem_id)
-                $(this).show(100);
-            else $(this).hide(100);
-        });
-    })
 });
 </script>
 
