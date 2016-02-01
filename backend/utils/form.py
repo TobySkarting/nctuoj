@@ -32,13 +32,14 @@ def form_validation(form, schema):
 
         if name in form:
             ### check value type
-            if not isinstance(form[name], item['type']):
-                if item['type'] == datetime:
-                    try: form[name] = parser.parse(form[name])
-                    except Exception as e: return e
-                else:
-                    try: form[name] = item['type'](form[name])
-                    except Exception as e: return e
+            if 'type' in item:
+                if not isinstance(form[name], item['type']):
+                    if item['type'] == datetime:
+                        try: form[name] = parser.parse(form[name])
+                        except Exception as e: return e
+                    else:
+                        try: form[name] = item['type'](form[name])
+                        except Exception as e: return e
 
             ## check non_empty
             if 'non_empty' in item and item['non_empty']:
