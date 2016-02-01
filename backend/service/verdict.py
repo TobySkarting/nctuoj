@@ -1,5 +1,6 @@
 from service.base import BaseService
 from req import Service
+from utils.form import form_validation
 import os
 import config
 
@@ -25,7 +26,12 @@ class VerdictService(BaseService):
     
     def get_verdict(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         if int(data['id']) == 0:
             col = ['id', 'title', 'execute_type_id', 'execute_type_id', 'file_name', 'setter_user_id']
@@ -52,7 +58,23 @@ class VerdictService(BaseService):
 
     def post_verdict(self ,data={}):
         required_args = ['id', 'title', 'execute_type_id', 'setter_user_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+title',
+            'type': str,
+        }, {
+            'name': '+execute_type_id',
+            'type': int,
+        }, {
+            'name': '+setter_user_id',
+            'type': int,
+        }, {
+            'name': 'code_file',
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         code_file = None
         id = None
@@ -86,7 +108,12 @@ class VerdictService(BaseService):
 
     def delete_verdict(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         yield self.db.execute('DELETE FROM verdicts WHERE id=%s;', (data['id'],))
         self.rs.delete('verdict_list')
