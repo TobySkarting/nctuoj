@@ -1,4 +1,5 @@
 from service.base import BaseService
+from utils.form import form_validation
 import hashlib
 import config
 import time
@@ -23,6 +24,15 @@ class UserService(BaseService):
 
     def get_user_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
+        required_args = [{
+            'name': '+page',
+            'type': int,
+        }, {
+            'name': '+count',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
         res = (yield self.db.execute("SELECT * FROM users ORDER BY id LIMIT %s OFFSET %s", (data['count'], (int(data['page'])-1)*int(data['count']),))).fetchall()
         for x in res:
             err, x["power"] = yield from self.get_user_power_info(x["id"])
@@ -38,7 +48,15 @@ class UserService(BaseService):
 
     def get_user_group_problem_info(self, data={}):
         required_args = ['id', 'group_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+group_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_valiadation(data, required_args)
         if err: return (err, None)
         sql = '''SELECT s.*, s.id AS submission_id, p.id AS problem_id FROM (SELECT p.* FROM problems as p WHERE p.group_id=%s ORDER BY p.id) AS p LEFT JOIN (SELECT s2.*, v.abbreviation FROM (SELECT MIN(s2.id) AS submission_id FROM (SELECT s.problem_id, MAX(v.priority) AS priority FROM map_verdict_string AS v, submissions AS s WHERE v.id=s.verdict AND s.user_id=%s GROUP BY s.problem_id) AS s1, map_verdict_string AS v, submissions AS s2 WHERE v.priority=s1.priority AND v.id=s2.verdict AND s2.problem_id=s1.problem_id) AS s1, submissions AS s2, map_verdict_string AS v WHERE s2.id=s1.submission_id AND s2.verdict=v.id) AS s ON p.id=s.problem_id;'''
         res = yield self.db.execute(sql, (data['id'], data['group_id']))
@@ -74,7 +92,21 @@ class UserService(BaseService):
 
     def post_user_basic_info(self, data={}):
         required_args = ['id', 'passwd', 'npasswd', 'rpasswd']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+passwd',
+            'type': str,
+        }, {
+            'name': '+npasswd',
+            'type': str,
+        }, {
+            'name': '+rpasswd',
+            'type': str,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_valiadation(data, required_args)
         if err: return (err, None)
         id = data.pop('id')
         passwd = data.pop('passwd')
@@ -165,7 +197,15 @@ class UserService(BaseService):
         '''
         ### check required arguemts
         required_args = ['account', 'passwd']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+account',
+            'type': str,
+        }, {
+            'name': '+passwd',
+            'type': str,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
 
         ### get hashed passwd
@@ -194,7 +234,30 @@ class UserService(BaseService):
         '''
         ### check required arguemts
         required_args = ['email', 'account', 'name', 'student_id', 'passwd', 'repasswd', 'school_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+email',
+            'type': str,
+        }, {
+            'name': '+account',
+            'type': str,
+        }, {
+            'name': '+name',
+            'type': str,
+        }, {
+            'name': '+student_id',
+            'type': str,
+        }, {
+            'name': '+passwd',
+            'type': str,
+        }, {
+            'name': '+repasswd',
+            'type': str,
+        }, {
+            'name': '+school_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         ### check data valadation
         if data['passwd'] != data['repasswd']:
@@ -230,7 +293,15 @@ class UserService(BaseService):
 
     def ResetToken(self, data):
         required_args = ['account', 'passwd']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+account',
+            'type': str,
+        }, {
+            'name': '+passwd',
+            'type': str,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         id = data['account']['id']
         token = data['account']['token']
