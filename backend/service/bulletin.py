@@ -11,13 +11,13 @@ class BulletinService(BaseService):
     def get_bulletin_list(self, data={}):
         # required_args = ['group_id', 'page', 'count']
         required_args = [{
-                'name': 'group_id',
+                'name': '+group_id',
                 'type': int,
             },{
-                'name': 'page',
+                'name': '+page',
                 'type': int,
             },{
-                'name': 'count',
+                'name': '+count',
                 'type': int,
             }
         ]
@@ -32,7 +32,7 @@ class BulletinService(BaseService):
     def get_bulletin_list_count(self, data={}):
         required_args = ['group_id']
         required_args = [{
-            'name': 'group_id',
+            'name': '+group_id',
             'type': int,
         }]
         # err = self.check_required_args(required_args, data)
@@ -44,10 +44,10 @@ class BulletinService(BaseService):
     def get_bulletin(self, data={}):
         required_args = ['group_id', 'id']
         required_args = [{
-            'name': 'group_id',
+            'name': '+group_id',
             'type': int,
         },{
-            'name': 'id',
+            'name': '+id',
             'type': int,
         }]
         # err = self.check_required_args(required_args, data)
@@ -69,7 +69,7 @@ class BulletinService(BaseService):
     def get_latest_bulletin(self, data={}):
         required_args = ['group_id']
         required_args = [{
-            'name'    : 'group_id',
+            'name': '+group_id',
             'type': int,
         }]
         # err = self.check_required_args(required_args, data)
@@ -87,20 +87,22 @@ class BulletinService(BaseService):
     def post_bulletin(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id', 'title', 'content']
         required_args = [{
-            'name': 'id',
+            'name': '+id',
             'type': int,
         }, {
-            'name': 'group_id',
+            'name': '+group_id',
             'type': int,
         }, {
-            'name': 'setter_user_id',
+            'name': '+setter_user_id',
             'type': int,
         }, {
-            'name': 'title',
+            'name': '+title',
             'type': str,
+            'xss': True,
         }, {
-            'name': 'content',
+            'name': '+content',
             'type': str,
+            'xss': True,
         }]
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
@@ -121,10 +123,10 @@ class BulletinService(BaseService):
     def delete_bulletin(self, data={}):
         required_args = ['id', 'group_id']
         required_args = [{
-            'name': 'id',
+            'name': '+id',
             'type': int,
         }, {
-            'name': 'group_id',
+            'name': '+group_id',
             'type': int,
         }]
         # err = self.check_required_args(required_args, data)
