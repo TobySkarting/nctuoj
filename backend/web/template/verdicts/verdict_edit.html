@@ -6,7 +6,6 @@
         <h2 class="text-center">Edit Verdict. #{{data['id']}}</h2>
     </div>
 </div>
-
 <form class="form" action="/api/verdicts/{{data['id']}}/">
     <input name="token" type="hidden" value='{{account['token']}}'>
     <div class="form-inline margin-bottom">
@@ -34,7 +33,7 @@
 </div>
 <script>
 require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
-    $("selectpicker").selectpicker();
+    $(".selectpicker").selectpicker().selectpicker('val', {{data['execute_type_id']}});
     $("form").submit(function(){
         var data = new FormData($(this)[0]);
         form = $(this);
