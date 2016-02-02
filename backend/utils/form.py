@@ -13,6 +13,7 @@ def form_validation(form, schema):
             'range': <tuple> # t[0] <= value <= t[1]
             'len_range': <tuple> # t[0] <= len(value) <= t[1]
             'check_dict': <dict> # for dict
+            'script': <bool> #script tag in content, default is not
             ...
         }]
     int
