@@ -20,7 +20,6 @@ require(['jquery', 'codemirror'], function($, CodeMirror){
                 'codemirror/addon/display/fullscreen',
                 'codemirror/addon/dialog/dialog',
                 'loadCSS', 'onloadCSS']), function(){
-        console.log(CodeMirror.mimeModes);
         codemirror = CodeMirror.fromTextArea($('[name={{ textarea }}]')[0], {
             lineNumbers: true,
             mode: map_lang_mode[{{ cm_default_execute_id }}],
@@ -40,16 +39,23 @@ require(['jquery', 'codemirror'], function($, CodeMirror){
         });
         $('[name={{ cm_theme }}]').change(function(){
             var theme = $(this).val();
-            console.log(theme);
-            onloadCSS(loadCSS('/asset/codemirror/theme/' + theme.split(' ')[0] + '.css'), function(){
-                codemirror.setOption("theme", theme);
-            });
+            if(theme != 'default'){
+                onloadCSS(loadCSS('/asset/codemirror/theme/' + theme.split(' ')[0] + '.css'), function(){
+                    codemirror.setOption("theme", theme);
+                });
+            }else{
+                codemirror.setOption("theme", "default");
+            }
         });
         $('[name={{ cm_mode }}]').change(function(){
             var editor_mode = $(this).val().toLowerCase();
-            onloadCSS(loadCSS('/asset/codemirror/addon/dialog/dialog.css'), function(){
-                codemirror.setOption("keyMap", editor_mode);
-            });
+            if(editor_mode != 'normal'){
+                onloadCSS(loadCSS('/asset/codemirror/addon/dialog/dialog.css'), function(){
+                    codemirror.setOption("keyMap", editor_mode);
+                });
+            }else{
+                codemirror.setOption("keyMap", 'default');
+            }
         });
     });
 });
