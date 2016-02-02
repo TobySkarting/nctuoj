@@ -1,19 +1,20 @@
 from dateutil import parser
 from datetime import datetime
+from utils.pxfilter import XssHtml
 def form_validation(form, schema):
     '''
     schema:
         [{
             ### require
             'name': <str> # +<str> means require, default is optional
-            'type': <class>
             ### optional
+            'type': <class>
             'non_empty': <bool> # for str, list
             'except': <list>
             'range': <tuple> # t[0] <= value <= t[1]
             'len_range': <tuple> # t[0] <= len(value) <= t[1]
             'check_dict': <dict> # for dict
-            'script': <bool> #script tag in content, default is not
+            'xss': <bool> # xss filter, default is False
             ...
         }]
     int
@@ -62,9 +63,16 @@ def form_validation(form, schema):
                 if not (item['len_range'][0] <= len(form[name]) <= item['len_range'][1]):
                     return 'value of %s: "%s" not in len_range %s' % (name, str(form[name]), str(item['len_range']))
 
-            ### chech check_dict
+            ### check check_dict
             if 'check_dict' in item:
                 err = form_validation(form[name], item['check_dict'])
                 if err: return err
+
+            ### check xss
+            if 'xss' in item and item['xss']:
+                xss = XssHtml()
+                xss.feed(form[name])
+                xss.close()
+                form[name] = xss.getHtml()
 
     return None
