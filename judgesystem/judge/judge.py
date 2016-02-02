@@ -127,7 +127,10 @@ class Judge:
             "memory": 0,
             "exitcode": 0,
         }
-        f = open(file_path).readlines()
+        try: f = open(file_path).readlines()
+        except:
+            res['status'] = 'SE'
+            return res
         for x in f:
             x = x.strip('\n').split(":")
             if x[0] == "status":
