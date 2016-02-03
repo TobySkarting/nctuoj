@@ -38,15 +38,19 @@ class ApiGroupHandler(ApiRequestHandler):
             self.render(200, {"id": data})
             err, res = yield from Service.Group.post_group_user(meta)
             for i in range(1, 6):
-                yield from Service.User.post_user_group_power(self.account['id'], data, i)
+                try: yield from Service.User.post_user_group_power(self.account['id'], data, i)
+                except: pass
 
     @tornado.gen.coroutine
     def delete(self):
         meta = {}
         meta['id'] = self.current_group
-        if not self.check_edit():
-            self.render(403)
+        print('META', meta)
+        if not self.check_edit(meta):
+            print('ERROR')
+            return
         err, res = yield from Service.Group.delete_group(meta)
+        print('err', err, res)
         if err: self.render(500, err)
         else: self.render(200, res)
 
