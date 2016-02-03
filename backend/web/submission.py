@@ -12,6 +12,12 @@ class WebSubmissionsHandler(WebRequestHandler):
         meta["count"] = 10
         meta["group_id"] = self.current_group
         ### default page is 1
+        if not meta['account']:
+            meta.pop('account')
+
+        if not meta['problem_id']:
+            meta.pop('problem_id')
+
         if not meta['page']:
             meta['page'] = 1
         ### if get page is not int then redirect to page 1 
@@ -22,12 +28,18 @@ class WebSubmissionsHandler(WebRequestHandler):
             return
         ### should in range
         err, count = yield from Service.Submission.get_submission_list_count(meta)
+        if err:
+            self.write_error(500, err)
+            return
         page_count = max(math.ceil(count / meta['count']), 1)
         if int(meta['page']) < 1 or int(meta['page']) > page_count:
             self.write_error(500, 'Page out of range')
             return
         
         err, data = yield from Service.Submission.get_submission_list(meta)
+        if err:
+            self.write_error(500, err)
+            return
         
         ### about pagination 
         page = {}
@@ -44,4 +56,5 @@ class WebSubmissionHandler(WebRequestHandler):
         err, data = yield from Service.Submission.get_submission({'id': id, 'group_id': self.current_group})
         if err:
             self.write_error(500, err)
+            return
         self.render('./submissions/submission.html', data=data)

@@ -27,8 +27,13 @@ class SubmissionService(BaseService):
         }, {
             'name': '+count',
             'type': int,
+        }, {
+            'name': 'account',
+            'type': str,
+        }, {
+            'name': 'problem_id',
+            'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         sql = """
@@ -37,9 +42,9 @@ class SubmissionService(BaseService):
         WHERE p.id=s.problem_id AND u.id=s.user_id 
         """
         sql += " AND p.group_id=%s  "
-        if 'problem_id' in data and data['problem_id']:
-            sql += "AND problem_id=%s " % (int(data['problem_id']))
-        if 'account' in data and data['account']:
+        if 'problem_id' in data:
+            sql += "AND problem_id=%s " % (data['problem_id'])
+        if 'account' in data:
             try:
                 user_id = (yield self.db.execute("SELECT id FROM users WHERE account=%s", (data['account'],))).fetchone()['id']
             except:

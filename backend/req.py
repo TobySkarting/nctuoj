@@ -62,7 +62,6 @@ class RequestHandler(tornado.web.RequestHandler):
                     meta[n] = self.get_argument(n)
             except:
                 meta[n] = None
-                #print("get_args error: ", n)
         return meta
 
     @tornado.gen.coroutine
@@ -147,7 +146,10 @@ class WebRequestHandler(RequestHandler):
         kwargs['map_execute_types'] = self.map_execute_types
         kwargs['map_verdict_types'] = self.map_verdict_types
         kwargs['account'] = self.account
-        kwargs['title'] = kwargs["title"] + " | NCTUOJ" if "title" in kwargs else "NCTUOJ"
+        try:
+            kwargs['title'] = str(self.title) + " | NCTUOJ"
+        except:
+            kwargs['title'] = "NCTUOJ"
         kwargs['group'] = self.group
         kwargs['current_contest'] = self.current_contest
         kwargs['registered_contest'] = self.registered_contest

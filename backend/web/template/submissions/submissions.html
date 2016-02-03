@@ -35,12 +35,12 @@
                     <td><a href="/groups/{{current_group}}/submissions/{{x['id']}}/">{{x['id']}}</a></td>
                     <td><a href="/groups/{{current_group}}/problems/{{x['problem_id']}}/">{{x['problem_id']}}</a></td>
                     <td><a href="/users/{{x['user_id']}}/">{{x['user']}}</a></td>
-                    <td>{{x['time_usage'] if x['time_usage'] is not None else "--"}}</td>
-                    <td>{{x['memory_usage'] if x['memory_usage'] is not None else "--"}}</td>
+                    <td>{{x['time_usage'] or "--"}}</td>
+                    <td>{{x['memory_usage'] or "--"}}</td>
                     <td>{{map_verdict_types[x['verdict']]['abbreviation']}}</td>
                     <td><a href="/executes/{{x['execute_type_id']}}/">{{map_lang[map_execute_types[x['execute_type_id']]['lang']]}}</a></td>
                     <td>{{x['length']}}</td>
-                    <td>{{x['score'] if x['score'] is not None else '--' }}</td>
+                    <td>{{x['score'] or '--' }}</td>
                     <td>{{x['created_at']}}</td>
                     {% if len(current_group_power) %}
                         <td>{{x['ip']}}</td>

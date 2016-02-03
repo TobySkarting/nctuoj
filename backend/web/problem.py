@@ -36,6 +36,7 @@ class WebProblemsHandler(WebRequestHandler):
         page['url'] = '/groups/%s/problems/' % meta['group_id']
         page['get'] = {}
         self.render('./problems/problems.html', data=data, page=page)
+
 class WebProblemHandler(WebRequestHandler):
     def check_view(self, meta={}):
         err, data = yield from Service.Problem.get_problem(meta)
@@ -56,8 +57,10 @@ class WebProblemHandler(WebRequestHandler):
             return
         err, data = yield from Service.Problem.get_problem(meta)
         if action == None:
+            self.title = str(data['id']) + ". " + data['title']
             self.render('./problems/problem.html', data=data)
         elif action == "submit":
+            self.title = "Submit " + str(data['id']) + ". " + data['title']
             self.render('./problems/problem_submit.html', data=data)
         else:
             self.write_error(404)
