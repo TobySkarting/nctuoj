@@ -12,6 +12,7 @@
                 <label class="control-label">Description</label>
                 <input name="description" class="form-control" type="text" value="{{data['description']}}">
             </div>
+            <button type="button" class="btn btn-danger" onclick="delete_group();">Delete</button>
             <button class="btn btn-success">Submit</button>
         </form>
     </div>
@@ -24,13 +25,34 @@ require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
         data = $(this).serialize();
         $.post('/api/groups/{{current_group}}/', data, function(msg){
             if(msg['status'] == 200){
-                location.href = "/groups/" + msg['msg']['id'] + "/manage/";
+                bootbox.alert('Updated Successfully', function(){
+                    location.href = "/groups/" + msg['msg']['id'] + "/manage/";
+                });
             } else {
                 bootbox.alert(msg['msg']);
             }
         }, "json");
         return false;
     });
+    delete_group = function(){
+        $.ajax({
+            url: '/api/groups/{{current_group}}/', 
+            data: {
+                'token': "{{account['token']}}"
+            }, 
+            dataType: "json",
+            type: 'delete',
+            success: function(msg){
+                if(msg['status'] == 200){
+                    bootbox.alert('Deleted Successfully', function(){
+                        location.href = '/groups/';
+                    });
+                }else{
+                    bootbox.alert(msg['msg']);
+                }
+            }
+        });
+    }
 });
 </script>
 {% end %}
