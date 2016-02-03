@@ -37,7 +37,7 @@ class SubmissionService(BaseService):
         err = form_validation(data, required_args)
         if err: return (err, None)
         sql = """
-        SELECT s.*, u.account as user
+        SELECT s.*, u.account as user, p.title as problem_title
         FROM submissions as s, users as u, problems as p
         WHERE p.id=s.problem_id AND u.id=s.user_id 
         """

@@ -2,7 +2,7 @@
 {% block content %}
 <form class="form-inline">
     <div>
-        <label class="control-label">Problem:</label>
+        <label class="control-label">Problem ID:</label>
         <input class="form-control" name="problem_id" type="number" value="{{page['get']['problem_id'] or ''}}">
         <label class="control-label">Account:</label>
         <input class="form-control" name="account" type="text" value="{{page['get']['account'] or ''}}">
@@ -15,7 +15,7 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>PID</th>
+                <th>Problem</th>
                 <th>Submitter</th>
                 <th>Time</th>
                 <th>Memory</th>
@@ -33,7 +33,7 @@
             {% for x in data %}
                 <tr>
                     <td><a href="/groups/{{current_group}}/submissions/{{x['id']}}/">{{x['id']}}</a></td>
-                    <td><a href="/groups/{{current_group}}/problems/{{x['problem_id']}}/">{{x['problem_id']}}</a></td>
+                    <td><a href="/groups/{{current_group}}/problems/{{x['problem_id']}}/">{{x['problem_id']}}.{{x['problem_title']}}</a></td>
                     <td><a href="/users/{{x['user_id']}}/">{{x['user']}}</a></td>
                     <td>{{x['time_usage'] or "--"}}</td>
                     <td>{{x['memory_usage'] or "--"}}</td>
