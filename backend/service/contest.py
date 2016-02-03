@@ -1,5 +1,6 @@
 from service.base import BaseService
 from req import Service
+from utils.form import form_validation
 import os
 import config
 import datetime
@@ -18,7 +19,18 @@ class ContestService(BaseService):
 
     def get_contest_list(self, data={}):
         required_args = ['group_id', 'page', 'count']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+group_id',
+            'type': int,
+        }, {
+            'name': '+page',
+            'type': int,
+        }, {
+            'name': '+count',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         sql = """
             SELECT 
@@ -36,7 +48,12 @@ class ContestService(BaseService):
         
     def get_contest_list_count(self, data={}):
         required_args = ['group_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+group_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         res = self.rs.get('contest_list_count@%s' 
                 % (str(data['group_id'])))
@@ -50,7 +67,12 @@ class ContestService(BaseService):
 
     def get_contest(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         ### new contest
         if int(data['id']) == 0:
@@ -75,15 +97,59 @@ class ContestService(BaseService):
         return (None, res)
 
     def get_contest_problem_list(self, data={}):
-        required_args = ['id']
-        err = self.check_required_args(required_args, data)
+        required_args = ['+id']
+        required_args = [{
+            'name': 'id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute('SELECT p.id, p.title, m.score, m.penalty FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s ORDER BY m.id ASC;', (data['id'],))
         return (None, res.fetchall())
 
     def post_contest(self, data={}):
         required_args = ['id', 'group_id', 'setter_user_id', 'visible', 'title', 'description', 'register_start', 'register_end', 'start', 'freeze', 'end', 'type']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+group_id',
+            'type': int,
+        }, {
+            'name': '+setter_user_id',
+            'type': int,
+        }, {
+            'name': '+visible',
+            'type': int,
+        }, {
+            'name': '+title',
+            'type': str,
+        }, {
+            'name': '+description',
+            'type':str,
+            'xss': True,
+        }, {
+            'name': '+register_start',
+            'type': datetime.datetime,
+        }, {
+            'name': '+register_end',
+            'type': datetime.datetime,
+        }, {
+            'name': '+start',
+            'type': datetime.datetime,
+        }, {
+            'name': '+end',
+            'type': datetime.datetime,
+        }, {
+            'name': '+freeze',
+            'type': int,
+        }, {
+            'name': '+type',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         if not data['freeze'] or data['freeze'] == '': data['freeze'] = 0
         #try: data['freeze'] = datetime.timedelta(minutes=int(data['freeze']))
@@ -108,7 +174,18 @@ class ContestService(BaseService):
 
     def post_contest_problem(self, data={}):
         required_args = ['id', 'problems', 'scores']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+problems',
+            'type': list,
+        }, {
+            'name': '+scores',
+            'type': list,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         self.rs.delete('contest@%sproblem'%str(data['id']))
         yield self.db.execute('DELETE FROM map_contest_problem WHERE contest_id=%s;', (data['id'],))
@@ -123,7 +200,21 @@ class ContestService(BaseService):
 
     def get_contest_submission(self, data={}):
         required_args = ['id', 'user_id', 'current_group_power', 'submission_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+user_id',
+            'type': int,
+        }, {
+            'name': '+current_group_power',
+            'type': set, 
+        }, {
+            'name': '+submission_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         err, res = yield from self.get_contest(data)
         if err: return (err, None)
@@ -141,7 +232,15 @@ class ContestService(BaseService):
         -1 -> wa
         '''
         required_args = ['id', 'current_group_power']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+current_group_power',
+            'type': set,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         admin = map_group_power['contest_manage'] in data['current_group_power']
         err, res = yield from self.get_contest(data)
@@ -151,7 +250,7 @@ class ContestService(BaseService):
         _, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
         sql = '''SELECT s.id, s.user_id, s.problem_id, CEIL(extract('epoch' FROM (s.created_at - c.start)) / 60) as created_at, s.verdict as t_verdict, '''  
         if not admin:
-            sql += '''(CASE WHEN (s.verdict = %s OR s.created_at >= %s) THEN 0 ELSE (CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) END) AS verdict '''
+            sql += '''(CASE WHEN (s.verdict = %%s OR s.created_at >= %s) THEN 0 ELSE (CASE WHEN s.verdict = %%s THEN 1 ELSE -1 END) END) AS verdict '''%freeze_time
         else:
             sql += '''(CASE WHEN (s.verdict = %s) THEN 0 ELSE (CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) END) AS verdict '''
         sql += '''FROM submissions as s, contests as c, map_contest_user as mu, map_contest_problem as mp 
@@ -164,7 +263,7 @@ class ContestService(BaseService):
         %s <= s.created_at AND 
         s.created_at <= %s ORDER BY s.id;
         '''
-        submissions = yield self.db.execute(sql, (map_string_verdict['Pending']['id'],) + ((freeze_time,) if not admin else tuple()) + (map_string_verdict['AC']['id'], data['id'], start, end))
+        submissions = yield self.db.execute(sql, (map_string_verdict['Pending']['id'], map_string_verdict['AC']['id'], data['id'], start, end))
         submissions = submissions.fetchall()
         err, users = yield from self.get_contest_user(data)
         err, problems = yield from self.get_contest_problem_list(data)
@@ -177,7 +276,18 @@ class ContestService(BaseService):
 
     def get_contest_submission_list(self, data={}):
         required_args = ['id', 'user_id', 'current_group_power']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+user_id',
+            'type': int,
+        }, {
+            'name': '+current_group_power',
+            'type': set,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         #res = self.rs.get('contest@%s@submission'%(str(data['id'])))
         #if res: return (None, res)
@@ -217,7 +327,15 @@ class ContestService(BaseService):
 
     def register(self, data={}):
         required_args = ['id', 'user_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+user_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         err, res = yield from Service.User.get_user_contest(data['user_id']) 
         if err: return (err, None)
@@ -229,7 +347,15 @@ class ContestService(BaseService):
 
     def unregister(self, data={}):
         required_args = ['id', 'user_id']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+user_id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         err, res = yield from Service.User.get_user_contest(data['user_id']) 
         if err: return (err, None)
@@ -241,6 +367,15 @@ class ContestService(BaseService):
 
     def delete_contest(self, data={}):
         required_args = ['id', 'group_id']
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+group_id',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
         err, res = yield from self.get_contest(data)
         if err: return (err, None)
         yield self.db.execute('DELETE FROM contests WHERE id=%s;', (res['id'],))
@@ -250,7 +385,12 @@ class ContestService(BaseService):
 
     def get_contest_user(self, data={}):
         required_args = ['id']
-        err = self.check_required_args(required_args , data)
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        # err = self.check_required_args(required_args , data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         res = self.rs.get('contest@%s@user'%(str(data['id'])))
         if res: return (None, res)
@@ -261,7 +401,21 @@ class ContestService(BaseService):
 
     def get_contest_user_problem_score(self, data={}):
         required_args = ['user_id', 'problem', 'start', 'end']
-        err = self.check_required_args(required_args, data)
+        required_args = [{
+            'name': '+user_id',
+            'type': int,
+        }, {
+            'name': '+problem',
+            'type': dict,
+        }, {
+            'name': '+start',
+            'type': datetime.datetime,
+        }, {
+            'name': '+end',
+            'type': datetime.datetime,
+        }]
+        # err = self.check_required_args(required_args, data)
+        err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute('SELECT COUNT(*) FROM submissions WHERE user_id=%s AND problem_id=%s AND %s<=created_at AND created_at<=%s;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
         res = res.fetchone()
@@ -283,85 +437,85 @@ class ContestService(BaseService):
             pass
         return (None, res)
 
-    def get_contest_scoreboard(self, data={}):
-        '''
-        res = {
-            'score': {
-                'user': [
-                    {
-                        'id': integer,
-                        'total': {
-                            'penalty': integer,
-                            'ac_submitted': integer,
-                            'submitted': integer,
-                            'score': integer,
-                        }
-                        'problem': {
-                            problem_id(integer): {
-                                'score': integer,
-                                'penalty': integer,
-                                'submitted': integer
-                            } 
-                        }
-                    } 
-                ]
-                'problem': {
-                    problem_id(integer): {
-                        'total': {
-                            'score': integer
-                            'submitted': integer,
-                            'ac_submitted': integer,
-                        }
-                    }
-                }
-            }
-            'contest': contest_info(dict)
-        }
-        '''
-        required_args = ['id']
-        err = self.check_required_args(required_args , data)
-        if err: return (err, None)
-        start, end = data['start'], data['end']
-        err, data = yield from self.get_contest(data)
-        if err: return (err, None)
-        start = start or data['start']
-        end = end or data['end']
-        if data.get('admin'):
-            end = min(end, data['end']-datetime.timedelta(minutes=data['freeze']))
-        res = {}
-        score = res['score'] = {}
-        res['contest'] = data
-        res['start'] = start
-        res['end'] = end
-        user_score = score['user'] = []
-        map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
-        for user in data['user']:
-            user_meta = {}
-            user_meta['id'] = int(user['id'])
-            user_problem = user_meta['problem'] = {}
-            for problem in data['problem']:
-                problem_meta = {}
-                problem_meta['problem'] = problem
-                problem_meta['start'] = start
-                problem_meta['end'] = end
-                problem_meta['user_id'] = user['id']
-                err, user_problem[int(problem['id'])] = yield from self.get_contest_user_problem_score(problem_meta)
-                if err: return (err, None)
-            user_total = user_meta['total'] = {}
-            user_total['submitted'] = sum(x['submitted'] for x in user_problem.values())
-            user_total['score'] = sum(x['score'] or 0 for x in user_problem.values())
-            user_total['penalty'] = sum(x['penalty'] for x in user_problem.values())
-            user_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['verdict']==map_string_verdict['AC'] else 0), user_problem.values(), 0)
-            user_score.append(user_meta)
+    # def get_contest_scoreboard(self, data={}):
+        # '''
+        # res = {
+            # 'score': {
+                # 'user': [
+                    # {
+                        # 'id': integer,
+                        # 'total': {
+                            # 'penalty': integer,
+                            # 'ac_submitted': integer,
+                            # 'submitted': integer,
+                            # 'score': integer,
+                        # }
+                        # 'problem': {
+                            # problem_id(integer): {
+                                # 'score': integer,
+                                # 'penalty': integer,
+                                # 'submitted': integer
+                            # } 
+                        # }
+                    # } 
+                # ]
+                # 'problem': {
+                    # problem_id(integer): {
+                        # 'total': {
+                            # 'score': integer
+                            # 'submitted': integer,
+                            # 'ac_submitted': integer,
+                        # }
+                    # }
+                # }
+            # }
+            # 'contest': contest_info(dict)
+        # }
+        # '''
+        # required_args = ['id']
+        # err = self.check_required_args(required_args , data)
+        # if err: return (err, None)
+        # start, end = data['start'], data['end']
+        # err, data = yield from self.get_contest(data)
+        # if err: return (err, None)
+        # start = start or data['start']
+        # end = end or data['end']
+        # if data.get('admin'):
+            # end = min(end, data['end']-datetime.timedelta(minutes=data['freeze']))
+        # res = {}
+        # score = res['score'] = {}
+        # res['contest'] = data
+        # res['start'] = start
+        # res['end'] = end
+        # user_score = score['user'] = []
+        # map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
+        # for user in data['user']:
+            # user_meta = {}
+            # user_meta['id'] = int(user['id'])
+            # user_problem = user_meta['problem'] = {}
+            # for problem in data['problem']:
+                # problem_meta = {}
+                # problem_meta['problem'] = problem
+                # problem_meta['start'] = start
+                # problem_meta['end'] = end
+                # problem_meta['user_id'] = user['id']
+                # err, user_problem[int(problem['id'])] = yield from self.get_contest_user_problem_score(problem_meta)
+                # if err: return (err, None)
+            # user_total = user_meta['total'] = {}
+            # user_total['submitted'] = sum(x['submitted'] for x in user_problem.values())
+            # user_total['score'] = sum(x['score'] or 0 for x in user_problem.values())
+            # user_total['penalty'] = sum(x['penalty'] for x in user_problem.values())
+            # user_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['verdict']==map_string_verdict['AC'] else 0), user_problem.values(), 0)
+            # user_score.append(user_meta)
 
-        problem_score = score['problem'] = {}
-        for problem in data['problem']:
-            problem_total = problem_score[int(problem['id'])] = {}
-            problem_total['score'] = sum(x['problem'][int(problem['id'])]['score'] or 0 for x in user_score)
-            problem_total['submitted'] = sum(x['problem'][int(problem['id'])]['submitted'] for x in user_score)
-            problem_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['problem'][int(problem['id'])]['verdict']==7 else 0), user_score, 0)
+        # problem_score = score['problem'] = {}
+        # for problem in data['problem']:
+            # problem_total = problem_score[int(problem['id'])] = {}
+            # problem_total['score'] = sum(x['problem'][int(problem['id'])]['score'] or 0 for x in user_score)
+            # problem_total['submitted'] = sum(x['problem'][int(problem['id'])]['submitted'] for x in user_score)
+            # problem_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['problem'][int(problem['id'])]['verdict']==7 else 0), user_score, 0)
         
-        return (None, res)
+        # return (None, res)
 
 
 
