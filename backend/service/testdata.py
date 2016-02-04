@@ -21,11 +21,11 @@ class TestdataSerivce(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        res = self.rs.get('testdata_list@problem@%s'%(str(data['problem_id'])))
-        if res: return (None, res)
+        # res = self.rs.get('testdata_list@problem@%s'%(str(data['problem_id'])))
+        # if res: return (None, res)
         res = yield self.db.execute("SELECT t.* FROM testdata as t, (SELECT id FROM testdata WHERE problem_id=%s) as t2 where t.id=t2.id ORDER BY t.id ASC;", (data['problem_id'],))
         res = res.fetchall()
-        self.rs.set('testdata_list@problem@%s'%(str(data['problem_id'])), res)
+        # self.rs.set('testdata_list@problem@%s'%(str(data['problem_id'])), res)
         return (None, res)
 
     def get_testdata(self, data={}):
@@ -37,13 +37,13 @@ class TestdataSerivce(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        res = self.rs.get('testdata@%s'%(str(data['id'])))
-        if res: return (None, res)
+        # res = self.rs.get('testdata@%s'%(str(data['id'])))
+        # if res: return (None, res)
         res = yield self.db.execute("SELECT * FROM testdata WHERE id=%s", (data['id'], ))
         if res.rowcount == 0:
             return ('No tetsdata ID', None)
         res = res.fetchone()
-        self.rs.set('testdata@%s'%(str(data['id'])), res)
+        # self.rs.set('testdata@%s'%(str(data['id'])), res)
         return (None, res)
 
     def get_testdata_by_problem(self, data={}):
@@ -68,8 +68,8 @@ class TestdataSerivce(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        self.rs.delete('testdata@%s'%(str(data['id'])))
-        self.rs.delete('testdata_list@problem@%s'%(str(data['problem_id'])))
+        # self.rs.delete('testdata@%s'%(str(data['id'])))
+        # self.rs.delete('testdata_list@problem@%s'%(str(data['problem_id'])))
         if int(data['id']) == 0:
             res = yield self.db.execute("INSERT INTO testdata (problem_id) VALUES (%s) RETURNING id;", (data['problem_id'],))
             id = res.fetchone()['id']
@@ -128,8 +128,8 @@ class TestdataSerivce(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        self.rs.delete('testdata@%s'%(str(data['id'])))
-        self.rs.delete('testdata_list@problem@%s'%(data['problem_id']))
+        # self.rs.delete('testdata@%s'%(str(data['id'])))
+        # self.rs.delete('testdata_list@problem@%s'%(data['problem_id']))
         yield self.db.execute("DELETE FROM testdata WHERE id=%s", (data['id'],))
         return (None, None)
 
