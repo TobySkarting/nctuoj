@@ -26,11 +26,11 @@ class GroupService(BaseService):
 
 
     def get_group_list_count(self):
-        res = self.rs.get('group_list_count')
-        if res: return (None, res)
+        # res = self.rs.get('group_list_count')
+        # if res: return (None, res)
         res = yield self.db.execute('SELECT COUNT(*) FROM groups;')
         res = res.fetchone()
-        self.rs.set('group_list_count', res['count'])
+        # self.rs.set('group_list_count', res['count'])
         return (None, res['count'])
 
     def get_group(self, data={}):
@@ -49,11 +49,11 @@ class GroupService(BaseService):
             res['type'] = 0
             return (None, res)
         if err: return (err, None)
-        res = self.rs.get('group@%s'%(str(data['id'])))
+        # res = self.rs.get('group@%s'%(str(data['id'])))
         if res is None:
             res = yield self.db.execute('SELECT * FROM groups WHERE id=%s;', (data['id'],))
             res = res.fetchone()
-            self.rs.set('group@%s'%(str(data['id'])), res)
+            # self.rs.set('group@%s'%(str(data['id'])), res)
         err, res['members'] = yield from self.get_group_member_list(data)
         return (None, res)
 
@@ -66,8 +66,8 @@ class GroupService(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        res = self.rs.get('group@%s@user'%(str(data['id'])))
-        if res: return (None, res)
+        # res = self.rs.get('group@%s@user'%(str(data['id'])))
+        # if res: return (None, res)
         res = yield self.db.execute('SELECT u.* FROM map_group_user as g, users as u WHERE g.user_id=u.id AND g.group_id=%s ORDER BY u.id;', (data['id'], ))
         res = res.fetchall()
         for x in res:
@@ -91,7 +91,7 @@ class GroupService(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        self.rs.delete('group@%s@user'%(str(data['id'])))
+        # self.rs.delete('group@%s@user'%(str(data['id'])))
         if int(data['id']) == 0:
             data.pop('id')
             sql, param = self.gen_insert_sql('groups', data)
@@ -100,7 +100,7 @@ class GroupService(BaseService):
             id = data.pop('id')
             sql, param = self.gen_update_sql('groups', data)
             yield self.db.execute(sql+' WHERE id=%s', param+(id,))
-            self.rs.delete('group@%s'%(str(id)))
+            # self.rs.delete('group@%s'%(str(id)))
         return (None, id)
 
     def post_group_user(self, data={}):
@@ -119,7 +119,7 @@ class GroupService(BaseService):
         try: res = yield self.db.execute(sql, param)
         except: return ('Already in', None)
         id = res.fetchone()['id']
-        self.rs.delete('group@%s@user'%(str(data['group_id'])))
+        # self.rs.delete('group@%s@user'%(str(data['group_id'])))
         return (None, id)
 
     def delete_group_user(self, data={}):
@@ -138,7 +138,7 @@ class GroupService(BaseService):
         print('RES: ',res)
         if res.rowcount == 0:
             return ("User isn't in this group", None)
-        self.rs.delete('group@%s@user'%(str(data['group_id'])))
+        # self.rs.delete('group@%s@user'%(str(data['group_id'])))
         return (None, res.fetchone()['id'])
 
     def delete_group(self, data={}):
@@ -153,6 +153,6 @@ class GroupService(BaseService):
         res = yield self.db.execute('DELETE FROM groups WHERE id=%s RETURNING id;', (data['id'],))
         if res.rowcount == 0:
             return ('No ID exist', None)
-        self.rs.delete('group@%s'%(str(data['id'])))
-        self.rs.delete('group@%s@user'%(str(data['id'])))
+        # self.rs.delete('group@%s'%(str(data['id'])))
+        # self.rs.delete('group@%s@user'%(str(data['id'])))
         return (None, res.fetchone()['id'])
