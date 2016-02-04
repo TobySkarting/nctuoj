@@ -36,33 +36,15 @@ class ApiUserHandler(ApiRequestHandler):
             yield from Service.User.post_user_power(id, meta['power'])
             self.render()
             return
-        elif meta['query'] == "group_power":
-            args = ['group_id', 'power']
-            meta = self.get_args(args)
-            if self.map_group_power['group_manage'] not in self.current_group_power:
-                self.render(403)
-                return
-        elif meta['query'] == "add_group":
-            args = ['group_id']
-            meta = self.get_args(args)
-            err, group = yield from Service.Group.get_group({"id": meta['group_id']})
-            if err: 
-                self.render(500, err)
-                return
-            if group['type'] == 0:  #Public
-                yield from Service.User.post_user_group(id, group['id'])
-                self.render(200)
-
-        elif meta['query'] == "basic_info":
-            if int(id) != int(self.account['id']):
-                sefl.render('403', 'Permission Denied')
-                return 
-            args = ['npasswd', 'rpasswd', 'passwd']
-            meta = self.get_args(args)
-            meta['id'] = id
-            err, res = yield from Service.User.post_user_basic_info(meta)
-            if err: self.render(500, err)
-            else: self.render(200, res)
+        if int(id) != int(self.account['id']):
+            sefl.render('403', 'Permission Denied')
+            return 
+        args = ['npasswd', 'rpasswd', 'passwd']
+        meta = self.get_args(args)
+        meta['id'] = id
+        err, res = yield from Service.User.post_user_basic_info(meta)
+        if err: self.render(500, err)
+        else: self.render(200, res)
 
 class ApiUserSignHandler(ApiRequestHandler):
     @tornado.gen.coroutine
