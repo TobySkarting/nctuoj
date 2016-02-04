@@ -17,6 +17,13 @@ class ExecuteService(BaseService):
         self.rs.set('execute_list', res)
         return (None, res)
 
+    def get_execute_type(self):
+        res = self.rs.get('execute_type')
+        if res: return res
+        res ={ x['id']: x for x in (yield self.db.execute("SELECT * FROM execute_types order by id"))}
+        self.rs.set('execute_type', res)
+        return res
+
     
     def get_execute(self, data={}):
         required_args = ['id']

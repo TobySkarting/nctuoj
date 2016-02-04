@@ -23,6 +23,12 @@ class VerdictService(BaseService):
         self.rs.set('verdict_list', res)
         return (None, res)
 
+    def get_verdict_type(self):
+        res = self.rs.get('verdict_type')
+        if res: return res
+        res = { x['id']: x for x in (yield self.db.execute("SELECT * FROM map_verdict_string order by id"))}
+        self.rs.set('verdict_type', res)
+        return res
     
     def get_verdict(self, data={}):
         required_args = ['id']
