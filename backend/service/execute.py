@@ -9,20 +9,20 @@ class ExecuteService(BaseService):
         ExecuteService.inst = self
 
     def get_execute_list(self, data={}):
-        res = self.rs.get('execute_list')
-        if res: return (None, res)
+        # res = self.rs.get('execute_list')
+        # if res: return (None, res)
         sql = "SELECT e.*, u.account as setter_user FROM execute_types as e, users as u WHERE e.setter_user_id=u.id ORDER BY e.priority"
         res = yield self.db.execute(sql)
         res = res.fetchall()
-        self.rs.set('execute_list', res)
+        # self.rs.set('execute_list', res)
         return (None, res)
 
     def get_execute_type(self):
-        res = self.rs.get('execute_type')
-        if res: return res
+        # res = self.rs.get('execute_type')
+        # if res: return (None, res)
         res ={ x['id']: x for x in (yield self.db.execute("SELECT * FROM execute_types order by id"))}
-        self.rs.set('execute_type', res)
-        return res
+        # self.rs.set('execute_type', res)
+        return (None, res)
 
     
     def get_execute(self, data={}):
@@ -42,8 +42,8 @@ class ExecuteService(BaseService):
             res['description'] = ''
             res['cm_mode'] = ''
             return (None, res)
-        res = self.rs.get('execute@%s'%(str(data['id'])))
-        if res: return (None, res)
+        # res = self.rs.get('execute@%s'%(str(data['id'])))
+        # if res: return (None, res)
         sql = "SELECT e.*, u.account as setter_user FROM execute_types as e, users as u WHERE e.id=%s AND e.setter_user_id=u.id"
         res = yield self.db.execute(sql, (data["id"], ))
         if res.rowcount == 0:
@@ -52,7 +52,7 @@ class ExecuteService(BaseService):
         res['steps'] = (yield self.db.execute("SELECT execute_steps.* FROM execute_steps WHERE execute_type_id=%s ORDER BY id", (res['id'],))).fetchall()
         for id, x in enumerate(res['steps']):
             x['step'] = id + 1
-        self.rs.set('execute@%s'%(str(data['id'])), res)
+        # self.rs.set('execute@%s'%(str(data['id'])), res)
         return (None, res)
 
     def post_execute(self, data={}):
@@ -79,7 +79,7 @@ class ExecuteService(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        self.rs.delete('execute_list')
+        # self.rs.delete('execute_list')
         command = data.pop('command')
         id = None
         if int(data['id']) == 0:
@@ -97,7 +97,7 @@ class ExecuteService(BaseService):
             meta['execute_type_id'] = id
             sql, parma = self.gen_insert_sql("execute_steps", meta)
             yield self.db.execute(sql, parma)
-        self.rs.delete('execute@%s'%(str(id)))
+        # self.rs.delete('execute@%s'%(str(id)))
         return (None, id)
 
     def post_execute_priority(self, data={}):
@@ -128,8 +128,8 @@ class ExecuteService(BaseService):
                 return ('priority can not duplicate', None)
         for id, pri in priority.items():
             yield self.db.execute('UPDATE execute_types SET priority=%s WHERE id=%s;', (pri, id,))
-            self.rs.delete('execute@%s'%(str(id)))
-        self.rs.delete('execute_list')
+            # self.rs.delete('execute@%s'%(str(id)))
+        # self.rs.delete('execute_list')
         return (None, None)
 
     def delete_execute(self, data={}):
@@ -143,8 +143,8 @@ class ExecuteService(BaseService):
         if err: return (err, None)
         yield self.db.execute('DELETE FROM execute_types WHERE id=%s;', (data['id'],))
         ### ???
-        self.rs.delete('execute@%s'%(str(data['id'])))
-        self.rs.delete('execute_list')
+        # self.rs.delete('execute@%s'%(str(data['id'])))
+        # self.rs.delete('execute_list')
         return (None, str(data['id']))
 
     def get_problem_execute(self, data={}):
@@ -156,13 +156,13 @@ class ExecuteService(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        res = self.rs.get('execute@problem@%s'%str(data['problem_id']))
-        if res: return (None, res)
+        # res = self.rs.get('execute@problem@%s'%str(data['problem_id']))
+        # if res: return (None, res)
         res = yield self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['problem_id'],))
         res = res.fetchall()
         print("*****")
         print(res)
-        self.rs.set('execute@problem@%s' % str(data['problem_id']), res)
+        # self.rs.set('execute@problem@%s' % str(data['problem_id']), res)
         return (None, res)
 
     def post_problem_execute(self, data={}):
@@ -189,6 +189,6 @@ class ExecuteService(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        self.rs.delete('execute@problem@%s' % str(data['problem_id']))
+        # self.rs.delete('execute@problem@%s' % str(data['problem_id']))
         yield self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['problem_id'],))
         return (None, None)
