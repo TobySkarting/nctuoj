@@ -15,7 +15,7 @@ class ApiUserGroupHandler(ApiRequestHandler):
             meta = {}
             meta['id'] = id
             meta['group_id'] = group_id
-            err, data = yield from Service.User.get_user_group_problem_info(meta)
+            err, data = yield from Service.Group.get_group_user_problem_info(meta)
             if err: self.render(500, err)
             else: self.render(200, data)
 

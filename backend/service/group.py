@@ -130,6 +130,54 @@ class GroupService(BaseService):
         # self.rs.delete('group@%s@user'%(str(data['group_id'])))
         return (None, res.fetchone()['id'])
 
+    def get_group_user_power(self, data={}):
+        required_args = [{
+            'name': '+user_id',
+            'type': int,
+        }, {
+            'name': '+group_id',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        # res = self.rs.get('user_group_power@%s@%s' % (str(uid), str(gid)))
+        # if res: return (None, res)
+        res = yield self.db.execute("SELECT power from map_group_user_power where user_id=%s AND group_id=%s", (data['user_id'], data['group_id'],))
+        power = list({ x['power'] for x in res })
+        # self.rs.set('user_group_power@%s@%s' % (str(uid), str(gid)), power)
+        return (None, power)
+
+    def post_group_user_power(self, data={}):
+        required_args = [{
+            'name': '+user_id',
+            'type': int,
+        }, {
+            'name': '+group_id',
+            'type': int,
+        }, {
+            'name': '+power',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        err, current_power = yield from self.get_user_group_power_info(data['user_id'], data['group_id'])
+        print(current_power)
+        if int(data['power']) in current_power:
+            yield self.db.execute('DELETE FROM map_group_user_power WHERE user_id=%s AND group_id=%s AND power=%s;', (data['user_id'], data['group_id'], data['power'],))
+        else:
+            sql, param = self.gen_insert_sql('map_group_user_power', data)
+            # yield self.db.execute('INSERT INTO map_group_user_power (user_id, group_id, power) VALUES(%s, %s, %s);', (uid, gid, power))
+            yield self.db.execute(sql, param)
+        # self.rs.delete('user_group_power@%s@%s' % (str(uid), str(gid)))
+        return (None, None)
+
+    def get_user_contest(self, id):
+        #res = self.rs.get('user@%scontest'%(str(id)))
+        #if res: return (None, res)
+        res = yield self.db.execute('SELECT contest_id FROM map_contest_user WHERE user_id=%s;', (id,))
+        res = set(x['contest_id'] for x in res)
+        return (None, res)
+
     def delete_group(self, data={}):
         required_args = [{
             'name': '+id',
@@ -143,3 +191,18 @@ class GroupService(BaseService):
         # self.rs.delete('group@%s'%(str(data['id'])))
         # self.rs.delete('group@%s@user'%(str(data['id'])))
         return (None, res.fetchone()['id'])
+
+    def get_group_user_problem_info(self, data={}):
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+group_id',
+            'type': int,
+        }]
+        err = form_valiadation(data, required_args)
+        if err: return (err, None)
+        sql = '''SELECT s.*, s.id AS submission_id, p.id AS problem_id FROM (SELECT p.* FROM problems as p WHERE p.group_id=%s ORDER BY p.id) AS p LEFT JOIN (SELECT s2.*, v.abbreviation FROM (SELECT MIN(s2.id) AS submission_id FROM (SELECT s.problem_id, MAX(v.priority) AS priority FROM map_verdict_string AS v, submissions AS s WHERE v.id=s.verdict AND s.user_id=%s GROUP BY s.problem_id) AS s1, map_verdict_string AS v, submissions AS s2 WHERE v.priority=s1.priority AND v.id=s2.verdict AND s2.problem_id=s1.problem_id) AS s1, submissions AS s2, map_verdict_string AS v WHERE s2.id=s1.submission_id AND s2.verdict=v.id) AS s ON p.id=s.problem_id;'''
+        res = yield self.db.execute(sql, (data['id'], data['group_id']))
+        return (None, res.fetchall())
+

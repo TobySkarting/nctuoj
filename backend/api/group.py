@@ -40,7 +40,7 @@ class ApiGroupHandler(ApiRequestHandler):
             err, res = yield from Service.Group.post_group_user(meta)
             for i in range(1, 6):
                 meta['power'] = i
-                try: yield from Service.User.post_user_group_power(meta)
+                try: yield from Service.Group.post_group_user_power(meta)
                 except Exception as e: print(e)
 
     @tornado.gen.coroutine
@@ -67,7 +67,7 @@ class ApiGroupUserHandler(ApiRequestHandler):
         meta = {}
         meta['group_id'] = self.current_group
         meta['user_id'] = user_id
-        err, data = yield from Service.User.get_user_group_power_info(self.current_group, user_id)
+        err, data = yield from Service.Group.get_group_user_power(meta)
         if err: self.render(500, err)
         else: self.render(200, data)
 
@@ -85,7 +85,7 @@ class ApiGroupUserHandler(ApiRequestHandler):
             if err: self.render(500, err)
             else: self.render(200, res)
         else:
-            err, res = yield from Service.User.post_user_group_power(meta)
+            err, res = yield from Service.Group.post_group_user_power(meta)
             if err: self.render(500, err)
             else: self.render(200, res)
     @tornado.gen.coroutine
