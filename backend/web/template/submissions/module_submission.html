@@ -158,11 +158,11 @@
                     <td>
                         {% if "msg" in x %}
                             <a onclick="show_msg(this);" style="cursor: pointer;">
-                                {{map_verdict_types[data['verdict']]['abbreviation']}}
+                                {{map_verdict_types[x['verdict']]['abbreviation']}}
                                 <textarea hidden>{{x['msg'] if "msg" in x else ""}}</textarea>
                             </a>
                         {% else %}
-                            {{map_verdict_types[data['verdict']]['abbreviation']}}
+                            {{map_verdict_types[x['verdict']]['abbreviation']}}
                         {% end %}
                     </td>
                     <td>{{x['score'] if x['score'] is not None else '--'}}</td>
