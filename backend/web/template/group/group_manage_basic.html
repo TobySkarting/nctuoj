@@ -12,7 +12,9 @@
                 <label class="control-label">Description</label>
                 <input name="description" class="form-control" type="text" value="{{data['description']}}">
             </div>
+            {% if data['id'] != 0 %}
             <button type="button" class="btn btn-danger" onclick="delete_group();">Delete</button>
+            {% end %}
             <button class="btn btn-success">Submit</button>
         </form>
     </div>
@@ -34,25 +36,32 @@ require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
         }, "json");
         return false;
     });
+    {% if data['id'] != 0 %}
     delete_group = function(){
-        $.ajax({
-            url: '/api/groups/{{current_group}}/', 
-            data: {
-                'token': "{{account['token']}}"
-            }, 
-            dataType: "json",
-            type: 'delete',
-            success: function(msg){
-                if(msg['status'] == 200){
-                    bootbox.alert('Deleted Successfully', function(){
-                        location.href = '/groups/';
-                    });
-                }else{
-                    bootbox.alert(msg['msg']);
-                }
+        bootbox.confirm('Do you want to delete group {{data["id"]}}.{{data["name"]}}', 
+            function(res){
+                if(res == false)return true;
+                $.ajax({
+                    url: '/api/groups/{{current_group}}/', 
+                    data: {
+                        'token': "{{account['token']}}"
+                    }, 
+                    dataType: "json",
+                    type: 'delete',
+                    success: function(msg){
+                        if(msg['status'] == 200){
+                            bootbox.alert('Deleted Successfully', function(){
+                                location.href = '/groups/';
+                            });
+                        }else{
+                            bootbox.alert(msg['msg']);
+                        }
+                    }
+                });
             }
-        });
-    }
+        );
+    };
+    {% end %}
 });
 </script>
 {% end %}
