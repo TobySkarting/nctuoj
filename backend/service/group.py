@@ -50,6 +50,7 @@ class GroupService(BaseService):
             return (None, res)
         if err: return (err, None)
         # res = self.rs.get('group@%s'%(str(data['id'])))
+        res = None
         if res is None:
             res = yield self.db.execute('SELECT * FROM groups WHERE id=%s;', (data['id'],))
             res = res.fetchone()
