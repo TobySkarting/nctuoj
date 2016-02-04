@@ -90,7 +90,7 @@ class ApiRequestHandler(RequestHandler):
         return
     @tornado.gen.coroutine
     def prepare(self):
-        super().prepare()
+        yield super().prepare()
         self.account = {}
         token = (self.get_args(['token']))['token']
         if token == None:
@@ -161,7 +161,7 @@ class WebRequestHandler(RequestHandler):
 
     @tornado.gen.coroutine
     def prepare(self):
-        super().prepare()
+        yield super().prepare()
         ### No group => 0
         ### No user => 0 (guest)
         try:
