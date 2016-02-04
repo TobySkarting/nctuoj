@@ -66,7 +66,10 @@ class GroupService(BaseService):
         res = yield self.db.execute('SELECT u.* FROM map_group_user as g, users as u WHERE g.user_id=u.id AND g.group_id=%s ORDER BY u.id;', (data['id'], ))
         res = res.fetchall()
         for x in res:
-            err, x['group_power'] = yield from Service.User.get_user_group_power_info(x['id'], data['id'])
+            err, x['group_power'] = yield from self.get_group_user_power({
+                'user_id': x['id'], 
+                'group_id': data['id']
+            })
             x.pop('passwd')
             x.pop('token')
         return (None, res)
@@ -160,7 +163,7 @@ class GroupService(BaseService):
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        err, current_power = yield from self.get_user_group_power_info(data['user_id'], data['group_id'])
+        err, current_power = yield from self.get_group_user_power(data)
         print(current_power)
         if int(data['power']) in current_power:
             yield self.db.execute('DELETE FROM map_group_user_power WHERE user_id=%s AND group_id=%s AND power=%s;', (data['user_id'], data['group_id'], data['power'],))

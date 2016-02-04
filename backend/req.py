@@ -96,7 +96,7 @@ class ApiRequestHandler(RequestHandler):
         if token == None:
             self.account['id'] = 0
         else:
-            err, data = yield from Service.User.get_user_basic_info_by_token(token)
+            err, data = yield from Service.User.get_user_basic_info_by_token({'token': token})
             if err:
                 self.account['id'] = 0
             else:
@@ -109,11 +109,14 @@ class ApiRequestHandler(RequestHandler):
                 self.render(403, 'Permission Denied')
                 return
         id = self.account['id']
-        err, self.registered_contest = yield from Service.User.get_user_contest(id)
-        err, self.current_contest = yield from Service.User.get_user_current_contest(id)
-        err, self.account['power'] = yield from Service.User.get_user_power_info(id)
-        err, self.group = yield from Service.User.get_user_group_info(id)
-        err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
+        err, self.registered_contest = yield from Service.User.get_user_contest({'id': id})
+        err, self.current_contest = yield from Service.User.get_user_current_contest({'id': id})
+        err, self.account['power'] = yield from Service.User.get_user_power_info({'id': id})
+        err, self.group = yield from Service.User.get_user_group_info({'id': id})
+        err, self.current_group_power = yield from Service.Group.get_group_user_power({
+            'user_id': id, 
+            'group_id': self.current_group
+        })
 
 
 
@@ -172,7 +175,7 @@ class WebRequestHandler(RequestHandler):
         self.account = {}
         try:
             id = int(self.get_secure_cookie('id').decode())
-            err, data = yield from Service.User.get_user_basic_info(id)
+            err, data = yield from Service.User.get_user_basic_info({'id': id})
             if err:
                 id = 0
                 self.clear_cookie('id')
@@ -185,11 +188,14 @@ class WebRequestHandler(RequestHandler):
             self.account['token'] = ""
         
         self.account["id"] = id
-        err, self.registered_contest = yield from Service.User.get_user_contest(id)
-        err, self.current_contest = yield from Service.User.get_user_current_contest(id)
-        err, self.account['power'] = yield from Service.User.get_user_power_info(id)
-        err, self.group = yield from Service.User.get_user_group_info(id)
-        err, self.current_group_power = yield from Service.User.get_user_group_power_info(id, self.current_group)
+        err, self.registered_contest = yield from Service.User.get_user_contest({'id': id})
+        err, self.current_contest = yield from Service.User.get_user_current_contest({'id': id})
+        err, self.account['power'] = yield from Service.User.get_user_power_info({'id': id})
+        err, self.group = yield from Service.User.get_user_group_info({'id': id})
+        err, self.current_group_power = yield from Service.Group.get_group_user_power({
+            'user_id': id,
+            'group_id': self.current_group
+        })
 
         """ if the user not in the group render(403) """
         in_group = self.current_group in (x['id'] for x in self.group)

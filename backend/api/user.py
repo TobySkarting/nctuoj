@@ -33,7 +33,8 @@ class ApiUserHandler(ApiRequestHandler):
             if self.map_power['user_manage'] not in self.account['power']:
                 self.render(403, "Permission Denied")
                 return
-            yield from Service.User.post_user_power(id, meta['power'])
+            meta['id'] = id
+            yield from Service.User.post_user_power(meta)
             self.render()
             return
         if int(id) != int(self.account['id']):

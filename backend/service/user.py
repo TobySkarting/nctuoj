@@ -34,7 +34,7 @@ class UserService(BaseService):
         if err: return (err, None)
         res = (yield self.db.execute("SELECT * FROM users ORDER BY id LIMIT %s OFFSET %s", (data['count'], (int(data['page'])-1)*int(data['count']),))).fetchall()
         for x in res:
-            err, x["power"] = yield from self.get_user_power_info(x["id"])
+            err, x["power"] = yield from self.get_user_power_info(x)
         return (None, res)
 
     def get_user_list_count(self, data={}):
@@ -49,26 +49,38 @@ class UserService(BaseService):
         required_args = ['id', 'group_list']
         pass
 
-    def get_user_basic_info(self, id):
+    def get_user_basic_info(self, data={}):
         # res = self.rs.get("user_basic@%s" % str(id))
         # if res: return (None, res)
-        res = yield self.db.execute("SELECT u.*, s.name as school FROM users as u, schools as s where u.id=%s AND u.school_id = s.id", (id,))
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        },]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        res = yield self.db.execute("SELECT u.*, s.name as school FROM users as u, schools as s where u.id=%s AND u.school_id = s.id", (data['id'],))
         if res.rowcount == 0:
             return ('ID Not Exist', None)
         res = res.fetchone()
         res.pop("passwd")
-        err, res['power'] = yield from self.get_user_power_info(id)
+        err, res['power'] = yield from self.get_user_power_info(data)
         # self.rs.set("user_basic@%s" % str(id), res)
         return (None, res)
 
-    def get_user_basic_info_by_token(self, token):
+    def get_user_basic_info_by_token(self, data={}):
+        required_args = [{
+            'name': '+token',
+            'type': str
+        },]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
         # res = self.rs.get("user_token@%s" % token)
         res = None
         if not res:
-            res = yield self.db.execute("SELECT id FROM users WHERE token=%s", (token,))
+            res = yield self.db.execute("SELECT id FROM users WHERE token=%s", (data['token'],))
             if res.rowcount == 0:
                 return ('Token Not Exist', None)
-            res = res.fetchone()['id']
+            res = res.fetchone()
             # self.rs.set("user_token@%s" % token, res)
         err, data = yield from self.get_user_basic_info(res)
         if err: return (err, None)
@@ -94,7 +106,7 @@ class UserService(BaseService):
         passwd = data.pop('passwd')
         npasswd = data.pop('npasswd')
         rpasswd = data.pop('rpasswd')
-        res = yield self.db.execute('SELECT passwd FROM users WHERE id=%s;', (id,))
+        res = yield self.db.execute('SELECT passwd FROM users WHERE id=%s;', (data['id'],))
         if res.rowcount == 0: return ('User id not exist', None)
         hpasswd = res.fetchone()['passwd']
         if self.hash_pwd(passwd) != hpasswd: return ('Wrong Password', None)
@@ -103,7 +115,7 @@ class UserService(BaseService):
                 return ('Confirm new password', None)
             else: data['passwd'] = self.hash_pwd(npasswd)
         sql, param = self.gen_update_sql('users', data)
-        res = yield self.db.execute(sql+' WHERE id=%s RETURNING token;', param+(id,))
+        res = yield self.db.execute(sql+' WHERE id=%s RETURNING token;', param+(data['id'],))
         # self.rs.delete('user@%s'%(id))
         # self.rs.delete('user_token@%s'%(res.fetchone()['token']))
         return (None, id)
@@ -114,36 +126,69 @@ class UserService(BaseService):
     def get_user_advance_info_by_token(self, token):
         pass
 
-    def get_user_group_info(self, id):
-        res = yield self.db.execute("SELECT g.* FROM groups as g, map_group_user as m where m.user_id=%s and g.id=m.group_id ORDER BY g.id", (id,))
+    def get_user_group_info(self, data={}):
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        },]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        res = yield self.db.execute("SELECT g.* FROM groups as g, map_group_user as m where m.user_id=%s and g.id=m.group_id ORDER BY g.id", (data['id'],))
         res = res.fetchall()
         return (None, res)
 
-    def get_user_power_info(self, id):
+    def get_user_power_info(self, data={}):
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        },]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
         # res = self.rs.get('user_power@%s' % str(id))
         # if res: return (None, res)
-        res = yield self.db.execute("SELECT power from map_user_power WHERE user_id=%s", (id,))
+        res = yield self.db.execute("SELECT power from map_user_power WHERE user_id=%s", (data['id'],))
         power = list({ x['power'] for x in res })
         # self.rs.set('user_power@%s' % str(id), power)
         return (None, power)
 
-    def post_user_power(self, id, power):
-        err, current_power = yield from self.get_user_power_info(id)
+    def post_user_power(self, data={}):
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+power',
+            'type': int,
+        },]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        err, current_power = yield from self.get_user_power_info(data)
         # self.rs.delete('user_power@%s'%(str(id)))
-        if int(power) in current_power:
-            yield self.db.execute("DELETE FROM map_user_power WHERE user_id=%s and power=%s", (id, power,))
+        if int(data['power']) in current_power:
+            yield self.db.execute("DELETE FROM map_user_power WHERE user_id=%s and power=%s", (data['id'], data['power'],))
         else:
-            yield self.db.execute("INSERT INTO map_user_power (user_id, power) VALUES (%s, %s)", (id, power,))
+            yield self.db.execute("INSERT INTO map_user_power (user_id, power) VALUES (%s, %s)", (data['id'], data['power'],))
 
-    def get_user_contest(self, id):
+    def get_user_contest(self, data={}):
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        },]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
         #res = self.rs.get('user@%scontest'%(str(id)))
         #if res: return (None, res)
-        res = yield self.db.execute('SELECT contest_id FROM map_contest_user WHERE user_id=%s;', (id,))
-        res = set(x['contest_id'] for x in res)
+        res = yield self.db.execute('SELECT contest_id FROM map_contest_user WHERE user_id=%s;', (data['id'],))
+        res = list({x['contest_id'] for x in res})
         return (None, res)
 
-    def get_user_current_contest(self, id):
-        res = yield self.db.execute('SELECT c.* FROM map_contest_user as m, contests as c WHERE m.user_id=%s AND m.contest_id=c.id AND c.start<=%s AND %s<=c.end;', (id, datetime.datetime.now(), datetime.datetime.now(),))
+    def get_user_current_contest(self, data={}):
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        },]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        res = yield self.db.execute('SELECT c.* FROM map_contest_user as m, contests as c WHERE m.user_id=%s AND m.contest_id=c.id AND c.start<=%s AND %s<=c.end;', (data['id'], datetime.datetime.now(), datetime.datetime.now(),))
         if res.rowcount == 0:
             return (None, None)
         else:
@@ -249,7 +294,7 @@ class UserService(BaseService):
     def ResetToken(self, data):
         required_args = [{
             'name': '+account',
-            'type': str,
+            'type': dict,
         }, {
             'name': '+passwd',
             'type': str,

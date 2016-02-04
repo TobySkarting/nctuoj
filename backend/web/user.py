@@ -48,8 +48,8 @@ class WebUserHandler(WebRequestHandler):
     def get(self, id=None, action=None):
         if not id: id = self.account["id"]
         ###err, meta = yield from Service.User.get_user_advanced_info(id)
-        err, meta = yield from Service.User.get_user_basic_info(id)
-        err, meta['group'] = yield from Service.User.get_user_group_info(id)
+        err, meta = yield from Service.User.get_user_basic_info({'id': id})
+        err, meta['group'] = yield from Service.User.get_user_group_info({'id': id})
         if err:
             self.write_error(500, err)
             return
@@ -58,7 +58,7 @@ class WebUserHandler(WebRequestHandler):
 class WebUserEditHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
-        err, data = yield from Service.User.get_user_basic_info(id)
+        err, data = yield from Service.User.get_user_basic_info({'id': id})
         if err:
             self.write_error(500, err)
             return
