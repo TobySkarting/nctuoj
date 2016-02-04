@@ -55,14 +55,14 @@ class ContestService(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        res = self.rs.get('contest_list_count@%s' 
-                % (str(data['group_id'])))
-        if res: return (None, res)
+        # res = self.rs.get('contest_list_count@%s' 
+                # % (str(data['group_id'])))
+        # if res: return (None, res)
         sql = "SELECT COUNT(*) FROM contests as c WHERE c.group_id=%s;"
         res = yield self.db.execute(sql, (data['group_id'],))
         res = res.fetchone()
-        self.rs.set('contest_list_count@%s'
-                % (str(data['group_id'])), res['count'])
+        # self.rs.set('contest_list_count@%s'
+                # % (str(data['group_id'])), res['count'])
         return (None, res['count'])
 
     def get_contest(self, data={}):
@@ -85,13 +85,14 @@ class ContestService(BaseService):
             res['problem'] = []
             return (None, res)
         
-        res = self.rs.get('contest@%s'%str(data['id']))
+        # res = self.rs.get('contest@%s'%str(data['id']))
+        res = None
         if not res:
             res = yield self.db.execute('SELECT c.*, u.account as setter_user FROM contests as c, users as u WHERE c.setter_user_id=u.id AND c.id=%s;', (data['id'], ))
             if res.rowcount == 0:
                 return ('No Contest ID', None)
             res = res.fetchone()
-            self.rs.set('contest@%s'%str(data['id']), res)
+            # self.rs.set('contest@%s'%str(data['id']), res)
         err, res['problem'] = yield from self.get_contest_problem_list(data)
         err, res['user'] = yield from self.get_contest_user(data)
         return (None, res)
@@ -156,8 +157,8 @@ class ContestService(BaseService):
         #except: return ('freeze time error', None) 
         # if data['end'] - data['start'] < datetime.timedelta(minutes=data['freeze']):
            # return ('freeze time too long', None)
-        self.rs.delete('contest_list_count@%s' 
-                % (str(data['group_id'])))
+        # self.rs.delete('contest_list_count@%s' 
+                # % (str(data['group_id'])))
         if int(data['id']) == 0:
             data.pop('id')
             sql, param = self.gen_insert_sql('contests', data)
@@ -169,7 +170,7 @@ class ContestService(BaseService):
             data.pop('id')
             sql, param = self.gen_update_sql('contests', data)
             yield self.db.execute(sql+' WHERE id=%s AND group_id=%s;', param+(res['id'], res['group_id'],))
-            self.rs.delete('contest@%s'%str(res['id']))
+            # self.rs.delete('contest@%s'%str(res['id']))
             return (None, res['id'])
 
     def post_contest_problem(self, data={}):
@@ -187,7 +188,7 @@ class ContestService(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        self.rs.delete('contest@%sproblem'%str(data['id']))
+        # self.rs.delete('contest@%sproblem'%str(data['id']))
         yield self.db.execute('DELETE FROM map_contest_problem WHERE contest_id=%s;', (data['id'],))
         for problem, score in zip(data['problems'], data['scores']):
             meta = {}
@@ -342,7 +343,7 @@ class ContestService(BaseService):
         if int(data['user_id']) in res:
             return ('You have registered', None)
         yield self.db.execute('INSERT INTO map_contest_user (contest_id, user_id) VALUES(%s, %s);', (data['id'], data['user_id'],))
-        self.rs.delete('contest@%s@user'%(str(data['id'])))
+        # self.rs.delete('contest@%s@user'%(str(data['id'])))
         return (None, str(data['id']))
 
     def unregister(self, data={}):
@@ -362,7 +363,7 @@ class ContestService(BaseService):
         if int(data['id']) not in res:
             return ('You have not registered yet', None)
         yield self.db.execute('DELETE FROM map_contest_user WHERE contest_id=%s AND user_id=%s;', (data['id'], data['user_id'],))
-        self.rs.delete('contest@%s@user'%(str(data['id'])))
+        # self.rs.delete('contest@%s@user'%(str(data['id'])))
         return (None, str(data['id']))
 
     def delete_contest(self, data={}):
@@ -379,8 +380,8 @@ class ContestService(BaseService):
         err, res = yield from self.get_contest(data)
         if err: return (err, None)
         yield self.db.execute('DELETE FROM contests WHERE id=%s;', (res['id'],))
-        self.rs.delete('contest@%s'%str(res['id']))
-        self.rs.delete('contest@%s@problem'%str(res['id']))
+        # self.rs.delete('contest@%s'%str(res['id']))
+        # self.rs.delete('contest@%s@problem'%str(res['id']))
         return (None, None)
 
     def get_contest_user(self, data={}):
@@ -392,11 +393,12 @@ class ContestService(BaseService):
         # err = self.check_required_args(required_args , data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        res = self.rs.get('contest@%s@user'%(str(data['id'])))
+        # res = self.rs.get('contest@%s@user'%(str(data['id'])))
+        res = None
         if res: return (None, res)
         res = yield self.db.execute('SELECT u.id, u.account, u.name  FROM users AS u, map_contest_user AS m WHERE m.contest_id=%s AND u.id = m.user_id;', (data['id'],))
         res = res.fetchall()
-        self.rs.set('contest@%s@user'%(str(data['id'])), res)
+        # self.rs.set('contest@%s@user'%(str(data['id'])), res)
         return (None, res)
 
     def get_contest_user_problem_score(self, data={}):
