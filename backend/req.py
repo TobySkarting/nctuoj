@@ -74,8 +74,8 @@ class RequestHandler(tornado.web.RequestHandler):
         self.map_group_power = map_group_power
         self.map_group_type = map_group_type
         self.map_lang = map_lang
-        self.map_execute_types = yield from Service.Execute.get_execute_type()
-        self.map_verdict_types = yield from Service.Verdict.get_verdict_type()
+        err, self.map_execute_types = yield from Service.Execute.get_execute_type()
+        err, self.map_verdict_types = yield from Service.Verdict.get_verdict_type()
         x_real_ip = self.request.headers.get("X-Real-IP")
         remote_ip = x_real_ip or self.request.remote_ip
         self.remote_ip = remote_ip
