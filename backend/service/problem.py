@@ -50,15 +50,15 @@ class ProblemService(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        res = self.rs.get('problem_list_count@%s' 
-                % (str(data['group_id'])))
-        if res: return (None, res)
+        # res = self.rs.get('problem_list_count@%s' 
+                # % (str(data['group_id'])))
+        # if res: return (None, res)
         sql = "SELECT COUNT(*) FROM problems as p "
         sql += "WHERE p.group_id=%s"
         res = yield self.db.execute(sql, (data['group_id'],))
         res = res.fetchone()
-        self.rs.set('problem_list_count@%s'
-                % (str(data['group_id'])), res['count'])
+        # self.rs.set('problem_list_count@%s'
+                # % (str(data['group_id'])), res['count'])
         return (None, res['count'])
 
     def get_problem(self, data={}):
@@ -78,21 +78,23 @@ class ProblemService(BaseService):
             res['verdict_id'] = 1
             return (None, res)
 
-        res = self.rs.get('problem@%s' % str(data['id']))
+        # res = self.rs.get('problem@%s' % str(data['id']))
+        res = None
         if not res:
             sql = "SELECT p.*, u.account as setter_user FROM problems as p, users as u WHERE p.setter_user_id=u.id AND p.id=%s"
             res = yield self.db.execute(sql, (data["id"], ))
             if res.rowcount == 0:
                 return ('No problem id', None)
             res = res.fetchone()
-            self.rs.set('problem@%s' % str(data['id']), res)
+            # self.rs.set('problem@%s' % str(data['id']), res)
         err, res['execute'] = yield from Service.Execute.get_problem_execute({'problem_id': data['id']})
         err, res['testdata'] = yield from Service.Testdata.get_testdata_list_by_problem({'problem_id': data['id']})
         return (None, res)
 
     def reset_rs_problem_count(self, group_id):
-        self.rs.delete('problem_list_count@%s' % str(group_id))
-        self.rs.delete('problem_list_count@1')
+        # self.rs.delete('problem_list_count@%s' % str(group_id))
+        # self.rs.delete('problem_list_count@1')
+        pass
 
 
     def post_problem(self, data={}):
@@ -186,7 +188,7 @@ class ProblemService(BaseService):
         else:
             self.reset_rs_problem_count(data['group_id'])
             id = data.pop('id')
-            self.rs.delete('problem@%s' % str(id))
+            # self.rs.delete('problem@%s' % str(id))
             sql, parma = self.gen_update_sql("problems", data)
             yield self.db.execute("%s WHERE id = %s" % (sql, id), parma)
             yield self.db.execute('DELETE FROM verdicts WHERE problem_id=%s AND id!=%s;', (id, data['verdict_id'],))
@@ -222,8 +224,8 @@ class ProblemService(BaseService):
         if err: return (err, None)
         self.reset_rs_problem_count(data['group_id'])
         yield self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id']),))
-        self.rs.delete('problem@%s' % str(data['id']))
-        self.rs.delete('problem@%s@execute' % str(data['id']))
+        # self.rs.delete('problem@%s' % str(data['id']))
+        # self.rs.delete('problem@%s@execute' % str(data['id']))
         return (None, None)
     
     def post_rejudge_problem(self, data={}):
@@ -237,7 +239,7 @@ class ProblemService(BaseService):
         if err: return (err, None)
         res = yield self.db.execute('SELECT s.id FROM submissions as s WHERE s.problem_id=%s ORDER BY s.id;', (data['id'],))
         res = res.fetchall()
-        for x in res: self.rs.delete('submission@%s'%(str(x['id'])))
+        # for x in res: self.rs.delete('submission@%s'%(str(x['id'])))
         yield self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s, verdict=%s WHERE id IN %s;', (None, None, None, 1, tuple(x['id'] for x in res)))
         yield self.db.execute('DELETE FROM map_submission_testdata WHERE submission_id IN %s;', (tuple(x['id'] for x in res),))
         yield self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES '+','.join('(%s)'%x['id'] for x in res))
