@@ -169,13 +169,29 @@ class UserService(BaseService):
         # self.rs.set('user_group_power@%s@%s' % (str(uid), str(gid)), power)
         return (None, power)
 
-    def post_user_group_power(self, uid, gid, power):
-        current_power = yield from self.get_user_group_power_info(uid, gid)
-        if int(power) in current_power:
-            yield self.db.execute('DELETE FROM map_group_user_power WHERE user_id=%s AND group_id=%s AND power=%s;', (uid, gid, power,))
+    def post_user_group_power(self, data={}):
+        required_args = [{
+            'name': '+user_id',
+            'type': int,
+        }, {
+            'name': '+group_id',
+            'type': int,
+        }, {
+            'name': '+power',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        err, current_power = yield from self.get_user_group_power_info(data['user_id'], data['group_id'])
+        print(current_power)
+        if int(data['power']) in current_power:
+            yield self.db.execute('DELETE FROM map_group_user_power WHERE user_id=%s AND group_id=%s AND power=%s;', (data['user_id'], data['group_id'], data['power'],))
         else:
-            yield self.db.execute('INSERT INTO map_group_user_power (user_id, group_id, power) VALUES(%s, %s, %s);', (uid, gid, power))
+            sql, param = self.gen_insert_sql('map_group_user_power', data)
+            # yield self.db.execute('INSERT INTO map_group_user_power (user_id, group_id, power) VALUES(%s, %s, %s);', (uid, gid, power))
+            yield self.db.execute(sql, param)
         # self.rs.delete('user_group_power@%s@%s' % (str(uid), str(gid)))
+        return (None, None)
 
     def get_user_contest(self, id):
         #res = self.rs.get('user@%scontest'%(str(id)))

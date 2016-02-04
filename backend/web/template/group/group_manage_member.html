@@ -20,14 +20,19 @@
                 <tbody>
                     {% for x in data['members'] %}
                         <tr>
+                            {% set id = x['id'] %}
                             <td><a href="">{{x['id']}}</a></td>
                             <td><a href="">{{x['student_id']}}</a></td>
                             <td><a href="">{{x['name']}}</a></td>
                             {% for i in range(1, 6) %}
                                 {% if i in x['group_power'] %}
-                                    <td class="col-md-1"><a class="btn btn-success btn-sm">YES</a></td>
+                                    <td class="col-md-1">
+                                        <a class="btn btn-success btn-sm" onclick="post_group_user_power({{id}}, {{i}});">YES</a>
+                                    </td>
                                 {% else %}
-                                    <td class="col-md-1"><a class="btn btn-danger btn-sm">NO</a></td>
+                                    <td class="col-md-1">
+                                        <a class="btn btn-danger btn-sm" onclick="post_group_user_power({{id}}, {{i}});">NO</a>
+                                    </td>
                                 {% end %}
                             {% end %}
                         </tr>
@@ -37,5 +42,26 @@
         </div>
     </div>
 </div>
+{% if map_group_power['group_manage'] in current_group_power %}
+<script>
+var post_group_user_power = null;
+require(['jquery', 'bootbox'], function($, bootbox){
+    post_group_user_power = function(uid, power){
+        $.post('/api/groups/{{current_group}}/' + uid + '/',{
+            token: '{{account["token"]}}',
+            power: power
+        }, function(msg){
+            if(msg['status'] == 200){
+                bootbox.alert('Updated successfully', function(){
+                    location.href = location.href;
+                });
+            }else{
+                bootbox.alert(msg['msg']);
+            }
+        }, "json");
+    }
+});
+</script>
+{% end %}
 {% end %}
 
