@@ -186,7 +186,7 @@ class SubmissionService(BaseService):
         # err =self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        self.rs.delete('submission@%s'%(str(data['id'])))
+        # self.rs.delete('submission@%s'%(str(data['id'])))
         yield self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (data['id'],))
         yield self.db.execute('UPDATE submissions SET time_usage=%s, memory_usage=%s, score=%s, verdict=%s WHERE id=%s;', (None, None, None, 1, data['id']))
         yield self.db.execute('DELETE FROM map_submission_testdata WHERE submission_id=%s;', (data['id'],))
