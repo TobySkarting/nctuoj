@@ -75,13 +75,13 @@ class BulletinService(BaseService):
         # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
-        res = self.rs.get('latest_bulletin@%s' % str(data["group_id"]))
-        if res: return (None, res)
+        # res = self.rs.get('latest_bulletin@%s' % str(data["group_id"]))
+        # if res: return (None, res)
         sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND group_id=%s ORDER BY b.id DESC LIMIT 1"
         res = yield self.db.execute(sql, (data["group_id"],))
         if res.rowcount == 0: return ('Empty', None)
         res = res.fetchone()
-        self.rs.set('latest_bulletin@%s' % str(data["group_id"]), res)
+        # self.rs.set('latest_bulletin@%s' % str(data["group_id"]), res)
         return (None, res)
 
     def post_bulletin(self, data={}):
