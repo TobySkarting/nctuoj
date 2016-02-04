@@ -13,12 +13,10 @@ class TestdataSerivce(BaseService):
         pass
 
     def get_testdata_list_by_problem(self, data={}):
-        required_args = ['problem_id']
         required_args = [{
             'name': '+problem_id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # res = self.rs.get('testdata_list@problem@%s'%(str(data['problem_id'])))
@@ -29,12 +27,10 @@ class TestdataSerivce(BaseService):
         return (None, res)
 
     def get_testdata(self, data={}):
-        required_args = ['id']
         required_args = [{
             'name': '+id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # res = self.rs.get('testdata@%s'%(str(data['id'])))
@@ -50,7 +46,6 @@ class TestdataSerivce(BaseService):
         pass
 
     def post_testdata(self, data={}):
-        required_args = ['id', 'problem_id']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -65,7 +60,6 @@ class TestdataSerivce(BaseService):
         }, {
             'name': 'output',
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # self.rs.delete('testdata@%s'%(str(data['id'])))
@@ -83,7 +77,6 @@ class TestdataSerivce(BaseService):
                     f.write(''.encode())
             return (None, id)
         else:
-            required_args = ['time_limit', 'memory_limit', 'output_limit', 'score']
             required_args = [{
                 'name': '+score',
                 'type': int,
@@ -97,7 +90,6 @@ class TestdataSerivce(BaseService):
                 'name': '+output_limit',
                 'type': int,
             }]
-            # err = self.check_required_args(required_args, data)
             err = form_validation(data, required_args)
             if err: return (err, None)
             meta = { x['name']: data[x['name']] for x in required_args }
@@ -117,7 +109,6 @@ class TestdataSerivce(BaseService):
             return (None, data['id'])
 
     def delete_testdata(self, data={}):
-        required_args = ['id', 'problem_id']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -125,7 +116,6 @@ class TestdataSerivce(BaseService):
             'name': '+problem_id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # self.rs.delete('testdata@%s'%(str(data['id'])))

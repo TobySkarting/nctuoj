@@ -9,7 +9,6 @@ class BulletinService(BaseService):
         BulletinService.inst = self
 
     def get_bulletin_list(self, data={}):
-        # required_args = ['group_id', 'page', 'count']
         required_args = [{
                 'name': '+group_id',
                 'type': int,
@@ -21,28 +20,23 @@ class BulletinService(BaseService):
                 'type': int,
             }
         ]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         sql = "SELECT bulletins.*, users.account as setter_user FROM bulletins, users WHERE bulletins.group_id = %s and bulletins.setter_user_id = users.id order by bulletins.id DESC limit %s offset %s"
         res = yield self.db.execute(sql, (data["group_id"], data['count'], (int(data["page"])-1)*data["count"],))
-        # err, total = yield from self.get_bulletin_list_count(data)
         return (None, res.fetchall())
 
     def get_bulletin_list_count(self, data={}):
-        required_args = ['group_id']
         required_args = [{
             'name': '+group_id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s", (data['group_id'],))
         return (None, res.fetchone()['count'])
 
     def get_bulletin(self, data={}):
-        required_args = ['group_id', 'id']
         required_args = [{
             'name': '+group_id',
             'type': int,
@@ -50,7 +44,6 @@ class BulletinService(BaseService):
             'name': '+id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         """ new bulletin """
@@ -67,12 +60,10 @@ class BulletinService(BaseService):
         return (None, res.fetchone())
     
     def get_latest_bulletin(self, data={}):
-        required_args = ['group_id']
         required_args = [{
             'name': '+group_id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # res = self.rs.get('latest_bulletin@%s' % str(data["group_id"]))
@@ -85,7 +76,6 @@ class BulletinService(BaseService):
         return (None, res)
 
     def post_bulletin(self, data={}):
-        required_args = ['id', 'group_id', 'setter_user_id', 'title', 'content']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -104,7 +94,6 @@ class BulletinService(BaseService):
             'type': str,
             'xss': True,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         if int(data['id']) == 0:
@@ -121,7 +110,6 @@ class BulletinService(BaseService):
             return (None, None)
 
     def delete_bulletin(self, data={}):
-        required_args = ['id', 'group_id']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -129,7 +117,6 @@ class BulletinService(BaseService):
             'name': '+group_id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         yield self.db.execute("DELETE FROM bulletins WHERE id=%s AND group_id=%s", (data['id'],data['group_id'],))

@@ -10,7 +10,6 @@ class GroupService(BaseService):
         GroupService.inst = self
 
     def get_group_list(self, data={}):
-        required_args = ['page', 'count']
         required_args = [{
             'name': '+page',
             'type': int,
@@ -18,7 +17,6 @@ class GroupService(BaseService):
             'name': '+count',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute('SELECT * FROM groups ORDER BY id LIMIT %s OFFSET %s;', (data['count'], int(data['page']-1)*int(data['count']),))
@@ -34,12 +32,10 @@ class GroupService(BaseService):
         return (None, res['count'])
 
     def get_group(self, data={}):
-        required_args = ['id']
         required_args = [{
             'name': '+id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         if int(data['id']) == 0:
@@ -59,12 +55,10 @@ class GroupService(BaseService):
         return (None, res)
 
     def get_group_member_list(self, data={}):
-        required_args = ['id']
         required_args = [{
             'name': '+id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # res = self.rs.get('group@%s@user'%(str(data['id'])))
@@ -78,7 +72,6 @@ class GroupService(BaseService):
         return (None, res)
 
     def post_group(self, data={}):
-        required_args = ['id', 'name', 'description']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -89,7 +82,6 @@ class GroupService(BaseService):
             'name': '+description',
             'type': str,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # self.rs.delete('group@%s@user'%(str(data['id'])))
@@ -105,7 +97,6 @@ class GroupService(BaseService):
         return (None, id)
 
     def post_group_user(self, data={}):
-        required_args = ['user_id', 'group_id']
         required_args = [{
             'name': 'user_id',
             'type': int,
@@ -113,7 +104,6 @@ class GroupService(BaseService):
             'name': 'group_id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         sql, param = self.gen_insert_sql('map_group_user', data)
@@ -124,7 +114,6 @@ class GroupService(BaseService):
         return (None, id)
 
     def delete_group_user(self, data={}):
-        required_args = ['user_id', 'group_id']
         required_args = [{
             'name': '+user_id',
             'type': int,
@@ -132,7 +121,6 @@ class GroupService(BaseService):
             'name': '+group_id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute('DELETE FROM map_group_user WHERE user_id=%s AND group_id=%s RETURNING id;', (data['user_id'], data['group_id'],))
@@ -143,12 +131,10 @@ class GroupService(BaseService):
         return (None, res.fetchone()['id'])
 
     def delete_group(self, data={}):
-        required_args = ['id']
         required_args = [{
             'name': '+id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute('DELETE FROM groups WHERE id=%s RETURNING id;', (data['id'],))

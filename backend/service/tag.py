@@ -19,12 +19,10 @@ class TagService(BaseService):
         return (None, res)
 
     def get_tag(self, data={}):
-        required_args = ['id']
         required_args = [{
             'name': '+id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # res = self.rs.get('tag@%s'%(str(data['id'])))
@@ -36,7 +34,6 @@ class TagService(BaseService):
         return (None, res)
 
     def post_tag(self, data={}):
-        required_args = ['id', 'tag']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -44,7 +41,6 @@ class TagService(BaseService):
             'name': '+tag',
             'type': str,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         if int(data['id']) == 0:

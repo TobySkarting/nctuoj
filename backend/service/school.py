@@ -12,12 +12,10 @@ class SchoolService(BaseService):
         return (None, res.fetchall())
 
     def get_school(self, data={}):
-        required_args = ['id']
         required_args = [{
             'name': '+id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute('SELECT * FROM schools WHERE id=%s;', (data['id'],))

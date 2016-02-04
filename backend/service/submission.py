@@ -17,7 +17,6 @@ class SubmissionService(BaseService):
         SubmissionService.inst = self
     
     def get_submission_list(self, data):
-        required_args = ['group_id', 'page', 'count']
         required_args = [{
             'name': '+group_id',
             'type': int,
@@ -113,7 +112,6 @@ class SubmissionService(BaseService):
         return (None, res)
 
     def post_submission(self, data):
-        required_args = ['problem_id', 'execute_type_id', 'user_id', 'ip']
         required_args = [{
             'name': '+problem_id',
             'type': int,
@@ -127,7 +125,6 @@ class SubmissionService(BaseService):
             'name': '+ip',
             'type': str,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return(err, None)
         if data['code_file'] == None and len(data['plain_code']) == 0:
@@ -178,12 +175,10 @@ class SubmissionService(BaseService):
         return (None, id) 
 
     def post_rejudge(self, data={}):
-        required_args = ['id']
         required_args = [{
             'name': '+id',
             'type': int,
         }]
-        # err =self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # self.rs.delete('submission@%s'%(str(data['id'])))

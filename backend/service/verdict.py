@@ -13,6 +13,12 @@ class VerdictService(BaseService):
     def get_verdict_list(self, data={}):
         # res = self.rs.get('verdict_list')
         # if res: return (None, res)
+        required_args = [{
+            'name': 'problem_id',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
         sql = "SELECT v.*, u.account as setter_user FROM verdicts as v, users as u WHERE v.setter_user_id=u.id"
         param = tuple()
         if 'problem_id' in data and data['problem_id']:
@@ -31,12 +37,10 @@ class VerdictService(BaseService):
         return (None, res)
     
     def get_verdict(self, data={}):
-        required_args = ['id']
         required_args = [{
             'name': '+id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         if int(data['id']) == 0:
@@ -63,7 +67,6 @@ class VerdictService(BaseService):
         return (None, res)
 
     def post_verdict(self ,data={}):
-        required_args = ['id', 'title', 'execute_type_id', 'setter_user_id']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -79,7 +82,6 @@ class VerdictService(BaseService):
         }, {
             'name': 'code_file',
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         code_file = None
@@ -113,12 +115,10 @@ class VerdictService(BaseService):
         return (None, str(id))
 
     def delete_verdict(self, data={}):
-        required_args = ['id']
         required_args = [{
             'name': '+id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         yield self.db.execute('DELETE FROM verdicts WHERE id=%s;', (data['id'],))

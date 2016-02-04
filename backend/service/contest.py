@@ -18,7 +18,6 @@ class ContestService(BaseService):
         return (None, list(set(int(x['id']) for x in res)))
 
     def get_contest_list(self, data={}):
-        required_args = ['group_id', 'page', 'count']
         required_args = [{
             'name': '+group_id',
             'type': int,
@@ -29,7 +28,6 @@ class ContestService(BaseService):
             'name': '+count',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         sql = """
@@ -47,12 +45,10 @@ class ContestService(BaseService):
         return (None, res.fetchall())
         
     def get_contest_list_count(self, data={}):
-        required_args = ['group_id']
         required_args = [{
             'name': '+group_id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # res = self.rs.get('contest_list_count@%s' 
@@ -66,12 +62,10 @@ class ContestService(BaseService):
         return (None, res['count'])
 
     def get_contest(self, data={}):
-        required_args = ['id']
         required_args = [{
             'name': '+id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         ### new contest
@@ -98,19 +92,16 @@ class ContestService(BaseService):
         return (None, res)
 
     def get_contest_problem_list(self, data={}):
-        required_args = ['+id']
         required_args = [{
             'name': 'id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute('SELECT p.id, p.title, m.score, m.penalty FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s ORDER BY m.id ASC;', (data['id'],))
         return (None, res.fetchall())
 
     def post_contest(self, data={}):
-        required_args = ['id', 'group_id', 'setter_user_id', 'visible', 'title', 'description', 'register_start', 'register_end', 'start', 'freeze', 'end', 'type']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -149,7 +140,6 @@ class ContestService(BaseService):
             'name': '+type',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         if not data['freeze'] or data['freeze'] == '': data['freeze'] = 0
@@ -174,7 +164,6 @@ class ContestService(BaseService):
             return (None, res['id'])
 
     def post_contest_problem(self, data={}):
-        required_args = ['id', 'problems', 'scores']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -185,7 +174,6 @@ class ContestService(BaseService):
             'name': '+scores',
             'type': list,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # self.rs.delete('contest@%sproblem'%str(data['id']))
@@ -200,7 +188,6 @@ class ContestService(BaseService):
         return (None, data['id'])
 
     def get_contest_submission(self, data={}):
-        required_args = ['id', 'user_id', 'current_group_power', 'submission_id']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -214,7 +201,6 @@ class ContestService(BaseService):
             'name': '+submission_id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         err, res = yield from self.get_contest(data)
@@ -232,7 +218,6 @@ class ContestService(BaseService):
         1 -> ac
         -1 -> wa
         '''
-        required_args = ['id', 'current_group_power']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -240,7 +225,6 @@ class ContestService(BaseService):
             'name': '+current_group_power',
             'type': set,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         admin = map_group_power['contest_manage'] in data['current_group_power']
@@ -276,7 +260,6 @@ class ContestService(BaseService):
         return (None, res)
 
     def get_contest_submission_list(self, data={}):
-        required_args = ['id', 'user_id', 'current_group_power']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -287,7 +270,6 @@ class ContestService(BaseService):
             'name': '+current_group_power',
             'type': set,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         #res = self.rs.get('contest@%s@submission'%(str(data['id'])))
@@ -327,7 +309,6 @@ class ContestService(BaseService):
         return (None, res)
 
     def register(self, data={}):
-        required_args = ['id', 'user_id']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -335,7 +316,6 @@ class ContestService(BaseService):
             'name': '+user_id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         err, res = yield from Service.User.get_user_contest(data['user_id']) 
@@ -347,7 +327,6 @@ class ContestService(BaseService):
         return (None, str(data['id']))
 
     def unregister(self, data={}):
-        required_args = ['id', 'user_id']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -355,7 +334,6 @@ class ContestService(BaseService):
             'name': '+user_id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         err, res = yield from Service.User.get_user_contest(data['user_id']) 
@@ -367,7 +345,6 @@ class ContestService(BaseService):
         return (None, str(data['id']))
 
     def delete_contest(self, data={}):
-        required_args = ['id', 'group_id']
         required_args = [{
             'name': '+id',
             'type': int,
@@ -385,12 +362,10 @@ class ContestService(BaseService):
         return (None, None)
 
     def get_contest_user(self, data={}):
-        required_args = ['id']
         required_args = [{
             'name': '+id',
             'type': int,
         }]
-        # err = self.check_required_args(required_args , data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         # res = self.rs.get('contest@%s@user'%(str(data['id'])))
@@ -402,7 +377,6 @@ class ContestService(BaseService):
         return (None, res)
 
     def get_contest_user_problem_score(self, data={}):
-        required_args = ['user_id', 'problem', 'start', 'end']
         required_args = [{
             'name': '+user_id',
             'type': int,
@@ -416,7 +390,6 @@ class ContestService(BaseService):
             'name': '+end',
             'type': datetime.datetime,
         }]
-        # err = self.check_required_args(required_args, data)
         err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute('SELECT COUNT(*) FROM submissions WHERE user_id=%s AND problem_id=%s AND %s<=created_at AND created_at<=%s;', (data['user_id'], data['problem']['id'], data['start'], data['end']))
