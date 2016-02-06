@@ -36,9 +36,9 @@
                                 <a href="/groups/{{current_group}}/contests/{{x['id']}}/">End</a>
                             {% else %}
                                 {% if int(x['id']) not in registered_contest %}
-                                    <div class="btn btn-default btn-sm" onclick="register({{x['id']}})">Register</div>
+                                    <button class="register_update btn btn-default btn-sm" onclick="register({{x['id']}})">Register</button>
                                 {% else %}
-                                    <div class="btn btn-default btn-sm" onclick="unregister({{x['id']}})">Registered</div>
+                                    <button class="register_update btn btn-default btn-sm" onclick="unregister({{x['id']}})">Registered</button>
                                     <a class="btn btn-success btn-sm" href="/groups/{{current_group}}/contests/{{x['id']}}/">Enter</a>
                                 {% end %}
                             {% end %}
@@ -89,17 +89,22 @@ require(['jquery', 'bootbox'], function($, bootbox){
 {% end %}
 require(['jquery', 'bootbox'], function($, bootbox){
     register = function(contest_id){
+        $(".register_update").prop("disabled", true);
         data = Object();
         data.token = '{{account['token']}}';
         $.post('/api/groups/{{current_group}}/contests/'+contest_id+'/register/', data, function(msg){
             if(msg['status'] == 200){
-                bootbox.alert('Successfully registered', function(){location.href=location.href;});
+                bootbox.alert('Successfully registered', function(){
+                //    location.href=location.href;
+                });
             }else{
                 bootbox.alert(msg['msg']);
             }
         }, "json");
+        //$(".register_update").prop("disabled", false);
     }
     unregister = function(contest_id){
+        $(".register_update").prop("disabled", true);
         data = Object();
         data.token = '{{account['token']}}';
         $.post('/api/groups/{{current_group}}/contests/'+contest_id+'/unregister/', data, function(msg){
@@ -109,6 +114,7 @@ require(['jquery', 'bootbox'], function($, bootbox){
                 bootbox.alert(msg['msg']);
             }
         }, "json");
+        $(".register_update").prop("disabled", false);
     }
 }
 );

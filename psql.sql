@@ -313,6 +313,7 @@ CREATE TABLE map_verdict_string (
     abbreviation    varchar(15)     NOT NULL,
     description     varchar(31)     NOT NULL,
     priority        integer         NOT NULL,
+    color           varchar(32)    NOT NULL    DEFAULT "#000",
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );

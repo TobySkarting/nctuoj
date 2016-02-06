@@ -318,7 +318,7 @@ class ContestService(BaseService):
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        err, res = yield from Service.User.get_user_contest(data['user_id']) 
+        err, res = yield from Service.User.get_user_contest({"id": data['user_id']}) 
         if err: return (err, None)
         if int(data['user_id']) in res:
             return ('You have registered', None)
@@ -336,7 +336,7 @@ class ContestService(BaseService):
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        err, res = yield from Service.User.get_user_contest(data['user_id']) 
+        err, res = yield from Service.User.get_user_contest({"id": data['user_id']}) 
         if err: return (err, None)
         if int(data['id']) not in res:
             return ('You have not registered yet', None)

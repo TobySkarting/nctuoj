@@ -37,7 +37,7 @@
                     <td><a href="/users/{{x['user_id']}}/">{{x['user']}}</a></td>
                     <td>{{x['time_usage'] or "--"}}</td>
                     <td>{{x['memory_usage'] or "--"}}</td>
-                    <td>{{map_verdict_types[x['verdict']]['abbreviation']}}</td>
+                    <td style="color: {{map_verdict_types[x['verdict']]['color']}}">{{map_verdict_types[x['verdict']]['abbreviation']}}</td>
                     <td><a href="/executes/{{x['execute_type_id']}}/">{{map_lang[map_execute_types[x['execute_type_id']]['lang']]}}</a></td>
                     <td>{{x['length']}}</td>
                     <td>{{x['score'] or '--' }}</td>
