@@ -41,9 +41,9 @@ class SubmissionService(BaseService):
         WHERE p.id=s.problem_id AND u.id=s.user_id 
         """
         sql += " AND p.group_id=%s  "
-        if 'problem_id' in data:
+        if data['problem_id']:
             sql += "AND problem_id=%s " % (data['problem_id'])
-        if 'account' in data:
+        if data['account']:
             try:
                 user_id = (yield self.db.execute("SELECT id FROM users WHERE account=%s", (data['account'],))).fetchone()['id']
             except:
