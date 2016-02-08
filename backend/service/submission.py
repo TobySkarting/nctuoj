@@ -63,9 +63,9 @@ class SubmissionService(BaseService):
         if err: return (err, None)
         sql = "SELECT count(*) FROM submissions as s, problems as p"
         sql += " WHERE s.problem_id = p.id AND p.group_id=%s"%(data['group_id'])
-        if 'problem_id' in data and data['problem_id']:
+        if data['problem_id']:
             sql += " AND problem_id=%s " % (int(data['problem_id']))
-        if 'account' in data and data['account']:
+        if data['account']:
             try:
                 user_id = (yield self.db.execute("SELECT id FROM users WHERE account=%s", (data['account'],))).fetchone()['id']
             except:
