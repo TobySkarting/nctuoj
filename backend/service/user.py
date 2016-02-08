@@ -94,19 +94,31 @@ class UserService(BaseService):
             'name': '+passwd',
             'type': str,
         }, {
-            'name': '+npasswd',
+            'name': 'npasswd',
             'type': str,
         }, {
-            'name': '+rpasswd',
+            'name': 'rpasswd',
             'type': str,
-        }]
-        err = form_valiadation(data, required_args)
+        }, {
+            'name': 'name',
+            'type': str,
+        }, {
+            'name': 'school_id',
+            'type': int,
+        }, {
+            'name': 'email',
+            'type': str,
+        }, {
+            'name': 'student_id',
+            'type': str,
+        },]
+        err = form_validation(data, required_args)
         if err: return (err, None)
         id = data.pop('id')
         passwd = data.pop('passwd')
         npasswd = data.pop('npasswd')
         rpasswd = data.pop('rpasswd')
-        res = yield self.db.execute('SELECT passwd FROM users WHERE id=%s;', (data['id'],))
+        res = yield self.db.execute('SELECT passwd FROM users WHERE id=%s;', (id,))
         if res.rowcount == 0: return ('User id not exist', None)
         hpasswd = res.fetchone()['passwd']
         if self.hash_pwd(passwd) != hpasswd: return ('Wrong Password', None)
@@ -115,7 +127,7 @@ class UserService(BaseService):
                 return ('Confirm new password', None)
             else: data['passwd'] = self.hash_pwd(npasswd)
         sql, param = self.gen_update_sql('users', data)
-        res = yield self.db.execute(sql+' WHERE id=%s RETURNING token;', param+(data['id'],))
+        res = yield self.db.execute(sql+' WHERE id=%s RETURNING token;', param+(id,))
         # self.rs.delete('user@%s'%(id))
         # self.rs.delete('user_token@%s'%(res.fetchone()['token']))
         return (None, id)

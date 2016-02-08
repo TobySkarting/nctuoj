@@ -20,6 +20,8 @@ class ApiUserGroupHandler(ApiRequestHandler):
             else: self.render(200, data)
 
 class ApiUserHandler(ApiRequestHandler):
+    def check_edit(self, meta={}):
+        pass
     @tornado.gen.coroutine
     def get(self, id):
         pass
@@ -38,9 +40,9 @@ class ApiUserHandler(ApiRequestHandler):
             self.render()
             return
         if int(id) != int(self.account['id']):
-            sefl.render('403', 'Permission Denied')
+            sefl.render(403, 'Permission Denied')
             return 
-        args = ['npasswd', 'rpasswd', 'passwd']
+        args = ['npasswd', 'rpasswd', 'passwd', 'name', 'email', 'student_id', 'school_id']
         meta = self.get_args(args)
         meta['id'] = id
         err, res = yield from Service.User.post_user_basic_info(meta)

@@ -58,10 +58,11 @@ class WebUserHandler(WebRequestHandler):
 class WebUserEditHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
-        err, data = yield from Service.User.get_user_basic_info({'id': id})
-        if err:
-            self.write_error(500, err)
+        if int(id) != self.account['id']:
+            self.write_error(403)
             return
+        data = {}
+        err, data['schools'] = yield from Service.School.get_school_list()
         self.render('./users/user_edit.html', data=data)
 
 class WebUserSignHandler(WebRequestHandler):
