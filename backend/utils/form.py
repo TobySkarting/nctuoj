@@ -74,5 +74,6 @@ def form_validation(form, schema):
                 xss.feed(form[name])
                 xss.close()
                 form[name] = xss.getHtml()
+        else: form[name] = None
 
     return None
