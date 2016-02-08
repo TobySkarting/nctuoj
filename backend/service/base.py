@@ -1,5 +1,6 @@
 import tornado
 import time
+from copy import copy
 import subprocess
 import config
 class BaseService:
@@ -27,12 +28,16 @@ class BaseService:
         sql = 'INSERT INTO "%s" (%s) VALUES(%s) RETURNING id;' % (tablename, sql1, sql2)
         return (sql, prama)
     
-    def gen_update_sql(self, tablename, data):
+    def gen_update_sql(self, tablename, _data):
         '''
         tablename(str)
         data(dict)
         return sql(str), prama(tuple)
         '''
+        data = copy(_data)
+        for col in _data:
+            if _data[col] is None:
+                del data[col]
         sql = ''.join(' "%s" = %%s,'%col for col in data)[:-1]
         prama = tuple( val for val in data.values() )
         sql = 'UPDATE "%s" SET %s '%(tablename, sql)
