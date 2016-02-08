@@ -58,6 +58,12 @@ class SubmissionService(BaseService):
         required_args = [{
             'name': '+group_id',
             'type': int,
+        }, {
+            'name': 'problem_id',
+            'type': int,
+        }, {
+            'name': 'account',
+            'type': str,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
