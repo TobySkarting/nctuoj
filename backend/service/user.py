@@ -250,34 +250,26 @@ class UserService(BaseService):
         required_args = [{
             'name': '+email',
             'type': str,
+            'non_empty': True,
         }, {
             'name': '+account',
             'type': str,
-        }, {
-            'name': '+name',
-            'type': str,
-        }, {
-            'name': '+student_id',
-            'type': str,
+            'non_empty': True,
         }, {
             'name': '+passwd',
             'type': str,
+            'non_empty': True,
         }, {
             'name': '+repasswd',
             'type': str,
-        }, {
-            'name': '+school_id',
-            'type': int,
-        }]
+            'non_empty': True,
+        },]
         err = form_validation(data, required_args)
         if err: return (err, None)
         ### check data valadation
         if data['passwd'] != data['repasswd']:
             return ('Confirm Two Password', None)
 
-        res = yield self.db.execute("SELECT * FROM schools WHERE id=%s", (data['school_id'],))
-        if res.rowcount == 0:
-            return ('Invalid School', None)
 
         ### check conflict
         res = yield self.db.execute('SELECT id FROM users ' 
