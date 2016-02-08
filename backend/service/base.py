@@ -16,12 +16,16 @@ class BaseService:
                 return 'Error: %s should not be empty.' % a
         return None
 
-    def gen_insert_sql(self, tablename, data):
+    def gen_insert_sql(self, tablename, _data):
         '''
         tablename(str)
         data(dict)
         return sql(str), prama(tuple)
         '''
+        data = copy(_data)
+        for col in _data:
+            if _data[col] is None:
+                del data[col]
         sql1 = ''.join( ' "%s",'%col for col in data )[:-1]
         sql2 = (' %s,'*len(data))[:-1]
         prama = tuple( val for val in data.values() )
