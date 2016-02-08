@@ -212,6 +212,24 @@ class WebRequestHandler(RequestHandler):
                     self.redirect('/groups/%s/contests/%s/'%(str(self.current_contest['group_id']), str(self.current_contest['id'])))
         """
 
+class StaticFileHandler(tornado.web.StaticFileHandler):
+    @tornado.gen.coroutine
+    def prepare(self):
+        super().prepare()
+        self.account = {}
+        try:
+            id = int(self.get_secure_cookie('id').decode())
+            err, data = yield from Service.User.get_user_basic_info({'id': id})
+            if err:
+                id = 0
+                self.clear_cookie('id')
+            else:
+                self.account = data
+        except:
+            id = 0
+            self.clear_cookie('id')
+        if id == 0:
+            self.account['token'] = ""
 
 
         
@@ -228,3 +246,5 @@ def reqenv(func):
             ret = yield from ret
         return ret
     return wrap
+
+

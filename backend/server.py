@@ -3,6 +3,7 @@ import tornado.ioloop
 import tornado.httpserver
 import tornado.web
 ### self define from req import RequestHandler
+from req import StaticFileHandler
 from req import Service 
 ### my app
 import config
@@ -105,6 +106,9 @@ from web.user           import WebUserHandler
 from web.user           import WebUserEditHandler
 #from web.problem import WebProblemHandler
 #from web.problem import WebProblemListHandler
+
+### static file handler
+from file.testdata import FileTestdataHandler
 
 
 
@@ -250,7 +254,7 @@ if __name__ == '__main__':
 
 
         ('/about/',                                                     WebAboutHandler),
-        ('/resource/(.*)', tornado.web.StaticFileHandler, {'path': '/mnt/nctuoj/data'}),
+        ('/resource/testdata/(.*)', FileTestdataHandler, {'path': '/mnt/nctuoj/data/testdata'}),
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/(google4e9e359eaf9accab.html)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/.*',                                                         Web404Handler),
