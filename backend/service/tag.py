@@ -80,7 +80,8 @@ class TagService(BaseService):
         err = form_validation(data, required_args)
         if err: return (err, None)
         # self.rs.delete('tag@problem@%s'%(data['problem_id']))
-        yield self.db.execute('INSERT INTO map_problem_tag (tag_id, problem_id) VALUES(%s, %s);', (data['tag_id'], data['problem_id']))
+        try: yield self.db.execute('INSERT INTO map_problem_tag (tag_id, problem_id) VALUES(%s, %s);', (data['tag_id'], data['problem_id']))
+        except: return ('Already in', None)
         return (None, None)
 
     def delete_problem_tag(self, data={}):
