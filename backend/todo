@@ -22,3 +22,29 @@ Check:
 
 login log
 auto reset token
+
+make more restful
+service/
+    - bulletin.py
+        - post_bulletin: post -> post&put
+    - contest.py
+        - post_contest: post -> post&put
+        - post_contest_problem: post -> put 
+    - execute.py
+        - post_execute: post -> post&put
+        - post_execute_priority: post -> put
+        - post_problem_execute:
+            - post -> put
+            - move to service/problem.py 
+    - group.py
+        - post_group: post -> post&put
+    - problem.py
+        - post_problem: post -> post&put
+    - tag.py
+        - post_tag: post -> post&put
+    - testdata.py
+        - post_testdata: post -> post&put
+    - user.py
+        - post_user_basic_info: post -> put
+    - verdict.py
+        - post_verdict: post -> post&put
