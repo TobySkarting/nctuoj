@@ -7,7 +7,6 @@ from req import StaticFileHandler
 from req import Service 
 ### my app
 import config
-import mysql
 import myredis
 
 ### built-in module
