@@ -110,9 +110,8 @@ class GroupService(BaseService):
         err = form_validation(data, required_args)
         if err: return (err, None)
         sql, param = self.gen_insert_sql('map_group_user', data)
-        res = yield self.db.execute(sql, param)
-        #try: res = yield self.db.execute(sql, param)
-        #except: return ('Already in', None)
+        try: res = yield self.db.execute(sql, param)
+        except: return ('Already in', None)
         id = res.fetchone()['id']
         return (None, id)
 
