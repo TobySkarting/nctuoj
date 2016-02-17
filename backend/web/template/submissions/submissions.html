@@ -40,7 +40,7 @@
                     <td style="color: {{map_verdict_types[x['verdict']]['color']}}">{{map_verdict_types[x['verdict']]['abbreviation']}}</td>
                     <td><a href="/executes/{{x['execute_type_id']}}/">{{map_lang[map_execute_types[x['execute_type_id']]['lang']]}}</a></td>
                     <td>{{x['length']}}</td>
-                    <td>{{x['score'] or '--' }}</td>
+                    <td>{{x['score'] if x['score'] is not None else '--' }}</td>
                     <td>{{x['created_at']}}</td>
                     {% if len(current_group_power) %}
                         <td>{{x['ip']}}</td>

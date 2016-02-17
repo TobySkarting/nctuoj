@@ -1,4 +1,5 @@
 <!DOCTYPE>
+{% import datetime %}
 <html>
     <head>
     <title>{{ title }}</title>
@@ -92,7 +93,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12 text-center">
-                    Copyright © 2015 <a href="http://fogworkshop.com/" target="_blank">fogworkshop</a>. All rights reserved.
+                    Copyright © 2015 - {% raw datetime.datetime.now().year %} <a href="http://fogworkshop.com/" target="_blank">fogworkshop</a>. All rights reserved.
                 </div>
             </div>
         </div>
