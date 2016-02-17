@@ -110,10 +110,10 @@ class GroupService(BaseService):
         err = form_validation(data, required_args)
         if err: return (err, None)
         sql, param = self.gen_insert_sql('map_group_user', data)
-        try: res = yield self.db.execute(sql, param)
-        except: return ('Already in', None)
+        res = yield self.db.execute(sql, param)
+        #try: res = yield self.db.execute(sql, param)
+        #except: return ('Already in', None)
         id = res.fetchone()['id']
-        # self.rs.delete('group@%s@user'%(str(data['group_id'])))
         return (None, id)
 
     def delete_group_user(self, data={}):

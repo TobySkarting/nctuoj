@@ -75,14 +75,14 @@ class ApiGroupUserHandler(ApiRequestHandler):
         meta = self.get_args(args)
         meta['user_id'] = user_id
         meta['group_id'] = self.current_group
-        if not self.check_edit():
-            self.render(403)
-            return
         if meta['power'] is None:
+            meta.pop('power')
             err, res = yield from Service.Group.post_group_user(meta)
             if err: self.render(500, err)
             else: self.render(200, res)
         else:
+            if not self.check_edit():
+                return
             err, res = yield from Service.Group.post_group_user_power(meta)
             if err: self.render(500, err)
             else: self.render(200, res)

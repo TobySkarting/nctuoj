@@ -103,9 +103,6 @@ class ApiRequestHandler(RequestHandler):
                 self.account = data
         if self.request.method != 'GET':
             if self.account['id'] == 0 and self.request.uri not in config.API_URI_WITHOUT_SIGNIN:
-                print(self.request.uri)
-                print(config.API_URI_WITHOUT_SIGNIN)
-                print("======")
                 self.render(403, 'Permission Denied')
                 return
         id = self.account['id']
@@ -118,10 +115,9 @@ class ApiRequestHandler(RequestHandler):
             'group_id': self.current_group
         })
 
-
-
+        print("HERE")
         in_group = self.current_group in (x['id'] for x in self.group)
-        if not in_group and self.current_group != 0:
+        if not in_group and self.current_group != 0 and re.search(r'^/api/groups/\d+/\d+/$', self.request.uri) == False:
             self.render(403, 'Permission Denied')
             return
             
