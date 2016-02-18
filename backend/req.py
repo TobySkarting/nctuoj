@@ -128,11 +128,13 @@ class WebRequestHandler(RequestHandler):
         super().set_secure_cookie(name, value, expires_days, version, **kwargs)
 
     def write_error(self, status_code, err=None, **kwargs):
+        print("write error")
         if status_code == 403 and self.account['id'] == 0:
             self.redirect("/users/signin/?next_url=%s" % quote(self.request.uri[1:], safe=''))
             print(self.request.uri)
             return
         kwargs['err'] = err
+        self.set_status(status_code)
         self.render('./err/'+str(status_code)+'.html', **kwargs)
 
     def render(self, templ, **kwargs):
