@@ -1,0 +1,51 @@
+<form class="form-inline">
+    <div>
+        <label class="control-label">Problem ID:</label>
+        <input class="form-control" name="problem_id" type="number" value="{{page['get']['problem_id'] or ''}}">
+        <label class="control-label">Account:</label>
+        <input class="form-control" name="account" type="text" value="{{page['get']['account'] or ''}}">
+        <button class="btn btn-success">Go</button>
+        <button class="btn btn-warning" type="button" onclick="$(this).parent().children('input').val('');$(this).parent().parent().submit()">Reset</button>
+    </div>
+</form>
+<div class="panel panel-default table-responsive">
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Problem</th>
+                <th>Submitter</th>
+                <th>Time</th>
+                <th>Memory</th>
+                <th>Verdict</th>
+                <th>Compiler</th>
+                <th>Length</th>
+                <th>Score</th>
+                <th>Submit Time</th>
+                {% if len(current_group_power) %}
+                    <th>IP</th>
+                {% end %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for x in data %}
+                <tr>
+                    <td><a href="/groups/{{current_group}}/submissions/{{x['id']}}/">{{x['id']}}</a></td>
+                    <td><a href="/groups/{{current_group}}/problems/{{x['problem_id']}}/">{{x['problem_id']}}.{{x['problem_title']}}</a></td>
+                    <td><a href="/users/{{x['user_id']}}/">{{x['user']}}</a></td>
+                    <td>{{x['time_usage'] if x['time_usage'] is not None else "--"}}</td>
+                    <td>{{x['memory_usage'] if x['memory_usage'] is not None else "--"}}</td>
+                    <td style="color: {{map_verdict_types[x['verdict']]['color']}}">{{map_verdict_types[x['verdict']]['abbreviation']}}</td>
+                    <td><a href="/executes/{{x['execute_type_id']}}/">{{map_lang[map_execute_types[x['execute_type_id']]['lang']]}}</a></td>
+                    <td>{{x['length']}}</td>
+                    <td>{{x['score'] if x['score'] is not None else '--' }}</td>
+                    <td>{{x['created_at']}}</td>
+                    {% if len(current_group_power) %}
+                        <td>{{x['ip']}}</td>
+                    {% end %}
+                </tr>
+            {% end %}
+        </tbody>
+    </table>
+</div>
+{% module Pagination(page) %}
