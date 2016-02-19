@@ -35,8 +35,8 @@
                     <td><a href="/groups/{{current_group}}/submissions/{{x['id']}}/">{{x['id']}}</a></td>
                     <td><a href="/groups/{{current_group}}/problems/{{x['problem_id']}}/">{{x['problem_id']}}.{{x['problem_title']}}</a></td>
                     <td><a href="/users/{{x['user_id']}}/">{{x['user']}}</a></td>
-                    <td>{{x['time_usage'] or "--"}}</td>
-                    <td>{{x['memory_usage'] or "--"}}</td>
+                    <td>{{x['time_usage'] if x['time_usage'] is not None else "--"}}</td>
+                    <td>{{x['memory_usage'] if x['memory_usage'] is not None else "--"}}</td>
                     <td style="color: {{map_verdict_types[x['verdict']]['color']}}">{{map_verdict_types[x['verdict']]['abbreviation']}}</td>
                     <td><a href="/executes/{{x['execute_type_id']}}/">{{map_lang[map_execute_types[x['execute_type_id']]['lang']]}}</a></td>
                     <td>{{x['length']}}</td>
