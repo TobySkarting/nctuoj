@@ -8,6 +8,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Account</th>
                         <th>Student ID</th>
                         <th>Name</th>
                         <th>Group</th>
@@ -22,6 +23,7 @@
                         <tr>
                             {% set id = x['id'] %}
                             <td><a href="">{{x['id']}}</a></td>
+                            <td><a href="">{{x['account']}}</a></td>
                             <td><a href="">{{x['student_id']}}</a></td>
                             <td><a href="">{{x['name']}}</a></td>
                             {% for i in range(1, 6) %}
