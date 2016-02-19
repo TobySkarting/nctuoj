@@ -10,6 +10,7 @@ import config
 import shutil
 import time
 import tornado
+import chardet
 
 class SubmissionService(BaseService):
     def __init__(self, db, rs):
@@ -113,8 +114,9 @@ class SubmissionService(BaseService):
 
 
         file_path = '%s/%s' % (folder, res['file_name'])
-        res['code'] = open(file_path).read()
-        res['code_line'] = len(open(file_path).readlines())
+        res['code'] = open(file_path, 'rb').read()
+        res['code'] = res['code'].decode(chardet.detect(res['code']))
+        res['code_line'] = len(open(file_path, 'rb').readlines())
         #self.rs.set('submission@%s'%(str(data['id'])), res)
         return (None, res)
 
@@ -174,6 +176,8 @@ class SubmissionService(BaseService):
         #shutil.rmtree(remote_folder)
         with open(file_path, 'wb+') as f:
             if data['code_file']:
+                encode = chardet.detect(data['code_file']['body'])
+                data['code_file']['body'] = data['code_file']['file'].decode(encode['encoding']).encode()
                 f.write(data['code_file']['body'])
             else:
                 f.write(data['plain_code'].encode())
