@@ -12,6 +12,7 @@ class WebProblemsHandler(WebRequestHandler):
         meta = self.get_args(args)
         meta['count'] = 100
         meta["group_id"] = self.current_group
+        meta['user_id'] = self.account['id']
         ### default page is 1
         if not meta['page']:
             meta['page'] = 1

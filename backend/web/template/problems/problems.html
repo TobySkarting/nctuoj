@@ -10,6 +10,7 @@
     <table class="table table-hover table-striped">
         <thead>
             <tr>
+                <th></th>
                 <th>PID</th>
                 <th>Problem</th>
                 <th class="tablet computer only">Setter</th>
@@ -23,6 +24,13 @@
             {% for x in data %}
                 {% if (map_group_power['problem_manage'] in current_group_power) or int(x['visible']) > 0 %}
                     <tr>
+                        {% if x['ac'] %}
+                            <td><i style="color: rgb(105, 246, 105);" class="glyphicon glyphicon-ok"></i></td>
+                        {% elif x['try'] %}
+                            <td><i style="color: red;" class="glyphicon glyphicon-remove"></i></td>
+                        {% else %}
+                            <td></td>
+                        {% end %}
                         <td>
                             <a href='/groups/{{current_group}}/problems/{{x['id']}}/'>{{x['id']}}</a>
                         </td>

@@ -16,6 +16,9 @@ class ProblemService(BaseService):
             'name': '+group_id',
             'type': int,
         }, {
+            'name': '+user_id',
+            'type': int,
+        }, {
             'name': '+page',
             'type': int,
         }, {
@@ -26,6 +29,8 @@ class ProblemService(BaseService):
         if err: return (err, None)
         sql = """
             SELECT 
+            (SELECT COUNT(*) FROM (SELECT * FROM submissions WHERE problem_id=p.id AND user_id=%s AND verdict=9 limit 1) AS m) AS ac, 
+            (SELECT COUNT(*) FROM (SELECT * FROM submissions WHERE problem_id=p.id AND user_id=%s limit 1) AS n) AS try, 
             p.id, p.title, p.source, p.visible, p.created_at,
             u.id as setter_user_id, u.account as setter_user,
             g.id as group_id, g.name as group_name
@@ -35,7 +40,7 @@ class ProblemService(BaseService):
         sql += """ (p.group_id=%s) """
         sql += """ ORDER BY p.id limit %s OFFSET %s """
 
-        res  = yield self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
+        res  = yield self.db.execute(sql, (data['user_id'], data['user_id'], data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"]), ))
         return (None, res.fetchall())
         
     ### Should be improvement
