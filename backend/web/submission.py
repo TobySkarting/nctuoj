@@ -11,16 +11,16 @@ class WebSubmissionsHandler(WebRequestHandler):
         meta = self.get_args(args)
         meta["count"] = 10
         meta["group_id"] = self.current_group
-        ### default page is 1
         if not meta['account']:
             meta.pop('account')
 
         if not meta['problem_id']:
             meta.pop('problem_id')
 
+        ### default page is 1
         if not meta['page']:
             meta['page'] = 1
-        ### if get page is not int then redirect to page 1 
+        ### if get page is not int then throw the error
         try:
             meta["page"] = int(meta["page"])
         except:

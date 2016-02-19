@@ -99,16 +99,46 @@ class WebContestSubmissionsHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, contest_id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
-        meta = {}
+        if err:
+            self.write_error(500, err)
+            return
+        args = ['account', 'problem_id', 'page']
+        meta = self.get_args(args)
+        meta["count"] = 10
         meta['id'] = contest_id
         meta['group_id'] = self.current_group
         meta['user_id'] = self.account['id']
         meta['current_group_power'] = self.current_group_power
+        ### default page is 1
+        if not meta['page']:
+            meta['page'] = 1
+        ### if get page is not int then throw the error
+        try:
+            meta["page"] = int(meta["page"])
+        except:
+            self.write_error(500, 'Argument page error')
+            return
         err, data = yield from Service.Contest.get_contest_submission_list(meta)
         if err: 
             self.write_wrror(500, err)
             return
-        self.render('./contests/contest_submissions.html', contest_data=contest_data, data=data)
+        ### should in range
+        err, count = yield from Service.Contest.get_contest_submission_list_count(meta)
+        if err:
+            self.write_error(500, err)
+            return
+        page_count = max(math.ceil(count / meta['count']), 1)
+        if int(meta['page']) < 1 or int(meta['page']) > page_count:
+            self.write_error(500, 'Page out of range')
+            return
+        
+        ### about pagination 
+        page = {}
+        page['total'] = page_count
+        page['current'] = meta['page']
+        page['url'] = '/groups/%s/contests/%s/submissions/' % (meta['group_id'], contest_id)
+        page['get'] = self.get_args(args)
+        self.render('./contests/contest_submissions.html', contest_data=contest_data, data=data, page=page)
 
 class WebContestSubmissionHandler(WebRequestHandler):
     @tornado.gen.coroutine

@@ -269,44 +269,66 @@ class ContestService(BaseService):
         }, {
             'name': '+current_group_power',
             'type': set,
+        }, {
+            'name': '+page',
+            'type': int,
+        }, {
+            'name': '+count',
+            'type': int,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        #res = self.rs.get('contest@%s@submission'%(str(data['id'])))
-        #if res: return (None, res)
         err, res = yield from self.get_contest(data)
         start = res['start']
         end = res['end']
-        freeze_time = min(end, end-datetime.timedelta(minutes=res['freeze']))
         sql = """
-        SELECT s.*, u.account as user, e.lang, v.abbreviation
-        FROM submissions as s, users as u, execute_types as e, map_verdict_string as v, map_contest_problem as mp, map_contest_user as mu
+        SELECT s.*, u.account as user, p.title as problem_title
+        FROM submissions as s, users as u, map_contest_problem as mp, map_contest_user as mu, problems as p
         WHERE """;
-
         if map_group_power['contest_manage'] not in data['current_group_power']:
             sql += "u.id=%s AND " % (int(data['user_id']))
         sql += """
         u.id=s.user_id AND mu.user_id=u.id 
         AND mu.contest_id=%s AND mp.contest_id=mu.contest_id  
         AND mp.problem_id=s.problem_id 
-        AND e.id=s.execute_type_id AND v.id=s.verdict 
+        AND mp.problem_id=p.id
         AND %s<=s.created_at AND s.created_at<=%s 
-        ORDER BY s.id DESC;
+        ORDER BY s.id DESC LIMIT %s OFFSET %s;
         """;
-        submissions = yield self.db.execute(sql, (res['id'], start, end,))
-        submissions = submissions.fetchall()
-        err, problems = yield from self.get_contest_problem_list(data)
-        res = {
-                'submissions': submissions,
-                'problems': problems
-                }
-        # map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
-        # if map_group_power['contest_manage'] not in data['current_group_power'] :
-            # for submission in res:
-                # if submission['created_at'] >= freeze_time:
-                    # submission['verdict'] = map_string_verdict['Pending']
-                    # submission['abbreviation'] = 'Pending'
-        return (None, res)
+        submissions = yield self.db.execute(sql, (res['id'], start, end, data['count'], int(data['page']-1)*int(data['count']), ))
+        return (None, submissions.fetchall())
+
+    def get_contest_submission_list_count(self, data):
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+user_id',
+            'type': int,
+        }, {
+            'name': '+current_group_power',
+            'type': set,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        err, res = yield from self.get_contest(data)
+        start = res['start']
+        end = res['end']
+        sql = """
+        SELECT count(*)
+        FROM submissions as s, map_contest_problem as mp, map_contest_user as mu, problems as p
+        WHERE """;
+        if map_group_power['contest_manage'] not in data['current_group_power']:
+            sql += "s.user_id=%s AND " % (int(data['user_id']))
+        sql += """
+        mu.user_id=s.user_id 
+        AND mu.contest_id=%s AND mp.contest_id=mu.contest_id  
+        AND mp.problem_id=s.problem_id 
+        AND mp.problem_id=p.id
+        AND %s<=s.created_at AND s.created_at<=%s 
+        """;
+        res = yield self.db.execute(sql, (res['id'], start, end,  ))
+        return (None, res.fetchone()['count'])
 
     def register(self, data={}):
         required_args = [{
