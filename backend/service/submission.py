@@ -182,7 +182,7 @@ class SubmissionService(BaseService):
             if data['code_file']:
                 encode = chardet.detect(data['code_file']['body'])
                 if encode['encoding']:
-                    data['code_file']['body'] = data['code_file']['file'].decode(encode['encoding']).encode()
+                    data['code_file']['body'] = data['code_file']['body'].decode(encode['encoding']).encode()
                 f.write(data['code_file']['body'])
             else:
                 f.write(data['plain_code'].encode())
