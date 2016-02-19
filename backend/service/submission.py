@@ -103,6 +103,7 @@ class SubmissionService(BaseService):
         if res.rowcount == 0:
             return ('No Submission ID', None)
         res = res.fetchone()
+        err, res['execute'] = yield from Service.Execute.get_problem_execute(res)
         res['testdata'] = yield self.db.execute('SELECT m.* FROM map_submission_testdata as m WHERE submission_id=%s ORDER BY testdata_id;', (data['id'],))
         res['testdata'] = res['testdata'].fetchall()
         folder = '/mnt/nctuoj/data/submissions/%s/' % str(res['id'])
