@@ -235,7 +235,7 @@ class ContestService(BaseService):
         _, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
         sql = '''SELECT s.id, s.user_id, s.problem_id, CEIL(extract('epoch' FROM (s.created_at - c.start)) / 60) as created_at, s.verdict as t_verdict, '''  
         if not admin:
-            sql += '''(CASE WHEN (s.verdict = %%s OR s.created_at >= %s) THEN 0 ELSE (CASE WHEN s.verdict = %%s THEN 1 ELSE -1 END) END) AS verdict '''%freeze_time
+            sql += '''(CASE WHEN (s.verdict = %%s OR s.created_at >= \'%s\') THEN 0 ELSE (CASE WHEN s.verdict = %%s THEN 1 ELSE -1 END) END) AS verdict '''%freeze_time
         else:
             sql += '''(CASE WHEN (s.verdict = %s) THEN 0 ELSE (CASE WHEN s.verdict = %s THEN 1 ELSE -1 END) END) AS verdict '''
         sql += '''FROM submissions as s, contests as c, map_contest_user as mu, map_contest_problem as mp 
