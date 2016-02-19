@@ -115,7 +115,7 @@ class SubmissionService(BaseService):
 
         file_path = '%s/%s' % (folder, res['file_name'])
         res['code'] = open(file_path, 'rb').read()
-        res['code'] = res['code'].decode(chardet.detect(res['code']))
+        res['code'] = res['code'].decode(chardet.detect(res['code'])['encoding'])
         res['code_line'] = len(open(file_path, 'rb').readlines())
         #self.rs.set('submission@%s'%(str(data['id'])), res)
         return (None, res)
