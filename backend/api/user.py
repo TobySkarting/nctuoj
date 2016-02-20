@@ -1,5 +1,6 @@
 from req import ApiRequestHandler
 from req import Service
+from map import *
 import tornado
 
 
@@ -21,10 +22,16 @@ class ApiUserGroupHandler(ApiRequestHandler):
 
 class ApiUserHandler(ApiRequestHandler):
     def check_edit(self, meta={}):
-        pass
+        print('POWER', self.account['power'])
+        if map_power['user_manage'] not in self.account['power']:
+            self.render(403, 'Permission Denied!!')
+            return False
+        return True
+
     @tornado.gen.coroutine
     def get(self, id):
         pass
+
     @tornado.gen.coroutine
     def post(self, id):
         args = ['query']
@@ -40,7 +47,7 @@ class ApiUserHandler(ApiRequestHandler):
             self.render()
             return
         if int(id) != int(self.account['id']):
-            sefl.render(403, 'Permission Denied')
+            self.render(403, 'Permission Denied')
             return 
         args = ['npasswd', 'rpasswd', 'passwd', 'name', 'email', 'student_id', 'school_id']
         meta = self.get_args(args)
@@ -48,6 +55,16 @@ class ApiUserHandler(ApiRequestHandler):
         err, res = yield from Service.User.post_user_basic_info(meta)
         if err: self.render(500, err)
         else: self.render(200, res)
+
+    @tornado.gen.coroutine
+    def delete(self, id):
+        print(self.account['power'])
+        if not self.check_edit():
+            return
+        meta = {'id': id}
+        err, res = yield from Service.User.delete_user(meta)
+        if err: self.render(500, err)
+        else: self.render(200, meta)
 
 class ApiUserSignHandler(ApiRequestHandler):
     @tornado.gen.coroutine

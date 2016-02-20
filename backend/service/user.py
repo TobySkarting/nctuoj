@@ -322,4 +322,14 @@ class UserService(BaseService):
         sql, prama = self.gen_update_sql('users', {'token': token})
         res = yield self.db.execute(sql + ' WHERE id = %s;', prama + (id,))
         return (None, token)
-
+    
+    def delete_user(self, data={}):
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        res = yield self.db.execute('DELETE FROM users WHERE id=%s;', (data['id'], ))
+        if res.rowcount == 0: return ('No such user', None)
+        return (None, data['id'])
