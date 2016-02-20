@@ -122,15 +122,15 @@ require(["jquery", "bootbox", "bootstrap-select", "bootstrap-datetimepicker"], f
             data: form.serialize(),
             dataType: "json",
             success: function(msg){
-                if(msg['status'] == 200){
-                    bootbox.alert("Updated!", function(){
-                        location.href = location.href;
-                    });
-                } else {
-                    bootbox.alert(msg['msg'], function(){
-                        location.href = location.href;
-                    });
-                }
+                bootbox.alert("Updated!", function(){
+                    location.href = location.href;
+                });
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg'], function(){
+                    location.href = location.href;
+                });
             }
         });
         return false;
@@ -153,11 +153,11 @@ require(["jquery", "bootbox", "bootstrap-select", "bootstrap-datetimepicker"], f
             data: form.serialize(),
             dataType: "json",
             success: function(msg){
-                if(msg['status'] == 200){
-                    location.href = "/groups/{{current_group}}/contests/" + msg['msg'] + "/";
-                } else {
-                    bootbox.alert(msg['msg']);
-                }
+                location.href = "/groups/{{current_group}}/contests/" + msg['msg'] + "/";
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
         });
         return false;

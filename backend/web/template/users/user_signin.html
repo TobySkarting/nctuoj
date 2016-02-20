@@ -34,15 +34,15 @@ require(["jquery", "bootbox"], function($, bootbox){
             data: form.serialize(),
             dataType: "json",
             success: function(msg){
-                if(msg['status'] == 200){
-                    if($.urlParam("next_url")){
-                        location.href = "/"+$.urlParam("next_url");
-                    } else {
-                        location.href = "/";
-                    }
+                if($.urlParam("next_url")){
+                    location.href = "/"+$.urlParam("next_url");
                 } else {
-                    bootbox.alert(msg['msg'])
+                    location.href = "/";
                 }
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
         });
         return false;

@@ -86,8 +86,10 @@ class RequestHandler(tornado.web.RequestHandler):
 class ApiRequestHandler(RequestHandler):
     def render(self, code=200, msg=""):
         self.set_status(code)
-        self.finish(json.dumps({'status': code,
-                                'msg': msg}, cls=DatetimeEncoder))
+        self.finish(json.dumps({
+                'msg': msg
+            },
+            cls=DatetimeEncoder))
         return
     @tornado.gen.coroutine
     def prepare(self):

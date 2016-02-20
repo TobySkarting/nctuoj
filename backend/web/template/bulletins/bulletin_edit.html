@@ -24,13 +24,13 @@ require(["jquery", "bootbox", "ckeditor"], function($, bootbox){
             data: form.serialize(),
             dataType: "json",
             success: function(msg){
-                if(msg['status'] == 200){
-                    location.href = "/groups/{{current_group}}/bulletins/";
-                    return false;
-                } else {
-                    bootbox.alert(msg['msg'])
-                }
+                location.href = "/groups/{{current_group}}/bulletins/";
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
+
         });
         return false;
     });

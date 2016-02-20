@@ -37,11 +37,11 @@
                         },
                         dataType: "json",
                         success: function(msg){
-                            if(msg['status'] == 200){
-                                location.href = location.href;
-                            } else {
-                                alert(msg['msg']);
-                            }
+                            location.href = location.href;
+                        },
+                        error: function(event){
+                            msg = JSON.parse(event.responseText);
+                            bootbox.alert(msg['msg']);
                         }
                     });
                 }
