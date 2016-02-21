@@ -9,7 +9,7 @@
             <div class="bulletin panel panel-default">
                 <div class="panel-heading">
                     {{x['title']}}
-                    {% if map_group_power["bulletin_manage"] in current_group_power %}
+                    {% if map_group_power["bulletin_manage"] in current_group_power and x['group_id'] == current_group %}
                         <span style="float: right;">
                             <a class="btn btn-default btn-xs" href="/groups/{{current_group}}/bulletins/{{x['id']}}/edit/">Edit</a>
                             <a class="btn btn-default btn-xs delete bulletin" data-href="/api/groups/{{current_group}}/bulletins/{{x['id']}}/" data-method="delete">Delete</a> 

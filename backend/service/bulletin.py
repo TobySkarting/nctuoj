@@ -22,7 +22,7 @@ class BulletinService(BaseService):
         ]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        sql = "SELECT bulletins.*, users.account as setter_user FROM bulletins, users WHERE bulletins.group_id = %s and bulletins.setter_user_id = users.id order by bulletins.id DESC limit %s offset %s"
+        sql = "SELECT bulletins.*, users.account as setter_user FROM bulletins, users WHERE ( bulletins.group_id = %s OR bulletins.group_id=1 )and bulletins.setter_user_id = users.id order by bulletins.id DESC limit %s offset %s"
         res = yield self.db.execute(sql, (data["group_id"], data['count'], (int(data["page"])-1)*data["count"],))
         return (None, res.fetchall())
 
@@ -33,7 +33,7 @@ class BulletinService(BaseService):
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        res = yield self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s", (data['group_id'],))
+        res = yield self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s OR group_id=1", (data['group_id'],))
         return (None, res.fetchone()['count'])
 
     def get_bulletin(self, data={}):
@@ -53,7 +53,7 @@ class BulletinService(BaseService):
             res['id'] = 0
             return (None, res)
 
-        sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND b.id=%s AND b.group_id=%s;"
+        sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND b.id=%s AND (b.group_id=%s OR group_id=0);"
         res = yield self.db.execute(sql, (data["id"], data['group_id'],))
         if res.rowcount == 0:
             return ('Error bulletin id', None)
