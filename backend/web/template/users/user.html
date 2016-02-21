@@ -110,8 +110,11 @@ require(["jquery", "bootbox"], function($, bootbox){
             dataType: "json",
             success: function(msg){
                 $.each(msg['msg'], function(index, element){
-                    
                 });
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
         });
     });
@@ -131,17 +134,23 @@ require(["jquery", "bootbox"], function($, bootbox){
                 bootbox.prompt({
                     title: 'password',
                     callback: function(passwd){
-                        $.post('/api/users/resettoken/',{
-                            'token': "{{account['token']}}",
-                            'passwd': passwd}, function(msg){
-                                if(msg['status'] == 200){
-                                    bootbox.alert('token is reset', function(){
-                                        location.href = location.href;
-                                    });
-                                }else{
-                                    bootbox.alert(msg['msg']);
-                                }
-                            }, "json");
+                        $.ajax({
+                            url: '/api/users/resettoken/',
+                            data: {
+                                'token': "{{account['token']}}",
+                                'passwd': passwd
+                            },
+                            dataType: "json",
+                            success: function(msg){
+                                bootbox.alert('token is reset', function(){
+                                    location.href = location.href;
+                                });
+                            },
+                            error: function(event){
+                                msg = JSON.parse(event.responseText);
+                                bootbox.alert(msg['msg']);
+                            }
+                        });
                     },
                     inputType: 'password'
                 });

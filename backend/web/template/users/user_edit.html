@@ -63,11 +63,11 @@ require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
             data: form.serialize(),
             dataType: "json",
             success: function(msg){
-                if(msg['status'] == 200){
-                    location.href = "/users/{{account['id']}}/";
-                } else {
-                    bootbox.alert(msg['msg'])
-                }
+                location.href = "/users/{{account['id']}}/";
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
         });
         return false;
