@@ -10,11 +10,11 @@
             <input type="hidden" name="token" value="{{account['token']}}">
             <h1>
                 {% if 'contest_data' in globals() %}
-                    <input type="hidden" name="id" value="{{data['problem_id']}}">
-                    <a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{data['problem_id']}}/">
+                    <input type="hidden" name="id" value="{{data['id']}}">
+                    <a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{data['id']}}/">
                         {% for id, x in enumerate(contest_data['problem']) %}
-                            {% if x['id'] == data['problem_id'] %}
-                                {{chr(id+65)}}.{{data['problem_name']}}
+                            {% if x['id'] == data['id'] %}
+                                {{chr(id+65)}}.{{data['title']}}
                             {% end %}
                         {% end %}
                     </a>
@@ -103,11 +103,16 @@ require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, Code
             contentType: false,
             success: function(msg){
                 $("button").prop("disabled", false);
-                location.href = "/groups/{{current_group}}/submissions/"+msg['msg']+"/";
+                {% if 'contest_data' in globals() %}
+                    location.href = "/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/" + msg['msg'] + "/";
+                {% else %}
+                    location.href = "/groups/{{current_group}}/submissions/"+msg['msg']+"/";
+                {% end %}
             },
             error: function(msg){
                 $("button").prop("disabled", false);
                 msg = JSON.parse(event.responseText);
+                console.log(msg);
                 bootbox.alert(msg['msg']);
             }
         });
