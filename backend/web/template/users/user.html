@@ -140,6 +140,7 @@ require(["jquery", "bootbox"], function($, bootbox){
                                 'token': "{{account['token']}}",
                                 'passwd': passwd
                             },
+                            type: 'post',
                             dataType: "json",
                             success: function(msg){
                                 bootbox.alert('token is reset', function(){
