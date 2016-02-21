@@ -1,16 +1,23 @@
 {% if map_group_power['submission_manage'] in current_group_power and map_verdict_types[data['verdict']]['abbreviation'] != 'Pending'%}
-    <a class="btn btn-default" _href="/api/groups/{{current_group}}/submissions/{{data['id']}}/rejudge/" style="margin-bottom: 12px;" onclick="rejudge_submission(this);">Rejudge</a>
+    <a class="btn btn-default margin-bottom" onclick="rejudge_submission(this);">Rejudge</a>
     <script>
     function rejudge_submission(ele){
         require(["jquery", "bootbox"], function(){
-            ele = $(ele);
-            $.post(ele.attr("_href"), {'token': '{{account['token']}}'}, function(msg){
-                if(msg['status'] == 200){
+            $.ajax({
+                url: '/api/groups/{{current_group}}/submissions/{{data['id']}}/rejudge/',
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    'token': '{{account['token']}}'
+                },
+                success: function(msg){
                     location.href = location.href;
-                }else{
+                },
+                error: function(event){
+                    msg = JSON.parse(event.responseText);
                     bootbox.alert(msg['msg']);
                 }
-            }, "json");
+            });
         });
     }
     </script>
