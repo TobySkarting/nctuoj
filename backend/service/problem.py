@@ -181,6 +181,12 @@ class ProblemService(BaseService):
             data.pop('id')
             sql, parma = self.gen_insert_sql("problems", data)
             id = (yield self.db.execute(sql, parma)).fetchone()['id']
+            yield from Service.Execute.post_problem_execute({
+                'problem_id': id,
+                'execute': [
+                    1, 2, 3, 4
+                ]
+            })
         else:
             self.reset_rs_problem_count(data['group_id'])
             id = data.pop('id')
