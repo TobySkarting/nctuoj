@@ -24,15 +24,21 @@
         <script>
         require(['jquery', 'bootbox'], function($, bootbox){
             register = function(contest_id){
-                data = Object();
-                data.token = '{{account['token']}}';
-                $.post('/api/groups/{{current_group}}/contests/'+contest_id+'/register/', data, function(msg){
-                    if(msg['status'] == 200){
+                $.ajax({
+                    url: '/api/groups/{{current_group}}/contests/'+contest_id+'/register/',
+                    type: 'post',
+                    data: {
+                        "token": "{{account['token']}}"
+                    },
+                    dataType: "json",
+                    success: function(msg){
                         bootbox.alert('Successfully registered', function(){location.href=location.href;});
-                    }else{
+                    },
+                    error: function(msg){
+                        msg = JSON.parse(event.responseText);
                         bootbox.alert(msg['msg']);
                     }
-                }, "json");
+                });
             }
         })
         </script>
@@ -73,11 +79,11 @@
                                 },
                                 dataType: "json",
                                 success: function(msg){
-                                    if(msg['status'] == 200){
-                                        location.href = '/groups/{{current_group}}/problems/';
-                                    } else {
-                                    bootbox.alert(msg['msg'], function(){});
-                                    }
+                                    location.href = '/groups/{{current_group}}/problems/';
+                                },
+                                error: function(msg){
+                                    msg = JSON.parse(event.responseText);
+                                    bootbox.alert(msg['msg']);
                                 }
                             });
                         }
@@ -87,17 +93,20 @@
             function rejudge_problem(ele){
                 require(["jquery", "bootbox"], function($, bootbox){
                     form = $(ele);
-                    $.post('/api/groups/{{current_group}}/problems/{{data["id"]}}/rejudge/', 
-                        {'token': '{{account['token']}}'},
-                        function(msg){
-                        if(msg['status'] == 200){
-                            bootbox.alert("Rejudged.", function(){
-                                location.href="/groups/{{current_group}}/submissions/?problem_id={{data['id']}}";
-                            });
-                        }else{
-                            bootbox.alert(msg['msg'], function(){});
+                    $.ajax({
+                        url: '/api/groups/{{current_group}}/problems/{{data['id']}}/rejudge/',
+                        type: 'post',
+                        data: {
+                            'token': '{{account['token']}}',
+                        },
+                        dataType: "json",
+                        success: function(msg){
+                        },
+                        error: function(event){
+                            msg = JSON.parse(event.responseText);
+                            bootbox.alert(msg['msg']);
                         }
-                    }, "json");
+                    });
                 });
             }
             </script>

@@ -6,14 +6,24 @@
 <script>
 function new_testdata(){
     $(".new_testdata").prop("disabled", true);
-    $.post("/api/groups/{{current_group}}/testdata/0/", {'token': '{{account['token']}}', 'problem_id': '{{data["id"]}}' }, function(msg){
-        $(".new_testdata").prop("disabled", false);
-        if(msg['status'] == 200){
+    $.ajax({
+        url: '/api/groups/{{current_group}}/testdata/0/',
+        type: 'post',
+        data: {
+            'token': '{{account['token']}}',
+            'problem_id': '{{data['id']}}'
+        },
+        dataType: "json",
+        success: function(msg){
             location.href = location.href;
-        } else {
+            $(".new_testdata").prop("disabled", false);
+        },
+        error: function(event){
+            msg = JSON.parse(event.responseText);
             bootbox.alert(msg['msg']);
+            $(".new_testdata").prop("disabled", false);
         }
-    }, "json");
+    });
 }
 </script>
 <div class="progress">
@@ -90,10 +100,11 @@ function delete_testdata(id){
             },
             dataType:"json",
             success: function(msg){
-                if(msg['status'] == 200){
-                    location.href=location.href;
-                } else {
-                }
+                location.href = location.href;
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
         });
     });
@@ -133,10 +144,13 @@ require(["jquery", "bootbox"], function($, bootbox){
                 contentType: false,
                 success: function(msg){
                     $(".progress-bar").addClass("progress-bar-success").removeClass("active progress-bar-striped").css({"width": percent_value}).attr("aria-valuenow", value).html("Complete");
-                    if(msg['status'] == 200){
-                    } else {
-                        bootbox.alert(msg['msg']);
-                    }
+                    $(".testdata_update").prop("disabled", false);
+                    $(".testdata_delete").prop("disabled", false);
+                },
+                error: function(event){
+                    $(".progress-bar").addClass("progress-bar-success").removeClass("active progress-bar-striped").css({"width": percent_value}).attr("aria-valuenow", value).html("Complete");
+                    msg = JSON.parse(event.responseText);
+                    bootbox.alert(msg['msg']);
                     $(".testdata_update").prop("disabled", false);
                     $(".testdata_delete").prop("disabled", false);
                 }

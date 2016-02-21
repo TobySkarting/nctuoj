@@ -58,7 +58,7 @@
 </table>
 <div class="hidden template execute list">
     <li>
-        <a onclick="add_execute_fron_list(this);" data-id='%id%' data-lang='%lang-code%' data-description='%description%'>
+        <a onclick="add_execute_from_list(this);" data-id='%id%' data-lang='%lang-code%' data-description='%description%'>
             <div class="row">
                 <div class="col-xs-4">%lang%</div>
                 <div class="col-xs-8">|%description%</div>
@@ -82,7 +82,7 @@ function add_execute(ele){
         $('tbody:not(.template)').append(data);
     });
 }
-function add_execute_fron_list(ele){
+function add_execute_from_list(ele){
     require(["jquery"], function($){
         element = Object;
         element['id'] = $(ele).attr("data-id");
@@ -135,7 +135,7 @@ require(["jquery", "bootbox"], function($, bootbox){
             success: function(msg){
                 if(msg['status'] == 200){
                     bootbox.alert("success", function(){
-                        location.href = location.href;
+                        //location.href = location.href;
                     });
                 } else {
                     bootbox.alert(msg['msg']);
