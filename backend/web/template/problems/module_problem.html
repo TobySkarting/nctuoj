@@ -1,4 +1,112 @@
 
+{% if 'contest_data' in globals() %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center">
+                {% for id, x in enumerate(contest_data['problem']) %}
+                    {% if x['id'] == data['id'] %}
+                        {{chr(id+65)}}.{{data['title']}}
+                    {% end %}
+                {% end %}
+            </h2>
+        </div>
+    </div>
+    {% if datetime.datetime.now() > contest_data['end'] %}
+        <font style="color: red">比賽時間已結束，<a href="/groups/{{current_group}}/problems/{{data['id']}}/">回到一般題目頁面</a>。</font>
+    {% elif (contest_data['id'] in registered_contest or map_group_power['contest_manage'] in current_group_power) %}
+        <div class="row margin-bottom">
+            <div class="col-md-2">
+                <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{data['id']}}/submit/" style="cursor: pointer">Submit</a>
+            </div>
+        </div>
+    {% else %}
+        <font style="color: red">你尚未註冊此比賽，<a onclick="register({{contest_data['id']}});">點選此處註冊</a>。</font>
+        <script>
+        require(['jquery', 'bootbox'], function($, bootbox){
+            register = function(contest_id){
+                data = Object();
+                data.token = '{{account['token']}}';
+                $.post('/api/groups/{{current_group}}/contests/'+contest_id+'/register/', data, function(msg){
+                    if(msg['status'] == 200){
+                        bootbox.alert('Successfully registered', function(){location.href=location.href;});
+                    }else{
+                        bootbox.alert(msg['msg']);
+                    }
+                }, "json");
+            }
+        })
+        </script>
+    {% end %}
+{% else %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center">{{data['id']}}.{{data['title']}}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 margin-bottom">
+            <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/problems/{{data['id']}}/submit/">Submit</a>
+        </div>
+        <div class="col-md-2 margin-bottom">
+            <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/submissions/?problem_id={{data['id']}}">Submissions</a>
+        </div>
+        {% if map_group_power["problem_manage"] in current_group_power and int(current_group) == int(data['group_id']) %}
+            <div class="col-md-2 margin-bottom">
+                <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/problems/{{data['id']}}/basic/edit/">Edit</a>
+            </div>
+            <div class="col-md-2 margin-bottom">
+                <a class="btn btn-default btn-block btn-sm" onclick="delete_problem(this)" data-href="/api/groups/{{current_group}}/problems/{{data['id']}}/basic/" data-method="delete">Delete</a> 
+            </div>
+            <div class="col-md-2 margin-bottom">
+                <a class="btn btn-default btn-block btn-sm" onclick="rejudge_problem(this);" >Rejudge</a>
+            </div>
+            <script>
+            function delete_problem(ele){
+                require(["jquery", "bootbox"], function($, bootbox){
+                    bootbox.confirm("Are you sure?", function(result) {
+                        if(result){
+                            $.ajax({
+                                url: $(ele).attr("data-href"),
+                                type: $(ele).attr("data-method"),
+                                data: {
+                                    "token": "{{account['token']}}"
+                                },
+                                dataType: "json",
+                                success: function(msg){
+                                    if(msg['status'] == 200){
+                                        location.href = '/groups/{{current_group}}/problems/';
+                                    } else {
+                                    bootbox.alert(msg['msg'], function(){});
+                                    }
+                                }
+                            });
+                        }
+                    }); 
+                });
+            }
+            function rejudge_problem(ele){
+                require(["jquery", "bootbox"], function($, bootbox){
+                    form = $(ele);
+                    $.post('/api/groups/{{current_group}}/problems/{{data["id"]}}/rejudge/', 
+                        {'token': '{{account['token']}}'},
+                        function(msg){
+                        if(msg['status'] == 200){
+                            bootbox.alert("Rejudged.", function(){
+                                location.href="/groups/{{current_group}}/submissions/?problem_id={{data['id']}}";
+                            });
+                        }else{
+                            bootbox.alert(msg['msg'], function(){});
+                        }
+                    }, "json");
+                });
+            }
+            </script>
+        {% end %}
+        <div class="col-md-2 margin-bottom">
+            <a class="btn btn-default btn-block btn-sm" href="/groups/{{current_group}}/problems/">Back to List</a>
+        </div>
+    </div>
+{% end %}
 {% if not data['pdf'] %}
 <div class="row">
     <div class="col-md-12">
