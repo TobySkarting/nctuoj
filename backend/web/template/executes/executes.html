@@ -82,13 +82,18 @@
                     data.id.push($(tr).attr('execute-id'));
                     data.priority.push(i+1);
                 });
-                $.post('/api/executes/', data, function(msg){
-                    if(msg['status'] == 200){
-                    }else{
+                $.ajax({
+                    url: '/api/exeuctes/',
+                    type: 'post',
+                    dataType: 'json',
+                    data: data,
+                    success: function(msg){
+                    },
+                    error: function(event){
+                        msg = JSON.parse(event.responseText);
                         bootbox.alert(msg['msg']);
                     }
-                }, "json");
-                return true;
+                });
             }
         });
     </script>
