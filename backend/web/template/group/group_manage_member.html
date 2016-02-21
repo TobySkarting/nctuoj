@@ -49,18 +49,24 @@
 var post_group_user_power = null;
 require(['jquery', 'bootbox'], function($, bootbox){
     post_group_user_power = function(uid, power){
-        $.post('/api/groups/{{current_group}}/' + uid + '/',{
-            token: '{{account["token"]}}',
-            power: power
-        }, function(msg){
-            if(msg['status'] == 200){
+        $.ajax({
+            url: '/api/groups/{{current_group}}/' + uid + '/',
+            data: {
+                token: '{{account['token']}}',
+                power: power
+            },
+            dataType: 'json',
+            type: 'post',
+            success: function(msg){
                 bootbox.alert('Updated successfully', function(){
                     location.href = location.href;
                 });
-            }else{
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
                 bootbox.alert(msg['msg']);
             }
-        }, "json");
+        });
     }
 });
 </script>

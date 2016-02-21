@@ -59,15 +59,21 @@
 <script>
 function add_group(group){
     require(["jquery", "bootbox"], function($, bootbox){
-        $.post(
-            "/api/groups/" + group +"/{{account['id']}}/",{
-                token: "{{account['token']}}",
-            }, function(msg){
-                if(msg['status'] == 200)
-                    location.href = "/groups/" + group + "/";
+        $.ajax({
+            url: "/api/groups/" + group +"/{{account['id']}}/",
+            data: {
+                token: '{{account['token']}}'
             },
-            "json"
-        )
+            type: 'post',
+            dataType: 'json',
+            success: function(msg){
+                location.href = "/groups/" + group + "/";
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
+            }
+        });
     });
 }
 </script>
