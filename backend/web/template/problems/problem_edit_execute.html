@@ -113,14 +113,15 @@ require(["jquery", "bootbox"], function($, bootbox){
             dataType: "json",
             success: function(msg){
                 $('tbody:not(.template)').html("");
-                if(msg['status'] == 200){
-                    $.each(msg['msg'], function(index, element){
-                        add_execute(element);
-                    });
-                    $("#problem_execute_form").submit();
-                } else {
-                    bootbox.alert(msg['msg']);
-                }
+                $.each(msg['msg'], function(index, element){
+                    add_execute(element);
+                });
+                $("#problem_execute_form").submit();
+            }
+            error: function(event){
+                $('tbody:not(.template)').html("");
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
         });
         return false;
@@ -133,13 +134,13 @@ require(["jquery", "bootbox"], function($, bootbox){
             data: form.serialize(),
             dataType: "json",
             success: function(msg){
-                if(msg['status'] == 200){
-                    bootbox.alert("success", function(){
-                        //location.href = location.href;
-                    });
-                } else {
-                    bootbox.alert(msg['msg']);
-                }
+                bootbox.alert("success", function(){
+                    //location.href = location.href;
+                });
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
         });
         return false;
