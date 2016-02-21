@@ -47,14 +47,14 @@ require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
             contentType: false,
             success: function(msg){
                 $("button").prop("disabled", false);
-                if(msg['status'] == 200){
-                    location.href = "/verdicts/" + msg['msg'] + "/";
-                } else {
-                    bootbox.alert(msg['msg']);
-                }
+                location.href = "/verdicts/" + msg['msg'] + "/";
+            },
+            error: function(event){
+                $("button").prop("disabled", false);
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
         });
-        return false;
 
     });
 });

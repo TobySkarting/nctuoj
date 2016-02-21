@@ -32,13 +32,13 @@ function delete_verdict(){
             dataType: 'json',
             data: {'token': "{{account['token']}}"},
             success: function(msg){
-                if(msg['status'] == 200){
-                    bootbox.alert('Delete successfully', function(){
-                        location.href = '/verdicts/';
-                    });
-                }else{
-                    bootbox.alert(msg['msg']);
-                }
+                bootbox.alert('Delete successfully', function(){
+                    location.href = '/verdicts/';
+                });
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
         });
     });
