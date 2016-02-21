@@ -165,7 +165,10 @@ class ExecuteService(BaseService):
         yield from self.delete_problem_execute(data)
         if data['execute']:
             for x in data['execute']:
-                yield self.db.execute("INSERT INTO map_problem_execute (execute_type_id, problem_id) values (%s, %s)", (x, data['problem_id']))
+                try:
+                    yield self.db.execute("INSERT INTO map_problem_execute (execute_type_id, problem_id) values (%s, %s)", (x, data['problem_id']))
+                except:
+                    pass
         return (None, data['problem_id'])
 
     def delete_problem_execute(self, data={}):
