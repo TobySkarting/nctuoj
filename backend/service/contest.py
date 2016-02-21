@@ -200,12 +200,15 @@ class ContestService(BaseService):
         }, {
             'name': '+submission_id',
             'type': int,
+        }, {
+            'name': '+group_id',
+            'type': int,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
         err, res = yield from self.get_contest(data)
         if err: return (err, None)
-        err, submission_res = yield from Service.Submission.get_submission({'id': data['submission_id']})
+        err, submission_res = yield from Service.Submission.get_submission({'id': data['submission_id'], 'group_id': data['group_id'],})
         if err: return (err, None)
         if map_group_power['contest_manage'] not in data['current_group_power']:
             if int(submission_res['user_id']) != int(data['user_id']):
