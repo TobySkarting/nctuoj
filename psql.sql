@@ -421,6 +421,7 @@ CREATE TABLE map_contest_user (
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER map_contest_user_update_row BEFORE UPDATE ON map_contest_user FOR EACH ROW EXECUTE PROCEDURE updated_row();
+CREATE UNIQUE INDEX ON map_contest_user (user_id, contest_id);
 CREATE INDEX ON map_contest_user (user_id);
 CREATE INDEX ON map_contest_user (contest_id);
 INSERT INTO map_contest_user (user_id, contest_id) VALUES(1, 1001);
