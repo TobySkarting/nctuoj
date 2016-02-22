@@ -35,7 +35,7 @@ map_visible = {
 map_default_file_name = {
     0: 'main.c',
     1: 'main.cpp',
-    2: 'main.java',
+    2: 'Main.java',
     3: 'main.py',
     4: 'main.py',
     5: 'main.go',
