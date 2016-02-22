@@ -96,18 +96,35 @@ class BulletinService(BaseService):
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        if int(data['id']) == 0:
-            data.pop('id')
-            sql, parma = self.gen_insert_sql("bulletins", data)
-            insert_id = (yield self.db.execute(sql, parma)).fetchone()['id']
-            return (None, str(insert_id))
-        else:
-            err, res = yield from self.get_bulletin(data)
-            if err: return (err, None)
-            data.pop('id')
-            sql, parma = self.gen_update_sql("bulletins", data)
-            yield self.db.execute("%s WHERE id=%%s AND group_id=%%s;"%sql, parma+(res['id'],res['group_id'],))
-            return (None, None)
+        err, res = yield from self.get_bulletin(data)
+        if err: return (err, None)
+        data.pop('id')
+        sql, parma = self.gen_update_sql("bulletins", data)
+        yield self.db.execute("%s WHERE id=%%s AND group_id=%%s;"%sql, parma+(res['id'],res['group_id'],))
+        return (None, None)
+
+    def post_bulletin(self, data={}):
+        required_args = [{
+            'name': '+group_id',
+            'type': int,
+        }, {
+            'name': '+setter_user_id',
+            'type': int,
+        }, {
+            'name': '+title',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': '+content',
+            'type': str,
+            'xss': True,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        data.pop('id')
+        sql, parma = self.gen_insert_sql("bulletins", data)
+        id = (yield self.db.execute(sql, parma)).fetchone()['id']
+        return (None, str(id))
 
     def delete_bulletin(self, data={}):
         required_args = [{

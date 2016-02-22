@@ -1,7 +1,10 @@
 {% extends './../frame.html' %}
 {% block content %}
 
-<form method="post" action="/api/groups/{{current_group}}/bulletins/{{data['id']}}/">
+<form method={% if data['id'] != 0 %}"put"{% else %}"post"{% end %} 
+    action={% if data['id'] != 0 %}"/api/groups/{{current_group}}/bulletins/{{data['id']}}/"
+            {% else %}"/api/groups/{{current_group}}/bulletins/"
+            {% end %}>
     <input type="hidden" name="token" value="{{account['token']}}">
     <div class="form-group">
         <label for="title">Title</label>
