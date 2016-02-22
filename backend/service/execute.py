@@ -81,7 +81,7 @@ class ExecuteService(BaseService):
         if int(data['id']) == 0:
             data.pop('id')
             sql, parma = self.gen_insert_sql("execute_types", data)
-            id = (yield from self.db.execute(sql, parma)).fetchone()['id']
+            id = (yield self.db.execute(sql, parma)).fetchone()['id']
         else:
             id = data.pop('id')
             sql, parma = self.gen_update_sql("execute_types", data)
