@@ -4,25 +4,76 @@ import requests
 import json
 import unittest
 import datetime
-sys.path.append("./../")
+from util import TestCase
 import config
 
-class TestApiUserSign(unittest.TestCase):
-    def test_user_register(self):
-        url = "%s/api/users/signup/"%(config.base_url,)
-        ### admin login
+class TestApiUserSignin(TestCase):
+    url = "%s/api/users/signup/"%(config.base_url,)
+
+    def test_user_signup(self):
+        pass
+
+    def test_user_signup_again(self):
+        pass
+
+
+"""
+    def test_admin_login(self):
         data = {
-            "email": "",
-            "account": "",
-            "passwd": config.user_admin,
-            "repasswd": config.user_admin_password,
+            "account": config.user_admin_account,
+            "passwd": config.user_admin_password,
         }
-        res = requests.post(url, data=data)
+        res = requests.post(self.url, data=data)
+        res.connection.close()
         expect_result = {
-            "msg": "",
+            "status_code": 200,
+            "body": {
+                "msg": "",
+            }
         }
-        self.assertEqual(json.loads(res.text), expect_result)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqualR(res, expect_result)
 
+    def test_no_exist_user_login(self):
+        data = {
+            "account": config.user_admin_account + str(datetime.datetime.now()),
+            "passwd": str(datetime.datetime.now()),
+        }
+        res = requests.post(self.url, data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 403,
+            "body": {
+                "msg": "User Not Exist",
+            }
+        }
+        self.assertEqualR(res, expect_result)
 
-unittest.main()
+    def test_forgot_fill_in_account(self):
+        data = {
+            "passwd": str(datetime.datetime.now()),
+        }
+        res = requests.post(self.url, data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 403,
+            "body": {
+                "msg": "User Not Exist", 
+            }
+        }
+        self.assertEqualR(res, expect_result)
+
+    def test_forgot_fill_in_password(self):
+        data = {
+            "account": config.user_admin_account,
+        }
+        res = requests.post(self.url, data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 403,
+            "body": {
+                "msg": "Wrong Password",
+            }
+        }
+        self.assertEqualR(res, expect_result)
+
+"""
