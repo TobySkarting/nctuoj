@@ -245,15 +245,15 @@ INSERT INTO verdicts (title, execute_type_id, file_name, setter_user_id) VALUES 
 --DROP TABLE IF EXISTS problems;
 CREATE TABLE problems (
     id              serial          NOT NULL    PRIMARY KEY,
-    title           varchar(255)    ,
-    pdf             boolean         DEFAULT FALSE,
-    description     text            ,
-    input           text            ,
-    output          text            ,
-    sample_input    text            ,
-    sample_output   text            ,
-    hint            text            ,
-    source          text            ,
+    title           varchar(255)    NOT NULL DEFAULT '',
+    pdf             boolean         NOT NULL DEFAULT FALSE,
+    description     text            NOT NULL DEFAULT '',
+    input           text            NOT NULL DEFAULT '',
+    output          text            NOT NULL DEFAULT '',
+    sample_input    text            NOT NULL DEFAULT '',
+    sample_output   text            NOT NULL DEFAULT '',
+    hint            text            NOT NULL DEFAULT '',
+    source          text            NOT NULL DEFAULT '',
     group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
     setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     visible         integer         NOT NULL DEFAULT 0 CHECK (visible = ANY('{0, 1}')),
@@ -266,7 +266,7 @@ ALTER SEQUENCE problems_id_seq RESTART WITH 10001;
 CREATE TRIGGER problems_updated_row BEFORE UPDATE ON problems FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON problems (visible);
 CREATE INDEX ON problems (group_id);
-INSERT INTO problems (group_id, setter_user_id) values (1, 1);
+INSERT INTO problems (group_id, setter_user_id, title) values (1, 1);
 INSERT INTO problems (group_id, setter_user_id) values (2, 1);
 
 --DROP TABLE IF EXISTS map_problem_execute;

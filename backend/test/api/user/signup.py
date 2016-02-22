@@ -8,7 +8,7 @@ sys.path.append("./../")
 import config
 
 class TestApiUserSign(unittest.TestCase):
-    def test_user_login(self):
+    def test_user_register(self):
         url = "%s/api/users/signup/"%(config.base_url,)
         ### admin login
         data = {
