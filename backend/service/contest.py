@@ -101,7 +101,7 @@ class ContestService(BaseService):
         res = yield self.db.execute('SELECT p.id, p.title, m.score, m.penalty FROM map_contest_problem as m, problems as p WHERE p.id=m.problem_id AND m.contest_id=%s ORDER BY m.id ASC;', (data['id'],))
         return (None, res.fetchall())
 
-    def post_contest(self, data={}):
+    def put_contest(self, data={}):
         required_args = [{
             'name': '+id',
             'type': int,
@@ -143,27 +143,58 @@ class ContestService(BaseService):
         err = form_validation(data, required_args)
         if err: return (err, None)
         if not data['freeze'] or data['freeze'] == '': data['freeze'] = 0
-        #try: data['freeze'] = datetime.timedelta(minutes=int(data['freeze']))
-        #except: return ('freeze time error', None) 
-        # if data['end'] - data['start'] < datetime.timedelta(minutes=data['freeze']):
-           # return ('freeze time too long', None)
-        # self.rs.delete('contest_list_count@%s' 
-                # % (str(data['group_id'])))
-        if int(data['id']) == 0:
-            data.pop('id')
-            sql, param = self.gen_insert_sql('contests', data)
-            insert_id = (yield self.db.execute(sql, param)).fetchone()['id']
-            return (None, str(insert_id))
-        else:
-            err, res = yield from self.get_contest(data)
-            if err: return (err, None)
-            data.pop('id')
-            sql, param = self.gen_update_sql('contests', data)
-            yield self.db.execute(sql+' WHERE id=%s AND group_id=%s;', param+(res['id'], res['group_id'],))
-            # self.rs.delete('contest@%s'%str(res['id']))
-            return (None, res['id'])
+        err, res = yield from self.get_contest(data)
+        if err: return (err, None)
+        data.pop('id')
+        sql, param = self.gen_update_sql('contests', data)
+        yield self.db.execute(sql+' WHERE id=%s AND group_id=%s;', param+(res['id'], res['group_id'],))
+        # self.rs.delete('contest@%s'%str(res['id']))
+        return (None, res['id'])
 
-    def post_contest_problem(self, data={}):
+    def post_contest(self, data={}):
+        required_args = [{
+            'name': '+group_id',
+            'type': int,
+        }, {
+            'name': '+setter_user_id',
+            'type': int,
+        }, {
+            'name': '+visible',
+            'type': int,
+        }, {
+            'name': '+title',
+            'type': str,
+        }, {
+            'name': '+description',
+            'type':str,
+            'xss': True,
+        }, {
+            'name': '+register_start',
+            'type': datetime.datetime,
+        }, {
+            'name': '+register_end',
+            'type': datetime.datetime,
+        }, {
+            'name': '+start',
+            'type': datetime.datetime,
+        }, {
+            'name': '+end',
+            'type': datetime.datetime,
+        }, {
+            'name': '+freeze',
+            'type': int,
+        }, {
+            'name': '+type',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        if not data['freeze'] or data['freeze'] == '': data['freeze'] = 0
+        sql, param = self.gen_insert_sql('contests', data)
+        insert_id = (yield self.db.execute(sql, param)).fetchone()['id']
+        return (None, str(insert_id))
+
+    def put_contest_problem(self, data={}):
         required_args = [{
             'name': '+id',
             'type': int,
@@ -345,28 +376,11 @@ class ContestService(BaseService):
         if err: return (err, None)
         err, res = yield from Service.User.get_user_contest({"id": data['user_id']}) 
         if err: return (err, None)
-        if int(data['user_id']) in res:
-            return ('You have registered', None)
-        yield self.db.execute('INSERT INTO map_contest_user (contest_id, user_id) VALUES(%s, %s);', (data['id'], data['user_id'],))
-        # self.rs.delete('contest@%s@user'%(str(data['id'])))
-        return (None, str(data['id']))
-
-    def unregister(self, data={}):
-        required_args = [{
-            'name': '+id',
-            'type': int,
-        }, {
-            'name': '+user_id',
-            'type': int,
-        }]
-        err = form_validation(data, required_args)
-        if err: return (err, None)
-        err, res = yield from Service.User.get_user_contest({"id": data['user_id']}) 
-        if err: return (err, None)
-        if int(data['id']) not in res:
-            return ('You have not registered yet', None)
-        yield self.db.execute('DELETE FROM map_contest_user WHERE contest_id=%s AND user_id=%s;', (data['id'], data['user_id'],))
-        # self.rs.delete('contest@%s@user'%(str(data['id'])))
+        print(res)
+        if int(data['id']) in res:
+            yield self.db.execute('DELETE FROM map_contest_user WHERE contest_id=%s AND user_id=%s;', (data['id'], data['user_id'],))
+        else:
+            yield self.db.execute('INSERT INTO map_contest_user (contest_id, user_id) VALUES(%s, %s);', (data['id'], data['user_id'],))
         return (None, str(data['id']))
 
     def delete_contest(self, data={}):
@@ -436,86 +450,6 @@ class ContestService(BaseService):
         if score != '':
             pass
         return (None, res)
-
-    # def get_contest_scoreboard(self, data={}):
-        # '''
-        # res = {
-            # 'score': {
-                # 'user': [
-                    # {
-                        # 'id': integer,
-                        # 'total': {
-                            # 'penalty': integer,
-                            # 'ac_submitted': integer,
-                            # 'submitted': integer,
-                            # 'score': integer,
-                        # }
-                        # 'problem': {
-                            # problem_id(integer): {
-                                # 'score': integer,
-                                # 'penalty': integer,
-                                # 'submitted': integer
-                            # } 
-                        # }
-                    # } 
-                # ]
-                # 'problem': {
-                    # problem_id(integer): {
-                        # 'total': {
-                            # 'score': integer
-                            # 'submitted': integer,
-                            # 'ac_submitted': integer,
-                        # }
-                    # }
-                # }
-            # }
-            # 'contest': contest_info(dict)
-        # }
-        # '''
-        # required_args = ['id']
-        # err = self.check_required_args(required_args , data)
-        # if err: return (err, None)
-        # start, end = data['start'], data['end']
-        # err, data = yield from self.get_contest(data)
-        # if err: return (err, None)
-        # start = start or data['start']
-        # end = end or data['end']
-        # if data.get('admin'):
-            # end = min(end, data['end']-datetime.timedelta(minutes=data['freeze']))
-        # res = {}
-        # score = res['score'] = {}
-        # res['contest'] = data
-        # res['start'] = start
-        # res['end'] = end
-        # user_score = score['user'] = []
-        # map_verdict_string, map_string_verdict = yield from Service.VerdictString.get_verdict_string_map()
-        # for user in data['user']:
-            # user_meta = {}
-            # user_meta['id'] = int(user['id'])
-            # user_problem = user_meta['problem'] = {}
-            # for problem in data['problem']:
-                # problem_meta = {}
-                # problem_meta['problem'] = problem
-                # problem_meta['start'] = start
-                # problem_meta['end'] = end
-                # problem_meta['user_id'] = user['id']
-                # err, user_problem[int(problem['id'])] = yield from self.get_contest_user_problem_score(problem_meta)
-                # if err: return (err, None)
-            # user_total = user_meta['total'] = {}
-            # user_total['submitted'] = sum(x['submitted'] for x in user_problem.values())
-            # user_total['score'] = sum(x['score'] or 0 for x in user_problem.values())
-            # user_total['penalty'] = sum(x['penalty'] for x in user_problem.values())
-            # user_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['verdict']==map_string_verdict['AC'] else 0), user_problem.values(), 0)
-            # user_score.append(user_meta)
-
-        # problem_score = score['problem'] = {}
-        # for problem in data['problem']:
-            # problem_total = problem_score[int(problem['id'])] = {}
-            # problem_total['score'] = sum(x['problem'][int(problem['id'])]['score'] or 0 for x in user_score)
-            # problem_total['submitted'] = sum(x['problem'][int(problem['id'])]['submitted'] for x in user_score)
-            # problem_total['ac_submitted'] = reduce(lambda s, x: s+(1 if x['problem'][int(problem['id'])]['verdict']==7 else 0), user_score, 0)
-        
-        # return (None, res)
 
 
 

@@ -5,7 +5,11 @@
 {% else %}
     <h1>New Contest</h1>
 {% end %}
-<form class="form" id="contest_content" action="/api/groups/{{current_group}}/contests/{{contest_data['id']}}/" method="post">
+<form class="form" 
+      id="contest_content" 
+      method={% if contest_data['id'] != 0 %}"put"{% else %}"post"{% end %} 
+      action={% if contest_data['id'] != 0 %}"/api/groups/{{current_group}}/contests/{{contest_data['id']}}/"{% else %}"/api/groups/{{current_group}}/contests/"{% end %}
+      >
     <input type="hidden" name="token" value="{{account['token']}}">
     <div class="row">
         <div class="col-md-3 form-group">
@@ -75,7 +79,11 @@
 </form>
 <hr>
 {% if int(contest_data['id']) != 0 %}
-    <form class="form" id="contest_problem" method="post" action="/api/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/">
+    <form class="form" 
+        id="contest_problem" 
+        method="put" 
+        action="/api/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/"
+        >
         <input type="hidden" name="token" value="{{account['token']}}">
         <div class="row">
             <div class="col-md-12">
