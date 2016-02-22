@@ -299,7 +299,7 @@ CREATE TABLE testdata(
     id              serial          NOT NULL    PRIMARY KEY,
     problem_id      integer         NOT NULL    REFERENCES problems(id) ON DELETE CASCADE,
     time_limit      integer         NOT NULL    DEFAULT 1000,
-    memory_limit    integer         NOT NULL    DEFAULT 65536,
+    memory_limit    integer         NOT NULL    DEFAULT 262144,
     output_limit    integer         NOT NULL    DEFAULT 64,
     score           integer         NOT NULL    DEFAULT 0,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
