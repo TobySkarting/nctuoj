@@ -28,9 +28,6 @@
 [submodule "http/pdf.js"]
 	path = http/pdf.js
 	url = https://github.com/mozilla/pdf.js
-[submodule "judgesystem/judge/code/isolate"]
-	path = judgesystem/judge/code/isolate
-	url = https://github.com/cms-dev/isolate
 [submodule "http/ckeditor"]
 	path = http/ckeditor
 	url = https://github.com/ckeditor/ckeditor-releases
