@@ -101,6 +101,9 @@
                         },
                         dataType: "json",
                         success: function(msg){
+                            bootbox.alert("Rejudged", function(){
+                                location.href = '/groups/{{current_group}}/submissions/?problem_id={{data['id']}}';
+                            });
                         },
                         error: function(event){
                             msg = JSON.parse(event.responseText);
