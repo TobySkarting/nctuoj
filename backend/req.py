@@ -175,18 +175,20 @@ class WebRequestHandler(RequestHandler):
 
         self.account = {}
         try:
-            id = int(self.get_secure_cookie('id').decode())
-            err, data = yield from Service.User.get_user_basic_info({'id': id})
+            token = self.get_secure_cookie('token').decode()
+            err, data = yield from Service.User.get_user_basic_info_by_token({'token': token})
             if err:
                 id = 0
-                self.clear_cookie('id')
+                self.clear_cookie('token')
             else:
+                id = data['id']
                 self.account = data
         except:
             id = 0
-            self.clear_cookie('id')
+            self.clear_cookie('token')
         if id == 0:
             self.account['token'] = ""
+        print(id)
         
         self.account["id"] = id
         err, self.registered_contest = yield from Service.User.get_user_contest({'id': id})
