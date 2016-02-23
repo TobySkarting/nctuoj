@@ -30,7 +30,11 @@ class ApiUserHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def get(self, id):
-        pass
+        err, res = yield from Service.User.get_user_basic_info({'id': id})
+        if int(self.account['id']) != int(id):
+            res.pop('token')
+            res.pop('power')
+        self.render(200, res)
 
     @tornado.gen.coroutine
     def post(self, id):

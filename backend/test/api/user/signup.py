@@ -11,9 +11,10 @@ class TestApiUserSignin(TestCase):
     url = "%s/api/users/signup/"%(config.base_url,)
 
     def test_user_signup(self):
-        pass
-
-    def test_user_signup_again(self):
+        ### sign 'test'
+        ### sign 'test' again
+        ### 'test' delete 'test'
+        ### 'admin' delete 'test'
         pass
 
 
@@ -75,5 +76,4 @@ class TestApiUserSignin(TestCase):
             }
         }
         self.assertEqualR(res, expect_result)
-
 """
