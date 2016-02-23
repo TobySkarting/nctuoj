@@ -30,8 +30,20 @@
         <tbody>
             {% for x in data %}
                 <tr>
-                    <td><a href="/groups/{{current_group}}/submissions/{{x['id']}}/">{{x['id']}}</a></td>
-                    <td><a href="/groups/{{current_group}}/problems/{{x['problem_id']}}/">{{x['problem_id']}}.{{x['problem_title']}}</a></td>
+                    {% if 'contest_data' in globals() %}
+                        <td><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/submissions/{{x['id']}}/">{{x['id']}}</a></td>
+                        <td><a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{x['problem_id']}}/">
+                            {% for id, y in enumerate(contest_data['problem']) %}
+                                {% if x['problem_id'] == y['id'] %}
+                                    {{chr(id+65)}}.{{x['problem_title']}}
+                                {% end %}
+                            {% end %}
+                        </a></td>
+                    {% else %}
+                        <td><a href="/groups/{{current_group}}/submissions/{{x['id']}}/">{{x['id']}}</a></td>
+                        <td><a href="/groups/{{current_group}}/problems/{{x['problem_id']}}/">{{x['problem_id']}}.{{x['problem_title']}}</a></td>
+                    {% end %}
+
                     <td><a href="/users/{{x['user_id']}}/">{{x['user']}}</a></td>
                     <td>{{x['time_usage'] if x['time_usage'] is not None else "--"}}</td>
                     <td>{{x['memory_usage'] if x['memory_usage'] is not None else "--"}}</td>

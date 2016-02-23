@@ -1,5 +1,5 @@
-{% extends './contest_frame.html' %}
-{% block contest_content %}
+{% extends './../frame.html' %}
+{% block content %}
 {% if int(contest_data['id']) != 0 %}
     <h1>Edit Contest.{{contest_data['id']}}</h1>
 {% else %}

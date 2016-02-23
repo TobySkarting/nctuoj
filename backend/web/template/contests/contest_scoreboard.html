@@ -1,5 +1,5 @@
-{% extends './contest_frame.html' %}
-{% block contest_content %}
+{% extends './../frame.html' %}
+{% block content %}
 {% import datetime %}
 {% if datetime.datetime.now() > contest_data['start'] or map_group_power['contest_manage'] in current_group_power %}
     <h1 class="text-center">
