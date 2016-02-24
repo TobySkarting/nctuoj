@@ -1,3 +1,6 @@
+
+{% if 'contest_data' in globals() %}
+{% else %}
 <form class="form-inline">
     <div>
         <label class="control-label">Problem ID:</label>
@@ -24,6 +27,8 @@ require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
     {% end %}
 });
 </script>
+{% end %}
+
 <div class="panel panel-default table-responsive">
     <table class="table table-hover table-striped">
         <thead>
