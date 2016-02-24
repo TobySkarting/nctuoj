@@ -207,7 +207,7 @@ class UserService(BaseService):
         if err: return (err, None)
 
         ### get hashed passwd
-        col = ['passwd', 'id']
+        col = ['passwd', 'id', 'token']
         sql = self.gen_select_sql('users', col)
         res = yield self.db.execute(sql+' WHERE account = %s;', (data['account'],))
         ### check account 
@@ -215,11 +215,12 @@ class UserService(BaseService):
         if res.rowcount == 0:
             return ('User Not Exist', None)
         res = res.fetchone()
-        hpwd, id = res["passwd"], res["id"]
+        hpwd, id, token = res["passwd"], res["id"], res['token']
         ### check passwd
         if self.hash_pwd(data['passwd']) != hpwd:
             return ('Wrong Password', None)
-        req.set_secure_cookie('id', str(id))
+        print(token)
+        req.set_secure_cookie('token', token)
         return (None, str(id))
 
     def SignOut(self, req):

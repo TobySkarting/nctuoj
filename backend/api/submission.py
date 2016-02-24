@@ -58,6 +58,7 @@ class ApiSubmissionHandler(ApiRequestHandler):
             meta['user_id'] =  self.account['id']
             meta['ip'] = self.remote_ip
             err, res = yield from Service.Submission.post_submission(meta)
+            print(err)
             if err: self.render(500, err)
             else: self.render(200, res)
         elif action == 'rejudge':

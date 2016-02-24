@@ -86,7 +86,7 @@ class ProblemService(BaseService):
                 return ('No problem id', None)
             res = res.fetchone()
             # self.rs.set('problem@%s' % str(data['id']), res)
-        err, res['execute'] = yield from Service.Execute.get_problem_execute({'problem_id': data['id']})
+        err, res['execute'] = yield from Service.Problem.get_problem_execute(data)
         err, res['testdata'] = yield from Service.Testdata.get_testdata_list_by_problem({'problem_id': data['id']})
         return (None, res)
 
@@ -95,8 +95,7 @@ class ProblemService(BaseService):
         # self.rs.delete('problem_list_count@1')
         pass
 
-
-    def post_problem(self, data={}):
+    def put_problem(self, data={}):
         required_args = [{
             'name': '+id',
             'type': int,
@@ -176,24 +175,117 @@ class ProblemService(BaseService):
             # if pdf_file is None:
                 # return ('pdf file should be uploaded', None)
 
-        if int(data['id']) == 0:
-            self.reset_rs_problem_count(data['group_id'])
-            data.pop('id')
-            sql, parma = self.gen_insert_sql("problems", data)
-            id = (yield self.db.execute(sql, parma)).fetchone()['id']
-            yield from Service.Execute.post_problem_execute({
-                'problem_id': id,
-                'execute': [
-                    1, 2, 3, 4
-                ]
-            })
-        else:
-            self.reset_rs_problem_count(data['group_id'])
-            id = data.pop('id')
-            # self.rs.delete('problem@%s' % str(id))
-            sql, parma = self.gen_update_sql("problems", data)
-            yield self.db.execute("%s WHERE id = %s" % (sql, id), parma)
-            yield self.db.execute('DELETE FROM verdicts WHERE problem_id=%s AND id!=%s;', (id, data['verdict_id'],))
+        self.reset_rs_problem_count(data['group_id'])
+        id = data.pop('id')
+        # self.rs.delete('problem@%s' % str(id))
+        sql, parma = self.gen_update_sql("problems", data)
+        yield self.db.execute("%s WHERE id = %s" % (sql, id), parma)
+        yield self.db.execute('DELETE FROM verdicts WHERE problem_id=%s AND id!=%s;', (id, data['verdict_id'],))
+        if new_verdict:
+            meta['id'] = data['verdict_id']
+            meta['title'] = 'special judge for problem %s'%(id)
+            meta['setter_user_id'] = data['setter_user_id']
+            meta['problem_id'] = id
+            meta['code_file'] = None
+            err, data['verdict_id'] = yield from Service.Verdict.post_verdict(meta)
+            if err: return (err, None)
+
+        if pdf_file:
+            folder = '/mnt/nctuoj/data/problems/%s' % id
+            file_path = '%s/pdf.pdf' % folder
+            try: os.makedirs(folder)
+            except: pass
+            with open(file_path, 'wb+') as f:
+                f.write(pdf_file['body'])
+        
+        return (None, id)
+
+    def post_problem(self, data={}):
+        required_args = [{
+            'name': '+group_id',
+            'type': int,
+        }, {
+            'name': '+setter_user_id',
+            'type': int,
+        }, {
+            'name': 'title',
+            'type': str,
+        }, {
+            'name': 'description',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'input',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'output',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'sample_input',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'sample_output',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'hint',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': 'source',
+            'type': str,
+            'xss': True,
+        }, {
+            'name': '+visible',
+            'type': int,
+        }, {
+            'name': '+verdict_id',
+            'type': int,
+        }, {
+            'name': 'verdict_code',
+        }, {
+            'name': 'verdict_execute_type_id',
+            'type': int,
+        }, {
+            'name': 'pdf',
+            'type': bool,
+        }, {
+            'name': 'pdf_file',
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        new_verdict = False
+        verdict_code = data.pop('verdict_code')
+        verdict_execute_type_id = data.pop('verdict_execute_type_id')
+        if int(data['verdict_id']) == 0:
+            print('verdict')
+            new_verdict = True
+            meta = {}
+            meta['id'] = 0
+            meta['title'] = 'special judge'
+            meta['execute_type_id'] = verdict_execute_type_id
+            meta['setter_user_id'] = data['setter_user_id']
+            meta['code_file'] = verdict_code
+            err, data['verdict_id'] = yield from Service.Verdict.post_verdict(meta)
+            if err: return (err, None)
+
+        pdf_file = data.pop('pdf_file')
+        # if data.get('pdf'):
+            # if pdf_file is None:
+                # return ('pdf file should be uploaded', None)
+
+        self.reset_rs_problem_count(data['group_id'])
+        sql, parma = self.gen_insert_sql("problems", data)
+        id = (yield self.db.execute(sql, parma)).fetchone()['id']
+        yield from Service.Problem.put_problem_execute({
+            'problem_id': id,
+            'execute': [
+                1, 2, 3, 4
+            ]
+        })
         if new_verdict:
             meta['id'] = data['verdict_id']
             meta['title'] = 'special judge for problem %s'%(id)
@@ -242,3 +334,47 @@ class ProblemService(BaseService):
         yield self.db.execute('DELETE FROM map_submission_testdata WHERE submission_id IN %s;', (tuple(x['id'] for x in res),))
         yield self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES '+','.join('(%s)'%x['id'] for x in res))
         return (None, str(data['id']))
+
+    def get_problem_execute(self, data={}):
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        # res = self.rs.get('execute@problem@%s'%str(data['problem_id']))
+        # if res: return (None, res)
+        res = yield self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['id'],))
+        res = res.fetchall()
+        print("*****")
+        print(res)
+        # self.rs.set('execute@problem@%s' % str(data['problem_id']), res)
+        return (None, res)
+
+    def put_problem_execute(self, data={}):
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        }, {
+            'name': '+execute',
+            'type': list,
+        }, ]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        yield from self.delete_problem_execute(data)
+        for x in data['execute']:
+            try:
+                yield self.db.execute("INSERT INTO map_problem_execute (execute_type_id, problem_id) values (%s, %s)", (x, data['id']))
+            except: pass
+        return (None, data['id'])
+
+    def delete_problem_execute(self, data={}):
+        required_args = [{
+            'name': '+problem_id',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        # self.rs.delete('execute@problem@%s' % str(data['problem_id']))
+        yield self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['problem_id'],))
+        return (None, None)

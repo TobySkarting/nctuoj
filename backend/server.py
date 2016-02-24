@@ -40,6 +40,9 @@ from api.bulletin       import ApiBulletinsHandler
 from api.bulletin       import ApiBulletinHandler
 from api.problem        import ApiProblemsHandler
 from api.problem        import ApiProblemHandler
+from api.problem        import ApiProblemExecuteHandler
+from api.problem        import ApiProblemRejudgeHandler
+from api.problem        import ApiProblemTagHandler
 from api.submission     import ApiSubmissionsHandler
 from api.submission     import ApiSubmissionHandler
 from api.testdata       import ApiTestdataHandler
@@ -50,6 +53,7 @@ from api.contest        import ApiContestSubmissionsHandler
 #from api.contest        import ApiContestSubmissionHandler
 from api.contest        import ApiContestScoreboardHandler
 from api.execute        import ApiExecuteTypesHandler
+from api.execute        import ApiExecuteTypesPriorityHandler
 from api.execute        import ApiExecuteTypeHandler
 from api.verdict        import ApiVerdictTypesHandler
 from api.verdict        import ApiVerdictTypeHandler
@@ -174,9 +178,11 @@ if __name__ == '__main__':
 
         ('/api/groups/\d+/problems/',                                   ApiProblemsHandler),
         ('/api/groups/\d+/problems/(\d+)/',                             ApiProblemHandler),
-        ('/api/groups/\d+/problems/(\d+)/(\w*)/',                       ApiProblemHandler),
+        ('/api/groups/\d+/problems/(\d+)/execute/',                     ApiProblemExecuteHandler),
+        ('/api/groups/\d+/problems/(\d+)/rejudge/',                     ApiProblemRejudgeHandler),
+        ('/api/groups/\d+/problems/(\d+)/tag/',                         ApiProblemTagHandler),
+        # ('/api/groups/\d+/problems/(\d+)/(\w*)/',                        ApiProblemHandler),
         ### /api/groups/\d+/problems/(\d+)/(\w*)/
-        ### /api/groups/\d+/problems/(\d+)/(execute)/
         ### /api/groups/\d+/problems/(\d+)/(tag)/
         ### /api/groups/\d+/problems/(\d+)/(testdata)/
         ('/api/groups/\d+/problems/(\d+)/(\w*)/(\d+)/',                 ApiProblemHandler),
@@ -196,7 +202,7 @@ if __name__ == '__main__':
         ('/api/time/',                                                  ApiTimeHandler),
 
         ('/api/executes/',                                              ApiExecuteTypesHandler),
-        ('/api/executes/priority/',                                     ApiExecuteTypesHandler),
+        ('/api/executes/priority/',                                     ApiExecuteTypesPriorityHandler),
         ('/api/executes/(\d+)/',                                        ApiExecuteTypeHandler),
         ('/api/verdicts/',                                              ApiVerdictTypesHandler),
         ('/api/verdicts/(\d+)/',                                        ApiVerdictTypeHandler),
