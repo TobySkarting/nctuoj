@@ -11,7 +11,11 @@ class ApiTagsHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def post(self):
-        pass
+        args = ['tag', 'description']
+        meta = self.get_args(args)
+        err, res = yield from Service.Tags.put_tag(meta)
+        if err: self.render(500, err)
+        else: self.render(200, res)
 
 
 class ApiTagHandler(ApiRequestHandler):

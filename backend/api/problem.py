@@ -201,7 +201,7 @@ class ApiProblemTagHandler(ApiProblemHandler):
         meta['group_id'] = self.current_group
         if not (yield from self.check_view(meta)):
             return 
-        err, data = yield from Service.Tags.get_problem_tag({'problem_id': meta['id']})
+        err, data = yield from Service.Problems.get_problem_tag({'problem_id': meta['id']})
         if err: self.redner(500, err)
         else: self.render(200, data)
 
@@ -213,7 +213,7 @@ class ApiProblemTagHandler(ApiProblemHandler):
         meta['group_id'] = self.current_group
         if not (yield from self.check_edit(meta)):
             return 
-        err, res = yield from Service.Tags.post_problem_tag(meta)
+        err, res = yield from Service.Problems.post_problem_tag(meta)
         if err: self.render(500, err)
         else: self.render()
         pass
@@ -226,6 +226,6 @@ class ApiProblemTagHandler(ApiProblemHandler):
         meta['group_id'] = self.current_group
         if not (yield from self.check_edit(meta)):
             return
-        err, res = yield from Service.Tags.delete_problem_tag(meta)
+        err, res = yield from Service.Problems.delete_problem_tag(meta)
         if err: self.render(500, err)
         else: self.render()

@@ -36,14 +36,14 @@ service/
         V {get, post}_problem_execute:
             V post -> put
             V move to service/problem.py 
-    - group.py
-        - post_group: post -> post&put
+    V group.py
+        V post_group: post -> post&put
     V problem.py
         V post_problem: post -> post&put
-    - tag.py
-        - post_tag: post -> post&put
-        - {get, post}_problem_tag
-            - move to service/problem.py
+    V tag.py
+        V post_tag: post -> post&put
+        V {get, post}_problem_tag
+            V move to service/problem.py
     - testdata.py
         - post_testdata: post -> post&put
     - user.py
