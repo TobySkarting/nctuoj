@@ -33,24 +33,30 @@ class SubmissionService(BaseService):
         }, {
             'name': 'problem_id',
             'type': int,
+        }, {
+            'name': 'verdict',
+            'type': int,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        sql = """
+        base_sql = """
         SELECT s.*, u.account as user, p.title as problem_title
         FROM submissions as s, users as u, problems as p
         WHERE p.id=s.problem_id AND u.id=s.user_id 
         """
-        sql += " AND p.group_id=%s  "
+        base_sql += " AND p.group_id=%s  "
         if data['problem_id']:
-            sql += "AND problem_id=%s " % (data['problem_id'])
+            base_sql += "AND problem_id=%s " % (data['problem_id'])
         if data['account']:
             try:
                 user_id = (yield self.db.execute("SELECT id FROM users WHERE account=%s", (data['account'],))).fetchone()['id']
             except:
                 user_id = 0
-            sql += "AND user_id=%s " % (user_id)
-        sql += " ORDER BY s.id DESC LIMIT %s OFFSET %s"
+            base_sql += "AND user_id=%s " % (user_id)
+        if data['verdict']:
+            base_sql += "AND s.verdict=%s " % (data['verdict'])
+
+        sql = base_sql + " ORDER BY s.id DESC LIMIT %s OFFSET %s"
         res = yield self.db.execute(sql, (data['group_id'], data['count'], (int(data["page"])-1)*int(data["count"])))
         res = res.fetchall()
         return (None, res)
@@ -65,6 +71,9 @@ class SubmissionService(BaseService):
         }, {
             'name': 'account',
             'type': str,
+        }, {
+            'name': 'verdict',
+            'type': int,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
@@ -78,6 +87,8 @@ class SubmissionService(BaseService):
             except:
                 user_id = 0
             sql += " AND user_id=%s " % (user_id)
+        if data['verdict']:
+            sql += " AND s.verdict=%s" % (data['verdict'])
         res = yield self.db.execute(sql)
         return (None, res.fetchone()['count'])
 

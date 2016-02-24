@@ -4,10 +4,26 @@
         <input class="form-control" name="problem_id" type="number" value="{{page['get']['problem_id'] or ''}}">
         <label class="control-label">Account:</label>
         <input class="form-control" name="account" type="text" value="{{page['get']['account'] or ''}}">
+        <label class="control-label">Verdict:</label>
+        <select name="verdict" value='{{page['get']['verdict'] or ''}}'>
+            <option value=''>ALL</option>
+            {% for x in map_verdict_types %}
+                <option value='{{x}}'>{{map_verdict_types[x]['abbreviation']}}</option>
+            {% end %}
+        </select>
         <button class="btn btn-success">Go</button>
-        <button class="btn btn-warning" type="button" onclick="$(this).parent().children('input').val('');$(this).parent().parent().submit()">Reset</button>
+        <button class="btn btn-warning" type="button" onclick="($(this).parent().parent()[0]).reset();$(this).parent().parent().submit()">Reset</button>
     </div>
 </form>
+<script>
+require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
+    {% if page['get']['verdict'] %}
+        $("select").selectpicker().selectpicker('val', {{page['get']['verdict']}});
+    {% else %}
+        $("select").selectpicker();
+    {% end %}
+});
+</script>
 <div class="panel panel-default table-responsive">
     <table class="table table-hover table-striped">
         <thead>
