@@ -102,7 +102,7 @@ class WebContestSubmissionsHandler(WebRequestHandler):
         if err:
             self.write_error(500, err)
             return
-        args = ['account', 'problem_id', 'page']
+        args = ['account', 'problem_id', 'page', 'verdict']
         meta = self.get_args(args)
         meta["count"] = 10
         meta['id'] = contest_id
