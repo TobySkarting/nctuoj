@@ -4,27 +4,30 @@
 {% include 'problem_edit_title.html' %}
 <a class="btn btn-default margin-bottom new_testdata" onclick="new_testdata();">New</a>
 <script>
-function new_testdata(){
-    $(".new_testdata").prop("disabled", true);
-    $.ajax({
-        url: '/api/groups/{{current_group}}/testdata/0/',
-        type: 'post',
-        data: {
-            'token': '{{account['token']}}',
-            'problem_id': '{{data['id']}}'
-        },
-        dataType: "json",
-        success: function(msg){
-            location.href = location.href;
-            $(".new_testdata").prop("disabled", false);
-        },
-        error: function(event){
-            msg = JSON.parse(event.responseText);
-            bootbox.alert(msg['msg']);
-            $(".new_testdata").prop("disabled", false);
-        }
-    });
-}
+var new_testdata = null;
+require(['jquery', 'bootbox'], function($, bootbox){
+    new_testdata = function(){
+        $(".new_testdata").prop("disabled", true);
+        $.ajax({
+            url: '/api/groups/{{current_group}}/testdata/',
+            type: 'post',
+            data: {
+                'token': '{{account['token']}}',
+                'problem_id': '{{data['id']}}'
+            },
+            dataType: "json",
+            success: function(msg){
+                location.href = location.href;
+                $(".new_testdata").prop("disabled", false);
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
+                $(".new_testdata").prop("disabled", false);
+            }
+        });
+    }
+});
 </script>
 <div class="progress">
     <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
@@ -137,7 +140,7 @@ require(["jquery", "bootbox"], function($, bootbox){
                     return xhr;
                 },
                 url: form.attr("action"),
-                type: "post",
+                type: "put",
                 data: data,
                 dataType: "json",
                 processData: false,

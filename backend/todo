@@ -44,8 +44,8 @@ service/
         V post_tag: post -> post&put
         V {get, post}_problem_tag
             V move to service/problem.py
-    - testdata.py
-        - post_testdata: post -> post&put
+    V testdata.py
+        V post_testdata: post -> post&put
     - user.py
         - post_user_basic_info: post -> put
     - verdict.py

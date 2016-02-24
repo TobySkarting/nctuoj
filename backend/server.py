@@ -45,6 +45,7 @@ from api.problem        import ApiProblemRejudgeHandler
 from api.problem        import ApiProblemTagHandler
 from api.submission     import ApiSubmissionsHandler
 from api.submission     import ApiSubmissionHandler
+from api.testdata       import ApiTestdatasHandler
 from api.testdata       import ApiTestdataHandler
 from api.contest        import ApiContestsHandler
 from api.contest        import ApiContestHandler
@@ -191,6 +192,7 @@ if __name__ == '__main__':
         ### /api/groups/\d+/problems/(\d+)/(testdata)/
         ('/api/groups/\d+/problems/(\d+)/(\w*)/(\d+)/',                 ApiProblemHandler),
         ### /api/groups/\d+/problems/(\d+)/(testdata)/(\d+)/'
+        ('/api/groups/\d+/testdata/',                                   ApiTestdatasHandler),
         ('/api/groups/\d+/testdata/(\d+)/',                             ApiTestdataHandler),
         ('/api/groups/\d+/submissions/',                                ApiSubmissionsHandler),
         ('/api/groups/\d+/submissions/(\d+)/',                          ApiSubmissionHandler),

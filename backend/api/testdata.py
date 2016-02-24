@@ -3,6 +3,28 @@ from req import Service
 from map import *
 import tornado
 
+class ApiTestdatasHandler(ApiRequestHandler):
+    def check_edit(self, meta):
+        err, problem = yield from Service.Problem.get_problem({'id': meta['problem_id']})
+        if err: 
+            self.render(500, err)
+            return False
+        if int(meta['group_id']) != int(problem['group_id']) or map_group_power['problem_manage'] not in self.current_group_power:
+            self.render(403, 'Permission Denied')
+            return False
+        return True
+    @tornado.gen.coroutine
+    def post(self):
+        print('hi')
+        args = ['problem_id', 'score', 'time_limit', 'memory_limit', 'output_limit', 'input[file]', 'output[file]']
+        meta = self.get_args(args)
+        meta['group_id'] = self.current_group
+        if not (yield from self.check_edit(meta)):
+            return
+        err, res = yield from Service.Testdata.post_testdata(meta)
+        if err: self.render(500, err)
+        else: self.render(200, res)
+
 class ApiTestdataHandler(ApiRequestHandler):
     def check_edit(self, meta):
         err, problem = yield from Service.Problem.get_problem({'id': meta['problem_id']})
@@ -12,8 +34,6 @@ class ApiTestdataHandler(ApiRequestHandler):
         if int(meta['group_id']) != int(problem['group_id']) or map_group_power['problem_manage'] not in self.current_group_power:
             self.render(403, 'Permission Denied')
             return False
-        if int(meta['id']) == 0:
-            return True
         err, testdata = yield from Service.Testdata.get_testdata(meta) 
         if err: 
             self.render(500, err)
@@ -47,17 +67,19 @@ class ApiTestdataHandler(ApiRequestHandler):
         meta['group_id'] = self.current_group
         if not (yield from self.check_view(meta)):
             return
-        pass
+        err, data = yield from Service.Testdata.get_testdata(meta)
+        if err: self.render(500, err)
+        self.render(200, data)
 
     @tornado.gen.coroutine
-    def post(self, id):
+    def put(self, id):
         args = ['problem_id', 'score', 'time_limit', 'memory_limit', 'output_limit', 'input[file]', 'output[file]']
         meta = self.get_args(args)
         meta['id'] = id
         meta['group_id'] = self.current_group
         if not (yield from self.check_edit(meta)):
             return
-        err, res = yield from Service.Testdata.post_testdata(meta)
+        err, res = yield from Service.Testdata.put_testdata(meta)
         if err: self.render(500, err)
         else: self.render(200, res)
 
