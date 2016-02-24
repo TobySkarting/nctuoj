@@ -76,6 +76,21 @@ class GroupService(BaseService):
 
     def post_group(self, data={}):
         required_args = [{
+            'name': '+name',
+            'type': str,
+        }, {
+            'name': '+description',
+            'type': str,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        # self.rs.delete('group@%s@user'%(str(data['id'])))
+        sql, param = self.gen_insert_sql('groups', data)
+        id = (yield self.db.execute(sql, param)).fetchone()['id']
+        return (None, id)
+
+    def put_group(self, data={}):
+        required_args = [{
             'name': '+id',
             'type': int,
         }, {
@@ -88,15 +103,10 @@ class GroupService(BaseService):
         err = form_validation(data, required_args)
         if err: return (err, None)
         # self.rs.delete('group@%s@user'%(str(data['id'])))
-        if int(data['id']) == 0:
-            data.pop('id')
-            sql, param = self.gen_insert_sql('groups', data)
-            id = (yield self.db.execute(sql, param)).fetchone()['id']
-        else:
-            id = data.pop('id')
-            sql, param = self.gen_update_sql('groups', data)
-            yield self.db.execute(sql+' WHERE id=%s', param+(id,))
-            # self.rs.delete('group@%s'%(str(id)))
+        id = data.pop('id')
+        sql, param = self.gen_update_sql('groups', data)
+        yield self.db.execute(sql+' WHERE id=%s', param+(id,))
+        # self.rs.delete('group@%s'%(str(id)))
         return (None, id)
 
     def post_group_user(self, data={}):

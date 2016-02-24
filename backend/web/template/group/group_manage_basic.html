@@ -2,7 +2,10 @@
 {% block content %}
 <div class="row">
     <div class="col-md-12">
-        <form class="form">
+        <form class="form" 
+              method={% if data['id'] != 0 %}"put"{% else %}"post"{% end %}
+              action={% if data['id'] != 0 %}"/api/groups/{{current_group}}/"{% else %}"/api/groups/"{% end %}
+              >
             <input type="hidden" name="token" value="{{account['token']}}">
             <div class="form-group">
                 <label class="control-label">Name</label>
@@ -26,13 +29,13 @@ require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
     $("form").submit(function(){
         data = $(this).serialize();
         $.ajax({
-            url: '/api/groups/{{current_group}}/',
+            url: $(this).attr('action'),
             data: data,
-            type: 'post',
+            type: $(this).attr('method'),
             dataType: 'json',
             success: function(msg){
                 bootbox.alert('Updated Successfully', function(){
-                    location.href = "/groups/" + msg['msg']['id'] + "/manage/";
+                    location.href = "/groups/" + msg['msg'] + "/manage/";
                 });
             },
             error: function(event){

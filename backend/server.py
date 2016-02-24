@@ -58,7 +58,9 @@ from api.execute        import ApiExecuteTypeHandler
 from api.verdict        import ApiVerdictTypesHandler
 from api.verdict        import ApiVerdictTypeHandler
 from api.group          import ApiGroupHandler
+from api.group          import ApiGroupsHandler
 from api.group          import ApiGroupUserHandler
+from api.group          import ApiGroupUserPowerHandler
 from api.time           import ApiTimeHandler
 from api.tag            import ApiTagsHandler
 from api.tag            import ApiTagHandler
@@ -171,8 +173,10 @@ if __name__ == '__main__':
         ('/api/users/(sign\w*)/',                                       ApiUserSignHandler),
         ('/api/users/(resettoken)/',                                    ApiUserSignHandler),
         
+        ('/api/groups/',                                                ApiGroupsHandler),
         ('/api/groups/\d+/',                                            ApiGroupHandler),
         ('/api/groups/\d+/(\d+)/',                                      ApiGroupUserHandler),
+        ('/api/groups/\d+/(\d+)/power/',                                ApiGroupUserPowerHandler),
         ('/api/groups/\d+/bulletins/',                                  ApiBulletinsHandler),
         ('/api/groups/\d+/bulletins/(\d+)/',                            ApiBulletinHandler),
 

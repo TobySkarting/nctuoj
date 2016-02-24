@@ -50,7 +50,7 @@ var post_group_user_power = null;
 require(['jquery', 'bootbox'], function($, bootbox){
     post_group_user_power = function(uid, power){
         $.ajax({
-            url: '/api/groups/{{current_group}}/' + uid + '/',
+            url: '/api/groups/{{current_group}}/' + uid + '/power/',
             data: {
                 token: '{{account['token']}}',
                 power: power
