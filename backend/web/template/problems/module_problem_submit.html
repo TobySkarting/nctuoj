@@ -109,7 +109,7 @@ require(["jquery",'codemirror', "bootbox", "bootstrap-select"], function($, Code
                     location.href = "/groups/{{current_group}}/submissions/"+msg['msg']+"/";
                 {% end %}
             },
-            error: function(msg){
+            error: function(event){
                 $("button").prop("disabled", false);
                 msg = JSON.parse(event.responseText);
                 console.log(msg);

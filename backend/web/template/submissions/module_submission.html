@@ -222,11 +222,11 @@ require(["jquery", "bootbox", "bootstrap-select", "codemirror"], function($, Cod
             contentType: false,
             success: function(msg){
                 $("button").prop("disabled", false);
-                if(msg['status'] == 200){
-                    location.href = "/groups/{{current_group}}/submissions/"+msg['msg']+"/";
-                } else {
-                    bootbox.alert(msg['msg']);
-                }
+                location.href = "/groups/{{current_group}}/submissions/"+msg['msg']+"/";
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
         });
         return false;
