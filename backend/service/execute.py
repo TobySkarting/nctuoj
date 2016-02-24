@@ -55,6 +55,39 @@ class ExecuteService(BaseService):
 
     def post_execute(self, data={}):
         required_args = [{
+            'name': '+setter_user_id',
+            'type': int,
+        }, {
+            'name': '+lang',
+            'type': int,
+        }, {
+            'name': 'description',
+            'type': str,
+        }, {
+            'name': 'command',
+            'type': list,
+        }, {
+            'name': 'cm_mode',
+            'type': str,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        # self.rs.delete('execute_list')
+        command = data.pop('command')
+        sql, parma = self.gen_insert_sql("execute_types", data)
+        id = (yield self.db.execute(sql, parma)).fetchone()['id']
+        yield self.db.execute("DELETE FROM execute_steps WHERE execute_type_id=%s", (id,))
+        for x in command:
+            meta = {}
+            meta['command'] = x
+            meta['execute_type_id'] = id
+            sql, parma = self.gen_insert_sql("execute_steps", meta)
+            yield self.db.execute(sql, parma)
+        # self.rs.delete('execute@%s'%(str(id)))
+        return (None, id)
+
+    def put_execute(self, data={}):
+        required_args = [{
             'name': '+id',
             'type': int,
         }, {
@@ -77,15 +110,9 @@ class ExecuteService(BaseService):
         if err: return (err, None)
         # self.rs.delete('execute_list')
         command = data.pop('command')
-        id = None
-        if int(data['id']) == 0:
-            data.pop('id')
-            sql, parma = self.gen_insert_sql("execute_types", data)
-            id = (yield self.db.execute(sql, parma)).fetchone()['id']
-        else:
-            id = data.pop('id')
-            sql, parma = self.gen_update_sql("execute_types", data)
-            yield self.db.execute("%s WHERE id = %s" % (sql, str(id)), parma)
+        id = data.pop('id')
+        sql, parma = self.gen_update_sql("execute_types", data)
+        yield self.db.execute("%s WHERE id = %s" % (sql, str(id)), parma)
         yield self.db.execute("DELETE FROM execute_steps WHERE execute_type_id=%s", (id,))
         for x in command:
             meta = {}
@@ -139,45 +166,45 @@ class ExecuteService(BaseService):
         # self.rs.delete('execute_list')
         return (None, str(data['id']))
 
-    def get_problem_execute(self, data={}):
-        required_args = [{
-            'name': '+problem_id',
-            'type': int,
-        }]
-        err = form_validation(data, required_args)
-        if err: return (err, None)
-        # res = self.rs.get('execute@problem@%s'%str(data['problem_id']))
-        # if res: return (None, res)
-        res = yield self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['problem_id'],))
-        res = res.fetchall()
-        print("*****")
-        print(res)
-        # self.rs.set('execute@problem@%s' % str(data['problem_id']), res)
-        return (None, res)
+    # def get_problem_execute(self, data={}):
+        # required_args = [{
+            # 'name': '+problem_id',
+            # 'type': int,
+        # }]
+        # err = form_validation(data, required_args)
+        # if err: return (err, None)
+        # # res = self.rs.get('execute@problem@%s'%str(data['problem_id']))
+        # # if res: return (None, res)
+        # res = yield self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['problem_id'],))
+        # res = res.fetchall()
+        # print("*****")
+        # print(res)
+        # # self.rs.set('execute@problem@%s' % str(data['problem_id']), res)
+        # return (None, res)
 
-    def post_problem_execute(self, data={}):
-        required_args = [{
-            'name': '+problem_id',
-            'type': int,
-        }]
-        err = form_validation(data, required_args)
-        if err: return (err, None)
-        yield from self.delete_problem_execute(data)
-        if data['execute']:
-            for x in data['execute']:
-                try:
-                    yield self.db.execute("INSERT INTO map_problem_execute (execute_type_id, problem_id) values (%s, %s)", (x, data['problem_id']))
-                except:
-                    pass
-        return (None, data['problem_id'])
+    # def post_problem_execute(self, data={}):
+        # required_args = [{
+            # 'name': '+problem_id',
+            # 'type': int,
+        # }]
+        # err = form_validation(data, required_args)
+        # if err: return (err, None)
+        # yield from self.delete_problem_execute(data)
+        # if data['execute']:
+            # for x in data['execute']:
+                # try:
+                    # yield self.db.execute("INSERT INTO map_problem_execute (execute_type_id, problem_id) values (%s, %s)", (x, data['problem_id']))
+                # except:
+                    # pass
+        # return (None, data['problem_id'])
 
-    def delete_problem_execute(self, data={}):
-        required_args = [{
-            'name': '+problem_id',
-            'type': int,
-        }]
-        err = form_validation(data, required_args)
-        if err: return (err, None)
-        # self.rs.delete('execute@problem@%s' % str(data['problem_id']))
-        yield self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['problem_id'],))
-        return (None, None)
+    # def delete_problem_execute(self, data={}):
+        # required_args = [{
+            # 'name': '+problem_id',
+            # 'type': int,
+        # }]
+        # err = form_validation(data, required_args)
+        # if err: return (err, None)
+        # # self.rs.delete('execute@problem@%s' % str(data['problem_id']))
+        # yield self.db.execute("DELETE FROM map_problem_execute WHERE problem_id=%s", (data['problem_id'],))
+        # return (None, None)

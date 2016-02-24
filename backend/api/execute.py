@@ -5,6 +5,11 @@ from map import *
 
 
 class ApiExecuteTypesHandler(ApiRequestHandler):
+    def check_edit(self, meta={}):
+        if map_power['execute_manage'] not in self.account['power']:
+            self.render(403, 'Permission Denied')
+            return False
+        return True
     @tornado.gen.coroutine
     def get(self):
         err, data = yield from Service.Execute.get_execute_list()
@@ -13,6 +18,24 @@ class ApiExecuteTypesHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def post(self):
+        if not self.check_edit(): 
+            return
+        args = ["description", "lang", "command[]", "cm_mode"]
+        meta = self.get_args(args)
+        meta["setter_user_id"] = self.account['id']
+        err, data = yield from Service.Execute.post_execute(meta)
+        if err: self.render(500, err)
+        else: self.render(200, {"id": data})
+
+class ApiExecuteTypesPriorityHandler(ApiRequestHandler):
+    def check_edit(self):
+        if map_power['execute_manage'] not in self.account['power']:
+            self.render(403, 'Permission Denied')
+            return False
+        return True
+    @tornado.gen.coroutine
+    def post(self):
+        if not self.check_edit(): return
         args = ['priority[]', 'id[]']
         meta = self.get_args(args)
         print('META: ', meta)
@@ -41,7 +64,7 @@ class ApiExecuteTypeHandler(ApiRequestHandler):
         else: self.render(200, data)
 
     @tornado.gen.coroutine
-    def post(self, id):
+    def put(self, id):
         check_meta = {}
         check_meta['id'] = id
         if not (yield from self.check_edit(check_meta)):
@@ -50,7 +73,7 @@ class ApiExecuteTypeHandler(ApiRequestHandler):
         meta = self.get_args(args)
         meta["setter_user_id"] = self.account['id']
         meta['id'] = id
-        err, data = yield from Service.Execute.post_execute(meta)
+        err, data = yield from Service.Execute.put_execute(meta)
         if err: self.error(err)
         else: self.render(200, {"id": data})
 

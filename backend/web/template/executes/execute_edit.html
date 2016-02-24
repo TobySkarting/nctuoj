@@ -6,7 +6,9 @@
     <a class="btn btn-default" href="/executes/{{data['id']}}/" style="margin-bottom: 12px;">Back</a>
 {% end %}
 
-<form method="post" action="/api/executes/{{data['id']}}/">
+<form method={% if data['id'] != 0 %}"put"{% else %}"post" {% end %}
+    action={% if data['id'] != 0%}"/api/executes/{{data['id']}}/"{% else %}"/api/executes/"{% end %}
+    >
     <input type="hidden" name="token" value="{{account['token']}}">
     <div class="row">
         <div class="col-xs-12">
@@ -76,6 +78,7 @@ require(["jquery", "bootbox", "bootstrap-select"], function(jquery, bootbox){
                 location.href = '/executes/'+msg['msg']['id']+'/';
             },
             error: function(event){
+                console.log(event);
                 msg = JSON.parse(event.responseText);
                 bootbox.alert(msg['msg']);
             }

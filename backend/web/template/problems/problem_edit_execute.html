@@ -16,7 +16,7 @@
         </div>
     </div>
 </div>
-<form id="problem_execute_form" method="post" action="/api/groups/{{current_group}}/problems/{{data['id']}}/execute/">
+<form id="problem_execute_form" method="put" action="/api/groups/{{current_group}}/problems/{{data['id']}}/execute/">
     <input type="hidden" name="token" value="{{account['token']}}">
     <div class="row">
         <div class="col-md-12">
@@ -109,7 +109,7 @@ require(["jquery", "bootbox"], function($, bootbox){
     $("#same_problem_id").submit(function(){
         form = $(this);
         $.ajax({
-            url: "/api/groups/0/problems/"+$("[name=id]").val()+"/execute/",
+            url: "/api/groups/"+{{current_group}}+"/problems/"+$("[name=id]").val()+"/execute/",
             dataType: "json",
             success: function(msg){
                 $('tbody:not(.template)').html("");
