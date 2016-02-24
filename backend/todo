@@ -50,3 +50,7 @@ service/
         - post_user_basic_info: post -> put
     - verdict.py
         - post_verdict: post -> post&put
+
+api
+    - submission.py
+        - restructure url
