@@ -20,13 +20,13 @@ class WebContestsHandler(WebRequestHandler):
         try:
             meta["page"] = int(meta["page"])
         except:
-            self.write_error(500, 'Argument page error')
+            self.write_error((500, 'Argument page error'))
             return
         ### should in range
         err, count = yield from Service.Contest.get_contest_list_count(meta)
         page_count = max(math.ceil(count / meta['count']), 1)
         if int(meta['page']) < 1 or int(meta['page']) > page_count:
-            self.write_error(404, 'Page out of range')
+            self.write_error((404, 'Page out of range'))
             return
         ### get data
         err, data = yield from Service.Contest.get_contest_list(meta)
@@ -100,7 +100,7 @@ class WebContestSubmissionsHandler(WebRequestHandler):
     def get(self, contest_id):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
         if err:
-            self.write_error(500, err)
+            self.write_error(err)
             return
         args = ['account', 'problem_id', 'page']
         meta = self.get_args(args)
@@ -116,20 +116,20 @@ class WebContestSubmissionsHandler(WebRequestHandler):
         try:
             meta["page"] = int(meta["page"])
         except:
-            self.write_error(500, 'Argument page error')
+            self.write_error((500, 'Argument page error'))
             return
         err, data = yield from Service.Contest.get_contest_submission_list(meta)
         if err: 
-            self.write_wrror(500, err)
+            self.write_wrror(err)
             return
         ### should in range
         err, count = yield from Service.Contest.get_contest_submission_list_count(meta)
         if err:
-            self.write_error(500, err)
+            self.write_error(err)
             return
         page_count = max(math.ceil(count / meta['count']), 1)
         if int(meta['page']) < 1 or int(meta['page']) > page_count:
-            self.write_error(500, 'Page out of range')
+            self.write_error((500, 'Page out of range'))
             return
         
         ### about pagination 
@@ -146,7 +146,7 @@ class WebContestSubmissionHandler(WebRequestHandler):
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
         err, data = yield from Service.Contest.get_contest_submission({"id": contest_id, 'user_id': self.account['id'], 'current_group_power': self.current_group_power, "submission_id": id,"group_id": self.current_group})
         if err:
-            self.write_error(500, err)
+            self.write_error(err)
             return
         self.render('./contests/contest_submission.html', contest_data=contest_data, data=data)
 

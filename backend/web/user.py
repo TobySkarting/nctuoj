@@ -51,7 +51,7 @@ class WebUserHandler(WebRequestHandler):
         err, meta = yield from Service.User.get_user_basic_info({'id': id})
         err, meta['group'] = yield from Service.User.get_user_group_info({'id': id})
         if err:
-            self.write_error(500, err)
+            self.write_error(err)
             return
         self.render('./users/user.html', data=meta)
 

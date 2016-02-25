@@ -32,16 +32,16 @@ class WebSubmissionsHandler(WebRequestHandler):
         ### should in range
         err, count = yield from Service.Submission.get_submission_list_count(meta)
         if err:
-            self.write_error(500, err)
+            self.write_error(err)
             return
         page_count = max(math.ceil(count / meta['count']), 1)
         if int(meta['page']) < 1 or int(meta['page']) > page_count:
-            self.write_error(500, 'Page out of range')
+            self.write_error((500, 'Page out of range'))
             return
         
         err, data = yield from Service.Submission.get_submission_list(meta)
         if err:
-            self.write_error(500, err)
+            self.write_error(err)
             return
         
         ### about pagination 
@@ -59,6 +59,6 @@ class WebSubmissionHandler(WebRequestHandler):
     def get(self, id):
         err, data = yield from Service.Submission.get_submission({'id': id, 'group_id': self.current_group})
         if err:
-            self.write_error(500, err)
+            self.write_error(err)
             return
         self.render('./submissions/submission.html', data=data)

@@ -19,7 +19,7 @@ class WebExecuteTypeHandler(WebRequestHandler):
         if not action : action = "view"
         if action == "view":
             err, data = yield from Service.Execute.get_execute(meta)
-            if err: self.write_error(500, err)
+            if err: self.write_error(err)
             else: self.render('./executes/execute.html', data=data)
         elif action == "edit":
             ### check power
@@ -27,7 +27,7 @@ class WebExecuteTypeHandler(WebRequestHandler):
                 self.write_error(403)
                 return
             err, data = yield from Service.Execute.get_execute(meta)
-            if err: self.write_error(500, err)
+            if err: self.write_error(err)
             else: self.render('./executes/execute_edit.html', data=data)
         else:
             self.write_error(404)

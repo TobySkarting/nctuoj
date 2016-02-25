@@ -20,13 +20,13 @@ class WebProblemsHandler(WebRequestHandler):
         try:
             meta["page"] = int(meta["page"])
         except:
-            self.write_error(500, 'Argument page error')
+            self.write_error((500, 'Argument page error'))
             return
         ### should in range
         err, count = yield from Service.Problem.get_problem_list_count(meta)
         page_count = max(math.ceil(count / meta['count']), 1)
         if int(meta['page']) < 1 or int(meta['page']) > page_count:
-            self.write_error(500, 'Page out of range')
+            self.write_error((500, 'Page out of range'))
             return
         ### get data
         err, data = yield from Service.Problem.get_problem_list(meta)
@@ -42,7 +42,7 @@ class WebProblemHandler(WebRequestHandler):
     def check_view(self, meta={}):
         err, data = yield from Service.Problem.get_problem(meta)
         if err:
-            self.write_error(500, err)
+            self.write_error(err)
             return False
         if int(data['group_id']) == int(meta['group_id']) and (map_group_power['problem_manage'] in self.current_group_power or int(data['visible']) > 0):
             return True

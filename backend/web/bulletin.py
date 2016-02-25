@@ -50,16 +50,16 @@ class WebBulletinHandler(WebRequestHandler):
         if action == "": action = "view"
         if action == "view":
             err, data = yield from Service.Bulletin.get_bulletin(meta)
-            if err: self.write_error(500, err)
+            if err: self.write_error(err)
             else: self.render('./bulletins/bulletin.html', data=data)
         elif action == "edit":
             ### check power
             if map_group_power['bulletin_manage'] not in self.current_group_power:
-                self.write_error(403)
+                self.write_error((403, ''))
                 return
             err, data = yield from Service.Bulletin.get_bulletin(meta)
-            if err: self.write_error(500, err)
+            if err: self.write_error(err)
             else: self.render('./bulletins/bulletin_edit.html', data=data)
         else:
-            self.write_error(404)
+            self.write_error((404, ''))
 

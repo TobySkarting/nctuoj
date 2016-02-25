@@ -9,14 +9,14 @@ class WebVerdictTypesHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self):
         err, data = yield from Service.Verdict.get_verdict_list()
-        if err: self.write_error(500, err)
+        if err: self.write_error(err)
         else: self.render('./verdicts/verdicts.html', data=data)
 
 class WebVerdictTypeHandler(WebRequestHandler):
     def check_view(self, meta):
         err, data = yield from Service.Verdict.get_verdict(meta)
         if err:
-            self.write_error(500, err)
+            self.write_error(err)
             return False
         if int(data['problem_id']) != 0:
             err, data = yield from Service.Problem.get_problem({'id': data['problem_id']})
@@ -41,7 +41,7 @@ class WebVerdictTypeHandler(WebRequestHandler):
             if not (yield from self.check_view(meta)):
                 return
             err, data = yield from Service.Verdict.get_verdict(meta)
-            if err: self.write_error(500, err)
+            if err: self.write_error(err)
             else: self.render('./verdicts/verdict.html', data=data)
         elif action == "edit":
             ### check power
@@ -50,10 +50,10 @@ class WebVerdictTypeHandler(WebRequestHandler):
                 return
             err, data = yield from Service.Verdict.get_verdict(meta)
             if err:
-                self.write_error(500, err)
+                self.write_error(err)
                 return
             err, data['execute_types'] = yield from Service.Execute.get_execute_list()
-            if err: self.write_error(500, err)
+            if err: self.write_error(err)
             else: self.render('./verdicts/verdict_edit.html', data=data)
         else:
             self.write_error(404)
