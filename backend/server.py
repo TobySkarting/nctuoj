@@ -15,6 +15,7 @@ import signal
 import logging 
 import momoko
 import psycopg2.extras
+from permission.permission import PermissionService
 
 ### service class
 from service.user       import UserService
@@ -293,6 +294,7 @@ if __name__ == '__main__':
     Service.Tags =          TagService(db, rs)
     Service.School =        SchoolService(db, rs)
     Service.VerdictString = VerdictStringService(db, rs)
+    Service.Permission =    PermissionService
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
     print('Server Started')
