@@ -135,7 +135,7 @@ class WebRequestHandler(RequestHandler):
     def write_error(self, err, **kwargs):
         print("write error")
         try: status_code, err = err
-        except: status_code = err, err = ''
+        except: status_code = err; err = ''
         if status_code == 403 and self.account['id'] == 0:
             self.redirect("/users/signin/?next_url=%s" % quote(self.request.uri[1:], safe=''))
             print(self.request.uri)

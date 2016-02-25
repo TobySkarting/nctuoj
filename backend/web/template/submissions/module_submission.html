@@ -184,7 +184,6 @@
 {% set cm_theme = 'cm_theme' %}
 {% set cm_mode = 'cm_mode' %}
 {% set cm_default_execute_id = data['execute_type_id'] %}
-{{ cm_default_execute_id }}
 {% include ../codemirror/cm_init.html %}
 <form class="form" action="/api/groups/{{current_group}}/submissions/0/submit/">
     <input type="hidden" name="id" value="{{data['problem_id']}}">
