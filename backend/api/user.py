@@ -105,3 +105,14 @@ class ApiUserSignHandler(ApiRequestHandler):
             self.render(msg=token)
         else:
             self.render(404)
+
+class ApiUserGetTokenHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
+    def post(self):
+        args = ['account', 'passwd']
+        meta = self.get_args(args)
+        err, res = yield from Service.User.get_user_token_by_account_passwd(meta)
+        if err:
+            self.render(403, err)
+        else:
+            self.render(200, res)

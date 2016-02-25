@@ -257,11 +257,13 @@ class UserService(BaseService):
 
 
         ### check conflict
-        res = yield self.db.execute('SELECT id FROM users ' 
-                'WHERE account = %s OR student_id = %s OR name = %s', 
-                (data['account'], data['student_id'], data['name']))
+        res = yield self.db.execute('SELECT * FROM users WHERE account = %s or email = %s', (data['account'], data['email']))
         if res.rowcount != 0:
-            return ('User Exist', None)
+            res = res.fetchone()
+            if res['email'] == data['email']:
+                return ('Email Exist', None)
+            elif res['account'] == data['account']:
+                return ('Account Exist', None)
 
         ### gen hashed passwd
         hpasswd = self.hash_pwd(data['passwd'])
@@ -318,3 +320,28 @@ class UserService(BaseService):
         res = yield self.db.execute('DELETE FROM users WHERE id=%s;', (data['id'], ))
         if res.rowcount == 0: return ('No such user', None)
         return (None, data['id'])
+    def get_user_token_by_account_passwd(self, data={}):
+        required_args = [{
+            'name': '+account',
+            'type': str,
+        }, {
+            'name': '+passwd',
+            'type': str,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+
+        ### get hashed passwd
+        col = ['passwd', 'id', 'token']
+        sql = self.gen_select_sql('users', col)
+        res = yield self.db.execute(sql+' WHERE account = %s;', (data['account'],))
+        ### check account 
+        print('RESCNT', res.rowcount)
+        if res.rowcount == 0:
+            return ('User Not Exist', None)
+        res = res.fetchone()
+        hpwd, id, token = res["passwd"], res["id"], res['token']
+        ### check passwd
+        if self.hash_pwd(data['passwd']) != hpwd:
+            return ('Wrong Password', None)
+        return (None, token)

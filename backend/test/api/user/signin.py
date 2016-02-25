@@ -6,6 +6,7 @@ import unittest
 import datetime
 from util import TestCase
 import config
+import common
 
 class TestApiUserSignin(TestCase):
     url = "%s/api/users/signin/"%(config.base_url,)
@@ -24,6 +25,7 @@ class TestApiUserSignin(TestCase):
             }
         }
         self.assertEqualR(res, expect_result)
+        print(common.get_token(data))
 
     def test_no_exist_user_login(self):
         data = {
