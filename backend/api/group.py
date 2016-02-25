@@ -6,19 +6,18 @@ from map import *
 class ApiGroupsHandler(ApiRequestHandler):
     def check_edit(self, meta={}):
         if map_power['group_manage'] not in self.account['power']:
-            self.render(403, 'Permission Denied')
+            self.render((403, 'Permission Denied'))
             return False
         return True
 
     @tornado.gen.coroutine
     def post(self):
-        print('in')
         if not self.check_edit():
             return
         args = ['name', 'description']
         meta = self.get_args(args)
         err, data = yield from Service.Group.post_group(meta)
-        if err: self.render(500, err)
+        if err: self.render(err)
         meta = {}
         meta['group_id'] = data
         meta['user_id'] = self.account['id']
@@ -28,7 +27,7 @@ class ApiGroupsHandler(ApiRequestHandler):
             try: yield from Service.Group.post_group_user_power(meta)
             except Exception as e: print(e)
         print(data)
-        self.render(200, data)
+        self.render(data)
 
 class ApiGroupHandler(ApiRequestHandler):
     def check_edit(self, meta={}):
@@ -36,7 +35,7 @@ class ApiGroupHandler(ApiRequestHandler):
             return True
         print(self.current_group_power)
         if map_group_power['group_manage'] not in self.current_group_power:
-            self.render(403, 'Permission Denied')
+            self.render((403, 'Permission Denied'))
             return False
         return True
 
@@ -45,8 +44,8 @@ class ApiGroupHandler(ApiRequestHandler):
         meta = {}
         meta['id'] = self.current_group
         err, data = yield from Service.Group.get_group(meta)
-        if err: self.render(500, err)
-        else: self.render(200, data)
+        if err: self.render(err)
+        else: self.render(data)
 
     @tornado.gen.coroutine
     def put(self):
@@ -56,8 +55,8 @@ class ApiGroupHandler(ApiRequestHandler):
         if not self.check_edit(meta):
             return
         err, data = yield from Service.Group.put_group(meta)
-        if err: self.render(500, err)
-        self.render(200, data)
+        if err: self.render(err)
+        self.render(data)
 
     @tornado.gen.coroutine
     def delete(self):
@@ -69,13 +68,13 @@ class ApiGroupHandler(ApiRequestHandler):
             return
         err, res = yield from Service.Group.delete_group(meta)
         print('err', err, res)
-        if err: self.render(500, err)
-        else: self.render(200, res)
+        if err: self.render(err)
+        else: self.render(res)
 
 class ApiGroupUserHandler(ApiRequestHandler):
     def check_edit(self, meta={}):
         if map_group_power['group_manage'] not in self.current_group_power:
-            self.render(403, 'Permission Denied')
+            self.render('Permission Denied')
             return False
         return True
     @tornado.gen.coroutine
@@ -84,8 +83,8 @@ class ApiGroupUserHandler(ApiRequestHandler):
         meta['group_id'] = self.current_group
         meta['user_id'] = user_id
         err, data = yield from Service.Group.get_group_user_power(meta)
-        if err: self.render(500, err)
-        else: self.render(200, data)
+        if err: self.render(err)
+        else: self.render(data)
 
     @tornado.gen.coroutine
     def post(self, user_id):
@@ -93,21 +92,21 @@ class ApiGroupUserHandler(ApiRequestHandler):
         meta['user_id'] = user_id
         meta['group_id'] = self.current_group
         err, res = yield from Service.Group.post_group_user(meta)
-        if err: self.render(500, err)
-        else: self.render(200, res)
+        if err: self.render(err)
+        else: self.render(res)
     @tornado.gen.coroutine
     def delete(self, user_id):
         meta = {}
         meta['group_id'] = self.current_group
         meta['user_id'] = user_id
         err, res = yield from Service.Group.delete_group_user(meta)
-        if err: self.render(500, err)
-        else: self.render(200, res)
+        if err: self.render(err)
+        else: self.render(res)
 
 class ApiGroupUserPowerHandler(ApiRequestHandler):
     def check_edit(self, meta={}):
         if map_group_power['group_manage'] not in self.current_group_power:
-            self.render(403, 'Permission Denied')
+            self.render((403, 'Permission Denied'))
             return False
         return True
     @tornado.gen.coroutine
@@ -119,5 +118,5 @@ class ApiGroupUserPowerHandler(ApiRequestHandler):
         if not self.check_edit():
             return
         err, res = yield from Service.Group.post_group_user_power(meta)
-        if err: self.render(500, err)
-        else: self.render(200, res)
+        if err: self.render(err)
+        else: self.render(res)

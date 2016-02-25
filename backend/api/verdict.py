@@ -7,7 +7,7 @@ class ApiVerdictTypesHandler(ApiRequestHandler):
 
     def check_edit(self, meta={}):
         if map_power['verdict_manage'] not in self.account['power']:
-            self.render(403, 'Permission Denied')
+            self.render((403, 'Permission Denied'))
             return False
         return True
 
@@ -16,8 +16,8 @@ class ApiVerdictTypesHandler(ApiRequestHandler):
         args = ['problem_id']
         meta = self.get_args(args)
         err, data = yield from Service.Verdict.get_verdict_list(meta)
-        if err: self.render(500, err)
-        else: self.render(200, data)
+        if err: self.render(err)
+        else: self.render(data)
 
     @tornado.gen.coroutine
     def post(self):
@@ -27,37 +27,37 @@ class ApiVerdictTypesHandler(ApiRequestHandler):
         meta = self.get_args(args)
         meta['setter_user_id'] = self.account['id']
         err, res = yield from Service.Verdict.post_verdict(meta)
-        if err: self.render(500, err)
-        else: self.render(200, res)
+        if err: self.render(err)
+        else: self.render(res)
 
 class ApiVerdictTypeHandler(ApiRequestHandler):
     def check_edit(self, meta):
         if map_power['verdict_manage'] not in self.account['power']:
-            self.render(403, 'Permission Denied')
+            self.render((403, 'Permission Denied'))
             return False
         err, data = yield from Service.Verdict.get_verdict(meta)
         if err:
-            self.render(500, err)
+            self.render(err)
             return False
         return True
     
     def check_view(self, meta):
         err, data = yield from Service.Verdict.get_verdict(meta)
         if err:
-            self.render(500, err)
+            self.render(err)
             return False
         if int(data['problem_id']) != 0:
             err, data = yield from Service.Problem.get_problem({'id': data['problem_id']})
             if err: 
-                self.render(500, err)
+                self.render(err)
                 return False
             if map_power['verdict_manage'] in self.power:
                 return True
             if int(data['group_id']) not in (int(x['id']) for x in self.group):
-                self.render(403, 'Permission Denied')
+                self.render((403, 'Permission Denied'))
                 return False
             if map_group_power['problem_manage'] not in (yield from Service.User.get_user_group_power_info(self.account['id'], data['group_id']))[1]:
-                self.render(403, 'Permission Denied')
+                self.render((403, 'Permission Denied'))
                 return False
         return True
 
@@ -68,8 +68,8 @@ class ApiVerdictTypeHandler(ApiRequestHandler):
         if not (yield from self.check_view(meta)):
             return False
         err, data = yield from Service.Verdict.get_verdict(meta)
-        if err: self.render(500, err)
-        else: self.render(200, data)
+        if err: self.render(err)
+        else: self.render(data)
 
     @tornado.gen.coroutine
     def put(self, id):
@@ -82,8 +82,8 @@ class ApiVerdictTypeHandler(ApiRequestHandler):
         meta['id'] = id
         meta['setter_user_id'] = self.account['id']
         err, res = yield from Service.Verdict.put_verdict(meta)
-        if err: self.render(500, err)
-        else: self.render(200, res)
+        if err: self.render(err)
+        else: self.render(res)
 
     @tornado.gen.coroutine
     def delete(self, id):
@@ -92,5 +92,5 @@ class ApiVerdictTypeHandler(ApiRequestHandler):
         if not (yield from self.check_edit(meta)):
             return
         err, data = yield from Service.Verdict.delete_verdict(meta)
-        if err: self.render(500, err)
-        else: self.render(200, data)
+        if err: self.render(err)
+        else: self.render(data)

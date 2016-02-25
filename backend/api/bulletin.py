@@ -7,15 +7,15 @@ from map import map_group_power
 class ApiBulletinsHandler(ApiRequestHandler):
     def check(self, meta):
         if map_group_power['bulletin_manage'] not in self.current_group_power:
-            self.render(403, "Permission Denied")
+            self.render((403, "Permission Denied"))
             return False
         if int(meta['id']) != 0:
             err, data = yield from Service.Bulletin.get_bulletin(meta)
             if err: 
-                self.render(500, err)
+                self.render(err)
                 return False
             if int(data['group_id']) != int(meta['group_id']):
-                self.render(403, "Permission Denied")
+                self.render((403, "Permission Denied"))
                 return False
         return True
 
@@ -26,8 +26,8 @@ class ApiBulletinsHandler(ApiRequestHandler):
         meta['page'] = 1
         meta['count'] = 10**9
         err, data = yield from Service.Bulletin.get_bulletin_list(meta)
-        if err: self.render(500, err)
-        else: self.render(200, data)
+        if err: self.render(err)
+        else: self.render(data)
 
     @tornado.gen.coroutine
     def post(self):
@@ -38,21 +38,21 @@ class ApiBulletinsHandler(ApiRequestHandler):
         meta['id'] = id
         if self.check(meta):
             err, data = yield from Service.Bulletin.post_bulletin(meta)
-            if err: self.render(500 ,err)
+            if err: self.render(err)
             else: self.render()
 
 class ApiBulletinHandler(ApiRequestHandler):
     def check(self, meta):
         if map_group_power['bulletin_manage'] not in self.current_group_power:
-            self.render(403, "Permission Denied")
+            self.render((403, "Permission Denied"))
             return False
         if int(meta['id']) != 0:
             err, data = yield from Service.Bulletin.get_bulletin(meta)
             if err: 
-                self.render(500, err)
+                self.render(err)
                 return False
             if int(data['group_id']) != int(meta['group_id']):
-                self.render(403, "Permission Denied")
+                self.render((403, "Permission Denied"))
                 return False
         return True
 
@@ -63,9 +63,9 @@ class ApiBulletinHandler(ApiRequestHandler):
         meta['group_id'] = self.current_group
         err, data = yield from Service.Bulletin.get_bulletin(meta)
         if err:
-            self.render(500, err)
+            self.render(err)
         else:
-            self.render(200, data)
+            self.render(data)
     
     @tornado.gen.coroutine
     def put(self, id):
@@ -76,7 +76,7 @@ class ApiBulletinHandler(ApiRequestHandler):
         meta['id'] = id
         if self.check(meta):
             err, data = yield from Service.Bulletin.post_bulletin(meta)
-            if err: self.render(500 ,err)
+            if err: self.render(err)
             else: self.render()
 
     
@@ -88,5 +88,5 @@ class ApiBulletinHandler(ApiRequestHandler):
         meta['id'] = id
         if self.check(meta):
             err, data = yield from Service.Bulletin.delete_bulletin(meta)
-            if err: self.render(500, err)
+            if err: self.render(err)
             else: self.render()

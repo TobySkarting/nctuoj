@@ -12,7 +12,7 @@ class ApiSubmissionHandler(ApiRequestHandler):
     def check_submit(self, meta={}):
         err, data = yield from Service.Problem.get_problem(meta)
         if err:
-            self.render(500, err)
+            self.render(err)
             return False
         if int(meta['group_id']) == int(data['group_id']) and (map_group_power['submission_manage'] in self.current_group_power or int(data['visible']) > 0):
             return True
@@ -20,21 +20,21 @@ class ApiSubmissionHandler(ApiRequestHandler):
             err, contest_problem_list = yield from Service.Contest.get_contest_problem_list(self.current_contest)
             if int(meta['id']) in (int(x['id']) for x in contest_problem_list):
                 return True
-        self.render(403, 'Permission Denied')
+        self.render((403, 'Permission Denied'))
         return False
 
     def check_rejudge(self, meta={}):
         err, data = yield from Service.Submission.get_submission(meta)
         if err:
-            self.render(500, err)
+            self.render(err)
             return False
         err, data = yield from Service.Problem.get_problem({'id': data['problem_id']})
         if err:
-            self.render(500, err)
+            self.render(err)
             return False
         if int(meta['group_id']) == int(data['group_id']) and map_group_power['submission_manage'] in self.current_group_power:
             return True
-        self.render(403, 'Permission Denied')
+        self.render((403, 'Permission Denied'))
         return False
 
     @tornado.gen.coroutine
@@ -43,8 +43,8 @@ class ApiSubmissionHandler(ApiRequestHandler):
         meta['id'] = id
         meta['group_id'] = self.current_group
         err, data = yield from Service.Submission.get_submission(meta)
-        if err: self.render(500, err)
-        else: self.render(200, data)
+        if err: self.render(err)
+        else: self.render(data)
 
     @tornado.gen.coroutine
     def post(self, id, action=None):
@@ -58,8 +58,8 @@ class ApiSubmissionHandler(ApiRequestHandler):
             meta['user_id'] =  self.account['id']
             meta['ip'] = self.remote_ip
             err, res = yield from Service.Submission.post_submission(meta)
-            if err: self.render(500, err)
-            else: self.render(200, res)
+            if err: self.render(err)
+            else: self.render(res)
         elif action == 'rejudge':
             meta = {}
             meta['id'] = id
@@ -67,10 +67,10 @@ class ApiSubmissionHandler(ApiRequestHandler):
             if not (yield from self.check_rejudge(meta)):
                 return
             err, res = yield from Service.Submission.post_rejudge(meta)
-            if err: self.render(500, err)
-            else: self.render(200, res)
+            if err: self.render(err)
+            else: self.render(res)
         else:
-            self.render(404, 'Page Not Found')
+            self.render((404, 'Page Not Found'))
 
 
     
