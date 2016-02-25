@@ -20,5 +20,5 @@ class SchoolService(BaseService):
         if err: return (err, None)
         res = yield self.db.execute('SELECT * FROM schools WHERE id=%s;', (data['id'],))
         if res.rowcount == 0:
-            return ('No school ID', None)
+            return ((404, 'No school ID'), None)
         return (None, res.fetchone())

@@ -55,7 +55,7 @@ class UserService(BaseService):
         if err: return (err, None)
         res = yield self.db.execute("SELECT u.*, s.name as school FROM users as u, schools as s where u.id=%s AND u.school_id = s.id", (data['id'],))
         if res.rowcount == 0:
-            return ('ID Not Exist', None)
+            return ((404, 'ID Not Exist'), None)
         res = res.fetchone()
         res.pop("passwd")
         err, res['power'] = yield from self.get_user_power_info(data)
@@ -72,7 +72,7 @@ class UserService(BaseService):
         if not res:
             res = yield self.db.execute("SELECT id FROM users WHERE token=%s", (data['token'],))
             if res.rowcount == 0:
-                return ('Token Not Exist', None)
+                return ((404, 'Token Not Exist'), None)
             res = res.fetchone()
         err, data = yield from self.get_user_basic_info(res)
         if err: return (err, None)
@@ -111,12 +111,12 @@ class UserService(BaseService):
         npasswd = data.pop('npasswd')
         rpasswd = data.pop('rpasswd')
         res = yield self.db.execute('SELECT passwd FROM users WHERE id=%s;', (id,))
-        if res.rowcount == 0: return ('User id not exist', None)
+        if res.rowcount == 0: return ((404, 'User id not exist'), None)
         hpasswd = res.fetchone()['passwd']
-        if self.hash_pwd(passwd) != hpasswd: return ('Wrong Password', None)
+        if self.hash_pwd(passwd) != hpasswd: return ((400, 'Wrong Password'), None)
         if npasswd is not None and npasswd != '':
             if npasswd != rpasswd:
-                return ('Confirm new password', None)
+                return ((400, 'Confirm new password'), None)
             else: data['passwd'] = self.hash_pwd(npasswd)
         sql, param = self.gen_update_sql('users', data)
         res = yield self.db.execute(sql+' WHERE id=%s RETURNING token;', param+(id,))
@@ -213,12 +213,12 @@ class UserService(BaseService):
         ### check account 
         print('RESCNT', res.rowcount)
         if res.rowcount == 0:
-            return ('User Not Exist', None)
+            return ((404, 'User Not Exist'), None)
         res = res.fetchone()
         hpwd, id, token = res["passwd"], res["id"], res['token']
         ### check passwd
         if self.hash_pwd(data['passwd']) != hpwd:
-            return ('Wrong Password', None)
+            return ((400, 'Wrong Password'), None)
         print(token)
         req.set_secure_cookie('token', token)
         return (None, str(id))
@@ -253,7 +253,7 @@ class UserService(BaseService):
         if err: return (err, None)
         ### check data valadation
         if data['passwd'] != data['repasswd']:
-            return ('Confirm Two Password', None)
+            return ((400, 'Confirm Two Password'), None)
 
 
         ### check conflict
@@ -261,9 +261,9 @@ class UserService(BaseService):
         if res.rowcount != 0:
             res = res.fetchone()
             if res['email'] == data['email']:
-                return ('Email Exist', None)
+                return ((400, 'Email Exist'), None)
             elif res['account'] == data['account']:
-                return ('Account Exist', None)
+                return ((400, 'Account Exist'), None)
 
         ### gen hashed passwd
         hpasswd = self.hash_pwd(data['passwd'])
@@ -276,7 +276,7 @@ class UserService(BaseService):
         res = yield self.db.execute('SELECT id FROM users '
                 'WHERE account = %s', (data['account'],))
         if res.rowcount == 0:
-            return ('Something Wrong!!!', None)
+            return ((500, 'Something Wrong!!!'), None)
         id = res.fetchone()["id"]
         yield self.db.execute("INSERT INTO map_group_user (group_id, user_id) values (1, %s)", (id,))
         # self.rs.delete('user_list_count')
@@ -302,7 +302,7 @@ class UserService(BaseService):
         hpasswd = res['passwd']
         account = res['account']
         if self.hash_pwd(data['passwd']) != hpasswd:
-            return ('Passwd Error', None)
+            return ((400, 'Passwd Error'), None)
         # self.rs.delete("user_basic@%s" % id)
         # self.rs.delete("user_token@%s" % token)
         token = self.gen_token(account)
@@ -318,8 +318,9 @@ class UserService(BaseService):
         err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute('DELETE FROM users WHERE id=%s;', (data['id'], ))
-        if res.rowcount == 0: return ('No such user', None)
+        if res.rowcount == 0: return ((404, 'No such user'), None)
         return (None, data['id'])
+
     def get_user_info_by_account_passwd(self, data={}):
         required_args = [{
             'name': '+account',
@@ -337,12 +338,12 @@ class UserService(BaseService):
         res = yield self.db.execute(sql+' WHERE account = %s;', (data['account'],))
         ### check account 
         if res.rowcount == 0:
-            return ('User Not Exist', None)
+            return ((404, 'User Not Exist'), None)
         res = res.fetchone()
         hpwd, id, token = res["passwd"], res["id"], res['token']
         ### check passwd
         if self.hash_pwd(data['passwd']) != hpwd:
-            return ('Wrong Password', None)
+            return ((400, 'Wrong Password'), None)
         return (None, {
             'id': id,
             'token': token

@@ -28,7 +28,7 @@ class TagService(BaseService):
         # res = self.rs.get('tag@%s'%(str(data['id'])))
         res = yield self.db.execute('SELECT * FROM tags WHERE id=%s;', (data['id'],))
         if res.rowcount == 0:
-            return ('No tag ID', None)
+            return ((404, 'No tag ID'), None)
         res = res.fetchone()
         # self.rs.set('tag@%s'%(str(data['id'])), res)
         return (None, res)

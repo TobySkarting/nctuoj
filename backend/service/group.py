@@ -121,7 +121,7 @@ class GroupService(BaseService):
         if err: return (err, None)
         sql, param = self.gen_insert_sql('map_group_user', data)
         try: res = yield self.db.execute(sql, param)
-        except: return ('Already in', None)
+        except: return ((400, 'Already in'), None)
         id = res.fetchone()['id']
         return (None, id)
 
@@ -138,7 +138,7 @@ class GroupService(BaseService):
         res = yield self.db.execute('DELETE FROM map_group_user WHERE user_id=%s AND group_id=%s RETURNING id;', (data['user_id'], data['group_id'],))
         print('RES: ',res)
         if res.rowcount == 0:
-            return ("User isn't in this group", None)
+            return ((404, "User isn't in this group"), None)
         # self.rs.delete('group@%s@user'%(str(data['group_id'])))
         return (None, res.fetchone()['id'])
 
@@ -199,7 +199,7 @@ class GroupService(BaseService):
         if err: return (err, None)
         res = yield self.db.execute('DELETE FROM groups WHERE id=%s RETURNING id;', (data['id'],))
         if res.rowcount == 0:
-            return ('No ID exist', None)
+            return ((404, 'No ID exist'), None)
         # self.rs.delete('group@%s'%(str(data['id'])))
         # self.rs.delete('group@%s@user'%(str(data['id'])))
         return (None, res.fetchone()['id'])

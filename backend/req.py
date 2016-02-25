@@ -84,7 +84,9 @@ class RequestHandler(tornado.web.RequestHandler):
 
 
 class ApiRequestHandler(RequestHandler):
-    def render(self, code=200, msg=""):
+    def render(self, msg=""):
+        if isinstance(msg, tuple): code, msg = msg
+        else: code = 200
         self.set_status(code)
         self.finish(json.dumps({
                 'msg': msg
@@ -130,8 +132,9 @@ class WebRequestHandler(RequestHandler):
         kwargs['httponly'] = True
         super().set_secure_cookie(name, value, expires_days, version, **kwargs)
 
-    def write_error(self, status_code, err=None, **kwargs):
+    def write_error(self, err, **kwargs):
         print("write error")
+        status_code, err = err
         if status_code == 403 and self.account['id'] == 0:
             self.redirect("/users/signin/?next_url=%s" % quote(self.request.uri[1:], safe=''))
             print(self.request.uri)

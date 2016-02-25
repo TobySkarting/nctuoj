@@ -346,8 +346,6 @@ class ProblemService(BaseService):
         # if res: return (None, res)
         res = yield self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['id'],))
         res = res.fetchall()
-        print("*****")
-        print(res)
         # self.rs.set('execute@problem@%s' % str(data['problem_id']), res)
         return (None, res)
 
@@ -393,7 +391,7 @@ class ProblemService(BaseService):
         if err: return (err, None)
         # self.rs.delete('tag@problem@%s'%(data['problem_id']))
         try: yield self.db.execute('INSERT INTO map_problem_tag (tag_id, problem_id) VALUES(%s, %s);', (data['tag_id'], data['problem_id']))
-        except: return ('Already in', None)
+        except: return ((400, 'Already in'), None)
         return (None, None)
 
     def delete_problem_tag(self, data={}):
@@ -411,7 +409,7 @@ class ProblemService(BaseService):
         # self.rs.delete('tag@problem@%s'%(data['problem_id']))
         res = yield self.db.execute('DELETE FROM map_problem_tag WHERE tag_id=%s AND problem_id=%s RETURNING id;', (data['tag_id'], data['problem_id']))
         if res.rowcount == 0:
-            return ('no this tag in this problem', None)
+            return ((404, 'no this tag in this problem'), None)
         return (None, None)
 
     def get_problem_tag(self, data={}):
@@ -427,6 +425,5 @@ class ProblemService(BaseService):
         # if res: return (None, res)
         res = yield self.db.execute('SELECT t.* FROM tags as t, map_problem_tag as m WHERE m.tag_id=t.id AND m.problem_id=%s;', (data['problem_id'],))
         res = res.fetchall()
-        print('RES: ', res)
         # self.rs.set('tag@problem@%s'%(str(data['problem_id'])), res)
         return (None, res)

@@ -37,7 +37,7 @@ class TestdataSerivce(BaseService):
         # if res: return (None, res)
         res = yield self.db.execute("SELECT * FROM testdata WHERE id=%s", (data['id'], ))
         if res.rowcount == 0:
-            return ('No tetsdata ID', None)
+            return ((404, 'No tetsdata ID'), None)
         res = res.fetchone()
         # self.rs.set('testdata@%s'%(str(data['id'])), res)
         return (None, res)

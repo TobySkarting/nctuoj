@@ -84,7 +84,7 @@ class ContestService(BaseService):
         if not res:
             res = yield self.db.execute('SELECT c.*, u.account as setter_user FROM contests as c, users as u WHERE c.setter_user_id=u.id AND c.id=%s;', (data['id'], ))
             if res.rowcount == 0:
-                return ('No Contest ID', None)
+                return ((404, 'No Contest ID'), None)
             res = res.fetchone()
             # self.rs.set('contest@%s'%str(data['id']), res)
         err, res['problem'] = yield from self.get_contest_problem_list(data)
@@ -243,7 +243,7 @@ class ContestService(BaseService):
         if err: return (err, None)
         if map_group_power['contest_manage'] not in data['current_group_power']:
             if int(submission_res['user_id']) != int(data['user_id']):
-                return ('No Submission id', None)
+                return ((404, 'No Submission id'), None)
         return (None, submission_res)
 
     def get_contest_submissions_scoreboard(self, data={}):

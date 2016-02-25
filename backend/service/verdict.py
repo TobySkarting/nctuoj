@@ -52,7 +52,7 @@ class VerdictService(BaseService):
         # if res: return (None, res)
         res = yield self.db.execute('SELECT v.*, u.account as setter_user FROM verdicts as v, users as u WHERE v.id=%s AND v.setter_user_id=u.id;', (data['id'],))
         if res.rowcount == 0:
-            return ('No Verdict ID', None)
+            return ((404, 'No Verdict ID'), None)
         res = res.fetchone()
         err, res['execute_type'] = yield from Service.Execute.get_execute({'id': res['execute_type_id']})
 

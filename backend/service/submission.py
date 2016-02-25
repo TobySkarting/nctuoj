@@ -113,9 +113,10 @@ class SubmissionService(BaseService):
         WHERE s.id=%s AND p.group_id=%s AND u.id=s.user_id AND s.problem_id=p.id 
         """, (data['id'], data['group_id'], ))
         if res.rowcount == 0:
-            return ('No Submission ID', None)
+            return ((404, 'No Submission ID'), None)
         res = res.fetchone()
-        err, res['execute'] = yield from Service.Problem.get_problem_execute(res)
+        err, res['execute'] = yield from Service.Problem.get_problem_execute({'id': res['problem_id']})
+        print(err, res)
         res['testdata'] = yield self.db.execute('SELECT m.* FROM map_submission_testdata as m WHERE submission_id=%s ORDER BY testdata_id;', (data['id'],))
         res['testdata'] = res['testdata'].fetchall()
         folder = '/mnt/nctuoj/data/submissions/%s/' % str(res['id'])
@@ -154,13 +155,13 @@ class SubmissionService(BaseService):
         print(err)
         if err: return(err, None)
         if data['code_file'] == None and len(data['plain_code']) == 0:
-            return ('No code', None)
+            return ((400, 'No code'), None)
         print('pass')
         meta = { x['name']: data[x['name']] for x in required_args }
         ### check problem has execute_type
         res = yield self.db.execute("SELECT * FROM map_problem_execute WHERE problem_id=%s and execute_type_id=%s", (data['problem_id'], data['execute_type_id'],))
         if res.rowcount == 0:
-            return ('No execute type', None)
+            return ((400, 'No execute type'), None)
         err, data['execute'] = yield from Service.Execute.get_execute({'id': data['execute_type_id']})
         ### get file name and length
         if data['code_file']:

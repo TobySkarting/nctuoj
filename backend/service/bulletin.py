@@ -56,7 +56,7 @@ class BulletinService(BaseService):
         sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND b.id=%s AND (b.group_id=%s OR group_id=0);"
         res = yield self.db.execute(sql, (data["id"], data['group_id'],))
         if res.rowcount == 0:
-            return ('Error bulletin id', None)
+            return ((404, 'Error bulletin id'), None)
         return (None, res.fetchone())
     
     def get_latest_bulletin(self, data={}):
@@ -70,7 +70,7 @@ class BulletinService(BaseService):
         # if res: return (None, res)
         sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND group_id=%s ORDER BY b.id DESC LIMIT 1"
         res = yield self.db.execute(sql, (data["group_id"],))
-        if res.rowcount == 0: return ('Empty', None)
+        if res.rowcount == 0: return ((404, 'Empty'), None)
         res = res.fetchone()
         # self.rs.set('latest_bulletin@%s' % str(data["group_id"]), res)
         return (None, res)
