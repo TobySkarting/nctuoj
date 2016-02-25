@@ -3,7 +3,7 @@ var codemirror;
 var map_lang_mode = Object();
 {% if execute %}
     {% for x in execute %}
-    map_lang_mode["{{x['id']}}"] = "{{x['cm_mode']}}";
+    map_lang_mode[{{x['id']}}] = "{{x['cm_mode']}}";
     {% end %}
 {% end %}
 var support_lang = ['clike', 'python', 'perl', 'javascript', 'ruby', 'go', 'shell'];
