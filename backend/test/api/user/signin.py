@@ -25,7 +25,6 @@ class TestApiUserSignin(TestCase):
             }
         }
         self.assertEqualR(res, expect_result)
-        print(common.get_user_info(data))
 
     def test_no_exist_user_login(self):
         data = {

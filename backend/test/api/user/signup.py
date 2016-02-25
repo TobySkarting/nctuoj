@@ -17,17 +17,17 @@ class TestApiUserSignup(TestCase):
             "account": config.user_test_account,
             "passwd": config.user_test_password,
         }
-        res = requests.post(self.url, data=data)
+        res = requests.post("%s/api/users/signin/"%(config.base_url), data=data)
         res.connection.close()
         if res.status_code == 200:
-            admin_token = common.get_token({'account': config.user_admin_account, 'passwd': config.user_admin_password})
-            
-            
-
-        
-
-            
-
+            admin_info = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})
+            test_info = common.get_user_info({'account': config.user_test_account, 'passwd': config.user_test_password})
+            delete_url = '%s/api/users/%s/'%(config.base_url, test_info['id'])
+            data = {
+                'token': admin_info['token']
+            }
+            res = requests.delete(delete_url, data=data)
+            res.connection.close()
 
         ### miss email
         data = {
@@ -154,4 +154,36 @@ class TestApiUserSignup(TestCase):
         }
         self.assertEqualR(res, expect_result)
         ### 'test' delete 'test'
+        admin_info = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})
+        test_info = common.get_user_info({'account': config.user_test_account, 'passwd': config.user_test_password})
+        delete_url = '%s/api/users/%s/'%(config.base_url, test_info['id'])
+        data = {
+            'token': test_info['token']
+        }
+        res = requests.delete(delete_url, data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 403,
+            "body": {
+                "msg": 'Permission Denied!!',
+            }
+        }
+        self.assertEqualR(res, expect_result)
         ### 'admin' delete 'test'
+        admin_info = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})
+        test_info = common.get_user_info({'account': config.user_test_account, 'passwd': config.user_test_password})
+        delete_url = '%s/api/users/%s/'%(config.base_url, test_info['id'])
+        data = {
+            'token': admin_info['token']
+        }
+        res = requests.delete(delete_url, data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 200,
+            "body": {
+                "msg": {
+                    'id': test_info['id']
+                },
+            }
+        }
+        self.assertEqualR(res, expect_result)

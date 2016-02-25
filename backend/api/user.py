@@ -112,7 +112,6 @@ class ApiUserGetInfoHandler(ApiRequestHandler):
         args = ['account', 'passwd']
         meta = self.get_args(args)
         err, res = yield from Service.User.get_user_info_by_account_passwd(meta)
-        print(res)
         if err:
             self.render(403, err)
         else:
