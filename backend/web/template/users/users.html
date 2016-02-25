@@ -73,11 +73,11 @@ require(['jquery', "bootbox"], function($, bootbox){
             },
             dataType: "json",
             success: function(msg){
-                if(msg["status"] == 200){
-                    location.href = location.href;
-                } else {
-                    bootbox.alert(msg['msg']);
-                }
+                location.href = location.href;
+            },
+            error: function(event){
+                msg = JSON.Parse(event.responseText);
+                bootbox.alert(msg['msg']);
             }
         });
     }
@@ -92,13 +92,14 @@ require(['jquery', "bootbox"], function($, bootbox){
                 },
                 dataType: "json",
                 success: function(msg){
-                    if(msg["status"] == 200){
-                        bootbox.alert('Delete Succcussfully', function(){
-                            location.href = location.href;
-                        });
-                    } else {
-                        bootbox.alert(msg['msg']);
-                    }
+                    bootbox.alert('Delete Succcussfully', function(){
+                        location.href = location.href;
+                    });
+                },
+                error: function(event){
+                    msg = JSON.Parse(event.responseText);
+                    console.log(msg);
+                    bootbox.alert(msg['msg']);
                 }
             });
             return true;
