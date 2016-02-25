@@ -320,7 +320,7 @@ class UserService(BaseService):
         res = yield self.db.execute('DELETE FROM users WHERE id=%s;', (data['id'], ))
         if res.rowcount == 0: return ('No such user', None)
         return (None, data['id'])
-    def get_user_token_by_account_passwd(self, data={}):
+    def get_user_info_by_account_passwd(self, data={}):
         required_args = [{
             'name': '+account',
             'type': str,
@@ -336,7 +336,6 @@ class UserService(BaseService):
         sql = self.gen_select_sql('users', col)
         res = yield self.db.execute(sql+' WHERE account = %s;', (data['account'],))
         ### check account 
-        print('RESCNT', res.rowcount)
         if res.rowcount == 0:
             return ('User Not Exist', None)
         res = res.fetchone()
@@ -344,4 +343,7 @@ class UserService(BaseService):
         ### check passwd
         if self.hash_pwd(data['passwd']) != hpwd:
             return ('Wrong Password', None)
-        return (None, token)
+        return (None, {
+            'id': id,
+            'token': token
+        })

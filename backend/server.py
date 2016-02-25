@@ -35,7 +35,7 @@ from service.verdictstring import VerdictStringService
 from api.user           import ApiUserSignHandler
 from api.user           import ApiUsersHandler
 from api.user           import ApiUserHandler
-from api.user           import ApiUserGetTokenHandler
+from api.user           import ApiUserGetInfoHandler
 from api.user           import ApiUserGroupHandler
 from api.bulletin       import ApiBulletinsHandler
 from api.bulletin       import ApiBulletinHandler
@@ -170,7 +170,7 @@ if __name__ == '__main__':
     app = tornado.web.Application([
         ('/',                                                           WebIndexHandler),
         ('/api/users/',                                                 ApiUsersHandler),
-        ('/api/users/gettoken/',                                        ApiUserGetTokenHandler),
+        ('/api/users/getinfo/',                                         ApiUserGetInfoHandler),
         ('/api/users/(\d+)/',                                           ApiUserHandler),
         ('/api/users/(\d+)/groups/(\d+)/(problems)/',                   ApiUserGroupHandler),
         ('/api/users/(sign\w*)/',                                       ApiUserSignHandler),

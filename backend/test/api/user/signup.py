@@ -21,6 +21,10 @@ class TestApiUserSignup(TestCase):
         res.connection.close()
         if res.status_code == 200:
             admin_token = common.get_token({'account': config.user_admin_account, 'passwd': config.user_admin_password})
+            
+            
+
+        
 
             
 
@@ -151,6 +155,3 @@ class TestApiUserSignup(TestCase):
         self.assertEqualR(res, expect_result)
         ### 'test' delete 'test'
         ### 'admin' delete 'test'
-        pass
-
-
