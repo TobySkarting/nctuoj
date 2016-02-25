@@ -34,7 +34,7 @@ class TestApiUserSignin(TestCase):
         res = requests.post(self.url, data=data)
         res.connection.close()
         expect_result = {
-            "status_code": 403,
+            "status_code": 404,
             "body": {
                 "msg": "User Not Exist",
             }
@@ -48,7 +48,7 @@ class TestApiUserSignin(TestCase):
         res = requests.post(self.url, data=data)
         res.connection.close()
         expect_result = {
-            "status_code": 403,
+            "status_code": 404,
             "body": {
                 "msg": "User Not Exist", 
             }
@@ -62,7 +62,7 @@ class TestApiUserSignin(TestCase):
         res = requests.post(self.url, data=data)
         res.connection.close()
         expect_result = {
-            "status_code": 403,
+            "status_code": 400,
             "body": {
                 "msg": "Wrong Password",
             }
