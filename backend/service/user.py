@@ -78,7 +78,7 @@ class UserService(BaseService):
         if err: return (err, None)
         return (None, data)
 
-    def post_user_basic_info(self, data={}):
+    def put_user_basic_info(self, data={}):
         required_args = [{
             'name': '+id',
             'type': int,

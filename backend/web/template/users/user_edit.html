@@ -1,7 +1,7 @@
 {% extends './../frame.html' %}
 {% block content %}
 
-<form class="form-horizontal" action="/api/users/{{account['id']}}/" method="post">
+<form class="form-horizontal" action="/api/users/{{account['id']}}/" method="put">
     <input type="hidden" name="query" value="basic_info">
     <input type="hidden" name="token" value="{{account['token']}}">
     <div class="form-group">

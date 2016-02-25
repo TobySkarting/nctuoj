@@ -47,10 +47,12 @@ service/
     V testdata.py
         V post_testdata: post -> post&put
     - user.py
-        - post_user_basic_info: post -> put
+        V post_user_basic_info: post -> put
     - verdict.py
         - post_verdict: post -> post&put
 
 api
     - submission.py
+        - restructure url
+    - user.py
         - restructure url

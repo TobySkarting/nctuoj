@@ -37,28 +37,30 @@ class ApiUserHandler(ApiRequestHandler):
         self.render(200, res)
 
     @tornado.gen.coroutine
-    def post(self, id):
-        args = ['query']
-        meta = self.get_args(args)
-        if meta['query'] == "power":
-            args = ['power']
-            meta = self.get_args(args)
-            if self.map_power['user_manage'] not in self.account['power']:
-                self.render(403, "Permission Denied")
-                return
-            meta['id'] = id
-            yield from Service.User.post_user_power(meta)
-            self.render()
-            return
+    def put(self, id):
         if int(id) != int(self.account['id']):
             self.render(403, 'Permission Denied')
             return 
         args = ['npasswd', 'rpasswd', 'passwd', 'name', 'email', 'student_id', 'school_id']
         meta = self.get_args(args)
+        print(meta)
         meta['id'] = id
-        err, res = yield from Service.User.post_user_basic_info(meta)
+        err, res = yield from Service.User.put_user_basic_info(meta)
+        print(err)
         if err: self.render(500, err)
         else: self.render(200, res)
+
+    @tornado.gen.coroutine
+    def post(self, id):
+        args = ['power']
+        meta = self.get_args(args)
+        if self.map_power['user_manage'] not in self.account['power']:
+            self.render(403, "Permission Denied")
+            return
+        meta['id'] = id
+        yield from Service.User.post_user_power(meta)
+        self.render()
+        return
 
     @tornado.gen.coroutine
     def delete(self, id):
