@@ -187,3 +187,19 @@ class TestApiUserSignup(TestCase):
             }
         }
         self.assertEqualR(res, expect_result)
+        ### 'test' signup again
+        data = {
+            'email': config.user_test_email,
+            'account': config.user_test_account,
+            'passwd': config.user_test_password,
+            'repasswd': config.user_test_password,
+        }
+        res = requests.post(self.url, data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 200,
+            "body": {
+                "msg": '',
+            }
+        }
+        self.assertEqualR(res, expect_result)
