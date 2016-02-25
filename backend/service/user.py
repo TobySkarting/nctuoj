@@ -224,7 +224,7 @@ class UserService(BaseService):
         return (None, str(id))
 
     def SignOut(self, req):
-        req.clear_cookie('id')
+        req.clear_cookie('token')
 
     def SignUp(self, data={}):
         '''
