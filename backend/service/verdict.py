@@ -68,6 +68,42 @@ class VerdictService(BaseService):
 
     def post_verdict(self ,data={}):
         required_args = [{
+            'name': '+title',
+            'type': str,
+        }, {
+            'name': '+execute_type_id',
+            'type': int,
+        }, {
+            'name': '+setter_user_id',
+            'type': int,
+        }, {
+            'name': 'code_file',
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        code_file = None
+        if data['code_file'] is None:
+            return ('No code file', None)
+        data['file_name'] = data['code_file']['filename']
+        code_file = data.pop('code_file')
+        sql, param = self.gen_insert_sql('verdicts', data)
+        id = (yield self.db.execute(sql, param)).fetchone()['id']
+        
+        if code_file:
+            folder = '/mnt/nctuoj/data/verdicts/%s/' % str(id)
+            file_path = '%s/%s' % (folder, data['file_name'])
+            try: shutil.rmtree(folder)
+            except: pass
+            try: os.makedirs(folder)
+            except: pass
+            with open(file_path, 'wb+') as f:
+                f.write(code_file['body'])
+        # self.rs.delete('verdict@%s'%(str(id)))
+        # self.rs.delete('verdict_list')
+        return (None, str(id))
+
+    def put_verdict(self ,data={}):
+        required_args = [{
             'name': '+id',
             'type': int,
         }, {
@@ -84,22 +120,11 @@ class VerdictService(BaseService):
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        code_file = None
-        id = None
-        if int(data['id']) == 0:
-            if data['code_file'] is None:
-                return ('No code file', None)
-            data['file_name'] = data['code_file']['filename']
-            code_file = data.pop('code_file')
-            data.pop('id')
-            sql, param = self.gen_insert_sql('verdicts', data)
-            id = (yield self.db.execute(sql, param)).fetchone()['id']
-        else:
-            code_file = data.pop('code_file')
-            if code_file: data['file_name'] = code_file['filename']
-            sql, param = self.gen_update_sql('verdicts', data)
-            id = data.pop('id')
-            yield self.db.execute(sql+' WHERE id=%s;', param+(id,))
+        code_file = data.pop('code_file')
+        if code_file: data['file_name'] = code_file['filename']
+        sql, param = self.gen_update_sql('verdicts', data)
+        id = data.pop('id')
+        yield self.db.execute(sql+' WHERE id=%s;', param+(id,))
         
         if code_file:
             folder = '/mnt/nctuoj/data/verdicts/%s/' % str(id)

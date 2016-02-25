@@ -6,7 +6,9 @@
         <h2 class="text-center">Edit Verdict. #{{data['id']}}</h2>
     </div>
 </div>
-<form class="form" action="/api/verdicts/{{data['id']}}/">
+<form class="form" 
+      method={% if data['id'] != 0 %}"put"{% else %}"post"{% end %}
+      action={% if data['id'] != 0 %}"/api/verdicts/{{data['id']}}/"{% else %}"/api/verdicts/"{% end %}>
     <input name="token" type="hidden" value='{{account['token']}}'>
     <div class="form-inline margin-bottom">
         <label class="label-control">Title</label>
@@ -33,14 +35,14 @@
 </div>
 <script>
 require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
-    $(".selectpicker").selectpicker().selectpicker('val', {{data['execute_type_id']}});
+    $(".selectpicker").selectpicker().selectpicker('val', {{data['execute_type_id'] or 1}});
     $("form").submit(function(){
         var data = new FormData($(this)[0]);
         form = $(this);
         $("button").prop("disabled", true);
         $.ajax({
             url: form.attr("action"),
-            type: "post",
+            type: form.attr('method'),
             data: data,
             dataType: "json",
             processData: false,
@@ -55,6 +57,7 @@ require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
                 bootbox.alert(msg['msg']);
             }
         });
+        return false;
 
     });
 });

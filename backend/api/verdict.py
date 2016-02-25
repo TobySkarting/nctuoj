@@ -4,6 +4,13 @@ from map import *
 import tornado
 
 class ApiVerdictTypesHandler(ApiRequestHandler):
+
+    def check_edit(self, meta={}):
+        if map_power['verdict_manage'] not in self.account['power']:
+            self.render(403, 'Permission Denied')
+            return False
+        return True
+
     @tornado.gen.coroutine
     def get(self):
         args = ['problem_id']
@@ -14,7 +21,14 @@ class ApiVerdictTypesHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def post(self):
-        pass
+        if not (self.check_edit()):
+            return
+        args = ['title', 'code_file[file]', 'execute_type_id']
+        meta = self.get_args(args)
+        meta['setter_user_id'] = self.account['id']
+        err, res = yield from Service.Verdict.post_verdict(meta)
+        if err: self.render(500, err)
+        else: self.render(200, res)
 
 class ApiVerdictTypeHandler(ApiRequestHandler):
     def check_edit(self, meta):
@@ -58,7 +72,7 @@ class ApiVerdictTypeHandler(ApiRequestHandler):
         else: self.render(200, data)
 
     @tornado.gen.coroutine
-    def post(self, id):
+    def put(self, id):
         meta = {}
         meta['id'] = id
         if not (yield from self.check_edit(meta)):
@@ -67,7 +81,7 @@ class ApiVerdictTypeHandler(ApiRequestHandler):
         meta = self.get_args(args)
         meta['id'] = id
         meta['setter_user_id'] = self.account['id']
-        err, res = yield from Service.Verdict.post_verdict(meta)
+        err, res = yield from Service.Verdict.put_verdict(meta)
         if err: self.render(500, err)
         else: self.render(200, res)
 

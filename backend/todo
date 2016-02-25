@@ -46,10 +46,10 @@ service/
             V move to service/problem.py
     V testdata.py
         V post_testdata: post -> post&put
-    - user.py
+    V user.py
         V post_user_basic_info: post -> put
-    - verdict.py
-        - post_verdict: post -> post&put
+    V verdict.py
+        V post_verdict: post -> post&put
 
 api
     - submission.py
