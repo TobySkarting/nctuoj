@@ -32,7 +32,7 @@ def form_validation(form, schema):
         if require and name not in form:
             return '%s not in form' % name
 
-        if form[name] is None and 'non_empty' in item and item['non_empty']:
+        if name in form and form[name] is None and 'non_empty' in item and item['non_empty']:
             return 'value of %s: "%s" should not be empty value' % (name, str(form[name]))
 
 
