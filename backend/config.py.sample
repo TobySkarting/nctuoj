@@ -11,6 +11,6 @@ PORT = ''
 MAX_WAIT_SECOND_BEFORE_SHUTDOWN = 2
 LOG_FILE_PATH = './log/server.log'
 DATA_EXPIRE_SECOND = 60
-API_URI_WITHOUT_SIGNIN = ['/api/users/signin/', '/api/users/signup/']
+API_URI_WITHOUT_SIGNIN = ['/api/users/signin/', '/api/users/signup/', '/api/users/getinfo/']
 DEBUG = True
 PASSWORD_SALT="adfdafd"

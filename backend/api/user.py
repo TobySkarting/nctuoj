@@ -108,7 +108,7 @@ class ApiUserSignHandler(ApiRequestHandler):
 
 class ApiUserGetInfoHandler(ApiRequestHandler):
     @tornado.gen.coroutine
-    def get(self):
+    def post(self):
         args = ['account', 'passwd']
         meta = self.get_args(args)
         err, res = yield from Service.User.get_user_info_by_account_passwd(meta)
