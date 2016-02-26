@@ -75,7 +75,7 @@ class BulletinService(BaseService):
         # self.rs.set('latest_bulletin@%s' % str(data["group_id"]), res)
         return (None, res)
 
-    def post_bulletin(self, data={}):
+    def put_bulletin(self, data={}):
         required_args = [{
             'name': '+id',
             'type': int,
@@ -121,7 +121,6 @@ class BulletinService(BaseService):
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        data.pop('id')
         sql, parma = self.gen_insert_sql("bulletins", data)
         id = (yield self.db.execute(sql, parma)).fetchone()['id']
         return (None, str(id))
