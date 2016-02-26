@@ -7,10 +7,13 @@ from map import map_group_power
 class ApiBulletinsHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self):
-        meta = {}
+        args = ["page", "count"]
+        meta = self.get_args(args)
         meta['group_id'] = self.current_group
-        meta['page'] = 1
-        meta['count'] = 10**9
+        if not meta['page']:
+            meta['page'] = 1
+        if not meta['count']:
+            meta['count'] = 10
         err, data = yield from Service.Bulletin.get_bulletin_list(meta)
         if err: self.render(err)
         else: self.render(data)
@@ -18,7 +21,6 @@ class ApiBulletinsHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def post(self):
         err = yield from Service.Permission.check(self)
-        print(err)
         if err:
             self.render(err)
             return
