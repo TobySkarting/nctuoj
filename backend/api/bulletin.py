@@ -31,15 +31,17 @@ class ApiBulletinsHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def post(self):
+        err = yield from Service.Permission.check(self)
+        if err:
+            self.render(err)
+            return
         args = ["title", "content"]
         meta = self.get_args(args)
         meta["group_id"] = self.current_group
         meta["setter_user_id"] = self.account['id']
-        meta['id'] = id
-        if self.check(meta):
-            err, data = yield from Service.Bulletin.post_bulletin(meta)
-            if err: self.render(err)
-            else: self.render()
+        err, data = yield from Service.Bulletin.post_bulletin(meta)
+        if err: self.render(err)
+        else: self.render()
 
 class ApiBulletinHandler(ApiRequestHandler):
     def check(self, meta):
@@ -75,7 +77,7 @@ class ApiBulletinHandler(ApiRequestHandler):
         meta["setter_user_id"] = self.account['id']
         meta['id'] = id
         if self.check(meta):
-            err, data = yield from Service.Bulletin.post_bulletin(meta)
+            err, data = yield from Service.Bulletin.put_bulletin(meta)
             if err: self.render(err)
             else: self.render()
 
