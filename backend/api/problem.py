@@ -7,11 +7,11 @@ import tornado
 class ApiProblemsHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self):
-        meta = {}
+        args = ['page', 'count']
+        meta = self.get_args(args)
+        meta['page'] = meta['page'] or 1
+        meta['count'] = meta['count'] or 10
         meta['group_id'] = self.current_group
-        meta['user_id'] = self.account['id']
-        meta['page'] = 1
-        meta['count'] = 10**9
         err, data = yield from Service.Problem.get_problem_list(meta)
         if err: self.render(err)
         else: self.render(data)
