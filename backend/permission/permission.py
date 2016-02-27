@@ -100,9 +100,6 @@ from web.user           import WebUserEditHandler
 ### static file handler
 from file.testdata import FileTestdataHandler
 
-<<<<<<< a036781425a4547b8e30bdff7f17516b87274401
-from permission.bulletin import ApiBulletinsPermission
-=======
 from permission.api.bulletin import ApiBulletinsPermission
 from permission.api.bulletin import ApiBulletinPermission
 from permission.api.problem import ApiProblemsPermission
@@ -110,7 +107,8 @@ from permission.api.problem import ApiProblemPermission
 from permission.api.problem import ApiProblemExecutePermission
 from permission.api.problem import ApiProblemTagPermission
 from permission.api.problem import ApiProblemRejudgePermission
->>>>>>> add problem permission
+from permission.api.submission import ApiSubmissionsPermission
+from permission.api.submission import ApiSubmissionRejudgePermission
 
 
 class PermissionService:
@@ -131,6 +129,10 @@ class PermissionService:
             res = ApiProblemTagPermission.check(req, data)
         elif isinstance(req, ApiProblemRejudgeHandler):
             res = ApiProblemRejudgePermission.check(req, data)
+        elif isinstance(req, ApiSubmissionsHandler):
+            res = ApiSubmissionsPermission.check(req, data)
+        elif isinstance(req, ApiSubmissionRejudgeHandler):
+            res = ApiSubmissionRejudgePermission.check(req, data)
         print('type', type(res)) 
         if isinstance(res, types.GeneratorType):
             res = yield from res

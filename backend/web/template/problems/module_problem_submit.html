@@ -10,7 +10,7 @@
             <input type="hidden" name="token" value="{{account['token']}}">
             <h1>
                 {% if 'contest_data' in globals() %}
-                    <input type="hidden" name="id" value="{{data['id']}}">
+                    <input type="hidden" name="problem_id" value="{{data['id']}}">
                     <a href="/groups/{{current_group}}/contests/{{contest_data['id']}}/problems/{{data['id']}}/">
                         {% for id, x in enumerate(contest_data['problem']) %}
                             {% if x['id'] == data['id'] %}
@@ -19,7 +19,7 @@
                         {% end %}
                     </a>
                 {% else %}
-                    <input type="hidden" name="id" value="{{data['id']}}">
+                    <input type="hidden" name="problem_id" value="{{data['id']}}">
                     <a href="/groups/{{current_group}}/problems/{{data['id']}}/">{{data['id']}}.{{data['title']}}</a>
                 {% end %}
             </h1>
