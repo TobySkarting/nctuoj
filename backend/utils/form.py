@@ -36,6 +36,7 @@ def _form_validation(form, schema):
             return '%s not in form' % name
 
         if not require and (name not in form or form[name] is None):
+            form[name] = None
             continue
 
         if name in form or require:
@@ -81,5 +82,7 @@ def _form_validation(form, schema):
                 xss.feed(form[name])
                 xss.close()
                 form[name] = xss.getHtml()
+        else:
+            form[name] = None
 
     return None

@@ -12,6 +12,15 @@ class WebSubmissionsHandler(WebRequestHandler):
         meta["count"] = 10
         meta["group_id"] = self.current_group
 
+        if not meta['account']:
+            meta.pop('account')
+
+        if not meta['problem_id']:
+            meta.pop('problem_id')
+
+        if not meta['verdict']:
+            meta.pop('verdict')
+
         ### default page is 1
         if not meta['page']:
             meta['page'] = 1
@@ -43,7 +52,6 @@ class WebSubmissionsHandler(WebRequestHandler):
         page['url'] = '/groups/%s/submissions/' % meta['group_id']
         args = ['account', 'problem_id', 'verdict']
         page['get'] = self.get_args(args)
-        print(page['get'])
         self.render('./submissions/submissions.html', data=data, page=page)
 
 class WebSubmissionHandler(WebRequestHandler):
