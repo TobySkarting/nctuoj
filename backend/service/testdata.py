@@ -75,9 +75,6 @@ class TestdataSerivce(BaseService):
             'name': '+id',
             'type': int,
         }, {
-            'name': '+group_id',
-            'type': int,
-        }, {
             'name': '+problem_id',
             'type': int,
         }, {
@@ -121,9 +118,6 @@ class TestdataSerivce(BaseService):
     def delete_testdata(self, data={}):
         required_args = [{
             'name': '+id',
-            'type': int,
-        }, {
-            'name': '+problem_id',
             'type': int,
         }]
         err = form_validation(data, required_args)
