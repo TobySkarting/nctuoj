@@ -22,7 +22,6 @@ class ApiUserGroupHandler(ApiRequestHandler):
 
 class ApiUserHandler(ApiRequestHandler):
     def check_edit(self, meta={}):
-        print('POWER', self.account['power'])
         if map_power['user_manage'] not in self.account['power']:
             self.render((403, 'Permission Denied!!'))
             return False
@@ -43,10 +42,8 @@ class ApiUserHandler(ApiRequestHandler):
             return 
         args = ['npasswd', 'rpasswd', 'passwd', 'name', 'email', 'student_id', 'school_id']
         meta = self.get_args(args)
-        print(meta)
         meta['id'] = id
         err, res = yield from Service.User.put_user_basic_info(meta)
-        print(err)
         if err: self.render(err)
         else: self.render(res)
 
@@ -64,7 +61,6 @@ class ApiUserHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def delete(self, id):
-        print(self.account['power'])
         if not self.check_edit():
             return
         meta = {'id': id}

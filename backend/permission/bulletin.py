@@ -5,4 +5,7 @@ from permission.base import PermissionBase
 class ApiBulletinsPermission(PermissionBase):
     def get(req, data):
         return None
+    
+    def post(req, data):
+        return None
         

@@ -13,10 +13,11 @@ class TestApiBulletin(TestCase):
     urls = '%s/api/groups/1/bulletins/'%(config.base_url)
     another_url = '%s/api/groups/2/bulletins/'%(config.base_url)
     another_urls = '%s/api/groups/2/bulletins/'%(config.base_url)
-    admin_token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})
-    user_token = common.get_user_info({'account': config.user_test_account, 'passwd': config.user_test_password})
+    admin_token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})['token']
+    user_token = common.get_user_info({'account': config.user_test_account, 'passwd': config.user_test_password})['token']
 
     def test_admin_get_bulletins(self):
+        print(self.admin_token)
         data = {
             "token": self.admin_token,
         }
@@ -24,13 +25,17 @@ class TestApiBulletin(TestCase):
         res.connection.close()
         self.assertEqual(res.status_code, 200)
 
+    """
     def test_admin_post_bulletin(self):
         data = {
             "token": self.admin_token,
+            "title": "test post",
+            "content": "test content",
         }
         res = requests.post(self.urls, data=data)
         res.connection.close()
         print(res.status_code, res.text)
+    """
 
 
 

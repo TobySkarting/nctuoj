@@ -66,6 +66,7 @@ class RequestHandler(tornado.web.RequestHandler):
 
     @tornado.gen.coroutine
     def prepare(self):
+        print("[%s] %s"%(self.request.method, self.request.uri))
         try:
             self.current_group = int(re.search(r'.*/groups/(\d+).*', self.request.uri).groups(1)[0])
         except:

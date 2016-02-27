@@ -211,7 +211,6 @@ class UserService(BaseService):
         sql = self.gen_select_sql('users', col)
         res = yield self.db.execute(sql+' WHERE account = %s;', (data['account'],))
         ### check account 
-        print('RESCNT', res.rowcount)
         if res.rowcount == 0:
             return ((404, 'User Not Exist'), None)
         res = res.fetchone()
@@ -219,7 +218,6 @@ class UserService(BaseService):
         ### check passwd
         if self.hash_pwd(data['passwd']) != hpwd:
             return ((400, 'Wrong Password'), None)
-        print(token)
         req.set_secure_cookie('token', token)
         return (None, str(id))
 
