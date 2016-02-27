@@ -114,6 +114,8 @@ from permission.api.submission import ApiSubmissionRejudgePermission
 from permission.api.execute import ApiExecuteTypesPermission
 from permission.api.execute import ApiExecuteTypePermission
 from permission.api.execute import ApiExecuteTypesPriorityPermission
+from permission.api.verdict import ApiVerdictTypesPermission
+from permission.api.verdict import ApiVerdictTypePermission
 
 
 class PermissionService:
@@ -146,6 +148,10 @@ class PermissionService:
             res = ApiExecuteTypePermission.check(req, data)
         elif isinstance(req, ApiExecuteTypesPriorityHandler):
             res = ApiExecuteTypesPriorityPermission.check(req, data)
+        elif isinstance(req, ApiVerdictTypesPermission):
+            res = ApiVerdictTypesPermission(req, data)
+        elif isinstance(req, ApiVerdictTypePermission):
+            res = ApiVerdictTypePermission(req, data)
         if isinstance(res, types.GeneratorType):
             res = yield from res
         return res

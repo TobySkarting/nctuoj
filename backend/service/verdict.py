@@ -77,13 +77,13 @@ class VerdictService(BaseService):
             'name': '+setter_user_id',
             'type': int,
         }, {
-            'name': 'code_file',
+            'name': '+code_file',
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
         code_file = None
         if data['code_file'] is None:
-            return ('No code file', None)
+            return ((400, 'No code file'), None)
         data['file_name'] = data['code_file']['filename']
         code_file = data.pop('code_file')
         sql, param = self.gen_insert_sql('verdicts', data)
