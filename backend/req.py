@@ -193,7 +193,6 @@ class WebRequestHandler(RequestHandler):
             self.clear_cookie('token')
         if id == 0:
             self.account['token'] = ""
-        print(id)
         
         self.account["id"] = id
         err, self.registered_contest = yield from Service.User.get_user_contest({'id': id})
