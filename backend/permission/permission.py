@@ -29,6 +29,7 @@ from api.problem        import ApiProblemRejudgeHandler
 from api.problem        import ApiProblemTagHandler
 from api.submission     import ApiSubmissionsHandler
 from api.submission     import ApiSubmissionHandler
+from api.submission     import ApiSubmissionRejudgeHandler
 from api.testdata       import ApiTestdatasHandler
 from api.testdata       import ApiTestdataHandler
 from api.contest        import ApiContestsHandler
@@ -108,6 +109,7 @@ from permission.api.problem import ApiProblemExecutePermission
 from permission.api.problem import ApiProblemTagPermission
 from permission.api.problem import ApiProblemRejudgePermission
 from permission.api.submission import ApiSubmissionsPermission
+from permission.api.submission import ApiSubmissionPermission
 from permission.api.submission import ApiSubmissionRejudgePermission
 
 
@@ -131,9 +133,10 @@ class PermissionService:
             res = ApiProblemRejudgePermission.check(req, data)
         elif isinstance(req, ApiSubmissionsHandler):
             res = ApiSubmissionsPermission.check(req, data)
+        elif isinstance(req, ApiSubmissionHandler):
+            res = ApiSubmissionPermission.check(req, data)
         elif isinstance(req, ApiSubmissionRejudgeHandler):
             res = ApiSubmissionRejudgePermission.check(req, data)
-        print('type', type(res)) 
         if isinstance(res, types.GeneratorType):
             res = yield from res
         return res

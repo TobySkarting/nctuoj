@@ -31,10 +31,12 @@ class ApiSubmissionsHandler(ApiRequestHandler):
 class ApiSubmissionHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
-        meta = {}
-        meta['id'] = id
-        meta['group_id'] = self.current_group
-        err, data = yield from Service.Submission.get_submission(meta)
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
+        err, data = yield from Service.Submission.get_submission({'id': id})
+        if self.account['id'] != data['user_id'] and \
+                map_group_power['submission_manage'] not in self.current_group_power:
+            data.pop('code')
         if err: self.render(err)
         else: self.render(data)
 

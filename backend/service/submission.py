@@ -101,21 +101,18 @@ class SubmissionService(BaseService):
         required_args = [{
             'name': '+id',
             'type': int,
-        }, {
-            'name': '+group_id',
-            'type': int,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute("""
         SELECT s.*, u.account as submitter, p.title as problem_name, p.group_id as problem_group_id
         FROM submissions as s, users as u, problems as p
-        WHERE s.id=%s AND p.group_id=%s AND u.id=s.user_id AND s.problem_id=p.id 
-        """, (data['id'], data['group_id'], ))
+        WHERE s.id=%s AND u.id=s.user_id AND s.problem_id=p.id 
+        """, (data['id'],))
         if res.rowcount == 0:
             return ((404, 'No Submission ID'), None)
         res = res.fetchone()
-        err, res['execute'] = yield from Service.Problem.get_problem_execute({'id': res['problem_id']})
+        err, res['execute'] = yield from Service.Problem.get_problem_execute({'problem_id': res['problem_id']})
         res['testdata'] = yield self.db.execute('SELECT m.* FROM map_submission_testdata as m WHERE submission_id=%s ORDER BY testdata_id;', (data['id'],))
         res['testdata'] = res['testdata'].fetchall()
         folder = '/mnt/nctuoj/data/submissions/%s/' % str(res['id'])
