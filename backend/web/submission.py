@@ -11,14 +11,6 @@ class WebSubmissionsHandler(WebRequestHandler):
         meta = self.get_args(args)
         meta["count"] = 10
         meta["group_id"] = self.current_group
-        if not meta['account']:
-            meta.pop('account')
-
-        if not meta['problem_id']:
-            meta.pop('problem_id')
-
-        if not meta['verdict']:
-            meta.pop('verdict')
 
         ### default page is 1
         if not meta['page']:

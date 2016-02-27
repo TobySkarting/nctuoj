@@ -35,6 +35,9 @@ def _form_validation(form, schema):
         if require and name not in form:
             return '%s not in form' % name
 
+        if not require and (name not in form or form[name] is None):
+            continue
+
         if name in form or require:
             ### check value type
             if 'type' in item:
@@ -78,6 +81,5 @@ def _form_validation(form, schema):
                 xss.feed(form[name])
                 xss.close()
                 form[name] = xss.getHtml()
-        else: form[name] = None
 
     return None
