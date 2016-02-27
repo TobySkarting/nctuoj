@@ -186,6 +186,7 @@ class SubmissionService(BaseService):
         try: shutil.rmtree(folder)
         except: pass
         try: os.makedirs(folder)
+        except: pass
         #yield self.ftp.delete(remote_folder)
         #shutil.rmtree(remote_folder)
         with open(file_path, 'wb+') as f:
