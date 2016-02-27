@@ -116,7 +116,6 @@ class SubmissionService(BaseService):
             return ((404, 'No Submission ID'), None)
         res = res.fetchone()
         err, res['execute'] = yield from Service.Problem.get_problem_execute({'id': res['problem_id']})
-        print(err, res)
         res['testdata'] = yield self.db.execute('SELECT m.* FROM map_submission_testdata as m WHERE submission_id=%s ORDER BY testdata_id;', (data['id'],))
         res['testdata'] = res['testdata'].fetchall()
         folder = '/mnt/nctuoj/data/submissions/%s/' % str(res['id'])
@@ -150,13 +149,10 @@ class SubmissionService(BaseService):
             'name': '+ip',
             'type': str,
         }]
-        print(data)
         err = form_validation(data, required_args)
-        print(err)
         if err: return(err, None)
         if data['code_file'] == None and len(data['plain_code']) == 0:
             return ((400, 'No code'), None)
-        print('pass')
         meta = { x['name']: data[x['name']] for x in required_args }
         ### check problem has execute_type
         res = yield self.db.execute("SELECT * FROM map_problem_execute WHERE problem_id=%s and execute_type_id=%s", (data['problem_id'], data['execute_type_id'],))
@@ -190,7 +186,6 @@ class SubmissionService(BaseService):
         try: shutil.rmtree(folder)
         except: pass
         try: os.makedirs(folder)
-        except Exception as e: print(e)
         #yield self.ftp.delete(remote_folder)
         #shutil.rmtree(remote_folder)
         with open(file_path, 'wb+') as f:
@@ -203,7 +198,6 @@ class SubmissionService(BaseService):
                 f.write(data['plain_code'].encode())
         #yield self.ftp.put(file_path, remote_path)
         yield self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (id,))
-        print(id)
         return (None, id) 
 
     def post_rejudge(self, data={}):
