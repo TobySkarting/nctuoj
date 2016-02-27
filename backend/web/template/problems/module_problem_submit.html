@@ -6,7 +6,7 @@
 {% include ../codemirror/cm_init.html %}
 <div class="row">
     <div class="col-md-12">
-        <form action="/api/groups/{{current_group}}/submissions/0/submit/">
+        <form action="/api/groups/{{current_group}}/submissions/">
             <input type="hidden" name="token" value="{{account['token']}}">
             <h1>
                 {% if 'contest_data' in globals() %}

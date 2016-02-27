@@ -155,7 +155,9 @@ class SubmissionService(BaseService):
             return ((400, 'No code'), None)
         meta = { x['name']: data[x['name']] for x in required_args }
         ### check problem has execute_type
+        print('data', data)
         res = yield self.db.execute("SELECT * FROM map_problem_execute WHERE problem_id=%s and execute_type_id=%s", (data['problem_id'], data['execute_type_id'],))
+        print(res.fetchall())
         if res.rowcount == 0:
             return ((400, 'No execute type'), None)
         err, data['execute'] = yield from Service.Execute.get_execute({'id': data['execute_type_id']})
