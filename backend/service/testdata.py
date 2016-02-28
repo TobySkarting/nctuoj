@@ -3,6 +3,7 @@ from service.base import BaseService
 from utils.form import form_validation
 from map import *
 import os
+import config
 
 class TestdataSerivce(BaseService):
     def __init__(self, db, rs):
@@ -61,7 +62,7 @@ class TestdataSerivce(BaseService):
         res = yield self.db.execute("INSERT INTO testdata (problem_id) VALUES (%s) RETURNING id;", (data['problem_id'],))
         id = res.fetchone()['id']
         print('ID', id)
-        folder = "/mnt/nctuoj/data/testdata/%s/" % id
+        folder = "%s/data/testdata/%s/" % (config.DATAROOT, str(id))
         try: os.makedirs(folder)
         except: pass
         for x in ['input', 'output']:
@@ -104,7 +105,7 @@ class TestdataSerivce(BaseService):
         yield self.db.execute("%s WHERE id=%s" % (sql, data['id']), parma)
 
         """ create folder """
-        folder = "/mnt/nctuoj/data/testdata/%s" % data['id']
+        folder = "%s/data/testdata/%s" % (config.DATAROOT, str(data['id']))
         try: os.makedirs(folder)
         except Exception as e: print(e)
         """ save file and upload to ftp """

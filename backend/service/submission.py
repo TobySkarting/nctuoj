@@ -3,6 +3,7 @@ from req import Service
 from map import map_default_file_name
 from map import map_group_power
 from utils.form import form_validation
+import config
 import re
 import shutil
 import os
@@ -115,7 +116,7 @@ class SubmissionService(BaseService):
         err, res['execute'] = yield from Service.Problem.get_problem_execute({'problem_id': res['problem_id']})
         res['testdata'] = yield self.db.execute('SELECT m.* FROM map_submission_testdata as m WHERE submission_id=%s ORDER BY testdata_id;', (data['id'],))
         res['testdata'] = res['testdata'].fetchall()
-        folder = '/mnt/nctuoj/data/submissions/%s/' % str(res['id'])
+        folder = '%s/data/submissions/%s/' % (config.DATAROOT, str(res['id']))
         for x in res['testdata']:
             try: x['msg'] = open('%s/testdata_%s'%(folder, x['testdata_id'])).read()
             except: pass
@@ -129,7 +130,6 @@ class SubmissionService(BaseService):
         else:
             res['code'] = res['code'].decode()
         res['code_line'] = len(open(file_path, 'rb').readlines())
-        #self.rs.set('submission@%s'%(str(data['id'])), res)
         return (None, res)
 
     def post_submission(self, data):
@@ -173,19 +173,13 @@ class SubmissionService(BaseService):
         ### save to db
         sql, parma = self.gen_insert_sql("submissions", meta)
         id = (yield self.db.execute(sql, parma)).fetchone()['id']
-        # res = yield self.db.execute('SELECT id FROM testdata WHERE problem_id=%s;', (data['problem_id'],))
-        # res = res.fetchall()
         ### save file
-        folder = '/mnt/nctuoj/data/submissions/%s/' % str(id)
-        #remote_folder = '/mnt/nctuoj/data/submissions/%s/' % str(id)
+        folder = '%s/nctuoj/data/submissions/%s/' % (config.DATAROOT, str(id))
         file_path = '%s/%s' % (folder, meta['file_name'])
-        #remote_path = '%s/%s' % (remote_folder, meta['file_name'])
         try: shutil.rmtree(folder)
         except: pass
         try: os.makedirs(folder)
         except: pass
-        #yield self.ftp.delete(remote_folder)
-        #shutil.rmtree(remote_folder)
         with open(file_path, 'wb+') as f:
             if data['code_file']:
                 encode = chardet.detect(data['code_file']['body'])
@@ -194,7 +188,6 @@ class SubmissionService(BaseService):
                 f.write(data['code_file']['body'])
             else:
                 f.write(data['plain_code'].encode())
-        #yield self.ftp.put(file_path, remote_path)
         yield self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (id,))
         return (None, id) 
 

@@ -56,7 +56,7 @@ class VerdictService(BaseService):
         res = res.fetchone()
         err, res['execute_type'] = yield from Service.Execute.get_execute({'id': res['execute_type_id']})
 
-        folder = '/mnt/nctuoj/data/verdicts/%s/' % str(res['id'])
+        folder = '%s/data/verdicts/%s/' % (config.DATAROOT, str(res['id']))
         file_path = '%s/%s' % (folder, res['file_name'])
         try: os.makedirs(folder)
         except: pass
@@ -90,7 +90,7 @@ class VerdictService(BaseService):
         id = (yield self.db.execute(sql, param)).fetchone()['id']
         
         if code_file:
-            folder = '/mnt/nctuoj/data/verdicts/%s/' % str(id)
+            folder = '%s/data/verdicts/%s/' % (config.DATAROOT, str(id))
             file_path = '%s/%s' % (folder, data['file_name'])
             try: shutil.rmtree(folder)
             except: pass
@@ -127,7 +127,7 @@ class VerdictService(BaseService):
         yield self.db.execute(sql+' WHERE id=%s;', param+(id,))
         
         if code_file:
-            folder = '/mnt/nctuoj/data/verdicts/%s/' % str(id)
+            folder = '%s/data/verdicts/%s/' % (config.DATAROOT, str(id))
             file_path = '%s/%s' % (folder, data['file_name'])
             try: shutil.rmtree(folder)
             except: pass

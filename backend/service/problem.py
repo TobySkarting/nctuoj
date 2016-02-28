@@ -3,6 +3,7 @@ import os
 import config
 import subprocess as sp
 import time
+import config
 from req import Service
 from utils.form import form_validation
 
@@ -191,7 +192,7 @@ class ProblemService(BaseService):
             if err: return (err, None)
 
         if pdf_file:
-            folder = '/mnt/nctuoj/data/problems/%s' % id
+            folder = '%s/data/problems/%s' % (config.DATAROOT, str(id))
             file_path = '%s/pdf.pdf' % folder
             try: os.makedirs(folder)
             except: pass
@@ -296,7 +297,7 @@ class ProblemService(BaseService):
             if err: return (err, None)
 
         if pdf_file:
-            folder = '/mnt/nctuoj/data/problems/%s' % id
+            folder = '%s/data/problems/%s' % (config.DATAROOT, str(id))
             file_path = '%s/pdf.pdf' % folder
             try: os.makedirs(folder)
             except: pass

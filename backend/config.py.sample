@@ -14,3 +14,4 @@ DATA_EXPIRE_SECOND = 60
 API_URI_WITHOUT_SIGNIN = ['/api/users/signin/', '/api/users/signup/', '/api/users/getinfo/']
 DEBUG = True
 PASSWORD_SALT="adfdafd"
+DATAROOT = '/mnt/nctuoj/'
