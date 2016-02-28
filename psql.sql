@@ -266,7 +266,7 @@ ALTER SEQUENCE problems_id_seq RESTART WITH 10001;
 CREATE TRIGGER problems_updated_row BEFORE UPDATE ON problems FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON problems (visible);
 CREATE INDEX ON problems (group_id);
-INSERT INTO problems (group_id, setter_user_id, title) values (1, 1);
+INSERT INTO problems (group_id, setter_user_id) values (1, 1);
 INSERT INTO problems (group_id, setter_user_id) values (2, 1);
 
 --DROP TABLE IF EXISTS map_problem_execute;
