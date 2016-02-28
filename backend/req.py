@@ -66,7 +66,6 @@ class RequestHandler(tornado.web.RequestHandler):
 
     @tornado.gen.coroutine
     def prepare(self):
-        print("[%s] %s"%(self.request.method, self.request.uri))
         try:
             self.current_group = int(re.search(r'.*/groups/(\d+).*', self.request.uri).groups(1)[0])
         except:
@@ -80,6 +79,7 @@ class RequestHandler(tornado.web.RequestHandler):
         x_real_ip = self.request.headers.get("X-Real-IP")
         remote_ip = x_real_ip or self.request.remote_ip
         self.remote_ip = remote_ip
+        print("[%s] %s %s"%(self.request.method, self.request.uri, self.remote_ip))
 
 
 
