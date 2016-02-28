@@ -3,6 +3,9 @@ from req import Service
 from map import *
 
 class ApiProblemsPermission(PermissionBase):
+    def get(req, data):
+        return None
+
     def post(req, data):
         if map_group_power['problem_manage'] not in req.current_group_power:
             return (403, 'Permission Denied')

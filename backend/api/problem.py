@@ -7,6 +7,8 @@ import tornado
 class ApiProblemsHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self):
+        err = yield from Service.Permission.check(self)
+        if err: self.render(err); return
         args = ['page', 'count']
         meta = self.get_args(args)
         meta['page'] = meta['page'] or 1

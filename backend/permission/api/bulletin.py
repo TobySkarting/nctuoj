@@ -2,6 +2,9 @@ from permission.base import PermissionBase
 from map import *
 
 class ApiBulletinsPermission(PermissionBase):
+    def get(req, data):
+        return None
+
     def post(req, data):
         if map_group_power['bulletin_manage'] not in req.current_group_power:
             return (403, 'Permission Denied')
