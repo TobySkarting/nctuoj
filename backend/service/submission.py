@@ -128,7 +128,8 @@ class SubmissionService(BaseService):
         res['code'] = open(file_path, 'rb').read()
         encode = chardet.detect(res['code'])
         if encode['encoding']: 
-            res['code'] = res['code'].decode(chardet.detect(res['code'])['encoding'])
+            try: res['code'] = res['code'].decode(chardet.detect(res['code'])['encoding'])
+            except: pass
         else:
             res['code'] = res['code'].decode()
         res['code_line'] = len(open(file_path, 'rb').readlines())
@@ -193,7 +194,8 @@ class SubmissionService(BaseService):
             if data['code_file']:
                 encode = chardet.detect(data['code_file']['body'])
                 if encode['encoding']:
-                    data['code_file']['body'] = data['code_file']['body'].decode(encode['encoding']).encode()
+                    try: data['code_file']['body'] = data['code_file']['body'].decode(encode['encoding']).encode()
+                    except: pass
                 f.write(data['code_file']['body'])
             else:
                 f.write(data['plain_code'].encode())
