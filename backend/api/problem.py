@@ -5,14 +5,23 @@ import tornado
 
 
 class ApiProblemsHandler(ApiRequestHandler):
-    def check_edit(self, meta):
-        if map_group_power['problem_manage'] not in self.current_group_power:
-            self.render((403, "Permission Denied"))
-            return False
+    @tornado.gen.coroutine
     def get(self):
-        pass
+        err = yield from Service.Permission.check(self)
+        if err: self.render(err); return
+        args = ['page', 'count']
+        meta = self.get_args(args)
+        meta['page'] = meta['page'] or 1
+        meta['count'] = meta['count'] or 10
+        meta['group_id'] = self.current_group
+        err, data = yield from Service.Problem.get_problem_list(meta)
+        if err: self.render(err)
+        else: self.render(data)
+
     @tornado.gen.coroutine
     def post(self):
+        err = yield from Service.Permission.check(self)
+        if err: self.render(err); return
         args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible", 'verdict_id', 'verdict_code[file]', 'verdict_execute_type_id', 'pdf', 'pdf_file[file]']
         meta = self.get_args(args)
         meta['group_id'] = self.current_group
@@ -22,52 +31,18 @@ class ApiProblemsHandler(ApiRequestHandler):
         else: self.render({"id": data})
 
 class ApiProblemHandler(ApiRequestHandler):
-    def check_view(self, meta):
-        err, data = yield from Service.Problem.get_problem(meta)
-        if err:
-            self.render(err)
-            return False
-        else:
-            if int(data['group_id']) == int(meta['group_id']) and (int(data['visible']) > 0 or map_group_power['problem_manage'] in self.current_group_power):
-                pass
-            else:
-                self.render((403, "Permission Denied"))
-                return False
-        return True
-
-    def check_edit(self, meta):
-        if map_group_power['problem_manage'] not in self.current_group_power:
-            self.render((403, "Permission Denied"))
-            return False
-        if int(meta['id']) != 0:
-            err, data = yield from Service.Problem.get_problem(meta)
-            if err: 
-                self.render(500, err)
-                return False
-            if int(data['group_id']) != int(meta['group_id']):
-                self.render(('403', 'Permission Denied'))
-                return False
-        return True
-
     @tornado.gen.coroutine
     def get(self, id):
-        meta = {}
-        meta['id'] = id
-        meta['group_id'] = self.current_group
-
-        if not (yield from self.check_view(meta)):
-            return
-
-        err, data = yield from Service.Problem.get_problem(meta)
-        self.render(data)
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
+        err, data = yield from Service.Problem.get_problem({'id': id})
+        if err: return err
+        else: self.render(data)
         
     @tornado.gen.coroutine
     def put(self, id):
-        check_meta = {}
-        check_meta['group_id'] = self.current_group
-        check_meta['id'] = id
-        if not (yield from self.check_edit(check_meta)):
-            return
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
         args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible", 'verdict_id', 'verdict_code[file]', 'verdict_execute_type_id', 'pdf', 'pdf_file[file]']
         meta = self.get_args(args)
         meta['group_id'] = self.current_group
@@ -79,153 +54,69 @@ class ApiProblemHandler(ApiRequestHandler):
     
     @tornado.gen.coroutine
     def delete(self, id):
-        check_meta = {}
-        check_meta['group_id'] = self.current_group
-        check_meta['id'] = id
-        if not (yield from self.check_edit(check_meta)):
-            return
-        meta = {}
-        meta['id'] = id
-        err, data = yield from Service.Problem.delete_problem(meta)
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
+        err, data = yield from Service.Problem.delete_problem({'id': id})
         if err: self.render(err)
         else: self.render()
 
 class ApiProblemExecuteHandler(ApiRequestHandler):
-    def check_edit(self, meta):
-        if map_group_power['problem_manage'] not in self.current_group_power:
-            self.render((403, "Permission Denied"))
-            return False
-        err, data = yield from Service.Problem.get_problem(meta)
-        if err: 
-            self.render(err)
-            return False
-        if int(data['group_id']) != int(meta['group_id']):
-            self.render(('403', 'Permission Denied'))
-            return False
-        return True
-
-    def check_view(self, meta):
-        err, data = yield from Service.Problem.get_problem(meta)
-        print('E', err)
-        if err:
-            self.render(err)
-            return False
-        else:
-            if int(data['group_id']) == int(meta['group_id']) and (int(data['visible']) > 0 or map_group_power['problem_manage'] in self.current_group_power):
-                pass
-            else:
-                self.render((403, "Permission Denied"))
-                return False
-        return True
-
     @tornado.gen.coroutine
     def get(self, id):
-        meta = {}
-        meta['id'] = id
-        meta['group_id'] = self.current_group
-        if not (yield from self.check_view(meta)):
-            return
-        err, data = yield from Service.Problem.get_problem_execute({"problem_id": meta['id']})
-        print(err)
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
+        err, data = yield from Service.Problem.get_problem_execute({"problem_id": id})
         if err: self.render(err)
-        self.render(data)
-
+        else: self.render(data)
 
     @tornado.gen.coroutine
     def put(self, id):
-        print('in')
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
         args = ['execute[]']
         meta = self.get_args(args)
-        meta['group_id'] = self.current_group
-        meta['id'] = id
-        if not (yield from self.check_edit(meta)):
-            return
+        meta['problem_id'] = id
+        print(meta)
         err, data = yield from Service.Problem.put_problem_execute(meta)
         if err: self.render(err)
         else: self.render()
 
 class ApiProblemRejudgeHandler(ApiRequestHandler):
-    def check_edit(self, meta):
-        if map_group_power['problem_manage'] not in self.current_group_power:
-            self.render((403, "Permission Denied"))
-            return False
-        err, data = yield from Service.Problem.get_problem(meta)
-        if err: 
-            self.render(err)
-            return False
-        if int(data['group_id']) != int(meta['group_id']):
-            self.render(('403', 'Permission Denied'))
-            return False
-        return True
     @tornado.gen.coroutine
     def post(self, id):
-        meta = {}
-        meta['id'] = id
-        meta['group_id'] = self.current_group
-        if not (yield from self.check_edit(meta)):
-            return
-        err, res = yield from Service.Problem.post_rejudge_problem(meta)
+        err = yield from Service.Permission.check(self, id=id)
+        if err: return err
+        err, res = yield from Service.Problem.post_rejudge_problem({'id': id})
         if err: self.render(err)
         else: self.render()
 
 class ApiProblemTagHandler(ApiProblemHandler):
-    def check_view(self, meta):
-        err, data = yield from Service.Problem.get_problem(meta)
-        print('E', err)
-        if err:
-            self.render(err)
-            return False
-        else:
-            if int(data['group_id']) == int(meta['group_id']) and (int(data['visible']) > 0 or map_group_power['problem_manage'] in self.current_group_power):
-                pass
-            else:
-                self.render((403, "Permission Denied"))
-                return False
-        return True
-    def check_edit(self, meta):
-        if map_group_power['problem_manage'] not in self.current_group_power:
-            self.render((403, "Permission Denied"))
-            return False
-        err, data = yield from Service.Problem.get_problem(meta)
-        if err: 
-            self.render(err)
-            return False
-        if int(data['group_id']) != int(meta['group_id']):
-            self.render(('403', 'Permission Denied'))
-            return False
-        return True
     @tornado.gen.coroutine
     def get(self, id):
-        meta = {}
-        meta['id'] = id
-        meta['group_id'] = self.current_group
-        if not (yield from self.check_view(meta)):
-            return 
-        err, data = yield from Service.Problems.get_problem_tag({'problem_id': meta['id']})
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err)
+        err, data = yield from Service.Problems.get_problem_tag({'problem_id': id})
         if err: self.redner(err)
         else: self.render(data)
 
     @tornado.gen.coroutine
     def post(self, id):
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err)
         args = ['tag_id']
         meta = self.get_args(args)
         meta['problem_id'] = id
-        meta['group_id'] = self.current_group
-        if not (yield from self.check_edit(meta)):
-            return 
         err, res = yield from Service.Problems.post_problem_tag(meta)
         if err: self.render(err)
         else: self.render()
-        pass
 
     @tornado.gen.coroutine
     def delete(self, id):
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err)
         args = ['tag_id']
         meta = self.get_args(args)
         meta['problem_id'] = id
-        meta['group_id'] = self.current_group
-        if not (yield from self.check_edit(meta)):
-            return
         err, res = yield from Service.Problems.delete_problem_tag(meta)
         if err: self.render(err)
         else: self.render()

@@ -3,6 +3,7 @@ import os
 import config
 import subprocess as sp
 import time
+import config
 from req import Service
 from utils.form import form_validation
 
@@ -86,7 +87,7 @@ class ProblemService(BaseService):
                 return ('No problem id', None)
             res = res.fetchone()
             # self.rs.set('problem@%s' % str(data['id']), res)
-        err, res['execute'] = yield from Service.Problem.get_problem_execute(data)
+        err, res['execute'] = yield from Service.Problem.get_problem_execute({'problem_id': data['id']})
         err, res['testdata'] = yield from Service.Testdata.get_testdata_list_by_problem({'problem_id': data['id']})
         return (None, res)
 
@@ -175,7 +176,7 @@ class ProblemService(BaseService):
             # if pdf_file is None:
                 # return ('pdf file should be uploaded', None)
 
-        self.reset_rs_problem_count(data['group_id'])
+        # self.reset_rs_problem_count(data['group_id'])
         id = data.pop('id')
         # self.rs.delete('problem@%s' % str(id))
         sql, parma = self.gen_update_sql("problems", data)
@@ -191,7 +192,7 @@ class ProblemService(BaseService):
             if err: return (err, None)
 
         if pdf_file:
-            folder = '/mnt/nctuoj/data/problems/%s' % id
+            folder = '%s/data/problems/%s' % (config.DATAROOT, str(id))
             file_path = '%s/pdf.pdf' % folder
             try: os.makedirs(folder)
             except: pass
@@ -296,7 +297,7 @@ class ProblemService(BaseService):
             if err: return (err, None)
 
         if pdf_file:
-            folder = '/mnt/nctuoj/data/problems/%s' % id
+            folder = '%s/data/problems/%s' % (config.DATAROOT, str(id))
             file_path = '%s/pdf.pdf' % folder
             try: os.makedirs(folder)
             except: pass
@@ -314,7 +315,7 @@ class ProblemService(BaseService):
         if err: return (err, None)
         err, data = yield from self.get_problem(data)
         if err: return (err, None)
-        self.reset_rs_problem_count(data['group_id'])
+        # self.reset_rs_problem_count(data['group_id'])
         yield self.db.execute("DELETE FROM problems WHERE id=%s", (int(data['id']),))
         # self.rs.delete('problem@%s' % str(data['id']))
         # self.rs.delete('problem@%s@execute' % str(data['id']))
@@ -337,21 +338,21 @@ class ProblemService(BaseService):
 
     def get_problem_execute(self, data={}):
         required_args = [{
-            'name': '+id',
+            'name': '+problem_id',
             'type': int,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
         # res = self.rs.get('execute@problem@%s'%str(data['problem_id']))
         # if res: return (None, res)
-        res = yield self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['id'],))
+        res = yield self.db.execute("SELECT e.* FROM execute_types as e, map_problem_execute as m WHERE m.execute_type_id=e.id and m.problem_id=%s ORDER BY e.priority", (data['problem_id'],))
         res = res.fetchall()
         # self.rs.set('execute@problem@%s' % str(data['problem_id']), res)
         return (None, res)
 
     def put_problem_execute(self, data={}):
         required_args = [{
-            'name': '+id',
+            'name': '+problem_id',
             'type': int,
         }, {
             'name': '+execute',
@@ -362,9 +363,9 @@ class ProblemService(BaseService):
         yield from self.delete_problem_execute(data)
         for x in data['execute']:
             try:
-                yield self.db.execute("INSERT INTO map_problem_execute (execute_type_id, problem_id) values (%s, %s)", (x, data['id']))
+                yield self.db.execute("INSERT INTO map_problem_execute (execute_type_id, problem_id) values (%s, %s)", (x, data['problem_id']))
             except: pass
-        return (None, data['id'])
+        return (None, data['problem_id'])
 
     def delete_problem_execute(self, data={}):
         required_args = [{
@@ -378,7 +379,6 @@ class ProblemService(BaseService):
         return (None, None)
 
     def post_problem_tag(self, data={}):
-        required_args = ['tag_id', 'problem_id']
         required_args = [{
             'name': '+tag_id',
             'type': str,

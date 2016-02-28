@@ -215,7 +215,8 @@ class ContestService(BaseService):
             meta['problem_id'] = problem
             meta['score'] = score
             sql, param = self.gen_insert_sql('map_contest_problem', meta)
-            yield self.db.execute(sql, param)
+            try: yield self.db.execute(sql, param)
+            except Exception as e: print(e)
         return (None, data['id'])
 
     def get_contest_submission(self, data={}):
@@ -386,9 +387,6 @@ class ContestService(BaseService):
     def delete_contest(self, data={}):
         required_args = [{
             'name': '+id',
-            'type': int,
-        }, {
-            'name': '+group_id',
             'type': int,
         }]
         err = form_validation(data, required_args)

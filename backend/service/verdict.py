@@ -56,7 +56,7 @@ class VerdictService(BaseService):
         res = res.fetchone()
         err, res['execute_type'] = yield from Service.Execute.get_execute({'id': res['execute_type_id']})
 
-        folder = '/mnt/nctuoj/data/verdicts/%s/' % str(res['id'])
+        folder = '%s/data/verdicts/%s/' % (config.DATAROOT, str(res['id']))
         file_path = '%s/%s' % (folder, res['file_name'])
         try: os.makedirs(folder)
         except: pass
@@ -77,20 +77,20 @@ class VerdictService(BaseService):
             'name': '+setter_user_id',
             'type': int,
         }, {
-            'name': 'code_file',
+            'name': '+code_file',
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
         code_file = None
         if data['code_file'] is None:
-            return ('No code file', None)
+            return ((400, 'No code file'), None)
         data['file_name'] = data['code_file']['filename']
         code_file = data.pop('code_file')
         sql, param = self.gen_insert_sql('verdicts', data)
         id = (yield self.db.execute(sql, param)).fetchone()['id']
         
         if code_file:
-            folder = '/mnt/nctuoj/data/verdicts/%s/' % str(id)
+            folder = '%s/data/verdicts/%s/' % (config.DATAROOT, str(id))
             file_path = '%s/%s' % (folder, data['file_name'])
             try: shutil.rmtree(folder)
             except: pass
@@ -127,7 +127,7 @@ class VerdictService(BaseService):
         yield self.db.execute(sql+' WHERE id=%s;', param+(id,))
         
         if code_file:
-            folder = '/mnt/nctuoj/data/verdicts/%s/' % str(id)
+            folder = '%s/data/verdicts/%s/' % (config.DATAROOT, str(id))
             file_path = '%s/%s' % (folder, data['file_name'])
             try: shutil.rmtree(folder)
             except: pass

@@ -29,6 +29,7 @@ from api.problem        import ApiProblemRejudgeHandler
 from api.problem        import ApiProblemTagHandler
 from api.submission     import ApiSubmissionsHandler
 from api.submission     import ApiSubmissionHandler
+from api.submission     import ApiSubmissionRejudgeHandler
 from api.testdata       import ApiTestdatasHandler
 from api.testdata       import ApiTestdataHandler
 from api.contest        import ApiContestsHandler
@@ -100,7 +101,27 @@ from web.user           import WebUserEditHandler
 ### static file handler
 from file.testdata import FileTestdataHandler
 
-from permission.bulletin import ApiBulletinsPermission
+from permission.api.bulletin import ApiBulletinsPermission
+from permission.api.bulletin import ApiBulletinPermission
+from permission.api.problem import ApiProblemsPermission
+from permission.api.problem import ApiProblemPermission
+from permission.api.problem import ApiProblemExecutePermission
+from permission.api.problem import ApiProblemTagPermission
+from permission.api.problem import ApiProblemRejudgePermission
+from permission.api.submission import ApiSubmissionsPermission
+from permission.api.submission import ApiSubmissionPermission
+from permission.api.submission import ApiSubmissionRejudgePermission
+from permission.api.execute import ApiExecuteTypesPermission
+from permission.api.execute import ApiExecuteTypePermission
+from permission.api.execute import ApiExecuteTypesPriorityPermission
+from permission.api.verdict import ApiVerdictTypesPermission
+from permission.api.verdict import ApiVerdictTypePermission
+from permission.api.testdata import ApiTestdatasPermission
+from permission.api.testdata import ApiTestdataPermission
+from permission.api.contest import ApiContestsPermission
+from permission.api.contest import ApiContestPermission
+from permission.api.contest import ApiContestSubmissionsPermission
+from permission.api.contest import ApiContestScoreboardPermission
 
 
 class PermissionService:
@@ -109,7 +130,47 @@ class PermissionService:
         res = None
         if isinstance(req, ApiBulletinsHandler):
             res = ApiBulletinsPermission.check(req, data) 
-        
+        elif isinstance(req, ApiBulletinHandler):
+            res = ApiBulletinPermission.check(req, data)
+        elif isinstance(req, ApiProblemsHandler):
+            res = ApiProblemsPermission.check(req, data)
+        elif isinstance(req, ApiProblemHandler):
+            res = ApiProblemPermission.check(req, data)
+        elif isinstance(req, ApiProblemExecuteHandler):
+            res = ApiProblemExecutePermission.check(req, data)
+        elif isinstance(req, ApiProblemTagHandler):
+            res = ApiProblemTagPermission.check(req, data)
+        elif isinstance(req, ApiProblemRejudgeHandler):
+            res = ApiProblemRejudgePermission.check(req, data)
+        elif isinstance(req, ApiSubmissionsHandler):
+            res = ApiSubmissionsPermission.check(req, data)
+        elif isinstance(req, ApiSubmissionHandler):
+            res = ApiSubmissionPermission.check(req, data)
+        elif isinstance(req, ApiSubmissionRejudgeHandler):
+            res = ApiSubmissionRejudgePermission.check(req, data)
+        elif isinstance(req, ApiExecuteTypesHandler):
+            res = ApiExecuteTypesPermission.check(req, data)
+        elif isinstance(req, ApiExecuteTypeHandler):
+            res = ApiExecuteTypePermission.check(req, data)
+        elif isinstance(req, ApiExecuteTypesPriorityHandler):
+            res = ApiExecuteTypesPriorityPermission.check(req, data)
+        elif isinstance(req, ApiVerdictTypesHandler):
+            res = ApiVerdictTypesPermission.check(req, data)
+        elif isinstance(req, ApiVerdictTypeHandler):
+            res = ApiVerdictTypePermission.check(req, data)
+        elif isinstance(req, ApiTestdatasHandler):
+            res = ApiTestdatasPermission.check(req, data)
+        elif isinstance(req, ApiTestdataHandler):
+            res = ApiTestdataPermission.check(req, data)
+        elif isinstance(req, ApiContestsHandler):
+            res = ApiContestsPermission.check(req, data)
+        elif isinstance(req, ApiContestHandler):
+            res = ApiContestPermission.check(req, data)
+        elif isinstance(req, ApiContestSubmissionsHandler):
+            res = ApiContestSubmissionsPermission.check(req, data)
+        elif isinstance(req, ApiContestScoreboardHandler):
+            res = ApiContestScoreboardPermission.check(req, data)
+
         if isinstance(res, types.GeneratorType):
             res = yield from res
         return res

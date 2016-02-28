@@ -47,6 +47,7 @@ from api.problem        import ApiProblemRejudgeHandler
 from api.problem        import ApiProblemTagHandler
 from api.submission     import ApiSubmissionsHandler
 from api.submission     import ApiSubmissionHandler
+from api.submission     import ApiSubmissionRejudgeHandler
 from api.testdata       import ApiTestdatasHandler
 from api.testdata       import ApiTestdataHandler
 from api.contest        import ApiContestsHandler
@@ -199,6 +200,7 @@ if __name__ == '__main__':
         ('/api/groups/\d+/testdata/(\d+)/',                             ApiTestdataHandler),
         ('/api/groups/\d+/submissions/',                                ApiSubmissionsHandler),
         ('/api/groups/\d+/submissions/(\d+)/',                          ApiSubmissionHandler),
+        ('/api/groups/\d+/submissions/(\d+)/rejudge/',                  ApiSubmissionRejudgeHandler),
         ('/api/groups/\d+/submissions/(\d+)/(\w*)/',                    ApiSubmissionHandler),
 
         ('/api/groups/\d+/contests/',                                   ApiContestsHandler),
@@ -268,8 +270,8 @@ if __name__ == '__main__':
 
 
         ('/about/',                                                     WebAboutHandler),
-        ('/resource/testdata/(.*)', FileTestdataHandler, {'path': '/mnt/nctuoj/data/testdata'}),
-        ('/resource/(.*)', tornado.web.StaticFileHandler, {'path': '/mnt/nctuoj/data'}),
+        ('/resource/testdata/(.*)', FileTestdataHandler, {'path': '%s/data/testdata'%(config.DATAROOT)}),
+        ('/resource/(.*)', tornado.web.StaticFileHandler, {'path': '%s/data'%(config.DATAROOT)}),
         ('/asset/(.*)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/(google4e9e359eaf9accab.html)', tornado.web.StaticFileHandler, {'path': '../http'}),
         ('/.*',                                                         Web404Handler),
