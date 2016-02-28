@@ -38,8 +38,12 @@ def _form_validation(form, schema):
         if not require and (name not in form or form[name] is None or (isinstance(form[name], str) and form[name] == '')):
             form[name] = None
             continue
-
         else:
+            ## check non_empty
+            if 'non_empty' in item and item['non_empty']:
+                if form[name] == item['type']() or form[name] is None:
+                    return 'value of %s: "%s" should not be empty value' % (name, str(form[name]))
+
             ### check value type
             if 'type' in item:
                 if not isinstance(form[name], item['type']):
@@ -49,11 +53,6 @@ def _form_validation(form, schema):
                     else:
                         try: form[name] = item['type'](form[name])
                         except Exception as e: return name + str(e)
-
-            ## check non_empty
-            if 'non_empty' in item and item['non_empty']:
-                if form[name] == item['type']() or form[name] is None:
-                    return 'value of %s: "%s" should not be empty value' % (name, str(form[name]))
 
 
             ### check except

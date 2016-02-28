@@ -7,5 +7,6 @@ class ApiBulletinsPermission(PermissionBase):
         return None
     
     def post(req, data):
+        
         return None
         
