@@ -410,6 +410,7 @@ CREATE TABLE map_contest_problem (
 CREATE TRIGGER map_conteset_problem_update_row BEFORE UPDATE ON map_contest_problem FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON map_contest_problem (contest_id);
 CREATE INDEX ON map_contest_problem (problem_id);
+CREATE UNIQUE INDEX ON map_contest_problem (contest_id, problem_id);
 INSERT INTO map_contest_problem (contest_id, problem_id) VALUES (1001, 10001);
 
 --DROP TABLE IF EXISTS map_contest_user;

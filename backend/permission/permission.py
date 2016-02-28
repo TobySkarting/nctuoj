@@ -118,6 +118,10 @@ from permission.api.verdict import ApiVerdictTypesPermission
 from permission.api.verdict import ApiVerdictTypePermission
 from permission.api.testdata import ApiTestdatasPermission
 from permission.api.testdata import ApiTestdataPermission
+from permission.api.contest import ApiContestsPermission
+from permission.api.contest import ApiContestPermission
+from permission.api.contest import ApiContestSubmissionsPermission
+from permission.api.contest import ApiContestScoreboardPermission
 
 
 class PermissionService:
@@ -158,6 +162,14 @@ class PermissionService:
             res = ApiTestdatasPermission.check(req, data)
         elif isinstance(req, ApiTestdataHandler):
             res = ApiTestdataPermission.check(req, data)
+        elif isinstance(req, ApiContestsHandler):
+            res = ApiContestsPermission.check(req, data)
+        elif isinstance(req, ApiContestHandler):
+            res = ApiContestPermission.check(req, data)
+        elif isinstance(req, ApiContestSubmissionsHandler):
+            res = ApiContestSubmissionsPermission.check(req, data)
+        elif isinstance(req, ApiContestScoreboardHandler):
+            res = ApiContestScoreboardPermission.check(req, data)
 
         if isinstance(res, types.GeneratorType):
             res = yield from res
