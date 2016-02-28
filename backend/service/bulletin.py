@@ -113,9 +113,11 @@ class BulletinService(BaseService):
         }, {
             'name': '+title',
             'type': str,
+            'non_empty': True,
             'xss': True,
         }, {
             'name': '+content',
+            'non_empty': True,
             'type': str,
             'xss': True,
         }]

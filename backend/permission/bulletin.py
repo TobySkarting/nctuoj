@@ -7,6 +7,8 @@ class ApiBulletinsPermission(PermissionBase):
         return None
     
     def post(req, data):
-        
+        print(req.current_group)
+        print(req.current_group_power)
+        print(req.map_group_power)
         return None
         

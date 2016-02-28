@@ -14,6 +14,8 @@ class TestApiBulletinAdmin(TestCase):
     another_url = '%s/api/groups/2/bulletins/'%(config.base_url)
     another_urls = '%s/api/groups/2/bulletins/'%(config.base_url)
     admin_token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})['token']
+    title = "Title test @ " + str(datetime.datetime.now())
+    content = "Content tes @ " + str(datetime.datetime.now())
 
     def test_admin_get_bulletins(self):
         data = {
@@ -24,15 +26,45 @@ class TestApiBulletinAdmin(TestCase):
         self.assertEqual(res.status_code, 200)
 
     def test_admin_post_bulletin(self):
-        return
+        # missing title
         data = {
             "token": self.admin_token,
-            "title": "admin test post",
-            "content": "admin test content",
+            "content": self.content,
+        }
+        expect_result = {
+            "status_code": 400,
+            "body": {
+                "msg": 'value of title: "None" should not be empty value',
+            }
         }
         res = requests.post(self.urls, data=data)
         res.connection.close()
-        self.assertEqual(res.status_code, data=data)
+        self.assertEqualR(res, expect_result)
+
+        # missing content
+        data = {
+            "token": self.admin_token,
+            "title": self.title,
+        }
+        res = requests.post(self.urls, data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 400,
+            "body": {
+                "msg": 'value of content: "None" should not be empty value',
+            }
+        }
+        self.assertEqualR(res, expect_result)
+
+        # success post
+        data = {
+            "token": self.admin_token,
+            "title": self.title,
+            "content": self.content,
+        }
+        res = requests.post(self.urls, data=data)
+        res.connection.close()
+        self.assertEqual(res.status_code, 200)
 
     def test_admin_put_bulletin(self):
         pass
