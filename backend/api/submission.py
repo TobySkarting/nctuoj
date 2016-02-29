@@ -6,7 +6,7 @@ import tornado
 class ApiSubmissionsHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self):
-        err = yield from Service.Permission.check(self, id=id)
+        err = yield from Service.Permission.check(self)
         if err: self.render(err); return
         args = ['page', 'count']
         meta = self.get_args(args)
@@ -19,8 +19,6 @@ class ApiSubmissionsHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def post(self):
-        err = yield from Service.Permission.check(self, id=id)
-        if err: self.render(err); return
         args = ['problem_id', 'execute_type_id', 'code_file[file]', 'plain_code', 'plain_file_name']
         meta = self.get_args(args)
         meta['group_id'] = self.current_group

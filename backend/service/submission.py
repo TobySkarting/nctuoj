@@ -175,7 +175,7 @@ class SubmissionService(BaseService):
         sql, parma = self.gen_insert_sql("submissions", meta)
         id = (yield self.db.execute(sql, parma)).fetchone()['id']
         ### save file
-        folder = '%s/nctuoj/data/submissions/%s/' % (config.DATAROOT, str(id))
+        folder = '%s/data/submissions/%s/' % (config.DATAROOT, str(id))
         file_path = '%s/%s' % (folder, meta['file_name'])
         try: shutil.rmtree(folder)
         except: pass
