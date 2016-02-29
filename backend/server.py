@@ -2,6 +2,8 @@
 import tornado.ioloop
 import tornado.httpserver
 import tornado.web
+import tornado.netutil
+import tornado.process
 ### self define from req import RequestHandler
 from req import StaticFileHandler
 from req import Service 
@@ -148,6 +150,9 @@ def shutdown():
 
 if __name__ == '__main__':
     print('Server Starting')
+    if not config.DEBUG:
+        sock = tornado.netutil.bind_sockets(config.PORT)
+        tornado.process.fork_processes(0)
     '''
     logging.basicConfig(level=logging.DEBUG,
             format='[%(asctime)s]: %(message)s',
@@ -288,7 +293,8 @@ if __name__ == '__main__':
             xheaders=True,)
     global srv
     srv = tornado.httpserver.HTTPServer(app)
-    srv.listen(config.PORT)
+    if not config.DEBUG: srv.add_sockets(sock)
+    else: srv.listen(config.PORT)
     Service.User =          UserService(db, rs)
     Service.Problem =       ProblemService(db, rs)
     Service.Submission =    SubmissionService(db, rs)
