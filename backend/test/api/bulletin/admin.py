@@ -67,7 +67,28 @@ class TestApiBulletinAdmin(TestCase):
         self.assertEqual(res.status_code, 200)
 
     def test_admin_put_bulletin(self):
-        pass
+        data = {
+            "token": self.admin_token,
+        }
+        res = requests.get(self.urls, data=data)
+        res.connection.close()
+        res = json.loads(res.text)['msg'][0]
+        data = {
+            "token": self.admin_token,
+            "title": res['title'],
+            "content": "Modify @ " + str(datetime.datetime.now()) + res['content'],
+        }
+        res =requests.put( '%s%s/'%(self.url, res['id']), data=data)
+        res.connection.close()
+        print(res.status_code, res.text)
+        expect_result = {
+            "status_code": 200,
+            "body": {
+                "msg": "",
+            }
+        }
+        self.assertEqualR(res, expect_result)
+
     def test_admin_delete_bulletin(self):
         pass
     def test_admin_post_another_bulletin(self):
