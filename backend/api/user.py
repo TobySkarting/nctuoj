@@ -68,6 +68,44 @@ class ApiUserHandler(ApiRequestHandler):
         if err: self.render(err)
         else: self.render(meta)
 
+class ApiUserSigninHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
+    def post(self):
+        args = ['account', 'passwd']
+        meta = self.get_args(args)
+        err, id = yield from Service.User.SignIn(meta, self)
+        if err: self.render(err)
+        else: self.render()
+
+class ApiUserSignupHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
+    def post(self):
+        args = ['email', 'account', 'passwd', 'repasswd', 'name', 'school_id', 'student_id']
+        meta = self.get_args(args)
+        passwd = meta['passwd']
+        err, id = yield from Service.User.SignUp(meta)
+        if err: self.render(err)
+        else:
+            meta['passwd'] = passwd
+            err, id = yield from Service.User.SignIn(meta, self)
+            self.render()
+
+class ApiUserSignoutHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
+    def post(self):
+        Service.User.SignOut(self)
+        self.render()
+
+class ApiUserResettokenHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
+    def post(self):
+        args = ['passwd']
+        meta = self.get_args(args)
+        meta['account'] = self.account
+        err, token = yield from Service.User.ResetToken(meta)
+        if err: self.render(err)
+        else: self.render(token)
+
 class ApiUserSignHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def post(self, action):

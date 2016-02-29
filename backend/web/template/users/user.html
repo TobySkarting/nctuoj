@@ -144,7 +144,7 @@ require(["jquery", "bootbox"], function($, bootbox){
                             dataType: "json",
                             success: function(msg){
                                 bootbox.alert('token is reset', function(){
-                                    location.href = location.href;
+                                    location.href = '/users/signin/';
                                 });
                             },
                             error: function(event){

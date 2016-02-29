@@ -33,7 +33,10 @@ from service.verdictstring import VerdictStringService
 
 
 ### api class from api.user import ApiUserSignupHandler
-from api.user           import ApiUserSignHandler
+from api.user           import ApiUserSigninHandler
+from api.user           import ApiUserSignupHandler
+from api.user           import ApiUserSignoutHandler
+from api.user           import ApiUserResettokenHandler
 from api.user           import ApiUsersHandler
 from api.user           import ApiUserHandler
 from api.user           import ApiUserGetInfoHandler
@@ -175,8 +178,10 @@ if __name__ == '__main__':
         ('/api/users/getinfo/',                                         ApiUserGetInfoHandler),
         ('/api/users/(\d+)/',                                           ApiUserHandler),
         ('/api/users/(\d+)/groups/(\d+)/(problems)/',                   ApiUserGroupHandler),
-        ('/api/users/(sign\w*)/',                                       ApiUserSignHandler),
-        ('/api/users/(resettoken)/',                                    ApiUserSignHandler),
+        ('/api/users/signin/',                                          ApiUserSigninHandler),
+        ('/api/users/signup/',                                          ApiUserSignupHandler),
+        ('/api/users/signout/',                                         ApiUserSignoutHandler),
+        ('/api/users/resettoken/',                                      ApiUserResettokenHandler),
         
         ('/api/groups/',                                                ApiGroupsHandler),
         ('/api/groups/\d+/',                                            ApiGroupHandler),
