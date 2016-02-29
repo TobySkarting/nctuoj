@@ -80,7 +80,6 @@ class TestApiBulletinAdmin(TestCase):
         }
         res =requests.put( '%s%s/'%(self.url, res['id']), data=data)
         res.connection.close()
-        print(res.status_code, res.text)
         expect_result = {
             "status_code": 200,
             "body": {

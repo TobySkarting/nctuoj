@@ -38,9 +38,6 @@ class BulletinService(BaseService):
 
     def get_bulletin(self, data={}):
         required_args = [{
-            'name': '+group_id',
-            'type': int,
-        },{
             'name': '+id',
             'type': int,
         }]
@@ -53,8 +50,8 @@ class BulletinService(BaseService):
             res['id'] = 0
             return (None, res)
 
-        sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND b.id=%s AND (b.group_id=%s OR group_id=0);"
-        res = yield self.db.execute(sql, (data["id"], data['group_id'],))
+        sql = "SELECT b.*, u.account as setter_user FROM bulletins as b, users as u WHERE b.setter_user_id=u.id AND b.id=%s"
+        res = yield self.db.execute(sql, (data["id"], ))
         if res.rowcount == 0:
             return ((404, 'Error bulletin id'), None)
         return (None, res.fetchone())
