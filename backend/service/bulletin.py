@@ -128,9 +128,6 @@ class BulletinService(BaseService):
         required_args = [{
             'name': '+id',
             'type': int,
-        }, {
-            'name': '+group_id',
-            'type': int,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)

@@ -165,7 +165,7 @@ class TestApiUserSignup(TestCase):
         expect_result = {
             "status_code": 403,
             "body": {
-                "msg": 'Permission Denied!!',
+                "msg": 'Permission Denied',
             }
         }
         self.assertEqualR(res, expect_result)
@@ -182,7 +182,7 @@ class TestApiUserSignup(TestCase):
             "status_code": 200,
             "body": {
                 "msg": {
-                    'id': test_info['id']
+                    'id': str(test_info['id'])
                 },
             }
         }

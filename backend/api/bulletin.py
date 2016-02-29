@@ -56,11 +56,8 @@ class ApiBulletinHandler(ApiRequestHandler):
     
     @tornado.gen.coroutine
     def delete(self, id):
-        meta = {}
-        meta["group_id"] = self.current_group
-        meta["setter_user_id"] = self.account['id']
-        meta['id'] = id
-        if self.check(meta):
-            err, data = yield from Service.Bulletin.delete_bulletin(meta)
-            if err: self.render(err)
-            else: self.render()
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
+        err, data = yield from Service.Bulletin.delete_bulletin({"id": id})
+        if err: self.render(err)
+        else: self.render()
