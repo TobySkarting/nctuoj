@@ -127,6 +127,10 @@ from permission.api.contest import ApiContestSubmissionsPermission
 from permission.api.contest import ApiContestScoreboardPermission
 from permission.api.user import ApiUsersPermission
 from permission.api.user import ApiUserPermission
+from permission.api.group import ApiGroupsPermission
+from permission.api.group import ApiGroupPermission
+from permission.api.group import ApiGroupUserPermission
+from permission.api.group import ApiGroupUserPowerPermission
 
 
 class PermissionService:
@@ -179,6 +183,14 @@ class PermissionService:
             res = ApiUsersPermission.check(req, data)
         elif isinstance(req, ApiUserHandler):
             res = ApiUserPermission.check(req, data)
+        elif isinstance(req, ApiGroupsHandler):
+            res = ApiGroupsPermission.check(req, data)
+        elif isinstance(req, ApiGroupHandler):
+            res = ApiGroupPermission.check(req, data)
+        elif isinstance(req, ApiGroupUserHandler):
+            res = ApiGroupUserPermission.check(req, data)
+        elif isinstance(req, ApiGroupUserPowerHandler):
+            res = ApiGroupUserPowerPermission.check(req, data)
 
         if isinstance(res, types.GeneratorType):
             res = yield from res

@@ -12,6 +12,7 @@ import shutil
 import time
 import tornado
 import chardet
+import codecs
 
 class SubmissionService(BaseService):
     def __init__(self, db, rs):
@@ -123,13 +124,15 @@ class SubmissionService(BaseService):
 
 
         file_path = '%s/%s' % (folder, res['file_name'])
-        res['code'] = open(file_path, 'rb').read()
-        encode = chardet.detect(res['code'])
-        if encode['encoding']: 
-            try: res['code'] = res['code'].decode(chardet.detect(res['code'])['encoding'])
-            except: pass
-        else:
-            res['code'] = res['code'].decode()
+        res['code'] = codecs.open(file_path, 'r', 'utf-8').read()
+        # encode = chardet.detect(res['code'])
+        # print(encode)
+        # encode['encoding'] = None
+        # if encode['encoding']: 
+            # try: res['code'] = res['code'].decode(chardet.detect(res['code'])['encoding'])
+            # except: pass
+        # else:
+            # res['code'] = res['code'].decode()
         res['code_line'] = len(open(file_path, 'rb').readlines())
         return (None, res)
 
@@ -181,15 +184,15 @@ class SubmissionService(BaseService):
         except: pass
         try: os.makedirs(folder)
         except: pass
-        with open(file_path, 'wb+') as f:
-            if data['code_file']:
-                encode = chardet.detect(data['code_file']['body'])
-                if encode['encoding']:
-                    try: data['code_file']['body'] = data['code_file']['body'].decode(encode['encoding']).encode()
-                    except: pass
+        print(type(data['plain_code']))
+        try: print(type(data['code_file']['body']))
+        except: pass
+        if data['code_file']:
+            with open(file_path, 'wb+') as f:
                 f.write(data['code_file']['body'])
-            else:
-                f.write(data['plain_code'].encode())
+        else:
+            with open(file_path, 'w+') as f:
+                f.write(data['plain_code'])
         yield self.db.execute('INSERT INTO wait_submissions (submission_id) VALUES(%s);', (id,))
         return (None, id) 
 
