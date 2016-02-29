@@ -8,7 +8,7 @@ class BulletinService(BaseService):
 
         BulletinService.inst = self
 
-    def get_bulletin_list(self, data={}):
+    def get_bulletin_list_with_public(self, data={}):
         required_args = [{
                 'name': '+group_id',
                 'type': int,
@@ -26,7 +26,26 @@ class BulletinService(BaseService):
         res = yield self.db.execute(sql, (data["group_id"], data['count'], (int(data["page"])-1)*data["count"],))
         return (None, res.fetchall())
 
-    def get_bulletin_list_count(self, data={}):
+
+    def get_bulletin_list(self, data={}):
+        required_args = [{
+                'name': '+group_id',
+                'type': int,
+            },{
+                'name': '+page',
+                'type': int,
+            },{
+                'name': '+count',
+                'type': int,
+            }
+        ]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        sql = "SELECT bulletins.*, users.account as setter_user FROM bulletins, users WHERE bulletins.group_id = %s AND bulletins.setter_user_id = users.id order by bulletins.id DESC limit %s offset %s"
+        res = yield self.db.execute(sql, (data["group_id"], data['count'], (int(data["page"])-1)*data["count"],))
+        return (None, res.fetchall())
+
+    def get_bulletin_list_count_with_public(self, data={}):
         required_args = [{
             'name': '+group_id',
             'type': int,
@@ -34,6 +53,16 @@ class BulletinService(BaseService):
         err = form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s OR group_id=1", (data['group_id'],))
+        return (None, res.fetchone()['count'])
+
+    def get_bulletin_list_count(self, data={}):
+        required_args = [{
+            'name': '+group_id',
+            'type': int,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        res = yield self.db.execute("SELECT COUNT(*) FROM bulletins WHERE group_id=%s", (data['group_id'],))
         return (None, res.fetchone()['count'])
 
     def get_bulletin(self, data={}):
@@ -131,5 +160,5 @@ class BulletinService(BaseService):
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        yield self.db.execute("DELETE FROM bulletins WHERE id=%s AND group_id=%s", (data['id'],data['group_id'],))
+        yield self.db.execute("DELETE FROM bulletins WHERE id=%s", (data['id'],))
         return (None, None)

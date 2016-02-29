@@ -123,7 +123,7 @@ class TestApiBulletinAdmin(TestCase):
         data = {
             "token": self.admin_token,
         }
-        res = requests.get(self.urls, data=data)
+        res = requests.get(self.another_urls, data=data)
         res.connection.close()
         print(res.text)
         #res = json.loads(res.text)['msg'][0]
