@@ -73,7 +73,7 @@ class WebUserSignHandler(WebRequestHandler):
                 self.redirect('/')
             self.render('./users/user_signin.html')
         elif action == "signout":
-            Service.User.SignOut(self)
+            Service.User.signout(self)
             self.redirect('/users/signin/')
         elif action == "signup":
             if self.account['id'] != 0:

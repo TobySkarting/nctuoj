@@ -16,7 +16,10 @@ from service.verdictstring import VerdictStringService
 
 
 ### api class from api.user import ApiUserSignupHandler
-from api.user           import ApiUserSignHandler
+from api.user           import ApiUserSigninHandler
+from api.user           import ApiUserSignupHandler
+from api.user           import ApiUserSignoutHandler
+from api.user           import ApiUserResettokenHandler
 from api.user           import ApiUsersHandler
 from api.user           import ApiUserHandler
 from api.user           import ApiUserGroupHandler
@@ -122,6 +125,8 @@ from permission.api.contest import ApiContestsPermission
 from permission.api.contest import ApiContestPermission
 from permission.api.contest import ApiContestSubmissionsPermission
 from permission.api.contest import ApiContestScoreboardPermission
+from permission.api.user import ApiUsersPermission
+from permission.api.user import ApiUserPermission
 
 
 class PermissionService:
@@ -170,6 +175,10 @@ class PermissionService:
             res = ApiContestSubmissionsPermission.check(req, data)
         elif isinstance(req, ApiContestScoreboardHandler):
             res = ApiContestScoreboardPermission.check(req, data)
+        elif isinstance(req, ApiUsersHandler):
+            res = ApiUsersPermission.check(req, data)
+        elif isinstance(req, ApiUserHandler):
+            res = ApiUserPermission.check(req, data)
 
         if isinstance(res, types.GeneratorType):
             res = yield from res

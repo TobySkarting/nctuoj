@@ -6,8 +6,17 @@ import tornado
 
 
 class ApiUsersHandler(ApiRequestHandler):
+    @tornado.gen.coroutine
     def get(self):
-        pass
+        err = yield from Service.Permission.check(self)
+        if err: self.render(err); return
+        args = ['count', 'page']
+        meta = self.get_args(args)
+        meta['page'] = meta['page'] or 1
+        meta['count'] = meta['count'] or 10
+        err, data = yield from Service.User.get_user_list(meta)
+        if err: self.render(err)
+        else: self.render(data)
 
 class ApiUserGroupHandler(ApiRequestHandler):
     @tornado.gen.coroutine
@@ -21,12 +30,6 @@ class ApiUserGroupHandler(ApiRequestHandler):
             else: self.render(data)
 
 class ApiUserHandler(ApiRequestHandler):
-    def check_edit(self, meta={}):
-        if map_power['user_manage'] not in self.account['power']:
-            self.render((403, 'Permission Denied!!'))
-            return False
-        return True
-
     @tornado.gen.coroutine
     def get(self, id):
         err, res = yield from Service.User.get_user_basic_info({'id': id})
@@ -37,9 +40,8 @@ class ApiUserHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def put(self, id):
-        if int(id) != int(self.account['id']):
-            self.render((403, 'Permission Denied'))
-            return 
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
         args = ['npasswd', 'rpasswd', 'passwd', 'name', 'email', 'student_id', 'school_id']
         meta = self.get_args(args)
         meta['id'] = id
@@ -49,31 +51,29 @@ class ApiUserHandler(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def post(self, id):
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
         args = ['power']
         meta = self.get_args(args)
-        if self.map_power['user_manage'] not in self.account['power']:
-            self.render((403, "Permission Denied"))
-            return
         meta['id'] = id
-        yield from Service.User.post_user_power(meta)
-        self.render()
-        return
+        err, res = yield from Service.User.post_user_power(meta)
+        if err: self.render(err)
+        else: self.render()
 
     @tornado.gen.coroutine
     def delete(self, id):
-        if not self.check_edit():
-            return
-        meta = {'id': id}
-        err, res = yield from Service.User.delete_user(meta)
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
+        err, res = yield from Service.User.delete_user({'id': id})
         if err: self.render(err)
-        else: self.render(meta)
+        else: self.render({'id': id})
 
 class ApiUserSigninHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def post(self):
         args = ['account', 'passwd']
         meta = self.get_args(args)
-        err, id = yield from Service.User.SignIn(meta, self)
+        err, id = yield from Service.User.signin(meta, self)
         if err: self.render(err)
         else: self.render()
 
@@ -83,17 +83,17 @@ class ApiUserSignupHandler(ApiRequestHandler):
         args = ['email', 'account', 'passwd', 'repasswd', 'name', 'school_id', 'student_id']
         meta = self.get_args(args)
         passwd = meta['passwd']
-        err, id = yield from Service.User.SignUp(meta)
+        err, id = yield from Service.User.signup(meta)
         if err: self.render(err)
         else:
             meta['passwd'] = passwd
-            err, id = yield from Service.User.SignIn(meta, self)
+            err, id = yield from Service.User.signin(meta, self)
             self.render()
 
 class ApiUserSignoutHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def post(self):
-        Service.User.SignOut(self)
+        Service.User.signout(self)
         self.render()
 
 class ApiUserResettokenHandler(ApiRequestHandler):
@@ -102,43 +102,9 @@ class ApiUserResettokenHandler(ApiRequestHandler):
         args = ['passwd']
         meta = self.get_args(args)
         meta['account'] = self.account
-        err, token = yield from Service.User.ResetToken(meta)
+        err, token = yield from Service.User.resettoken(meta)
         if err: self.render(err)
         else: self.render(token)
-
-class ApiUserSignHandler(ApiRequestHandler):
-    @tornado.gen.coroutine
-    def post(self, action):
-        if action == 'signin':
-            args = ['account', 'passwd']
-            meta = self.get_args(args)
-            err, id = yield from Service.User.SignIn(meta, self)
-            if err:
-                self.render(err)
-            else:
-                self.render()
-        elif action == 'signup':
-            args = ['email', 'account', 'passwd', 'repasswd', 'name', 'school_id', 'student_id']
-            meta = self.get_args(args)
-            passwd = meta['passwd']
-            err, id = yield from Service.User.SignUp(meta)
-            if err: self.render(err)
-            else:
-                meta['passwd'] = passwd
-                err, id = yield from Service.User.SignIn(meta, self)
-                self.render()
-        elif action == 'signout':
-            Service.User.SignOut(self)
-            self.render()
-        elif action == 'resettoken':
-            args = ['passwd']
-            meta = self.get_args(args)
-            meta['account'] = self.account
-            err, token = yield from Service.User.ResetToken(meta)
-            if err: self.render(err)
-            self.render(token)
-        else:
-            self.render((404, 'Not Found'))
 
 class ApiUserGetInfoHandler(ApiRequestHandler):
     @tornado.gen.coroutine
@@ -146,7 +112,5 @@ class ApiUserGetInfoHandler(ApiRequestHandler):
         args = ['account', 'passwd']
         meta = self.get_args(args)
         err, res = yield from Service.User.get_user_info_by_account_passwd(meta)
-        if err:
-            self.render(err)
-        else:
-            self.render(res)
+        if err: self.render(err)
+        else: self.render(res)

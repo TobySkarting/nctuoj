@@ -190,7 +190,7 @@ class UserService(BaseService):
         else:
             return (None, res.fetchone())
 
-    def SignIn(self, data, req): #need to set cookie
+    def signin(self, data, req): #need to set cookie
         '''
         data(dict): account(str), passwd(str)
         return id(str)
@@ -221,10 +221,10 @@ class UserService(BaseService):
         req.set_secure_cookie('token', token)
         return (None, str(id))
 
-    def SignOut(self, req):
+    def signout(self, req):
         req.clear_cookie('token')
 
-    def SignUp(self, data={}):
+    def signup(self, data={}):
         '''
         data(dict): account(str), student_id(str), passwd(str), repasswd(str), email(str), school_id
         return id(str)
@@ -280,7 +280,7 @@ class UserService(BaseService):
         # self.rs.delete('user_list_count')
         return (None, str(id))
 
-    def ResetToken(self, data):
+    def resettoken(self, data):
         required_args = [{
             'name': '+account',
             'type': dict,
