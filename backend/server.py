@@ -235,6 +235,7 @@ if __name__ == '__main__':
         ('/groups/(\d+)/',                                              WebGroupHandler),
         ('/groups/(\d+)/manage/(\w*/)?',                                WebGroupManageHandler),
         ('/groups/\d+/bulletins/',                                      WebBulletinsHandler),
+        ('/groups/\d+/bulletins/(private)/',                            WebBulletinsHandler),
         ('/groups/\d+/bulletins/(\d+)/(\w*)/',                          WebBulletinHandler),
 
         ('/groups/\d+/problems/',                                       WebProblemsHandler),
