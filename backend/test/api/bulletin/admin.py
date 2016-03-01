@@ -103,6 +103,8 @@ class TestApiBulletinAdmin(TestCase):
                 "msg": "",
             }
         }
+        self.assertEqualR(res, expect_result)
+
     def test_admin_post_another_bulletin(self):
         data = {
             "token": self.admin_token,
@@ -125,9 +127,7 @@ class TestApiBulletinAdmin(TestCase):
         }
         res = requests.get(self.another_urls, data=data)
         res.connection.close()
-        print(res.text)
-        #res = json.loads(res.text)['msg'][0]
-        """
+        res = json.loads(res.text)['msg'][0]
         data = {
             "token": self.admin_token,
             "title": res['title'],
@@ -136,13 +136,26 @@ class TestApiBulletinAdmin(TestCase):
         res =requests.put( '%s%s/'%(self.url, res['id']), data=data)
         res.connection.close()
         expect_result = {
-            "status_code": 200,
+            "status_code": 403,
             "body": {
-                "msg": "",
+                "msg": "Permission Denied",
             }
         }
         self.assertEqualR(res, expect_result)
-        """
 
     def test_admin_delete_another_bulletin(self):
-        pass
+        data = {
+            "token": self.admin_token,
+        }
+        res = requests.get(self.another_urls, data=data)
+        res.connection.close()
+        res = json.loads(res.text)['msg'][0]
+        res = requests.delete( '%s%s/'%(self.url, res['id']), data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 403,
+            "body": {
+                "msg": "Permission Denied",
+            }
+        }
+        self.assertEqualR(res, expect_result)
