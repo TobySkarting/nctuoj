@@ -11,7 +11,7 @@
         <select name="verdict" value='{{page['get']['verdict'] or ''}}'>
             <option value=''>ALL</option>
             {% for x in map_verdict_types %}
-                <option value='{{x}}'>{{map_verdict_types[x]['abbreviation']}}</option>
+                <option value='{{x}}' style="color: {{map_verdict_types[x]['color']}}">{{map_verdict_types[x]['abbreviation']}}</option>
             {% end %}
         </select>
         <button class="btn btn-success">Go</button>
