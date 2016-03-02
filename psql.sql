@@ -96,6 +96,7 @@ CREATE TABLE groups (
 CREATE TRIGGER groups_updated_row BEFORE UPDATE ON groups FOR EACH ROW EXECUTE PROCEDURE updated_row();
 INSERT INTO groups (name, description) VALUES ('Group1', 'For Group1');
 INSERT INTO groups (name, description) VALUES ('Group2', 'For Group2');
+INSERT INTO groups (name, description) VALUES ('Group3', 'For Group3');
 
 --DROP TABLE IF EXISTS map_group_user;
 CREATE TABLE map_group_user (
@@ -114,6 +115,7 @@ CREATE TRIGGER map_group_user_updated_row BEFORE UPDATE ON map_group_user FOR EA
 INSERT INTO map_group_user (group_id, user_id) VALUES (1, 1);
 INSERT INTO map_group_user (group_id, user_id) VALUES (2, 1);
 INSERT INTO map_group_user (group_id, user_id) VALUES (1, 2);
+INSERT INTO map_group_user (group_id, user_id) VALUES (2, 2);
 
 --DROP TABLE IF EXISTS map_group_user_power;
 CREATE TABLE map_group_user_power (
