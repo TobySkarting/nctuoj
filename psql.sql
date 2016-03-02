@@ -66,7 +66,7 @@ CREATE INDEX on users (name);
 CREATE INDEX on users (student_id);
 INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '1', 'P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr');
 INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('user', 'ee11cbb19052e40b07aac0ca060c23ee', 'user@gmail.com', '0000001', '1', 'TOKEN@user@a35668De30ED26b0cff046EBFD108964');
-
+INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('test', '098f6bcd4621d373cade4e832627b4f6', 'test@gmail.com', '0000002', '1', 'NCTUOJ@6766394053819075738@Ec77c214D7cE6ad1a543D93B5786a290');
 
 --DROP TABLE IF EXISTS map_user_power;
 CREATE TABLE map_user_power (
@@ -319,15 +319,15 @@ CREATE TABLE map_verdict_string (
 );
 CREATE TRIGGER map_verdict_string_updated_row BEFORE UPDATE ON map_verdict_string FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON map_verdict_string(priority);
-INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('Pending', 'In Queue', 1);
-INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('SE', 'System Error', 2);
-INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('CE', 'Compile Error', 3);
-INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('RE', 'Runtime Error', 4);
-INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('MLE', 'Memory Limit Exceed', 5);
-INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('TLE', 'Time Limit Exceed', 6);
-INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('OLE', 'Output Limit Exceed', 7);
-INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('WA', 'Wrong Answer', 8);
-INSERT INTO map_verdict_string (abbreviation,description,priority) VALUES('AC', 'Accepted', 9);
+INSERT INTO map_verdict_string (abbreviation,description,priority,color) VALUES('Pending', 'In Queue', 1, '#000');
+INSERT INTO map_verdict_string (abbreviation,description,priority,color) VALUES('SE', 'System Error', '#000');
+INSERT INTO map_verdict_string (abbreviation,description,priority,color) VALUES('CE', 'Compile Error', 3, 'rgb(51, 122, 183)');
+INSERT INTO map_verdict_string (abbreviation,description,priority,color) VALUES('RE', 'Runtime Error', 4, 'rgb(163, 188, 0)');
+INSERT INTO map_verdict_string (abbreviation,description,priority,color) VALUES('MLE', 'Memory Limit Exceed', 5, '#000');
+INSERT INTO map_verdict_string (abbreviation,description,priority,color) VALUES('TLE', 'Time Limit Exceed', 6, 'rgb(156, 39, 176)');
+INSERT INTO map_verdict_string (abbreviation,description,priority,color) VALUES('OLE', 'Output Limit Exceed', 7, '#000');
+INSERT INTO map_verdict_string (abbreviation,description,priority,color) VALUES('WA', 'Wrong Answer', 8, 'rgb(244, 67, 54)');
+INSERT INTO map_verdict_string (abbreviation,description,priority,color) VALUES('AC', 'Accepted', 9, 'rgb(76, 175, 80)');
 
 
 --DROP TABLE IF EXISTS submissions;
