@@ -268,12 +268,12 @@ ALTER SEQUENCE problems_id_seq RESTART WITH 10001;
 CREATE TRIGGER problems_updated_row BEFORE UPDATE ON problems FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON problems (visible);
 CREATE INDEX ON problems (group_id);
-INSERT INTO problems (group_id, setter_user_id, visible) values (1, 0);
-INSERT INTO problems (group_id, setter_user_id, visible) values (1, 1);
-INSERT INTO problems (group_id, setter_user_id, visible) values (2, 0);
-INSERT INTO problems (group_id, setter_user_id, visible) values (2, 1);
-INSERT INTO problems (group_id, setter_user_id, visible) values (3, 0);
-INSERT INTO problems (group_id, setter_user_id, visible) values (3, 1);
+INSERT INTO problems (group_id, setter_user_id, visible) values (1, 1, 0);
+INSERT INTO problems (group_id, setter_user_id, visible) values (1, 1, 1);
+INSERT INTO problems (group_id, setter_user_id, visible) values (2, 1, 0);
+INSERT INTO problems (group_id, setter_user_id, visible) values (2, 1, 1);
+INSERT INTO problems (group_id, setter_user_id, visible) values (3, 1, 0);
+INSERT INTO problems (group_id, setter_user_id, visible) values (3, 1, 1);
 
 --DROP TABLE IF EXISTS map_problem_execute;
 CREATE TABLE map_problem_execute (
