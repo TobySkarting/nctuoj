@@ -8,14 +8,12 @@ from util import TestCase
 import config
 import common
 
-class TestApiBulletinGuest(TestCase):
-    url = '%s/api/groups/3/bulletins/'%(config.base_url)
-    urls = '%s/api/groups/3/bulletins/'%(config.base_url)
+class TestApiProblemGuest(TestCase):
+    url = '%s/api/groups/3/problems/'%(config.base_url)
+    urls = '%s/api/groups/3/problems/'%(config.base_url)
     token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})['token']
-    title = "Title test @ " + str(datetime.datetime.now())
-    content = "Content test @ " + str(datetime.datetime.now())
 
-    def test_guest_get_bulletins(self):
+    def test_admin_get_problems(self):
         data = {
             "token": self.token,
         }
@@ -29,13 +27,11 @@ class TestApiBulletinGuest(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_guest_post_bulletin(self):
+    def test_admin_get_visible_problem(self):
         data = {
             "token": self.token,
-            "title": self.title,
-            "content": self.content,
         }
-        res = requests.post(self.urls, data=data)
+        res = requests.get("%s%s/"%(self.url,10006), data=data)
         res.connection.close()
         expect_result = {
             "status_code": 403,
@@ -45,30 +41,11 @@ class TestApiBulletinGuest(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_guest_put_bulletin(self):
+    def test_admin_get_invisible_problem(self):
         data = {
             "token": self.token,
         }
-        data = {
-            "token": self.token,
-            "title": self.title,
-            "content": "Modify @ " + str(datetime.datetime.now()) + self.content,
-        }
-        res =requests.put( '%s%s/'%(self.url, 3), data=data)
-        res.connection.close()
-        expect_result = {
-            "status_code": 403,
-            "body": {
-                "msg": "Permission Denied",
-            }
-        }
-        self.assertEqualR(res, expect_result)
-
-    def test_guest_delete_bulletin(self):
-        data = {
-            "token": self.token,
-        }
-        res = requests.delete( '%s%s/'%(self.url, 3), data=data)
+        res = requests.get("%s%s/"%(self.url,10005), data=data)
         res.connection.close()
         expect_result = {
             "status_code": 403,

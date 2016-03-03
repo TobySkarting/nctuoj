@@ -123,7 +123,7 @@ class ApiRequestHandler(RequestHandler):
 
         in_group = self.current_group in (x['id'] for x in self.group)
         ### if the user not in the group and doesn't try add to group then return 403
-        if not in_group and self.current_group != 0 and re.search(r'^/api/groups/\d+/\d+/$', self.request.uri) == False:
+        if not in_group and self.current_group != 0 and not re.search(r'^/api/groups/\d+/\d+/$', self.request.uri):
             self.render((403, 'Permission Denied'))
             return
             

@@ -14,6 +14,7 @@ class ApiProblemsHandler(ApiRequestHandler):
         meta['page'] = meta['page'] or 1
         meta['count'] = meta['count'] or 10
         meta['group_id'] = self.current_group
+        meta['user_id'] = self.account['id']
         err, data = yield from Service.Problem.get_problem_list(meta)
         if err: self.render(err)
         else: self.render(data)
