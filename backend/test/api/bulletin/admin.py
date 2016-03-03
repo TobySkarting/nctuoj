@@ -11,15 +11,13 @@ import common
 class TestApiBulletinAdmin(TestCase):
     url = '%s/api/groups/1/bulletins/'%(config.base_url)
     urls = '%s/api/groups/1/bulletins/'%(config.base_url)
-    another_url = '%s/api/groups/2/bulletins/'%(config.base_url)
-    another_urls = '%s/api/groups/2/bulletins/'%(config.base_url)
-    admin_token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})['token']
+    token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})['token']
     title = "Title test @ " + str(datetime.datetime.now())
     content = "Content test @ " + str(datetime.datetime.now())
 
     def test_admin_get_bulletins(self):
         data = {
-            "token": self.admin_token,
+            "token": self.token,
         }
         res = requests.get(self.urls, data=data)
         res.connection.close()
@@ -28,7 +26,7 @@ class TestApiBulletinAdmin(TestCase):
     def test_admin_post_bulletin(self):
         # missing title
         data = {
-            "token": self.admin_token,
+            "token": self.token,
             "content": self.content,
         }
         expect_result = {
@@ -43,7 +41,7 @@ class TestApiBulletinAdmin(TestCase):
 
         # missing content
         data = {
-            "token": self.admin_token,
+            "token": self.token,
             "title": self.title,
         }
         res = requests.post(self.urls, data=data)
@@ -58,7 +56,7 @@ class TestApiBulletinAdmin(TestCase):
 
         # success post
         data = {
-            "token": self.admin_token,
+            "token": self.token,
             "title": self.title,
             "content": self.content,
         }
@@ -68,13 +66,13 @@ class TestApiBulletinAdmin(TestCase):
 
     def test_admin_put_bulletin(self):
         data = {
-            "token": self.admin_token,
+            "token": self.token,
         }
         res = requests.get(self.urls, data=data)
         res.connection.close()
         res = json.loads(res.text)['msg'][0]
         data = {
-            "token": self.admin_token,
+            "token": self.token,
             "title": res['title'],
             "content": "Modify @ " + str(datetime.datetime.now()) + res['content'],
         }
@@ -90,7 +88,7 @@ class TestApiBulletinAdmin(TestCase):
 
     def test_admin_delete_bulletin(self):
         data = {
-            "token": self.admin_token,
+            "token": self.token,
         }
         res = requests.get(self.urls, data=data)
         res.connection.close()
@@ -101,61 +99,6 @@ class TestApiBulletinAdmin(TestCase):
             "status_code": 200,
             "body": {
                 "msg": "",
-            }
-        }
-        self.assertEqualR(res, expect_result)
-
-    def test_admin_post_another_bulletin(self):
-        data = {
-            "token": self.admin_token,
-            "title": self.title,
-            "content": self.content,
-        }
-        res = requests.post(self.another_urls, data=data)
-        res.connection.close()
-        expect_result = {
-            "status_code": 403,
-            "body": {
-                "msg": "Permission Denied",
-            }
-        }
-        self.assertEqualR(res, expect_result)
-
-    def test_admin_put_another_bulletin(self):
-        data = {
-            "token": self.admin_token,
-        }
-        res = requests.get(self.another_urls, data=data)
-        res.connection.close()
-        res = json.loads(res.text)['msg'][0]
-        data = {
-            "token": self.admin_token,
-            "title": res['title'],
-            "content": "Modify @ " + str(datetime.datetime.now()) + res['content'],
-        }
-        res =requests.put( '%s%s/'%(self.url, res['id']), data=data)
-        res.connection.close()
-        expect_result = {
-            "status_code": 403,
-            "body": {
-                "msg": "Permission Denied",
-            }
-        }
-        self.assertEqualR(res, expect_result)
-
-    def test_admin_delete_another_bulletin(self):
-        data = {
-            "token": self.admin_token,
-        }
-        res = requests.get(self.another_urls, data=data)
-        res.connection.close()
-        res = json.loads(res.text)['msg'][0]
-        res = requests.delete( '%s%s/'%(self.url, res['id']), data=data)
-        res.connection.close()
-        expect_result = {
-            "status_code": 403,
-            "body": {
-                "msg": "Permission Denied",
             }
         }
         self.assertEqualR(res, expect_result)

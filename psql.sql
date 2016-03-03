@@ -151,6 +151,7 @@ CREATE TRIGGER bulletins_updated_row BEFORE UPDATE ON bulletins FOR EACH ROW EXE
 CREATE INDEX ON bulletins (group_id);
 INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (1, 1, 'Public', 'New Group Public');
 INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (2, 1, 'Normal', 'New Group Normal');
+INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (3, 1, 'Normal 2', 'New Group Normal 2');
 
 --DROP TABLE IF EXISTS execute_types;
 CREATE TABLE execute_types (
