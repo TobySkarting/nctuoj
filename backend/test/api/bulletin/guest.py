@@ -24,37 +24,6 @@ class TestApiBulletinGuest(TestCase):
         self.assertEqual(res.status_code, 200)
 
     def test_guest_post_bulletin(self):
-        # missing title
-        data = {
-            "token": self.token,
-            "content": self.content,
-        }
-        expect_result = {
-            "status_code": 400,
-            "body": {
-                "msg": 'value of title: "None" should not be empty value',
-            }
-        }
-        res = requests.post(self.urls, data=data)
-        res.connection.close()
-        self.assertEqualR(res, expect_result)
-
-        # missing content
-        data = {
-            "token": self.token,
-            "title": self.title,
-        }
-        res = requests.post(self.urls, data=data)
-        res.connection.close()
-        expect_result = {
-            "status_code": 400,
-            "body": {
-                "msg": 'value of content: "None" should not be empty value',
-            }
-        }
-        self.assertEqualR(res, expect_result)
-
-        # success post
         data = {
             "token": self.token,
             "title": self.title,
@@ -62,26 +31,29 @@ class TestApiBulletinGuest(TestCase):
         }
         res = requests.post(self.urls, data=data)
         res.connection.close()
-        self.assertEqual(res.status_code, 200)
+        expect_result = {
+            "status_code": 403,
+            "body": {
+                "msg": "Permission Denied",
+            }
+        }
+        self.assertEqualR(res, expect_result)
 
     def test_guest_put_bulletin(self):
         data = {
             "token": self.token,
         }
-        res = requests.get(self.urls, data=data)
-        res.connection.close()
-        res = json.loads(res.text)['msg'][0]
         data = {
             "token": self.token,
-            "title": res['title'],
-            "content": "Modify @ " + str(datetime.datetime.now()) + res['content'],
+            "title": self.title,
+            "content": "Modify @ " + str(datetime.datetime.now()) + self.content,
         }
-        res =requests.put( '%s%s/'%(self.url, res['id']), data=data)
+        res =requests.put( '%s%s/'%(self.url, 3), data=data)
         res.connection.close()
         expect_result = {
-            "status_code": 200,
+            "status_code": 403,
             "body": {
-                "msg": "",
+                "msg": "Permission Denied",
             }
         }
         self.assertEqualR(res, expect_result)
@@ -90,15 +62,12 @@ class TestApiBulletinGuest(TestCase):
         data = {
             "token": self.token,
         }
-        res = requests.get(self.urls, data=data)
-        res.connection.close()
-        res = json.loads(res.text)['msg'][0]
-        res = requests.delete( '%s%s/'%(self.url, res['id']), data=data)
+        res = requests.delete( '%s%s/'%(self.url, 3), data=data)
         res.connection.close()
         expect_result = {
-            "status_code": 200,
+            "status_code": 403,
             "body": {
-                "msg": "",
+                "msg": "Permission Denied",
             }
         }
         self.assertEqualR(res, expect_result)
