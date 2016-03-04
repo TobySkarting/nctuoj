@@ -40,6 +40,7 @@ class TestApiProblemAdmin(TestCase):
     def test_put_visible(self):
         data = {
             "token": self.token,
+            "verdict_id": 1,
         }
         res = requests.post(self.urls, data=data)
         res.connection.close()
@@ -50,7 +51,21 @@ class TestApiProblemAdmin(TestCase):
             }
         }
         self.assertEqualR(res, expect_result)
-    
+
+    def test_put_verdict(self):
+        data = {
+            "token": self.token,
+            "visible": 0,
+        }
+        res = requests.post(self.urls, data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 400,
+            "body": {
+                "msg": "verdict_id not in form",
+            }
+        }
+        self.assertEqualR(res, expect_result)
 
     def test_admin_edit_problem(self):
         # put
