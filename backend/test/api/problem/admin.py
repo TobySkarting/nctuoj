@@ -37,3 +37,9 @@ class TestApiProblemAdmin(TestCase):
         res.connection.close()
         self.assertEqual(res.status_code, 200)
 
+    def test_admin_edit_problem(self):
+        # post
+        # put
+        # delete
+        pass
+
