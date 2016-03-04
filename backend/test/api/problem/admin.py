@@ -39,6 +39,18 @@ class TestApiProblemAdmin(TestCase):
 
     def test_admin_edit_problem(self):
         # post
+        data = {
+            "token": self.token,
+        }
+        res = requests.post(self.urls, data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 400,
+            "body": {
+                "msg": "visible not in form",
+            }
+        }
+        self.assertEqualR(res, expect_result)
         # put
         # delete
         pass

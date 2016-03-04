@@ -32,7 +32,7 @@ def _form_validation(form, schema):
         name = item['name'] = item['name'][1:] if require else item['name']
 
         ### check require
-        if require and name not in form:
+        if require and (name not in form or form[name] is None):
             return '%s not in form' % name
 
         if not require and (name not in form or form[name] is None or (isinstance(form[name], str) and form[name] == '')):

@@ -35,5 +35,11 @@ class TestApiProblemUser(TestCase):
         }
         res = requests.get("%s%s/"%(self.url,10003), data=data)
         res.connection.close()
-        self.assertEqual(res.status_code, 403)
+        expect_result = {
+            "status_code": 403,
+            "body": {
+                "msg": "Permission Denied",
+            }
+        }
+        self.assertEqualR(res, expect_result)
 

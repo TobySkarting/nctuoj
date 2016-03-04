@@ -32,7 +32,7 @@ class TestApiBulletinAdmin(TestCase):
         expect_result = {
             "status_code": 400,
             "body": {
-                "msg": 'value of title: "None" should not be empty value',
+                "msg": 'title not in form',
             }
         }
         res = requests.post(self.urls, data=data)
@@ -49,7 +49,7 @@ class TestApiBulletinAdmin(TestCase):
         expect_result = {
             "status_code": 400,
             "body": {
-                "msg": 'value of content: "None" should not be empty value',
+                "msg": 'content not in form',
             }
         }
         self.assertEqualR(res, expect_result)

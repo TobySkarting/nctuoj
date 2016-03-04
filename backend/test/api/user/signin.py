@@ -48,6 +48,17 @@ class TestApiUserSignin(TestCase):
         res = requests.post(self.url, data=data)
         res.connection.close()
         expect_result = {
+            "status_code": 400,
+            "body": {
+                "msg": "account not in form", 
+            }
+        }
+        self.assertEqualR(res, expect_result)
+
+        data['account'] = ''
+        res = requests.post(self.url, data=data)
+        res.connection.close()
+        expect_result = {
             "status_code": 404,
             "body": {
                 "msg": "User Not Exist", 
@@ -64,7 +75,7 @@ class TestApiUserSignin(TestCase):
         expect_result = {
             "status_code": 400,
             "body": {
-                "msg": "Wrong Password",
+                "msg": "passwd not in form",
             }
         }
         self.assertEqualR(res, expect_result)
