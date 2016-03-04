@@ -67,6 +67,7 @@ from api.execute        import ApiExecuteTypeHandler
 from api.verdict        import ApiVerdictTypesHandler
 from api.verdict        import ApiVerdictTypeHandler
 from api.group          import ApiGroupHandler
+from api.group          import ApiGroupAddusersHandler
 from api.group          import ApiGroupsHandler
 from api.group          import ApiGroupUserHandler
 from api.group          import ApiGroupUserPowerHandler
@@ -190,6 +191,7 @@ if __name__ == '__main__':
         
         ('/api/groups/',                                                ApiGroupsHandler),
         ('/api/groups/\d+/',                                            ApiGroupHandler),
+        ('/api/groups/\d+/addusers/',                                   ApiGroupAddusersHandler),
         ('/api/groups/\d+/(\d+)/',                                      ApiGroupUserHandler),
         ('/api/groups/\d+/(\d+)/power/',                                ApiGroupUserPowerHandler),
         ('/api/groups/\d+/bulletins/',                                  ApiBulletinsHandler),

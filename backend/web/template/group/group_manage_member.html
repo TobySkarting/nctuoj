@@ -50,6 +50,26 @@
                 </tbody>
             </table>
         </div>
+        <form class="form">
+            <h3>Add Users</h3>
+            <div class="form-group">
+                <label>By user id</label> 
+                <textarea class="form-control" name="user_ids"></textarea>
+            </div>
+            <div class="form-group">
+                <label>By user account</label> 
+                <textarea class="form-control" name="user_accounts"></textarea>
+            </div>
+            <div class="form-group">
+                <label>By user name</label> 
+                <textarea class="form-control" name="user_names"></textarea>
+            </div>
+            <div class="form-group">
+                <label>By user student id</label> 
+                <textarea class="form-control" name="user_student_ids"></textarea>
+            </div>
+            <input type="submit" class="form-control">
+        </form>
     </div>
 </div>
 {% if map_group_power['group_manage'] in current_group_power %}
@@ -57,6 +77,35 @@
 var post_group_user_power = null;
 var delete_group_user = null;
 require(['jquery', 'bootbox'], function($, bootbox){
+    $('form').submit(function(){
+        var form = $(this);
+        data = {};
+        data.token = "{{account['token']}}";
+        data.user_ids = form.find('[name=user_ids]').val().split(',');
+        data.user_accounts = form.find('[name=user_accounts]').val().split(',');
+        data.user_names = form.find('[name=user_names]').val().split(',');
+        data.user_student_ids = form.find('[name=user_student_ids]').val().split(',');
+        console.log(data);
+        bootbox.confirm('Are you sure?', function(res){
+            if(res == false)return;
+            $.ajax({
+                url: '/api/groups/{{current_group}}/addusers/',
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function(msg){
+                    bootbox.alert('Updated successfully', function(){
+                        location.href = '/groups/{{current_group}}/manage/member/';
+                    });
+                },
+                error: function(event){
+                    msg = JSON.parse(event.responseText);
+                    bootbox.alert(msg['msg']);
+                }
+            });
+        });
+        return false;
+    });
     post_group_user_power = function(uid, power){
         $.ajax({
             url: '/api/groups/{{current_group}}/' + uid + '/power/',

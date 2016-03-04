@@ -52,7 +52,7 @@ service/
         V post_verdict: post -> post&put
 
 api
-    - submission.py
-        - restructure url
-    - user.py
-        - restructure url
+    V submission.py
+        V restructure url
+    V user.py
+        V restructure url
