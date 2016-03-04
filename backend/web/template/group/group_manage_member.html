@@ -16,6 +16,9 @@
                         <th>Problem</th>
                         <th>Submission</th>
                         <th>Contest</th>
+                        {% if map_group_power['group_manage'] in current_group_power %}
+                        <th></th>
+                        {% end %}
                     </tr>
                 </thead>
                 <tbody>
@@ -37,6 +40,11 @@
                                     </td>
                                 {% end %}
                             {% end %}
+                            {% if map_group_power['group_manage'] in current_group_power %}
+                            <td class="col-md-1">
+                                <a class="btn btn-danger btn-sm" onclick="delete_group_user({{id}})">Kick</a>
+                            </td>
+                            {% end %}
                         </tr>
                     {% end %}
                 </tbody>
@@ -47,6 +55,7 @@
 {% if map_group_power['group_manage'] in current_group_power %}
 <script>
 var post_group_user_power = null;
+var delete_group_user = null;
 require(['jquery', 'bootbox'], function($, bootbox){
     post_group_user_power = function(uid, power){
         $.ajax({
@@ -67,7 +76,29 @@ require(['jquery', 'bootbox'], function($, bootbox){
                 bootbox.alert(msg['msg']);
             }
         });
-    }
+    };
+    delete_group_user = function(uid){
+        bootbox.confirm('Are you sure?', function(res){
+            if(res == false) return;
+            $.ajax({
+                url: '/api/groups/{{current_group}}/' + uid + '/',
+                type: 'DELETE',
+                dataType: 'json',
+                data: {
+                    token: "{{account['token']}}"
+                },
+                success: function(msg){
+                    bootbox.alert('Deleted successfully', function(){
+                        location.href = location.href;
+                    });
+                },
+                error: function(event){
+                    msg = JSON.parse(event.responseText);
+                    bootbox.alert(msg['msg']);
+                }
+            });
+        });
+    };
 });
 </script>
 {% end %}
