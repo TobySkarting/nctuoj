@@ -37,8 +37,7 @@ class TestApiProblemAdmin(TestCase):
         res.connection.close()
         self.assertEqual(res.status_code, 200)
 
-    def test_admin_edit_problem(self):
-        # post
+    def test_put_visible(self):
         data = {
             "token": self.token,
         }
@@ -51,6 +50,9 @@ class TestApiProblemAdmin(TestCase):
             }
         }
         self.assertEqualR(res, expect_result)
+    
+
+    def test_admin_edit_problem(self):
         # put
         # delete
         pass
