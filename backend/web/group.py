@@ -12,6 +12,8 @@ class WebGroupManageHandler(WebRequestHandler):
     @tornado.gen.coroutine
     def get(self, id, action):
         err, data = yield from Service.Group.get_group({"id": id})
+        if data['type'] == 1: #inpublic
+            err, data['inpublic'] = yield from Service.Group.get_inpublic_group_user({'id': id})
         if not action:
             action = "basic/"
         if action == "basic/":

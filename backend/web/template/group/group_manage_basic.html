@@ -15,6 +15,14 @@
                 <label class="control-label">Description</label>
                 <input name="description" class="form-control" type="text" value="{{data['description']}}">
             </div>
+            <div class="form-group">
+                <label class="control-label">Type</label>
+                <select name="type" class="form-control">
+                    {% for x in map_group_type %}
+                    <option value="{{x}}" {% if x == data['type'] %}selected{% end %}>{{map_group_type[x]}}</option>
+                    {% end %}
+                </select>
+            </div>
             {% if data['id'] != 0 %}
             <button type="button" class="btn btn-danger" onclick="delete_group();">Delete</button>
             {% end %}
@@ -26,6 +34,7 @@
 <script>
 
 require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
+    $('[name=type]').selectpicker().selectpicker('val', {{data['type']}});
     $("form").submit(function(){
         data = $(this).serialize();
         $.ajax({

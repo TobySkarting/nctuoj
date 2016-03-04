@@ -14,13 +14,14 @@ class ApiGroupsHandler(ApiRequestHandler):
     def post(self):
         err = yield from Service.Permission.check(self)
         if err: self.render(err); return
-        args = ['name', 'description']
+        args = ['name', 'description', 'type']
         meta = self.get_args(args)
         err, data = yield from Service.Group.post_group(meta)
         if err: self.render(err)
         meta = {}
         meta['group_id'] = data
         meta['user_id'] = self.account['id']
+        meta['force'] = True
         err, res = yield from Service.Group.post_group_user(meta)
         for i in range(1, 6):
             meta['power'] = i
@@ -40,7 +41,7 @@ class ApiGroupHandler(ApiRequestHandler):
     def put(self):
         err = yield from Service.Permission.check(self, id=self.current_group)
         if err: self.render(err); return
-        args = ['name', 'description']
+        args = ['name', 'description', 'type']
         meta = self.get_args(args)
         meta['id'] = self.current_group
         err, data = yield from Service.Group.put_group(meta)
@@ -81,7 +82,8 @@ class ApiGroupUserHandler(ApiRequestHandler):
     def post(self, user_id):
         err = yield from Service.Permission.check(self, user_id=user_id)
         if err: self.render(err); return
-        meta = {}
+        args = ['force']
+        meta = self.get_args(args)
         meta['user_id'] = user_id
         meta['group_id'] = self.current_group
         err, res = yield from Service.Group.post_group_user(meta)

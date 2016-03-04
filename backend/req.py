@@ -116,6 +116,7 @@ class ApiRequestHandler(RequestHandler):
         err, self.current_contest = yield from Service.User.get_user_current_contest({'id': id})
         err, self.account['power'] = yield from Service.User.get_user_power_info({'id': id})
         err, self.group = yield from Service.User.get_user_group_info({'id': id})
+        err, self.inpublic_group = yield from Service.User.get_user_inpublic_group({'id': id})
         err, self.current_group_power = yield from Service.Group.get_group_user_power({
             'user_id': id, 
             'group_id': self.current_group
@@ -160,6 +161,7 @@ class WebRequestHandler(RequestHandler):
         except:
             kwargs['title'] = "NCTUOJ"
         kwargs['group'] = self.group
+        kwargs['inpublic_group'] = self.inpublic_group
         kwargs['current_contest'] = self.current_contest
         kwargs['registered_contest'] = self.registered_contest
         kwargs['current_group'] = self.current_group
@@ -199,6 +201,8 @@ class WebRequestHandler(RequestHandler):
         err, self.current_contest = yield from Service.User.get_user_current_contest({'id': id})
         err, self.account['power'] = yield from Service.User.get_user_power_info({'id': id})
         err, self.group = yield from Service.User.get_user_group_info({'id': id})
+        err, self.inpublic_group = yield from Service.User.get_user_inpublic_group({'id': id})
+        print(self.inpublic_group)
         err, self.current_group_power = yield from Service.Group.get_group_user_power({
             'user_id': id,
             'group_id': self.current_group

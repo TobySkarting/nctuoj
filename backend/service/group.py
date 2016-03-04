@@ -1,6 +1,7 @@
 from service.base import BaseService
 from req import Service
 from utils.form import form_validation
+from map import *
 import config
 
 class GroupService(BaseService):
@@ -99,6 +100,9 @@ class GroupService(BaseService):
         }, {
             'name': '+description',
             'type': str,
+        }, {
+            'name': '+type',
+            'type': int,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
@@ -108,22 +112,51 @@ class GroupService(BaseService):
         yield self.db.execute(sql+' WHERE id=%s', param+(id,))
         # self.rs.delete('group@%s'%(str(id)))
         return (None, id)
-
-    def post_group_user(self, data={}):
+    
+    def get_inpublic_group_user(self, data={}):
         required_args = [{
-            'name': 'user_id',
-            'type': int,
-        }, {
-            'name': 'group_id',
+            'name': '+id',
             'type': int,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
-        sql, param = self.gen_insert_sql('map_group_user', data)
-        try: res = yield self.db.execute(sql, param)
-        except: return ((400, 'Already in'), None)
-        id = res.fetchone()['id']
-        return (None, id)
+        res = yield self.db.execute('SELECT u.* FROM map_inpublic_group_user as m, users as u WHERE m.group_id=%s AND m.user_id=u.id;', (data['id'], ))
+        res = res.fetchall()
+        return (None, res)
+
+    def post_group_user(self, data={}):
+        required_args = [{
+            'name': '+user_id',
+            'type': int,
+        }, {
+            'name': '+group_id',
+            'type': int,
+        }, {
+            'name': 'force',
+            'type': bool,
+        }]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        if 'force' in data:
+            force = data.pop('force')
+        else: force = False
+        err, group = yield from Service.Group.get_group({'id': data['group_id']})
+        if err: return (err, None)
+        if group['type'] == 0 or force == True: # public
+            if force:
+                self.db.execute('DELETE FROM map_inpublic_group_user WHERE group_id=%s AND user_id=%s;', (data['group_id'], data['user_id'],))
+            sql, param = self.gen_insert_sql('map_group_user', data)
+            try: res = yield self.db.execute(sql, param)
+            except: return ((400, 'Already in'), None)
+            id = res.fetchone()['id']
+            return (None, id)
+        elif group['type'] == 1: #inpublic
+            sql, param = self.gen_insert_sql('map_inpublic_group_user', data)
+            try: res = self.db.execute(sql, param)
+            except: return ((400, 'Already registered'), None)
+            return (None, None)
+        elif group['type'] == -1: #private
+            return ((403, 'This group is private'), None)
 
     def delete_group_user(self, data={}):
         required_args = [{

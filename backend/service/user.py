@@ -128,6 +128,17 @@ class UserService(BaseService):
     def get_user_advance_info_by_token(self, token):
         pass
 
+    def get_user_inpublic_group(self, data={}):
+        required_args = [{
+            'name': '+id',
+            'type': int,
+        },]
+        err = form_validation(data, required_args)
+        if err: return (err, None)
+        res = yield self.db.execute('SELECT * FROM map_inpublic_group_user WHERE user_id=%s;', (data['id'],))
+        res = res.fetchall()
+        return (None, res)
+
     def get_user_group_info(self, data={}):
         required_args = [{
             'name': '+id',

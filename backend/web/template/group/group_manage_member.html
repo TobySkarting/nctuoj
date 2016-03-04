@@ -50,6 +50,34 @@
                 </tbody>
             </table>
         </div>
+        {% if map_group_power['group_manage'] in current_group_power and data['type'] == 1%}
+        <!--inpublic-->
+        <div class="panel panel-default table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Account</th>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th class="col-md-1"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{data['inpublic']}}
+                    {% for x in data['inpublic'] %}
+                    <tr>
+                        <td>{{x['id']}}</td>
+                        <td>{{x['account']}}</td>
+                        <td>{{x['student_id']}}</td>
+                        <td>{{x['name']}}</td>
+                        <td class="col-md-1"><a class="btn btn-xs btn-default" onclick="add_group({{current_group}}, {{x['id']}})">OK</a></td>
+                    </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        </div>
+        {% end %}
         <form class="form">
             <h3>Add Users</h3>
             <div class="form-group">
@@ -149,6 +177,26 @@ require(['jquery', 'bootbox'], function($, bootbox){
         });
     };
 });
+function add_group(group, uid){
+    require(["jquery", "bootbox"], function($, bootbox){
+        $.ajax({
+            url: "/api/groups/" + group +"/" + uid + "/",
+            data: {
+                token: '{{account['token']}}',
+                force: true,
+            },
+            type: 'post',
+            dataType: 'json',
+            success: function(msg){
+                location.href = location.href;
+            },
+            error: function(event){
+                msg = JSON.parse(event.responseText);
+                bootbox.alert(msg['msg']);
+            }
+        });
+    });
+}
 </script>
 {% end %}
 {% end %}
