@@ -22,6 +22,15 @@ class ApiBulletinPermission(PermissionBase):
             return (403, 'Permission Denied')
         return None
 
+    def get(req, data):
+        err, res = yield from Service.Bulletin.get_bulletin(data)
+        if err:
+            return err
+        if int(res['group_id']) != int(req.current_group):
+            return (403, 'Permission Denied')
+        return None
+
+
     def put(req, data):
         err = yield from ApiBulletinPermission.edit(req, data)
         if err: return err

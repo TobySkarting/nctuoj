@@ -33,6 +33,8 @@ class ApiBulletinsHandler(ApiRequestHandler):
 class ApiBulletinHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
         meta = {}
         meta['id'] = id
         meta['group_id'] = self.current_group

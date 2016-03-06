@@ -2,6 +2,7 @@
 from api.user.signin import TestApiUserSignin
 from api.user.signup import TestApiUserSignup
 from api.bulletin.admin import TestApiBulletinAdmin
+from api.bulletin.admin_cross import TestApiBulletinAdminCross
 from api.bulletin.user import TestApiBulletinUser
 from api.bulletin.guest import TestApiBulletinGuest
 from api.problem.admin import TestApiProblemAdmin
