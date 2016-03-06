@@ -37,7 +37,7 @@ class TestApiProblemAdmin(TestCase):
         res.connection.close()
         self.assertEqual(res.status_code, 200)
 
-    def test_put_visible(self):
+    def test_post_visible(self):
         data = {
             "token": self.token,
             "verdict_id": 1,
@@ -52,7 +52,7 @@ class TestApiProblemAdmin(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_put_verdict(self):
+    def test_post_verdict(self):
         data = {
             "token": self.token,
             "visible": 0,
@@ -67,8 +67,58 @@ class TestApiProblemAdmin(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_admin_edit_problem(self):
-        # put
-        # delete
-        pass
+        ### out of range
+        """
+        data['verdict_id'] = 9999
+        res = requests.post(self.urls, data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 400,
+            "body": {
+                "msg": "",
+            }
+        }
+        self.assertEqualR(res, expect_result)
+        """
+
+
+    def test_admin_post_put_delete_problem(self):
+        data = {
+            "token": self.token,
+            "visible": 0,
+            "verdict_id": 1,
+        }
+        res = requests.post(self.urls, data=data)
+        res.connection.close()
+        self.assertEqual(res.status_code, 200)
+        id = json.loads(res.text)['msg']['id']
+
+        modify_url = '%s%s/'%(self.url, id)
+        data['title'] = 'modify ' + str(datetime.datetime.now())
+        res = requests.put(modify_url, data=data)
+        res.connection.close()
+
+        expect_result = {
+            "status_code": 200,
+            "body": {
+                "msg": {
+                    "id": id,
+                }
+            }
+        }
+        self.assertEqualR(res, expect_result)
+
+        data = {
+            "token": self.token,
+        }
+        res = requests.delete(modify_url, data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 200,
+            "body": {
+                "msg": ""
+            }
+        }
+        self.assertEqualR(res, expect_result)
+
 
