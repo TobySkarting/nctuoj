@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS problems;
 DROP TABLE IF EXISTS verdicts;
 DROP TABLE IF EXISTS execute_steps;
 DROP TABLE IF EXISTS execute_types;
+DROP TABLE IF EXISTS map_inpublic_group_user;
 DROP TABLE IF EXISTS groups;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS schools;
@@ -109,6 +110,18 @@ CREATE UNIQUE INDEX ON map_group_user(group_id, user_id);
 CREATE TRIGGER map_group_user_updated_row BEFORE UPDATE ON map_group_user FOR EACH ROW EXECUTE PROCEDURE updated_row();
 --INSERT INTO map_group_user (group_id, user_id) VALUES (1, 0);
 INSERT INTO map_group_user (group_id, user_id) VALUES (1, 1);
+
+CREATE TABLE map_inpublic_group_user (
+    id              serial          NOT NULL    PRIMARY KEY,
+    group_id        integer         NOT NULL    REFERENCES groups(id)   ON DELETE CASCADE,
+    user_id         integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE INDEX ON map_inpublic_group_user (group_id);
+CREATE INDEX ON map_inpublic_group_user (user_id);
+CREATE UNIQUE INDEX ON map_inpublic_group_user (user_id, group_id);
+CREATE TRIGGER map_inpublic_group_user_updated_row BEFORE UPDATE ON map_inpublic_group_user FOR EACH ROW EXECUTE PROCEDURE updated_row();
 
 --DROP TABLE IF EXISTS map_group_user_power;
 CREATE TABLE map_group_user_power (
