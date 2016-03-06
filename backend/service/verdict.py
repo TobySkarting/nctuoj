@@ -98,8 +98,6 @@ class VerdictService(BaseService):
             except: pass
             with open(file_path, 'wb+') as f:
                 f.write(code_file['body'])
-        # self.rs.delete('verdict@%s'%(str(id)))
-        # self.rs.delete('verdict_list')
         return (None, str(id))
 
     def put_verdict(self ,data={}):
