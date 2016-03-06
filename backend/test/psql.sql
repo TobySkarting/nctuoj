@@ -65,6 +65,8 @@ CREATE UNIQUE INDEX on users (account);
 CREATE INDEX on users (name);
 CREATE INDEX on users (student_id);
 INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '1', 'P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr');
+INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('user', 'ee11cbb19052e40b07aac0ca060c23ee', 'user@gmail.com', '0000001', '1', 'TOKEN@user@a35668De30ED26b0cff046EBFD108964');
+INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('test', '098f6bcd4621d373cade4e832627b4f6', 'test@gmail.com', '0000002', '1', 'NCTUOJ@6766394053819075738@Ec77c214D7cE6ad1a543D93B5786a290');
 
 --DROP TABLE IF EXISTS map_user_power;
 CREATE TABLE map_user_power (
@@ -93,6 +95,8 @@ CREATE TABLE groups (
 );
 CREATE TRIGGER groups_updated_row BEFORE UPDATE ON groups FOR EACH ROW EXECUTE PROCEDURE updated_row();
 INSERT INTO groups (name, description) VALUES ('Group1', 'For Group1');
+INSERT INTO groups (name, description) VALUES ('Group2', 'For Group2');
+INSERT INTO groups (name, description) VALUES ('Group3', 'For Group3');
 
 --DROP TABLE IF EXISTS map_group_user;
 CREATE TABLE map_group_user (
@@ -109,6 +113,9 @@ CREATE UNIQUE INDEX ON map_group_user(group_id, user_id);
 CREATE TRIGGER map_group_user_updated_row BEFORE UPDATE ON map_group_user FOR EACH ROW EXECUTE PROCEDURE updated_row();
 --INSERT INTO map_group_user (group_id, user_id) VALUES (1, 0);
 INSERT INTO map_group_user (group_id, user_id) VALUES (1, 1);
+INSERT INTO map_group_user (group_id, user_id) VALUES (2, 1);
+INSERT INTO map_group_user (group_id, user_id) VALUES (1, 2);
+INSERT INTO map_group_user (group_id, user_id) VALUES (2, 2);
 
 --DROP TABLE IF EXISTS map_group_user_power;
 CREATE TABLE map_group_user_power (
@@ -143,6 +150,8 @@ CREATE TABLE bulletins (
 CREATE TRIGGER bulletins_updated_row BEFORE UPDATE ON bulletins FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON bulletins (group_id);
 INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (1, 1, 'Public', 'New Group Public');
+INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (2, 1, 'Normal', 'New Group Normal');
+INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (3, 1, 'Normal 2', 'New Group Normal 2');
 
 --DROP TABLE IF EXISTS execute_types;
 CREATE TABLE execute_types (
@@ -260,6 +269,12 @@ ALTER SEQUENCE problems_id_seq RESTART WITH 10001;
 CREATE TRIGGER problems_updated_row BEFORE UPDATE ON problems FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON problems (visible);
 CREATE INDEX ON problems (group_id);
+INSERT INTO problems (group_id, setter_user_id, visible) values (1, 1, 0);
+INSERT INTO problems (group_id, setter_user_id, visible) values (1, 1, 1);
+INSERT INTO problems (group_id, setter_user_id, visible) values (2, 1, 0);
+INSERT INTO problems (group_id, setter_user_id, visible) values (2, 1, 1);
+INSERT INTO problems (group_id, setter_user_id, visible) values (3, 1, 0);
+INSERT INTO problems (group_id, setter_user_id, visible) values (3, 1, 1);
 
 --DROP TABLE IF EXISTS map_problem_execute;
 CREATE TABLE map_problem_execute (
@@ -273,6 +288,66 @@ CREATE TRIGGER map_problem_execute_updated_row BEFORE UPDATE ON map_problem_exec
 CREATE INDEX ON map_problem_execute (problem_id);
 CREATE INDEX ON map_problem_execute (execute_type_id);
 CREATE UNIQUE INDEX ON map_problem_execute (problem_id, execute_type_id);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 1);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 2);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 3);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 4);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 5);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 6);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 8);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 9);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 10);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10001, 11);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10002, 1);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10002, 2);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10002, 3);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10002, 4);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10002, 5);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10002, 6);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10002, 8);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10002, 9);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10002, 10);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10002, 11);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10003, 1);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10003, 2);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10003, 3);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10003, 4);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10003, 5);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10003, 6);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10003, 8);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10003, 9);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10003, 10);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10003, 11);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10004, 1);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10004, 2);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10004, 3);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10004, 4);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10004, 5);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10004, 6);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10004, 8);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10004, 9);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10004, 10);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10004, 11);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10005, 1);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10005, 2);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10005, 3);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10005, 4);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10005, 5);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10005, 6);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10005, 8);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10005, 9);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10005, 10);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10005, 11);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10006, 1);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10006, 2);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10006, 3);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10006, 4);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10006, 5);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10006, 6);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10006, 8);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10006, 9);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10006, 10);
+INSERT INTO map_problem_execute(problem_id, execute_type_id) VALUES (10006, 11);
 
 
 
