@@ -1,7 +1,7 @@
 #!/bin/sh
 PSQL="env psql"
 CONFIG="./../config.py"
-PSQL_FILE="./../../psql.sql"
+PSQL_FILE="./psql.sql"
 DBHOST=`cat $CONFIG | grep DBHOST | awk '{print $3}' | sed "s/^'//g" | sed "s/'$//g"`
 DBUSER=`cat $CONFIG | grep DBUSER | awk '{print $3}' | sed "s/^'//g" | sed "s/'$//g"`
 DBNAME=`cat $CONFIG | grep DBNAME | awk '{print $3}' | sed "s/^'//g" | sed "s/'$//g"`
