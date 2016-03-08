@@ -19,7 +19,7 @@ class ApiBulletinPermission(PermissionBase):
         if err: 
             return err
         if int(res['group_id']) != int(req.current_group):
-            return (403, 'Permission Denied')
+            return (404, 'Error bulletin id')
         return None
 
     def get(req, data):
@@ -27,7 +27,7 @@ class ApiBulletinPermission(PermissionBase):
         if err:
             return err
         if int(res['group_id']) != int(req.current_group):
-            return (403, 'Permission Denied')
+            return (404, 'Error bulletin id')
         return None
 
 
