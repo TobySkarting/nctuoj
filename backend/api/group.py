@@ -59,6 +59,8 @@ class ApiGroupHandler(ApiRequestHandler):
 class ApiGroupAddusersHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def post(self):
+        err = yield from Service.Permission.check(self)
+        if err: self.render(err); return
         args = ['user_ids[]', 'user_accounts[]', 'user_names[]', 'user_student_ids[]']
         meta = self.get_args(args)
         meta['group_id'] = self.current_group
@@ -106,7 +108,7 @@ class ApiGroupUserHandler(ApiRequestHandler):
 class ApiGroupUserPowerHandler(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self, user_id):
-        err = yield from service.permission.check(self, user_id=user_id)
+        err = yield from Service.Permission.check(self, user_id=user_id)
         if err: self.render(err); return
         meta = {}
         meta['group_id'] = self.current_group

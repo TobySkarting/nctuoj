@@ -10,7 +10,7 @@ class ApiGroupsPermission(PermissionBase):
 
 class ApiGroupPermission(PermissionBase):
     def edit(req, data):
-        err, res = yield from Service.Group.get_group({'id': data['id']})
+        err, res = yield from Service.Group.get_group({'id': req.current_group})
         if err: return err
         if map_power['group_manage'] in req.account['power']:
             return None
@@ -59,4 +59,10 @@ class ApiGroupUserPowerPermission(PermissionBase):
     def post(req, data):
         if map_group_power['group_manage'] not in req.current_group_power:
             return (403, 'Permission Denied')
+        return None
+
+class ApiGroupAddusersPermission(PermissionBase):
+    def post(req, data):
+        err = yield from ApiGroupPermission.edit(req, data)
+        if err: return err
         return None
