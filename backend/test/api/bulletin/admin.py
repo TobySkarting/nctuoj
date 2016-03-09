@@ -10,20 +10,34 @@ import common
 
 class TestApiBulletinAdmin(TestCase):
     url = '%s/api/groups/1/bulletins/'%(config.base_url)
-    urls = '%s/api/groups/1/bulletins/'%(config.base_url)
     token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})['token']
     title = "Title test @ " + str(datetime.datetime.now())
     content = "Content test @ " + str(datetime.datetime.now())
 
-    def test_admin_get_bulletins(self):
+    def test_get(self):
         data = {
             "token": self.token,
         }
-        res = requests.get(self.urls, data=data)
+        res = requests.get("%s%s/"%(self.url,1), data=data)
         res.connection.close()
         self.assertEqual(res.status_code, 200)
 
-    def test_admin_post_bulletin(self):
+        ### outbound
+        data = {
+            "token": self.token,
+        }
+        res = requests.get("%s%s/"%(self.url,2), data=data)
+        res.connection.close()
+
+    def test_gets(self):
+        data = {
+            "token": self.token,
+        }
+        res = requests.get(self.url, data=data)
+        res.connection.close()
+        self.assertEqual(res.status_code, 200)
+
+    def test_edit(self):
         # missing title
         data = {
             "token": self.token,
@@ -35,7 +49,7 @@ class TestApiBulletinAdmin(TestCase):
                 "msg": 'title not in form',
             }
         }
-        res = requests.post(self.urls, data=data)
+        res = requests.post(self.url, data=data)
         res.connection.close()
         self.assertEqualR(res, expect_result)
 
@@ -44,7 +58,7 @@ class TestApiBulletinAdmin(TestCase):
             "token": self.token,
             "title": self.title,
         }
-        res = requests.post(self.urls, data=data)
+        res = requests.post(self.url, data=data)
         res.connection.close()
         expect_result = {
             "status_code": 400,
@@ -60,23 +74,18 @@ class TestApiBulletinAdmin(TestCase):
             "title": self.title,
             "content": self.content,
         }
-        res = requests.post(self.urls, data=data)
+        res = requests.post(self.url, data=data)
         res.connection.close()
         self.assertEqual(res.status_code, 200)
+        id = json.loads(res.text)['msg']['id']
 
-    def test_admin_put_bulletin(self):
+        ### put
         data = {
             "token": self.token,
+            "title": self.title,
+            "content": "Modify @ " + str(datetime.datetime.now()) + self.content,
         }
-        res = requests.get(self.urls, data=data)
-        res.connection.close()
-        res = json.loads(res.text)['msg'][0]
-        data = {
-            "token": self.token,
-            "title": res['title'],
-            "content": "Modify @ " + str(datetime.datetime.now()) + res['content'],
-        }
-        res =requests.put( '%s%s/'%(self.url, res['id']), data=data)
+        res =requests.put( '%s%s/'%(self.url, id), data=data)
         res.connection.close()
         expect_result = {
             "status_code": 200,
@@ -86,14 +95,11 @@ class TestApiBulletinAdmin(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_admin_delete_bulletin(self):
+        ### delete
         data = {
             "token": self.token,
         }
-        res = requests.get(self.urls, data=data)
-        res.connection.close()
-        res = json.loads(res.text)['msg'][0]
-        res = requests.delete( '%s%s/'%(self.url, res['id']), data=data)
+        res = requests.delete( '%s%s/'%(self.url, id), data=data)
         res.connection.close()
         expect_result = {
             "status_code": 200,

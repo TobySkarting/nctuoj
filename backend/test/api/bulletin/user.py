@@ -10,26 +10,26 @@ import common
 
 class TestApiBulletinUser(TestCase):
     url = '%s/api/groups/2/bulletins/'%(config.base_url)
-    urls = '%s/api/groups/2/bulletins/'%(config.base_url)
+    url = '%s/api/groups/2/bulletins/'%(config.base_url)
     token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})['token']
     title = "Title test @ " + str(datetime.datetime.now())
     content = "Content test @ " + str(datetime.datetime.now())
 
-    def test_user_get_bulletins(self):
+    def test_gets(self):
         data = {
             "token": self.token,
         }
-        res = requests.get(self.urls, data=data)
+        res = requests.get(self.url, data=data)
         res.connection.close()
         self.assertEqual(res.status_code, 200)
 
-    def test_user_post_bulletin(self):
+    def test_post(self):
         data = {
             "token": self.token,
             "title": self.title,
             "content": self.content,
         }
-        res = requests.post(self.urls, data=data)
+        res = requests.post(self.url, data=data)
         res.connection.close()
         expect_result = {
             "status_code": 403,
@@ -39,11 +39,11 @@ class TestApiBulletinUser(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_user_put_bulletin(self):
+    def test_put(self):
         data = {
             "token": self.token,
         }
-        res = requests.get(self.urls, data=data)
+        res = requests.get(self.url, data=data)
         res.connection.close()
         res = json.loads(res.text)['msg'][0]
         data = {
@@ -61,11 +61,11 @@ class TestApiBulletinUser(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_user_delete_bulletin(self):
+    def test_delete(self):
         data = {
             "token": self.token,
         }
-        res = requests.get(self.urls, data=data)
+        res = requests.get(self.url, data=data)
         res.connection.close()
         res = json.loads(res.text)['msg'][0]
         res = requests.delete( '%s%s/'%(self.url, res['id']), data=data)

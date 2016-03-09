@@ -10,14 +10,13 @@ import common
 
 class TestApiProblemGuest(TestCase):
     url = '%s/api/groups/3/problems/'%(config.base_url)
-    urls = '%s/api/groups/3/problems/'%(config.base_url)
     token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})['token']
 
-    def test_admin_get_problems(self):
+    def test_gets(self):
         data = {
             "token": self.token,
         }
-        res = requests.get(self.urls, data=data)
+        res = requests.get(self.url, data=data)
         res.connection.close()
         expect_result = {
             "status_code": 403,
@@ -27,7 +26,7 @@ class TestApiProblemGuest(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_admin_get_visible_problem(self):
+    def test_get_visible(self):
         data = {
             "token": self.token,
         }
@@ -41,7 +40,7 @@ class TestApiProblemGuest(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_admin_get_invisible_problem(self):
+    def test_get_invisible(self):
         data = {
             "token": self.token,
         }
@@ -54,3 +53,4 @@ class TestApiProblemGuest(TestCase):
             }
         }
         self.assertEqualR(res, expect_result)
+

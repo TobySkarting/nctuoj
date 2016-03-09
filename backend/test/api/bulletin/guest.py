@@ -10,16 +10,15 @@ import common
 
 class TestApiBulletinGuest(TestCase):
     url = '%s/api/groups/3/bulletins/'%(config.base_url)
-    urls = '%s/api/groups/3/bulletins/'%(config.base_url)
     token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})['token']
     title = "Title test @ " + str(datetime.datetime.now())
     content = "Content test @ " + str(datetime.datetime.now())
 
-    def test_guest_get_bulletins(self):
+    def test_gets(self):
         data = {
             "token": self.token,
         }
-        res = requests.get(self.urls, data=data)
+        res = requests.get(self.url, data=data)
         res.connection.close()
         expect_result = {
             "status_code": 403,
@@ -29,13 +28,13 @@ class TestApiBulletinGuest(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_guest_post_bulletin(self):
+    def test_post(self):
         data = {
             "token": self.token,
             "title": self.title,
             "content": self.content,
         }
-        res = requests.post(self.urls, data=data)
+        res = requests.post(self.url, data=data)
         res.connection.close()
         expect_result = {
             "status_code": 403,
@@ -45,7 +44,7 @@ class TestApiBulletinGuest(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_guest_put_bulletin(self):
+    def test_put(self):
         data = {
             "token": self.token,
         }
@@ -64,7 +63,7 @@ class TestApiBulletinGuest(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_guest_delete_bulletin(self):
+    def test_delete(self):
         data = {
             "token": self.token,
         }

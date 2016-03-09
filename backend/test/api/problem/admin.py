@@ -10,18 +10,17 @@ import common
 
 class TestApiProblemAdmin(TestCase):
     url = '%s/api/groups/1/problems/'%(config.base_url)
-    urls = '%s/api/groups/1/problems/'%(config.base_url)
     token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})['token']
 
-    def test_admin_get_problems(self):
+    def test_gets(self):
         data = {
             "token": self.token,
         }
-        res = requests.get(self.urls, data=data)
+        res = requests.get(self.url, data=data)
         res.connection.close()
         self.assertEqual(res.status_code, 200)
 
-    def test_admin_get_visible_problem(self):
+    def test_get_visible(self):
         data = {
             "token": self.token,
         }
@@ -29,7 +28,7 @@ class TestApiProblemAdmin(TestCase):
         res.connection.close()
         self.assertEqual(res.status_code, 200)
 
-    def test_admin_get_invisible_problem(self):
+    def test_get_invisible(self):
         data = {
             "token": self.token,
         }
@@ -42,7 +41,7 @@ class TestApiProblemAdmin(TestCase):
             "token": self.token,
             "verdict_id": 1,
         }
-        res = requests.post(self.urls, data=data)
+        res = requests.post(self.url, data=data)
         res.connection.close()
         expect_result = {
             "status_code": 400,
@@ -57,7 +56,7 @@ class TestApiProblemAdmin(TestCase):
             "token": self.token,
             "visible": 0,
         }
-        res = requests.post(self.urls, data=data)
+        res = requests.post(self.url, data=data)
         res.connection.close()
         expect_result = {
             "status_code": 400,
@@ -70,7 +69,7 @@ class TestApiProblemAdmin(TestCase):
         ### out of range
         """
         data['verdict_id'] = 9999
-        res = requests.post(self.urls, data=data)
+        res = requests.post(self.url, data=data)
         res.connection.close()
         expect_result = {
             "status_code": 400,
@@ -82,17 +81,19 @@ class TestApiProblemAdmin(TestCase):
         """
 
 
-    def test_admin_post_put_delete_problem(self):
+    def test_edit(self):
+        ### post
         data = {
             "token": self.token,
             "visible": 0,
             "verdict_id": 1,
         }
-        res = requests.post(self.urls, data=data)
+        res = requests.post(self.url, data=data)
         res.connection.close()
         self.assertEqual(res.status_code, 200)
         id = json.loads(res.text)['msg']['id']
 
+        ### put
         modify_url = '%s%s/'%(self.url, id)
         data['title'] = 'modify ' + str(datetime.datetime.now())
         res = requests.put(modify_url, data=data)
@@ -108,6 +109,7 @@ class TestApiProblemAdmin(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
+        ### delete
         data = {
             "token": self.token,
         }

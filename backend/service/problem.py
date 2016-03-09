@@ -163,7 +163,6 @@ class ProblemService(BaseService):
         verdict_code = data.pop('verdict_code')
         verdict_execute_type_id = data.pop('verdict_execute_type_id')
         if int(data['verdict_id']) == 0:
-            print('verdict')
             new_verdict = True
             meta = {}
             meta['id'] = 0

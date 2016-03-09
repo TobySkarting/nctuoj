@@ -28,7 +28,7 @@ class ApiBulletinsHandler(ApiRequestHandler):
         meta["setter_user_id"] = self.account['id']
         err, data = yield from Service.Bulletin.post_bulletin(meta)
         if err: self.render(err)
-        else: self.render()
+        else: self.render({"id": data})
 
 class ApiBulletinHandler(ApiRequestHandler):
     @tornado.gen.coroutine

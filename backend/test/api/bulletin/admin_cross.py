@@ -10,7 +10,6 @@ import common
 
 class TestApiBulletinAdminCross(TestCase):
     url = '%s/api/groups/1/bulletins/'%(config.base_url)
-    urls = '%s/api/groups/1/bulletins/'%(config.base_url)
     cross_url = None
     token = common.get_user_info({'account': config.user_admin_account, 'passwd': config.user_admin_password})['token']
     title = "Title test @ " + str(datetime.datetime.now())
@@ -27,7 +26,7 @@ class TestApiBulletinAdminCross(TestCase):
             self.cross_url='%s/api/groups/1/bulletins/%s/'%(config.base_url, json.loads(res.text)['msg'][0]['id'])
         return self.cross_url
 
-    def test_admin_cross_get_bulletin(self):
+    def test_get(self):
         data = {
             "token": self.token,
         }
@@ -41,7 +40,7 @@ class TestApiBulletinAdminCross(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_admin_cross_put_bulletin(self):
+    def test_put(self):
         data = {
             "token": self.token,
             "title": self.title,
@@ -57,7 +56,7 @@ class TestApiBulletinAdminCross(TestCase):
         }
         self.assertEqualR(res, expect_result)
 
-    def test_admin_cross_delete_bulletin(self):
+    def test_delete(self):
         data = {
             "token": self.token,
         }
