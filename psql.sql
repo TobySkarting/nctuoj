@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS map_problem_tag;
 DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS problems;
 DROP TABLE IF EXISTS verdicts;
+DROP TABLE IF EXISTS score_types;
 DROP TABLE IF EXISTS execute_steps;
 DROP TABLE IF EXISTS execute_types;
 DROP TABLE IF EXISTS map_inpublic_group_user;
@@ -249,6 +250,16 @@ CREATE TABLE verdicts(
 CREATE TRIGGER verdicts_update_row BEFORE UPDATE ON verdicts FOR EACH ROW EXECUTE PROCEDURE updated_row();
 INSERT INTO verdicts (title, execute_type_id, file_name, setter_user_id) VALUES ('Token By Character(Ignore Lines)', 2, 'main.cpp', 1);
 
+CREATE TABLE score_types (
+    id              serial          NOT NULL    PRIMARY KEY,
+    name            varchar(255)    NOT NULL,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER score_types_update_row BEFORE UPDATE ON score_types FOR EACH ROW EXECUTE PROCEDURE updated_row();
+INSERT INTO score_types (name) VALUES ('sum');
+INSERT INTO score_types (name) VALUES ('min');
+
 --DROP TABLE IF EXISTS problems;
 CREATE TABLE problems (
     id              serial          NOT NULL    PRIMARY KEY,
@@ -266,6 +277,7 @@ CREATE TABLE problems (
     visible         integer         NOT NULL DEFAULT 0 CHECK (visible = ANY('{0, 1}')),
     interactive     integer         NOT NULL DEFAULT 0 CHECK (interactive = ANY('{0, 1}')),
     verdict_id      integer         DEFAULT 1   REFERENCES verdicts(id) ON DELETE CASCADE,
+    score_type_id   integer         DEFAULT 1   REFERENCES score_types(id) ON DELETE CASCADE,
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );

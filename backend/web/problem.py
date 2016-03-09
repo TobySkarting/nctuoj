@@ -91,6 +91,7 @@ class WebProblemEditHandler(WebRequestHandler):
         err, data = yield from Service.Problem.get_problem(meta)
         err, data['verdict_list'] = yield from Service.Verdict.get_verdict_list({'problem_id': data['id']})
         err, data['execute_types'] = yield from Service.Execute.get_execute_list()
+        err, data['score_types'] = yield from Service.Score.get_score_types_list()
 
         if not action: action = "basic"
         if action == "basic":

@@ -54,6 +54,16 @@
                 <input name="pdf_file" type="file" class="form-control">
             </div>
         </div>
+        <div class="col-md-3 form-group">
+            <div>
+                <label class="control-label">Score Type</label>
+            </div>
+            <select class="form-control selectpicker" name="score_type_id">
+                {% for x in data['score_types'] %}
+                <option value="{{x['id']}}">{{x['name']}}</option>
+                {% end %}
+            </select>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -115,6 +125,7 @@ require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
     $("[name=visible]").selectpicker().selectpicker('val', {{data["visible"]}});
     $("[name=verdict_id]").selectpicker().selectpicker('val', {{data["verdict_id"]}});
     $("[name=verdict_execute_type_id]").selectpicker();
+    $("[name=score_type_id]").selectpicker().selectpicker('val', {{data["score_type_id"]}});
     if({{data['verdict_id']}} != 0){
         $('[name=new_verdict]').hide();
     }
@@ -138,7 +149,7 @@ require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
             success: function(msg){
                 location.href = "/groups/{{current_group}}/problems/" + msg['msg']['id'] + "/";
             },
-            error: function(msg){
+            error: function(event){
                 msg = JSON.parse(event.responseText);
                 bootbox.alert(msg['msg']);
             }

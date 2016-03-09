@@ -153,6 +153,9 @@ class ProblemService(BaseService):
             'type': bool,
         }, {
             'name': 'pdf_file',
+        }, {
+            'name': '+score_type_id',
+            'type': int,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)
@@ -255,6 +258,9 @@ class ProblemService(BaseService):
             'type': bool,
         }, {
             'name': 'pdf_file',
+        }, {
+            'name': '+score_type_id',
+            'type': int,
         }]
         err = form_validation(data, required_args)
         if err: return (err, None)

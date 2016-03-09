@@ -23,7 +23,7 @@ class ApiProblemsHandler(ApiRequestHandler):
     def post(self):
         err = yield from Service.Permission.check(self)
         if err: self.render(err); return
-        args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible", 'verdict_id', 'verdict_code[file]', 'verdict_execute_type_id', 'pdf', 'pdf_file[file]']
+        args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible", 'verdict_id', 'verdict_code[file]', 'verdict_execute_type_id', 'pdf', 'pdf_file[file]', 'score_type_id']
         meta = self.get_args(args)
         meta['group_id'] = self.current_group
         meta['setter_user_id'] = self.account['id']
@@ -44,7 +44,7 @@ class ApiProblemHandler(ApiRequestHandler):
     def put(self, id):
         err = yield from Service.Permission.check(self, id=id)
         if err: self.render(err); return
-        args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible", 'verdict_id', 'verdict_code[file]', 'verdict_execute_type_id', 'pdf', 'pdf_file[file]']
+        args = ["title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "visible", 'verdict_id', 'verdict_code[file]', 'verdict_execute_type_id', 'pdf', 'pdf_file[file]', 'score_type_id']
         meta = self.get_args(args)
         meta['group_id'] = self.current_group
         meta['setter_user_id'] = self.account['id']

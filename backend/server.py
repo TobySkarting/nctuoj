@@ -32,6 +32,7 @@ from service.group      import GroupService
 from service.tag        import TagService
 from service.school     import SchoolService
 from service.verdictstring import VerdictStringService
+from service.score      import ScoreService
 
 
 ### api class from api.user import ApiUserSignupHandler
@@ -310,6 +311,7 @@ if __name__ == '__main__':
     Service.Tags =          TagService(db, rs)
     Service.School =        SchoolService(db, rs)
     Service.VerdictString = VerdictStringService(db, rs)
+    Service.Score =         ScoreService(db, rs)
     Service.Permission =    PermissionService
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
