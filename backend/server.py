@@ -33,6 +33,7 @@ from service.tag        import TagService
 from service.school     import SchoolService
 from service.verdictstring import VerdictStringService
 from service.score      import ScoreService
+from service.upload     import UploadService
 
 
 ### api class from api.user import ApiUserSignupHandler
@@ -75,6 +76,7 @@ from api.group          import ApiGroupUserPowerHandler
 from api.time           import ApiTimeHandler
 from api.tag            import ApiTagsHandler
 from api.tag            import ApiTagHandler
+from api.upload         import ApiUploadHandler
 
 #from api.execute_type import ApiExecuteTypesHandler
 #from api.execute_type import ApiExecuteTypeHandler
@@ -232,6 +234,7 @@ if __name__ == '__main__':
         ('/api/verdicts/(\d+)/',                                        ApiVerdictTypeHandler),
         ('/api/tags/',                                                  ApiTagsHandler),
         ('/api/tags/(\d+)/',                                            ApiTagHandler),
+        ('/api/groups/\d+/upload/',                                      ApiUploadHandler),
 
         ('/groups/',                                                    WebGroupsHandler),
 
@@ -312,6 +315,7 @@ if __name__ == '__main__':
     Service.School =        SchoolService(db, rs)
     Service.VerdictString = VerdictStringService(db, rs)
     Service.Score =         ScoreService(db, rs)
+    Service.Upload =        UploadService(db, rs)
     Service.Permission =    PermissionService
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)

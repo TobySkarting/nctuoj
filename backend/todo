@@ -21,7 +21,9 @@ Check:
 
 
 login log
-auto reset token
+- auto reset token
+- file upload
+    - by group
 
 make more restful
 service/

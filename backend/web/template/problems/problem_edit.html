@@ -3,7 +3,7 @@
 
 {% include 'problem_edit_title.html' %}
 
-<form class="form" 
+<form class="form"  name="edit"
     method={% if data['id'] != 0 %}"put"{% else %}"post" {% end %}
     action={% if data['id'] != 0 %}"/api/groups/{{current_group}}/problems/{{data['id']}}/"{% else %}"/api/groups/{{current_group}}/problems/"{% end %}>
     <input type="hidden" name="token" value="{{account['token']}}">
@@ -119,7 +119,6 @@
     </div>
     <button type="submit" class="btn btn-success">Submit</button>
 </form>
-
 <script>
 require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
     $("[name=visible]").selectpicker().selectpicker('val', {{data["visible"]}});
@@ -136,7 +135,7 @@ require(["jquery", "bootbox", "bootstrap-select"], function($, bootbox){
             $('[name=new_verdict]').hide();
         }
     });
-    $("form").submit(function(){
+    $("[name=edit]").submit(function(){
         form = $(this);
         var data = new FormData($(this)[0]);
         $.ajax({
