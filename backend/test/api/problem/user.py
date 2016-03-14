@@ -74,3 +74,18 @@ class TestApiProblemUser(TestCase):
         }
         print(res.status_code, res.text)
         self.assertEqualR(res, expect_result)
+
+    def test_delete(self):
+        data = {
+            "token": self.token,
+        }
+        res = requests.delete("%s%s/"%(self.url,10003), data=data)
+        res.connection.close()
+        expect_result = {
+            "status_code": 403,
+            "body": {
+                "msg": "Permission Denied"
+            }
+        }
+        self.assertEqualR(res, expect_result)
+

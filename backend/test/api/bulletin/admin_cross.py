@@ -33,9 +33,9 @@ class TestApiBulletinAdminCross(TestCase):
         res = requests.get(self.get_cross_url(), data=data)
         res.connection.close()
         expect_result = {
-            "status_code": 403,
+            "status_code": 404,
             "body": {
-                "msg": "Permission Denied",
+                "msg": "Error bulletin id",
             }
         }
         self.assertEqualR(res, expect_result)
@@ -49,9 +49,9 @@ class TestApiBulletinAdminCross(TestCase):
         res = requests.put(self.get_cross_url(), data=data)
         res.connection.close()
         expect_result = {
-            "status_code": 403,
+            "status_code": 404,
             "body": {
-                "msg": "Permission Denied",
+                "msg": "Error bulletin id",
             }
         }
         self.assertEqualR(res, expect_result)
@@ -63,9 +63,9 @@ class TestApiBulletinAdminCross(TestCase):
         res = requests.get(self.get_cross_url(), data=data)
         res.connection.close()
         expect_result = {
-            "status_code": 403,
+            "status_code": 404,
             "body": {
-                "msg": "Permission Denied",
+                "msg": "Error bulletin id",
             }
         }
         self.assertEqualR(res, expect_result)

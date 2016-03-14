@@ -90,6 +90,7 @@ class TestApiProblemAdmin(TestCase):
         }
         res = requests.post(self.url, data=data)
         res.connection.close()
+        print(res.status_code, res.text)
         self.assertEqual(res.status_code, 200)
         id = json.loads(res.text)['msg']['id']
 

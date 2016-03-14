@@ -71,11 +71,12 @@ class ProblemService(BaseService):
         err = form_validation(data, required_args)
         if err: return (err, None)
         if int(data['id']) == 0:
-            col = ["id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at","pdf"]
+            col = ["id", "title", "description", "input", "output", "sample_input", "sample_output", "hint", "source", "group_id", "setter_user_id", "visible", "interactive", "checker_id", "created_at", "updated_at","pdf", "score_type_id"]
             res = { x: "" for x in col }
             res['id'] = 0
             res['visible'] = 0
             res['verdict_id'] = 1
+            res['score_type_id'] = 1
             return (None, res)
 
         # res = self.rs.get('problem@%s' % str(data['id']))

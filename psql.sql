@@ -109,7 +109,6 @@ CREATE INDEX on map_group_user (group_id);
 CREATE INDEX on map_group_user (user_id);
 CREATE UNIQUE INDEX ON map_group_user(group_id, user_id);
 CREATE TRIGGER map_group_user_updated_row BEFORE UPDATE ON map_group_user FOR EACH ROW EXECUTE PROCEDURE updated_row();
---INSERT INTO map_group_user (group_id, user_id) VALUES (1, 0);
 INSERT INTO map_group_user (group_id, user_id) VALUES (1, 1);
 
 CREATE TABLE map_inpublic_group_user (
@@ -402,7 +401,6 @@ ALTER SEQUENCE contests_id_seq RESTART WITH 1001;
 CREATE TRIGGER contests_update_row BEFORE UPDATE ON contests FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON contests (group_id);
 CREATE INDEX ON contests (visible);
-INSERT INTO contests (group_id, setter_user_id, title, description) values (1, 1, 'test', 'contest');
 
 --DROP TABLE IF EXISTS map_contest_problem;
 CREATE TABLE map_contest_problem (
@@ -418,7 +416,6 @@ CREATE TRIGGER map_conteset_problem_update_row BEFORE UPDATE ON map_contest_prob
 CREATE INDEX ON map_contest_problem (contest_id);
 CREATE INDEX ON map_contest_problem (problem_id);
 CREATE UNIQUE INDEX ON map_contest_problem (contest_id, problem_id);
-INSERT INTO map_contest_problem (contest_id, problem_id) VALUES (1001, 10001);
 
 --DROP TABLE IF EXISTS map_contest_user;
 CREATE TABLE map_contest_user (
@@ -432,7 +429,6 @@ CREATE TRIGGER map_contest_user_update_row BEFORE UPDATE ON map_contest_user FOR
 CREATE UNIQUE INDEX ON map_contest_user (user_id, contest_id);
 CREATE INDEX ON map_contest_user (user_id);
 CREATE INDEX ON map_contest_user (contest_id);
-INSERT INTO map_contest_user (user_id, contest_id) VALUES(1, 1001);
 
 CREATE TABLE wait_submissions (
     id              serial          NOT NULL    PRIMARY KEY,
@@ -452,8 +448,6 @@ CREATE TABLE tags (
 );
 CREATE TRIGGER tags_update_row BEFORE UPDATE ON tags FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON tags(tag);
-INSERT INTO tags (tag) VALUES('DP');
-INSERT INTO tags (tag) VALUES('String');
 
 CREATE TABLE map_problem_tag (
     id              serial          NOT NULL        PRIMARY KEY,
