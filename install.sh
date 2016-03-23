@@ -1,2 +1,10 @@
-sudo apt-get install python3-pip python3 python3-dev redis-server libpq-dev
-sudo pip3 install tornado TorMySQL msgpack-python greenlet redis markdown momoko 
+sudo apt-get -y install build-essential curl git wget python3 python3-pip postgresql-server-dev-all redis-server postgresql-client
+sudo pip3 install --upgrade pip
+pip3 pinstall -r requirements.txt
+git submodule init
+git submodule sync
+git submodule update
+cd ./http/pdf.js
+npm install
+node make generic
+
