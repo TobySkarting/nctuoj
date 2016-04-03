@@ -226,7 +226,7 @@ class WebRequestHandler(RequestHandler):
 class StaticFileHandler(tornado.web.StaticFileHandler):
     @tornado.gen.coroutine
     def prepare(self):
-        super().prepare()
+        yield super().prepare()
         self.account = {}
         try:
             id = int(self.get_secure_cookie('id').decode())
@@ -241,6 +241,7 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
             self.clear_cookie('id')
         if id == 0:
             self.account['token'] = ""
+        self.account['id'] = id
 
 
         
