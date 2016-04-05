@@ -13,6 +13,8 @@ import unittest
 if __name__ == '__main__':
     ###
     # init db
-    sp.call("./init_db.sh", shell=True)
-    print('==========================================')
+    print("Init Database")
+    sp.call("./init_db.sh > /dev/null", shell=True)
+    print("...Done")
+
     unittest.main()

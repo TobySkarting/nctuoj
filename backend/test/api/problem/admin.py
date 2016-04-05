@@ -87,10 +87,10 @@ class TestApiProblemAdmin(TestCase):
             "token": self.token,
             "visible": 0,
             "verdict_id": 1,
+            "score_type_id": 1,
         }
         res = requests.post(self.url, data=data)
         res.connection.close()
-        print(res.status_code, res.text)
         self.assertEqual(res.status_code, 200)
         id = json.loads(res.text)['msg']['id']
 
