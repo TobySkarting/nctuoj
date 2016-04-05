@@ -22,7 +22,7 @@ class ApiProblemPermission(PermissionBase):
 
     def edit(req, data):
         if map_group_power['problem_manage'] not in req.current_group_power:
-            return ('403', 'Permission Denied')
+            return (403, 'Permission Denied')
         err, res = yield from Service.Problem.get_problem({'id': data['id']})
         if err: return err
         if res['group_id'] != req.current_group:
