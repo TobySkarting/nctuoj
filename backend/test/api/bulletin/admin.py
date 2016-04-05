@@ -4,7 +4,7 @@ import requests
 import json
 import unittest
 import datetime
-from util import TestCase
+from util import * 
 import config
 import common
 
