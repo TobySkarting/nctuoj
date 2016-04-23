@@ -61,7 +61,7 @@ class ApiGroupAddusersHandler(ApiRequestHandler):
     def post(self):
         err = yield from Service.Permission.check(self)
         if err: self.render(err); return
-        args = ['user_ids[]', 'user_accounts[]', 'user_names[]', 'user_student_ids[]']
+        args = ['user_ids[]', 'user_accounts[]',]
         meta = self.get_args(args)
         meta['group_id'] = self.current_group
         err, res = yield from Service.Group.post_group_addusers(meta)

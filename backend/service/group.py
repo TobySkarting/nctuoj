@@ -185,19 +185,13 @@ class GroupService(BaseService):
         }, {
             'name': '+user_accounts',
             'type': list,
-        }, {
-            'name': '+user_names',
-            'type': list,
-        }, {
-            'name': '+user_student_ids',
-            'type': list,
-        }]
+        }, ]
         err = form_validation(data, required_args)
         if err: return (err, None)
         data['user_ids'] = (x.strip() for x in data['user_ids'] if x.strip() != '')
         data['user_accounts'] = (x.strip() for x in data['user_accounts'] if x.strip() != '')
-        data['user_names'] = (x.strip() for x in data['user_names'] if x.strip() != '')
-        data['user_student_ids'] = (x.strip() for x in data['user_student_ids'] if x.strip() != '')
+        # data['user_names'] = (x.strip() for x in data['user_names'] if x.strip() != '')
+        # data['user_student_ids'] = (x.strip() for x in data['user_student_ids'] if x.strip() != '')
         print(data)
         ids = set(data['user_ids'])
         for account in data['user_accounts']:
@@ -205,15 +199,15 @@ class GroupService(BaseService):
             try: ids.add(res.fetchone()['id'])
             except: pass
 
-        for name in data['user_names']:
-            res = yield self.db.execute('SELECT id FROM users WHERE name=%s;', (name,))
-            try: ids.add(res.fetchone()['id'])
-            except: pass
+        # for name in data['user_names']:
+            # res = yield self.db.execute('SELECT id FROM users WHERE name=%s;', (name,))
+            # try: ids.add(res.fetchone()['id'])
+            # except: pass
 
-        for student_id in data['user_student_ids']:
-            res = yield self.db.execute('SELECT id FROM users WHERE student_id=%s;', (student_id,))
-            try: ids.add(res.fetchone()['id'])
-            except: pass
+        # for student_id in data['user_student_ids']:
+            # res = yield self.db.execute('SELECT id FROM users WHERE student_id=%s;', (student_id,))
+            # try: ids.add(res.fetchone()['id'])
+            # except: pass
         print(ids)
         for id in ids:
             try: res = yield self.db.execute('INSERT INTO map_group_user (group_id, user_id) VALUES(%s, %s);', (data['group_id'], id,))

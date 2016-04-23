@@ -81,19 +81,19 @@
         <form class="form">
             <h3>Add Users</h3>
             <div class="form-group">
-                <label>By user id</label> 
+                <label>By user id (split by ,)</label> 
                 <textarea class="form-control" name="user_ids"></textarea>
             </div>
             <div class="form-group">
-                <label>By user account</label> 
+                <label>By user account (split by ,)</label> 
                 <textarea class="form-control" name="user_accounts"></textarea>
             </div>
             <div class="form-group">
-                <label>By user name</label> 
+                <label>By user name (split by ,)</label> 
                 <textarea class="form-control" name="user_names"></textarea>
             </div>
             <div class="form-group">
-                <label>By user student id</label> 
+                <label>By user student id (split by ,)</label> 
                 <textarea class="form-control" name="user_student_ids"></textarea>
             </div>
             <input type="submit" class="form-control">
@@ -111,8 +111,8 @@ require(['jquery', 'bootbox'], function($, bootbox){
         data.token = "{{account['token']}}";
         data.user_ids = form.find('[name=user_ids]').val().split(',');
         data.user_accounts = form.find('[name=user_accounts]').val().split(',');
-        data.user_names = form.find('[name=user_names]').val().split(',');
-        data.user_student_ids = form.find('[name=user_student_ids]').val().split(',');
+        //data.user_names = form.find('[name=user_names]').val().split(',');
+        //data.user_student_ids = form.find('[name=user_student_ids]').val().split(',');
         console.log(data);
         bootbox.confirm('Are you sure?', function(res){
             if(res == false)return;
