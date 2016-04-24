@@ -226,7 +226,7 @@ class WebRequestHandler(RequestHandler):
 class StaticFileHandler(tornado.web.StaticFileHandler):
     @tornado.gen.coroutine
     def prepare(self):
-        yield super().prepare()
+        super().prepare()
         self.account = {}
         try:
             token = self.get_secure_cookie('token').decode()

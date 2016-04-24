@@ -11,7 +11,6 @@ class FileTestdataHandler(StaticFileHandler):
             self.testdata_id = int(re.search(r'.*/testdata/(\d+)/.*', self.request.uri).groups(1)[0])
         except:
             raise tornado.web.HTTPError(404)
-        print(self.testdata_id)
         yield super().prepare()
         err, testdata = yield from Service.Testdata.get_testdata({'id': self.testdata_id}) 
         if err: raise tornado.web.HTTPError(404)
