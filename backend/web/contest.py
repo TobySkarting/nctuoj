@@ -81,11 +81,23 @@ class WebContestEditHandler(WebRequestHandler):
         self.render('./contests/contest_edit.html', contest_data=contest_data)
 
 class WebContestProblemHandler(WebRequestHandler):
+    def check_view(self, meta={}):
+        err, data = yield from Service.Problem.get_problem(meta)
+        if err:
+            self.write_error(err)
+            return False
+        if int(data['group_id']) == int(meta['group_id']) and (map_group_power['problem_manage'] in self.current_group_power or int(data['visible']) > 0):
+            return True
+        self.write_error(403)
+        return False
     @tornado.gen.coroutine
     def get(self, contest_id, problem_id, action=None):
         meta = {
-            'id': problem_id
-        }
+            'id': problem_id,
+            'group_id': self.current_group
+        } 
+        if not (yield from self.check_view(meta)):
+            return
         err, data = yield from Service.Problem.get_problem(meta)
         err, contest_data = yield from Service.Contest.get_contest({"id": contest_id, "group_id": self.current_group})
         if action == None:
