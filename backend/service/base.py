@@ -3,10 +3,20 @@ import time
 from copy import copy
 import subprocess
 import config
+import logging
+
 class BaseService:
     def __init__(self, db, rs):
         self.db = db
         self.rs = rs
+
+    def log(self, msg):
+        class_name = self.__class__.__name__
+        caller_function = inspect.stack()[1].function
+        caller_lineno = inspect.stack()[1].lineno
+        caller_filename = inspect.stack()[1].filename
+        msg = '<%s@%s@%s@%s> %s' % (caller_filename, caller_lineno, self.__class__.__name__, caller_function, str(msg))
+        logging.debug(msg)
 
     def check_required_args(self, args, data):
         for a in args:

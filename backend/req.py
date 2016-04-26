@@ -8,6 +8,7 @@ import tornado.gen
 import tornado.web
 import tornado.websocket
 import datetime
+import inspect
 import re
 from map import *
 import config
@@ -46,7 +47,11 @@ class RequestHandler(tornado.web.RequestHandler):
             id = 0
         else:
             id = self.acct['id']
-        msg = '<USER %d> %s' % (id, str(msg))
+        class_name = self.__class__.__name__
+        caller_function = inspect.stack()[1].function
+        caller_lineno = inspect.stack()[1].lineno
+        caller_filename = inspect.stack()[1].filename
+        msg = '<USER %d / %s@%s@%s@%s> %s' % (id, caller_filename, caller_lineno, self.__class__.__name__, caller_function, str(msg))
         logging.debug(msg)
 
     def get_args(self, name):
