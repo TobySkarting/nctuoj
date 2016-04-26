@@ -207,7 +207,6 @@ class WebRequestHandler(RequestHandler):
         err, self.account['power'] = yield from Service.User.get_user_power_info({'id': id})
         err, self.group = yield from Service.User.get_user_group_info({'id': id})
         err, self.inpublic_group = yield from Service.User.get_user_inpublic_group({'id': id})
-        print(self.inpublic_group)
         err, self.current_group_power = yield from Service.Group.get_group_user_power({
             'user_id': id,
             'group_id': self.current_group

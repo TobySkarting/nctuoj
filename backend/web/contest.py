@@ -82,7 +82,11 @@ class WebContestEditHandler(WebRequestHandler):
 
 class WebContestProblemHandler(WebRequestHandler):
     def check_view(self, meta={}):
-        err, data = yield from Service.Problem.get_problem(meta)
+        err, data = yield from Service.Problem.get_problem({'id': meta['id'], 'group_id': meta['group_id']})
+        err, contest_data = yield from Service.Contest.get_contest_problem_list( {'id': meta['contest_id']} )
+        for x in contest_data:
+            if int(x['id']) == int(meta['id']):
+                return True
         if err:
             self.write_error(err)
             return False
@@ -94,7 +98,8 @@ class WebContestProblemHandler(WebRequestHandler):
     def get(self, contest_id, problem_id, action=None):
         meta = {
             'id': problem_id,
-            'group_id': self.current_group
+            'group_id': self.current_group,
+            'contest_id': contest_id,
         } 
         if not (yield from self.check_view(meta)):
             return
