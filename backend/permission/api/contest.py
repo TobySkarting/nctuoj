@@ -32,6 +32,11 @@ class ApiContestPermission(PermissionBase):
         if err: return err
         return None
 
+    def post(req, data):
+        err = yield from ApiContestPermission.view(req, data)
+        if err: return err
+        return None
+
     def put(req, data):
         err = yield from ApiContestPermission.edit(req, data)
         if err: return err

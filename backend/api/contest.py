@@ -61,6 +61,17 @@ class ApiContestHandler(ApiRequestHandler):
         else: self.render(data)
 
     @tornado.gen.coroutine
+    def post(self, id, action=None):
+        err = yield from Service.Permission.check(self, id=id)
+        if err: self.render(err); return
+        meta = {}
+        meta['id'] = id
+        meta['user_id'] = self.account['id']
+        err, res = yield from Service.Contest.register(meta)
+        if err: self.render(err)
+        else: self.render(res)
+
+    @tornado.gen.coroutine
     def delete(self, id):
         err = yield from Service.Permission.check(self, id=id)
         if err: self.render(err); return
