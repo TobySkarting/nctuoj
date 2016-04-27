@@ -188,7 +188,10 @@
                     
                     var end = new Date().getTime();
                     console.log(end-start);
-                    setTimeout(function(){get_scoreboard();}, 1000);
+                    /***********/
+                    /* TIMEOUT */
+                    /***********/
+                    setTimeout(function(){get_scoreboard();}, 5000);
                     l = $("tbody>tr");
                     for(i = 0 ; i < l.length - 1 ; i++){
                         for(j = 0 ; j < l.length - 1 - i ; j++){
