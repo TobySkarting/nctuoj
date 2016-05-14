@@ -3,6 +3,7 @@ from req import Service
 from map import map_default_file_name
 from map import map_group_power
 from utils.form import form_validation
+from utils.encoding import bytes2string
 import config
 import re
 import shutil
@@ -124,7 +125,7 @@ class SubmissionService(BaseService):
 
 
         file_path = '%s/%s' % (folder, res['file_name'])
-        res['code'] = codecs.open(file_path, 'r', 'utf-8').read()
+        res['code'] = bytes2string(open(file_path, 'rb'), 'Unknown encoding')
         # encode = chardet.detect(res['code'])
         # print(encode)
         # encode['encoding'] = None
