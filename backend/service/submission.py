@@ -125,7 +125,9 @@ class SubmissionService(BaseService):
 
 
         file_path = '%s/%s' % (folder, res['file_name'])
-        res['code'] = bytes2string(open(file_path, 'rb'), 'Unknown encoding')
+        res['code'] = bytes2string(open(file_path, 'rb'), """We couldn't identify the encoding of the file. 
+Please convert it into UTF-8.
+Usually, it is due to some Chinese characters in your source code. Please remove all Chinese characters.""")
         # encode = chardet.detect(res['code'])
         # print(encode)
         # encode['encoding'] = None
