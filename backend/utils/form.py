@@ -30,10 +30,11 @@ def _form_validation(form, schema):
     for item in schema:
         require = True if item['name'][0] == '+' else False
         name = item['name'] = item['name'][1:] if require else item['name']
+        desc = item['desc'] if 'desc' in item else name
 
         ### check require
         if require and (name not in form or form[name] is None):
-            return '%s not in form' % name
+            return '%s not in form' % desc
 
         if not require and (name not in form or form[name] is None or (isinstance(form[name], str) and form[name] == '')):
             form[name] = None
@@ -42,33 +43,33 @@ def _form_validation(form, schema):
             ## check non_empty
             if 'non_empty' in item and item['non_empty']:
                 if form[name] == item['type']() or form[name] is None:
-                    return 'value of %s: "%s" should not be empty value' % (name, str(form[name]))
+                    return 'value of %s: "%s" should not be empty value' % (desc, str(form[name]))
 
             ### check value type
             if 'type' in item:
                 if not isinstance(form[name], item['type']):
                     if item['type'] == datetime:
                         try: form[name] = parser.parse(form[name])
-                        except Exception as e: return name + str(e)
+                        except Exception as e: return desc + str(e)
                     else:
                         try: form[name] = item['type'](form[name])
-                        except Exception as e: return name + str(e)
+                        except Exception as e: return desc + str(e)
 
 
             ### check except
             if 'except' in item:
                 if form[name] in item['except']:
-                    return 'value of %s: "%s" in except list' % (name, str(form[name]))
+                    return 'value of %s: "%s" in except list' % (desc, str(form[name]))
             
             ### check range
             if 'range' in item:
                 if not (item['range'][0] <= form[name] <= item['range'][1]):
-                    return 'value of %s: "%s" not in range %s' % (name, str(form[name]), str(item['range']))
+                    return 'value of %s: "%s" not in range %s' % (desc, str(form[name]), str(item['range']))
 
             ### check len_range
             if 'len_range' in item:
                 if not (item['len_range'][0] <= len(form[name]) <= item['len_range'][1]):
-                    return 'value of %s: "%s" not in len_range %s' % (name, str(form[name]), str(item['len_range']))
+                    return 'value of %s: "%s" not in len_range %s' % (desc, str(form[name]), str(item['len_range']))
 
             ### check check_dict
             if 'check_dict' in item:
