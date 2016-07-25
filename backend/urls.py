@@ -1,12 +1,12 @@
-from include import include
+from utils.include import include
 class Handler:
     pass
 include(Handler, "./handler/")
 urls = [
     (r'/', Handler.index.Index),
-    # (r'/api/users/', Handler.api.user.Users),
-    # (r'/api/users/(\d+)/', Handler.api.user.User),
-    # (r'/api/users/session/', Handler.api.session.Session),
+    (r'/api/users/', Handler.api.user.Users),
+    (r'/api/users/(\d+)/', Handler.api.user.User),
+    (r'/api/users/session/', Handler.api.session.Session),
 
     # (r'/api/problems/', Handler.api.problem.problem.Problems),
     # (r'/api/problems/(\d+)/', Handler.api.problem.problem.Problem),

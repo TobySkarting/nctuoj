@@ -7,3 +7,4 @@ __pycache__
 data
 client.ovpn
 build/
+flush_db.sh

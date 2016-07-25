@@ -8,5 +8,3 @@ class Index(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self):
         self.render()
-
-

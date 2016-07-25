@@ -6,15 +6,14 @@ import tornado.web
 import tornado.websocket
 import datetime
 import inspect
-from urllib.parse import quote
-from log import log
 import momoko
 import config
 import types
 import re
+from utils.log import log
 from utils.form import form_validation
 from utils.utils import *
-from include import *
+from utils.include import *
 from urllib.parse import quote
 import sys
 
