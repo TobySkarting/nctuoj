@@ -1,9 +1,0 @@
-{% extends './../frame.html' %}
-{% block content %}
-{% import datetime %}
-
-{% if datetime.datetime.now() > contest_data['start'] or map_group_power['contest_manage'] in current_group_power %}
-    {% include "./../problems/module_problem.html" %}
-{% end %}
-
-{% end %}
