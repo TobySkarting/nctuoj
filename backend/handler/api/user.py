@@ -36,3 +36,35 @@ class User(ApiRequestHandler):
         err, res = yield from Service.User.delete_user({'id': id})
         self.render()
 
+class Power(ApiRequestHandler):
+    @tornado.gen.coroutine
+    def get(self, user_id):
+        err, res = yield from Service.User.get_power({'user_id': user_id})
+        if err:
+            self.render(err)
+        else:
+            self.render(res)
+
+    @tornado.gen.coroutine
+    def post(self, user_id):
+        args = ['power']
+        data = self.get_args(args)
+        data['user_id'] = user_id
+        err, res = yield from Service.User.post_power(data)
+        if err:
+            self.render(err)
+        else:
+            err, res = yield from Service.User.get_power(data)
+            self.render(res)
+
+    @tornado.gen.coroutine
+    def delete(self, user_id):
+        args = ['power']
+        data = self.get_args(args)
+        data['user_id'] = user_id
+        err, res = yield from Service.User.delete_power(data)
+        if err:
+            self.render(err)
+        else:
+            err, res = yield from Service.User.get_power(data)
+            self.render(res)

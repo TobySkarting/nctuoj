@@ -6,6 +6,7 @@ urls = [
     (r'/', Handler.index.Index),
     (r'/api/users/', Handler.api.user.Users),
     (r'/api/users/(\d+)/', Handler.api.user.User),
+    (r'/api/users/(\d+)/power/', Handler.api.user.Power),
     (r'/api/users/session/', Handler.api.session.Session),
 
     # (r'/api/problems/', Handler.api.problem.problem.Problems),
