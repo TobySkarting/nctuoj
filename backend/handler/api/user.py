@@ -9,12 +9,23 @@ class Users(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def post(self):
-        pass
+        args = ['email', 'account', 'password', 'repassword', 'name']
+        data = self.get_args(args)
+        err, res = yield from Service.User.post_user(data)
+        if err:
+            self.render(err)
+        else:
+            err, res = yield from Service.User.get_user(res)
+            self.render(res)
 
 class User(ApiRequestHandler):
     @tornado.gen.coroutine
     def get(self, id):
-        pass
+        err, res = yield from Service.User.get_user({'id': id})
+        if err:
+            self.render(err)
+        else:
+            self.render(res)
 
     @tornado.gen.coroutine
     def put(self, id):
@@ -22,5 +33,6 @@ class User(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def delete(self, id):
-        pass
+        err, res = yield from Service.User.delete_user({'id': id})
+        self.render()
 

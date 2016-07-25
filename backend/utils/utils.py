@@ -2,6 +2,7 @@ import inspect
 import re
 import config
 import hashlib
+import datetime
 
 def get_module_path(obj):
     path = inspect.getmodule(obj)
@@ -13,9 +14,9 @@ def HashPassword(x):
     hpwd = hashlib.md5(str(x).encode()).hexdigest()
     return hpwd
 
-def GetToken(self, account):
+def GenToken(account):
     token = []
     token.append(config.TOKEN['prefix'])
     token.append(hashlib.md5(account['account'].encode()).hexdigest()[:10])
-    token.append(hashlib.md5((account['password'] + str(time.time())).encode()).hexdigest()[:40])
+    token.append(hashlib.md5((account['password'] + str(datetime.datetime.now())).encode()).hexdigest()[:40])
     return '@'.join(token)
