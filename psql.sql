@@ -155,7 +155,6 @@ CREATE TABLE bulletins (
 );
 CREATE TRIGGER bulletins_updated_row BEFORE UPDATE ON bulletins FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON bulletins (group_id);
-INSERT INTO bulletins (group_id, setter_user_id, title, content) VALUES (1, 1, 'Public', 'New Group Public');
 
 --DROP TABLE IF EXISTS execute_types;
 CREATE TABLE execute_types (

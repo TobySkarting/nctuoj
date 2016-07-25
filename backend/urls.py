@@ -9,6 +9,9 @@ urls = [
     (r'/api/users/(\d+)/power/', Handler.api.user.Power),
     (r'/api/users/session/', Handler.api.session.Session),
 
+    (r'/api/bulletins/', Handler.api.bulletin.Bulletins),
+    (r'/api/bulletins/(\d+)/', Handler.api.bulletin.Bulletin),
+
     # (r'/api/problems/', Handler.api.problem.problem.Problems),
     # (r'/api/problems/(\d+)/', Handler.api.problem.problem.Problem),
     # (r'/api/problems/(\d+)/rejudge/', Handler.api.problem.rejudge.Rejudge),
@@ -16,9 +19,6 @@ urls = [
     # (r'/api/problems/(\d+)/verdict/', Handler.api.problem.verdict.Verdict),
     # (r'/api/problems/(\d+)/testdata/', Handler.api.problem.testdata.Testdata),
     # (r'/api/problems/(\d+)/tag/',     Handler.api.problem.tag.Tag),
-
-    # (r'/api/bulletins/', Handler.api.bulletin.Bulletins),
-    # (r'/api/bulletins/(\d+)/', Handler.api.bulletin.Bulletin),
 
     # (r'/api/submissions/', Handler.api.submission.Submissions),
     # (r'/api/submissions/(\d+)/', Handler.api.submission.Submission),
