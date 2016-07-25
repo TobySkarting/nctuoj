@@ -52,7 +52,7 @@ INSERT INTO schools (name) VALUES('NCTU');
 CREATE TABLE users (
     id              serial          NOT NULL    PRIMARY KEY,
     account         varchar(32)     NOT NULL,
-    passwd          varchar(32)     NOT NULL,
+    password        varchar(32)     NOT NULL,
     email           varchar(255)    NOT NULL,
     name            varchar(32)     DEFAULT '',
     student_id      varchar(32)     DEFAULT '',
@@ -66,7 +66,7 @@ CREATE UNIQUE INDEX on users (token);
 CREATE UNIQUE INDEX on users (account);
 CREATE INDEX on users (name);
 CREATE INDEX on users (student_id);
-INSERT INTO users (account, passwd, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '1', 'P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr');
+INSERT INTO users (account, password, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '1', 'P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr');
 
 --DROP TABLE IF EXISTS map_user_power;
 CREATE TABLE map_user_power (

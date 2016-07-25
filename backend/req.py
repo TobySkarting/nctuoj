@@ -46,9 +46,9 @@ def Service__init__():
     ##################################################
     ### Importing Service Module                   ###
     ##################################################
-    include(Service, "./service", ["base.py"], True)
+    include(Service, "./service", ["base.py"], True, False)
     Service.Permission = T()
-    include(Service.Permission, "./permission/", ["base.py"], True)
+    include(Service.Permission, "./permission/", ["base.py"], True, True)
 
 class RequestHandler(tornado.web.RequestHandler):
     def __init__(self, *args, **kwargs):
@@ -122,7 +122,7 @@ class RequestHandler(tornado.web.RequestHandler):
                 token = None
 
         if token:
-            err, res = yield from Service.User.signin_by_token(self, {'token': token})
+            err, res = yield from Service.Session.post_session_by_toekn(self, {'token': token})
             if err:
                 self.account = {}
                 self.clear_cookie('token')

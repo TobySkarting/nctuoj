@@ -1,13 +1,2 @@
-compile:
-    type:
-        0: gcc INPUT -o OUTPUT
-        1: g++ INPUT -o OUTPUT
-        2: python2
-        3: python3
-        4: java
-        5: go
-        6: haskell
-    
-圈選比賽匯出報表
-AC Rate
-
+db change:
+users.passwd => users.password
