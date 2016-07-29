@@ -33,7 +33,7 @@ data = [
             "password": "test",
             "repassword": "test",
         },
-        "response_status": 200,
+        "response_status": 400,
         "response_data": {
             "msg": "Email Exist",
         }
