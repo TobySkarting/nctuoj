@@ -19,13 +19,17 @@ urls = [
     # (r'/api/problems/(\d+)/verdict/', Handler.api.problem.verdict.Verdict),
     # (r'/api/problems/(\d+)/testdata/', Handler.api.problem.testdata.Testdata),
     # (r'/api/problems/(\d+)/tag/',     Handler.api.problem.tag.Tag),
+    # (r'/api/problems/(\d+)/pdf/',     Handler.api.problem.pdf.PDF),
 
     # (r'/api/submissions/', Handler.api.submission.Submissions),
     # (r'/api/submissions/(\d+)/', Handler.api.submission.Submission),
     # (r'/api/submissions/(\d+)/rejudge/', Handler.api.submission.SubmissionRejudge),
+    # (r'/api/submissions/(\d+)/code/', Handler.api.submission.SubmissionCode),
 
     # (r'/api/testdata/', Handler.api.testdata.Testdata),
     # (r'/api/testdata/(\d+)/', Handler.api.testdata.Testdatum),
+    # (r'/api/testdata/(\d+)/input/', Handler.api.testdata.TestdatumInput),
+    # (r'/api/testdata/(\d+)/output/', Handler.api.testdata.TestdatumOutput),
 
     (r'/api/groups/', Handler.api.group.group.Groups),
     (r'/api/groups/(\d+)/', Handler.api.group.group.Group),
@@ -45,6 +49,7 @@ urls = [
 
     # (r'/api/verdicts/', Handler.api.verdict.Verdicts),
     # (r'/api/verdicts/(\d+)/', Handler.api.verdict.Verdict),
+    # (r'/api/verdicts/(\d+)/code/', Handler.api.verdict.VerdictCode),
 
     # (r'/api/contests/', Handler.api.contest.contest.Contests),
     # (r'/api/contests/(\d+)/', Handler.api.contest.contest.Contest),
