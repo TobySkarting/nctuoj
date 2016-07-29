@@ -12,8 +12,8 @@ urls = [
     (r'/api/bulletins/', Handler.api.bulletin.Bulletins),
     (r'/api/bulletins/(\d+)/', Handler.api.bulletin.Bulletin),
 
-    # (r'/api/problems/', Handler.api.problem.problem.Problems),
-    # (r'/api/problems/(\d+)/', Handler.api.problem.problem.Problem),
+    (r'/api/problems/', Handler.api.problem.problem.Problems),
+    (r'/api/problems/(\d+)/', Handler.api.problem.problem.Problem),
     # (r'/api/problems/(\d+)/rejudge/', Handler.api.problem.rejudge.Rejudge),
     # (r'/api/problems/(\d+)/execute/', Handler.api.problem.execute.Execute),
     # (r'/api/problems/(\d+)/verdict/', Handler.api.problem.verdict.Verdict),
