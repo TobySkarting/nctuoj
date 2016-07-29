@@ -27,8 +27,8 @@ urls = [
     # (r'/api/testdata/', Handler.api.testdata.Testdata),
     # (r'/api/testdata/(\d+)/', Handler.api.testdata.Testdatum),
 
-    # (r'/api/groups/', Handler.api.group.group.Groups),
-    # (r'/api/groups/(\d+)/', Handler.api.group.group.Group),
+    (r'/api/groups/', Handler.api.group.group.Groups),
+    (r'/api/groups/(\d+)/', Handler.api.group.group.Group),
     # (r'/api/groups/(\d+)/members/', Handler.api.group.member.Members),
     # (r'/api/groups/(\d+)/members/(\d+)/', Handler.api.group.member.Member),
     # (r'/api/groups/(\d+)/members/(\d+)/power/', Handler.api.group.member.MemberPower),
