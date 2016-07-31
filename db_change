@@ -1,0 +1,4 @@
+db change:
+users.passwd => users.password
+create languages
+modify execute_types.lang reference and value

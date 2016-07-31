@@ -41,7 +41,7 @@ urls = [
     # (r'/api/groups/(\d+)/submissions/', Handler.api.group.submission.Submissions),
     # (r'/api/groups/(\d+)/contests/', Handler.api.group.contest.Contests),
 
-    # (r'/api/languages/', Handler.api.language.Languages),
+    (r'/api/languages/', Handler.api.language.Languages),
     # (r'/api/languages/(\d+)/', Handler.api.language.Language),
 
     # (r'/api/executes/', Handler.api.execute.Executes),

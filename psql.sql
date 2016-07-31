@@ -23,6 +23,7 @@ DROP TABLE IF EXISTS map_inpublic_group_user CASCADE;
 DROP TABLE IF EXISTS groups CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS schools CASCADE;
+DROP TABLE IF EXISTS languages;
 
 CREATE OR REPLACE FUNCTION updated_row() 
 RETURNS TRIGGER AS $$
@@ -155,6 +156,26 @@ CREATE TABLE bulletins (
 );
 CREATE TRIGGER bulletins_updated_row BEFORE UPDATE ON bulletins FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX ON bulletins (group_id);
+
+CREATE TABLE languages (
+    id              serial          NOT NULL    PRIMARY KEY,
+    name            varchar(32)     NOT NULL,
+    created_at      timestamp       DEFAULT date_trunc('second',now()),
+    updated_at      timestamp       DEFAULT date_trunc('second',now())
+);
+CREATE TRIGGER languages_updated_row BEFORE UPDATE ON languages FOR EACH ROW EXECUTE PROCEDURE updated_row();
+INSERT INTO languages (name) values ('C');          --1
+INSERT INTO languages (name) values ('C++');        --2
+INSERT INTO languages (name) values ('Java');       --3
+INSERT INTO languages (name) values ('Python2');    --4
+INSERT INTO languages (name) values ('Python3');    --5
+INSERT INTO languages (name) values ('Go');         --6
+INSERT INTO languages (name) values ('Perl');       --7
+INSERT INTO languages (name) values ('Javascript'); --8
+INSERT INTO languages (name) values ('Haskell');    --9
+INSERT INTO languages (name) values ('ruby');       --10
+INSERT INTO languages (name) values ('sh');         --11
+
 
 --DROP TABLE IF EXISTS execute_types;
 CREATE TABLE execute_types (

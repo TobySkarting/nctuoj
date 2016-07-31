@@ -1,7 +1,5 @@
 from req import Service
 from service.base import BaseService
-from utils.utils import HashPassword
-from utils.utils import GenToken
 
 
 class Bulletin(BaseService):
