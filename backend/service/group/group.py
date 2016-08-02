@@ -5,6 +5,13 @@ from utils.utils import GenToken
 
 
 class Group(BaseService):
+    def get_group_list(self, data):
+        res = yield self.db.execute("SELECT * FROM groups")
+        res = res.fetchall()
+        if res is None:
+            res = []
+        return (None, res)
+
     def get_group(self, data):
         require_args = [{
             'name': '+id',

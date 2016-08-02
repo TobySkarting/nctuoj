@@ -1,17 +1,27 @@
-import datetime
-DBNAME = ''
-DBUSER = ''
-DBPASSWORD = ''
-DBHOST = ''
-DBPORT = 5432
-DBMIN_SIZE = 1
-DBMAX_SIZE = 10
-COOKIE_SECRET = 'wef wqfqw wqefwqf2 '
-PORT = ''
-MAX_WAIT_SECOND_BEFORE_SHUTDOWN = 2
-LOG_FILE_PATH = './log/server.log'
-DATA_EXPIRE_SECOND = 60
-API_URI_WITHOUT_SIGNIN = ['/api/users/signin/', '/api/users/signup/', '/api/users/getinfo/']
-DEBUG = True
-PASSWORD_SALT="adfdafd"
+import psycopg2
+import psycopg2.extras
+
+MAX_WAIT_SECOND_BEFORE_SHUTDOWN = 3
+PORT = 3023
+
+TORNADO_SETTING = {}
+TORNADO_SETTING['debug'] = True
+TORNADO_SETTING['cookie_secret'] = 'cookie secret!'
+TORNADO_SETTING['compress_response'] = True
+TORNADO_SETTING['autoescape'] = 'xhtml_escape'
+TORNADO_SETTING['xheaders'] = True
+TORNADO_SETTING['password_salt'] = 'adfdafd'
+TORNADO_SETTING['debug_mode'] = True
+
+DB_SETTING = {}
+DB_SETTING['dsn'] = 'dbname= user= password= host= port=5432'
+DB_SETTING['size'] = 1
+DB_SETTING['max_size'] = 10
+DB_SETTING['setsession'] = ("SET TIME ZONE +8",)
+DB_SETTING['raise_connect_errors'] = False
+DB_SETTING['cursor_factory'] = psycopg2.extras.RealDictCursor
+
+TOKEN = {}
+TOKEN['prefix'] = "TOKEN"
+
 DATAROOT = '/mnt/nctuoj/'

@@ -33,9 +33,9 @@ urls = [
 
     (r'/api/groups/', Handler.api.group.group.Groups),
     (r'/api/groups/(\d+)/', Handler.api.group.group.Group),
-    # (r'/api/groups/(\d+)/members/', Handler.api.group.member.Members),
-    # (r'/api/groups/(\d+)/members/(\d+)/', Handler.api.group.member.Member),
-    # (r'/api/groups/(\d+)/members/(\d+)/power/', Handler.api.group.member.MemberPower),
+    # (r'/api/groups/(\d+)/users/', Handler.api.group.user.Users),
+    # (r'/api/groups/(\d+)/users/(\d+)/', Handler.api.group.user.User),
+    # (r'/api/groups/(\d+)/users/(\d+)/power/', Handler.api.group.user.Power),
     # (r'/api/groups/(\d+)/bulletins/', Handler.api.group.bulletin.Bulletins),
     # (r'/api/groups/(\d+)/problems/', Handler.api.group.problem.Problems),
     # (r'/api/groups/(\d+)/submissions/', Handler.api.group.submission.Submissions),
