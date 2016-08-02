@@ -12,7 +12,6 @@ class Problem(BaseService):
         }]
         err = self.form_validation(data, require_args)
         if err: return (err, None)
-        self.log(data)
         res = yield self.db.execute("SELECT * FROM problems WHERE id=%s", (data['id'],))
         res = res.fetchone()
         return (None, res)
