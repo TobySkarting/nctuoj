@@ -53,6 +53,7 @@ urls = [
 
     # (r'/api/contests/', Handler.api.contest.contest.Contests),
     # (r'/api/contests/(\d+)/', Handler.api.contest.contest.Contest),
+    # (r'/api/contests/(\d+)/users/', Handler.api.contest.user.Users),
     # (r'/api/contests/(\d+)/problems/', Handler.api.contest.problem.Problems),
     # (r'/api/contests/(\d+)/submissions/', Handler.api.contest.submission.Submissions),
     # (r'/api/contests/(\d+)/scoreboard/', Handler.api.contest.scoreboard.Scoreboard),

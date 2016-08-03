@@ -181,41 +181,26 @@ INSERT INTO languages (name) values ('sh');         --11
 CREATE TABLE execute_types (
     id              serial          NOT NULL    PRIMARY KEY,
     description     varchar(255)    NOT NULL    DEFAULT '',
-    lang            integer         NOT NULL,
+    language_id     integer         NOT NULL    REFERENCES language(id),
     recompile       integer         NOT NULL    DEFAULT 0   CHECK(recompile = ANY('{0,1}')), 
     setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     priority        integer         NOT NULL    DEFAULT 999,
-	cm_mode			varchar(255)	DEFAULT '',
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER execute_types_updated_row BEFORE UPDATE ON execute_types FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX on execute_types (priority);
-INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic C', 0, 1, 1, 'text/x-csrc');
-INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic C++', 1, 1, 2, 'text/x-c++src');
-INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic C++11', 1, 1, 3, 'text/x-c++src');
-INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Java', 2, 1, 4, 'text/x-java');
-INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Python2', 3, 1, 5, 'text/x-python');
-INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Python3', 4, 1, 6, 'text/x-python');
-INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Go', 5, 1, 7, 'text/x-go');
-INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Perl', 6, 1, 8, 'text/x-perl');
-INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Javascript', 7, 1, 9, 'text/javascript');
-INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic Ruby', 9, 1, 10, 'text/x-ruby');
-INSERT INTO execute_types (description, lang, setter_user_id, priority, cm_mode) values ('Basic shell', 10, 1, 11, 'text/x-sh');
---map_lang = {
---0: "C",
---1: "C++",
---2: "Java",
---3: "Python2",
---4: "Python3",
---5: "Go",
---6: "Perl",
---7: "Javascript",
---8: "Haskell",
---9: "ruby",
---10:"sh",
---}
-
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic C', 1, 1, 1,);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic C++11', 2, 1, 2);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic C++14', 2, 1, 3);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Java', 3, 1, 4);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Python2', 4, 1, 5);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Python3', 5, 1, 6);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Go', 6, 1, 7);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Perl', 7, 1, 8);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Javascript', 8, 1, 9);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Ruby', 10, 1, 10);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic shell', 11, 1, 11);
 
 --DROP TABLE IF EXISTS execute_steps;
 CREATE TABLE execute_steps (
@@ -229,9 +214,9 @@ CREATE TRIGGER execute_steps_updated_row BEFORE UPDATE ON execute_steps FOR EACH
 CREATE INDEX ON execute_steps (execute_type_id);
 INSERT INTO execute_steps (execute_type_id, command) values (1, 'gcc __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (1, './a.out');
-INSERT INTO execute_steps (execute_type_id, command) values (2, 'g++ __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (2, 'g++ -std=c++11 __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (2, './a.out');
-INSERT INTO execute_steps (execute_type_id, command) values (3, 'g++ -std=c++11  __FILE__');
+INSERT INTO execute_steps (execute_type_id, command) values (3, 'g++ -std=c++14  __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (3, './a.out');
 INSERT INTO execute_steps (execute_type_id, command) values (4, 'javac __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (4, 'java -Xmx__MEMORY_LIMIT__k -Xss8m __MAIN_FILE__');
@@ -245,15 +230,6 @@ INSERT INTO execute_steps (execute_type_id, command) values (8, 'perl __FILE__')
 INSERT INTO execute_steps (execute_type_id, command) values (9, 'd8 __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (10, 'ruby __FILE__');
 INSERT INTO execute_steps (execute_type_id, command) values (11, 'sh __FILE__');
-
-
---INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C', 0, 1, 1);
---INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++', 1, 1, 2);
---INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic C++11', 1, 1, 3);
---INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Java', 2, 1, 4);
---INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Python2', 3, 1, 5);
---INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Python3', 4, 1, 6);
---INSERT INTO execute_types (description, lang, setter_user_id, priority) values ('Basic Go', 5, 1, 7);
 
 --DROP TABLE IF EXISTS verdicts;
 CREATE TABLE verdicts(
@@ -317,8 +293,6 @@ CREATE TRIGGER map_problem_execute_updated_row BEFORE UPDATE ON map_problem_exec
 CREATE INDEX ON map_problem_execute (problem_id);
 CREATE INDEX ON map_problem_execute (execute_type_id);
 CREATE UNIQUE INDEX ON map_problem_execute (problem_id, execute_type_id);
-
-
 
 --DROP TABLE IF EXISTS testdata;
 CREATE TABLE testdata(
