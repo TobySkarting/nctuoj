@@ -67,7 +67,7 @@ CREATE UNIQUE INDEX on users (token);
 CREATE UNIQUE INDEX on users (account);
 CREATE INDEX on users (name);
 CREATE INDEX on users (student_id);
-INSERT INTO users (account, password, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '1', 'P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr');
+INSERT INTO users (account, password, email, student_id, school_id, token) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', '0000000', '1', 'ADMIN@TOKEN');
 
 --DROP TABLE IF EXISTS map_user_power;
 CREATE TABLE map_user_power (
@@ -182,25 +182,25 @@ CREATE TABLE execute_types (
     id              serial          NOT NULL    PRIMARY KEY,
     description     varchar(255)    NOT NULL    DEFAULT '',
     language_id     integer         NOT NULL    REFERENCES languages(id),
-    recompile       integer         NOT NULL    DEFAULT 0   CHECK(recompile = ANY('{0,1}')), 
     setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     priority        integer         NOT NULL    DEFAULT 999,
+    file_name       varchar(255)    NOT NULL    DEFAULT '',
     created_at      timestamp       DEFAULT date_trunc('second',now()),
     updated_at      timestamp       DEFAULT date_trunc('second',now())
 );
 CREATE TRIGGER execute_types_updated_row BEFORE UPDATE ON execute_types FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX on execute_types (priority);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic C', 1, 1, 1);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic C++11', 2, 1, 2);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic C++14', 2, 1, 3);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Java', 3, 1, 4);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Python2', 4, 1, 5);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Python3', 5, 1, 6);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Go', 6, 1, 7);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Perl', 7, 1, 8);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Javascript', 8, 1, 9);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Ruby', 10, 1, 10);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic shell', 11, 1, 11);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority, file_name) values ('Basic C', 1, 1, 1, 'main.c');
+INSERT INTO execute_types (description, language_id, setter_user_id, priority, file_name) values ('Basic C++11', 2, 1, 2, 'main.cpp');
+INSERT INTO execute_types (description, language_id, setter_user_id, priority, file_name) values ('Basic C++14', 2, 1, 3, 'main.cpp');
+INSERT INTO execute_types (description, language_id, setter_user_id, priority, file_name) values ('Basic Java', 3, 1, 4, 'Main.java');
+INSERT INTO execute_types (description, language_id, setter_user_id, priority, file_name) values ('Basic Python2', 4, 1, 5, 'main.py');
+INSERT INTO execute_types (description, language_id, setter_user_id, priority, file_name) values ('Basic Python3', 5, 1, 6, 'main.py');
+INSERT INTO execute_types (description, language_id, setter_user_id, priority, file_name) values ('Basic Go', 6, 1, 7, 'main.go');
+INSERT INTO execute_types (description, language_id, setter_user_id, priority, file_name) values ('Basic Perl', 7, 1, 8, 'main.pl');
+INSERT INTO execute_types (description, language_id, setter_user_id, priority, file_name) values ('Basic Javascript', 8, 1, 9, 'main.js');
+INSERT INTO execute_types (description, language_id, setter_user_id, priority, file_name) values ('Basic Ruby', 10, 1, 10, 'main.rb');
+INSERT INTO execute_types (description, language_id, setter_user_id, priority, file_name) values ('Basic shell', 11, 1, 11, 'main.sh');
 
 --DROP TABLE IF EXISTS execute_steps;
 CREATE TABLE execute_steps (

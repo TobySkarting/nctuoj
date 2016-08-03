@@ -4,7 +4,7 @@ data = [
         "url": "/api/languages/",
         "method": "get",
         "payload": {
-            "token": "P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr", 
+            "token": "ADMIN@TOKEN", 
             },
         "response_status": 200,
         "response_data": {

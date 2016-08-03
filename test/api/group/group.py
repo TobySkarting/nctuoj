@@ -4,7 +4,7 @@ data = [
         "url": "/api/groups/",
         "method": "post",
         "payload": {
-            "token": "P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr", 
+            "token": "ADMIN@TOKEN", 
             "name": "name",
             "description": "description",
             "type": 1,
@@ -24,7 +24,7 @@ data = [
         "url": "/api/groups/2/",
         "method": "get",
         "payload": {
-            "token": "P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr", 
+            "token": "ADMIN@TOKEN", 
         },
         "response_status": 200,
         "response_data": {
@@ -41,7 +41,7 @@ data = [
         "url": "/api/groups/2/",
         "method": "put",
         "payload": {
-            "token": "P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr", 
+            "token": "ADMIN@TOKEN", 
             "name": "Test put name",
             "description": "description",
             "type": 1,
@@ -61,7 +61,7 @@ data = [
         "url": "/api/groups/2/",
         "method": "delete",
         "payload": {
-            "token": "P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr", 
+            "token": "ADMIN@TOKEN", 
         },
         "response_status": 200,
         "response_data": {

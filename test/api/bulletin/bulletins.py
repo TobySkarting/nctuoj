@@ -4,7 +4,7 @@ data = [
         "url": "/api/bulletins/",
         "method": "post",
         "payload": {
-            "token": "P8AWkMjJFcEjsc7rpVfBk9XkBt99H4KjyHSHBwPtzXtyl3LtUeA6CQl8EVcdZrhr", 
+            "token": "ADMIN@TOKEN", 
             "title": "test bulletin",
             "content": "content",
             "group_id": 1,

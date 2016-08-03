@@ -44,8 +44,9 @@ urls = [
     (r'/api/languages/', Handler.api.language.Languages),
     # (r'/api/languages/(\d+)/', Handler.api.language.Language),
 
-    # (r'/api/executes/', Handler.api.execute.Executes),
-    # (r'/api/executes/(\d+)/', Handler.api.execute.Execute),
+    (r'/api/executes/', Handler.api.execute.Executes),
+    (r'/api/executes/(\d+)/', Handler.api.execute.Execute),
+    # (r'/api/executes/priority/', Handler.api.execute.ExecutesPriority),
 
     # (r'/api/verdicts/', Handler.api.verdict.Verdicts),
     # (r'/api/verdicts/(\d+)/', Handler.api.verdict.Verdict),
