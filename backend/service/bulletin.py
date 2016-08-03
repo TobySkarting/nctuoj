@@ -4,18 +4,18 @@ from service.base import BaseService
 
 class Bulletin(BaseService):
     def get_bulletin(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         }]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute("SELECT * FROM bulletins WHERE id=%s", (data['id'],))
         res = res.fetchone()
         return (None, res)
 
     def post_bulletin(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+group_id',
             'type': int,
         }, {
@@ -28,7 +28,7 @@ class Bulletin(BaseService):
             'name': '+content',
             'type': str,
         }]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         sql, param = self.gen_insert_sql('bulletins', data)
         res = yield self.db.execute(sql, param)
@@ -36,7 +36,7 @@ class Bulletin(BaseService):
         return (None, res)
 
     def put_bulletin(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         }, {
@@ -49,7 +49,7 @@ class Bulletin(BaseService):
             'name': '+content',
             'type': str,
         }]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         id = data.pop('id')
         sql, param = self.gen_update_sql('bulletins', data)
@@ -57,11 +57,11 @@ class Bulletin(BaseService):
         return (None, None)
 
     def delete_bulletin(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         },]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         yield self.db.execute("DELETE FROM bulletins WHERE id=%s", (data['id'],))
         return (None, None)

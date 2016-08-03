@@ -6,11 +6,11 @@ from utils.utils import GenToken
 
 class User(BaseService):
     def get_user(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         }]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute("SELECT * FROM users WHERE id=%s", (data['id'],))
         res = res.fetchone()
@@ -21,7 +21,7 @@ class User(BaseService):
         return (None, res)
 
     def post_user(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+email',
             'type': str,
         }, {
@@ -37,7 +37,7 @@ class User(BaseService):
             'name': '+name',
             'type': str,
         }]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         if data['password'] != data['repassword']:
             return ((400, "password is not equal to repassword"), None)
@@ -61,11 +61,11 @@ class User(BaseService):
         return (None, res)
 
     def delete_user(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         },]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         yield self.db.execute("DELETE FROM users WHERE id=%s", (data['id'],))
         return (None, None)

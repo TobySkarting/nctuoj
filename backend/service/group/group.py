@@ -13,11 +13,11 @@ class Group(BaseService):
         return (None, res)
 
     def get_group(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         }]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         self.log(data)
         res = yield self.db.execute("SELECT * FROM groups WHERE id=%s", (data['id'],))
@@ -25,7 +25,7 @@ class Group(BaseService):
         return (None, res)
 
     def post_group(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+name',
             'type': str,
         }, {
@@ -35,7 +35,7 @@ class Group(BaseService):
             'name': '+type',
             'type': int,
         }]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         sql, param = self.gen_insert_sql('groups', data)
         res = yield self.db.execute(sql, param)
@@ -43,7 +43,7 @@ class Group(BaseService):
         return (None, res)
 
     def put_group(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         }, {
@@ -56,7 +56,7 @@ class Group(BaseService):
             'name': '+type',
             'type': int,
         }]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         id = data.pop('id')
         sql, param = self.gen_update_sql('groups', data)
@@ -64,11 +64,11 @@ class Group(BaseService):
         return (None, None)
 
     def delete_group(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         },]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         yield self.db.execute("DELETE FROM groups WHERE id=%s", (data['id'],))
         return (None, None)

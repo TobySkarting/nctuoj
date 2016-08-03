@@ -11,22 +11,22 @@ class Execute(BaseService):
         return (None, res)
 
     def get_execute(self, data={}):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         },]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute("SELECT * FROM execute_types WHERE id=%s", (data['id'],))
         res = res.fetchone()
         return (None, res)
 
     def get_execute_with_steps(self, data={}):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         },]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute("SELECT * FROM execute_types WHERE id=%s", (data['id'],))
         res = res.fetchone()
@@ -38,7 +38,7 @@ class Execute(BaseService):
         return (None, res)
 
     def post_execute(self, data):
-        require_args = [{
+        required_args = [{
             'name': '+commands',
             'type': list,
         }, {
@@ -54,7 +54,7 @@ class Execute(BaseService):
             'name': '+setter_user_id',
             'type': int,
         }]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None) 
         commands = data.pop("commands")
         sql, param = self.gen_insert_sql('execute_types', data)
@@ -69,7 +69,7 @@ class Execute(BaseService):
         return (None, res)
 
     def put_execute(self, data={}):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         }, {
@@ -88,7 +88,7 @@ class Execute(BaseService):
             'name': '+setter_user_id',
             'type': int,
         }]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None) 
         commands = data.pop("commands")
         id = data.pop('id')
@@ -104,10 +104,10 @@ class Execute(BaseService):
         return (None, res)
 
     def delete_execute(self, data={}):
-        require_args = [{
+        required_args = [{
             'name': '+id',
             'type': int,
         },]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         yield self.db.execute("DELETE FROM execute_types WHERE id=%s", (data['id'],))
         return (None, None)

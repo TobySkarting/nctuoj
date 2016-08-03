@@ -5,14 +5,14 @@ from utils.utils import HashPassword
 
 class Session(BaseService):
     def post_session_by_password(self, req, data):
-        require_args = [{
+        required_args = [{
             'name': '+account',
             'type': str,
         }, {
             'name': '+password',
             'type': str,
         }]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute("SELECT * FROM users WHERE account=%s", (data['account'],))
         res = res.fetchone()
@@ -25,11 +25,11 @@ class Session(BaseService):
         return (None, res)
 
     def post_session_by_toekn(self, req, data):
-        require_args = [{
+        required_args = [{
             'name': '+token',
             'type': str,
         },]
-        err = self.form_validation(data, require_args)
+        err = self.form_validation(data, required_args)
         if err: return (err, None)
         res = yield self.db.execute("SELECT * FROM users WHERE token=%s", (data['token'],))
         res = res.fetchone()
