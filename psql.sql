@@ -181,7 +181,7 @@ INSERT INTO languages (name) values ('sh');         --11
 CREATE TABLE execute_types (
     id              serial          NOT NULL    PRIMARY KEY,
     description     varchar(255)    NOT NULL    DEFAULT '',
-    language_id     integer         NOT NULL    REFERENCES language(id),
+    language_id     integer         NOT NULL    REFERENCES languages(id),
     recompile       integer         NOT NULL    DEFAULT 0   CHECK(recompile = ANY('{0,1}')), 
     setter_user_id  integer         NOT NULL    REFERENCES users(id)    ON DELETE CASCADE,
     priority        integer         NOT NULL    DEFAULT 999,
@@ -190,7 +190,7 @@ CREATE TABLE execute_types (
 );
 CREATE TRIGGER execute_types_updated_row BEFORE UPDATE ON execute_types FOR EACH ROW EXECUTE PROCEDURE updated_row();
 CREATE INDEX on execute_types (priority);
-INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic C', 1, 1, 1,);
+INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic C', 1, 1, 1);
 INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic C++11', 2, 1, 2);
 INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic C++14', 2, 1, 3);
 INSERT INTO execute_types (description, language_id, setter_user_id, priority) values ('Basic Java', 3, 1, 4);
