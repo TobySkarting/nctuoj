@@ -6,7 +6,7 @@ from utils.utils import HashPassword
 class Session(BaseService):
     def post_session_by_password(self, req, data):
         required_args = [{
-            'name': '+account',
+            'name': '+email',
             'type': str,
         }, {
             'name': '+password',
@@ -14,7 +14,7 @@ class Session(BaseService):
         }]
         err = self.form_validation(data, required_args)
         if err: return (err, None)
-        res = yield self.db.execute("SELECT * FROM users WHERE account=%s", (data['account'],))
+        res = yield self.db.execute("SELECT * FROM users WHERE email=%s", (data['email'],))
         res = res.fetchone()
         if res == None:
             return ((404, "User Not Exist"), None)

@@ -5,7 +5,7 @@ import tornado
 class Session(ApiRequestHandler):
     @tornado.gen.coroutine
     def post(self):
-        args = ['account', 'password']
+        args = ['email', 'password']
         data = self.get_args(args)
         err, res = yield from Service.Session.post_session_by_password(self, data)
         if err:

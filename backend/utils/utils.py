@@ -17,6 +17,6 @@ def HashPassword(x):
 def GenToken(account):
     token = []
     token.append(config.TOKEN['prefix'])
-    token.append(hashlib.md5(account['account'].encode()).hexdigest()[:10])
+    token.append(account['email'])
     token.append(hashlib.md5((account['password'] + str(datetime.datetime.now())).encode()).hexdigest()[:40])
     return '@'.join(token)

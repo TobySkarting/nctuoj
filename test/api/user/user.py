@@ -9,7 +9,6 @@ data = [
         "response_data": {
             "msg": {
                 "email": "admin@gmail.com", 
-                "account": "admin", 
                 "id": 1,
                 "school_id": 1,
                 "name": "",

@@ -25,9 +25,6 @@ class User(BaseService):
             'name': '+email',
             'type': str,
         }, {
-            'name': '+account',
-            'type': str,
-        }, {
             'name': '+password',
             'type': str,
         }, {
@@ -44,14 +41,12 @@ class User(BaseService):
         ### check email
 
         ### check conflict
-        res = yield self.db.execute('SELECT * FROM users WHERE account=%s or email=%s', (data['account'], data['email'],))
+        res = yield self.db.execute('SELECT * FROM users WHERE email=%s', (data['email'],))
         if res.rowcount != 0:
             res = res.fetchone()
             if res['email'] == data['email']:
                 return ((400, 'Email Exist'), None)
-            elif res['account'] == data['account']:
-                return ((400, 'Account Exist'), None)
-        
+
         data.pop('repassword')
         data['token'] = GenToken(data)
         data['password'] = HashPassword(data['password'])

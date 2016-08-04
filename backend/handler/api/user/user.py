@@ -9,7 +9,7 @@ class Users(ApiRequestHandler):
 
     @tornado.gen.coroutine
     def post(self):
-        args = ['email', 'account', 'password', 'repassword', 'name']
+        args = ['email', 'password', 'repassword', 'name']
         data = self.get_args(args)
         err, res = yield from Service.user.User.post_user(data)
         if err:

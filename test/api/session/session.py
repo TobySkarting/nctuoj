@@ -4,14 +4,13 @@ data = [
         "url": "/api/users/session/",
         "method": "post",
         "payload": {
-            "account": "admin",
+            "email": "admin@gmail.com", 
             "password": "admin",
         },
         "response_status": 200,
         "response_data": {
             "msg": {
                 "email": "admin@gmail.com", 
-                "account": "admin", 
                 "token": "ADMIN@TOKEN", 
                 "id": 1,
                 "school_id": 1,

@@ -14,7 +14,6 @@ data = [
         "response_data": {
             "msg": {
                 "email": "test@gmail.com",
-                "account": "test",
                 "name": "NAMEISTEST",
                 "school_id": 1,
                 "id": 2,
@@ -28,7 +27,6 @@ data = [
         "method": "post",
         "payload": {
             "email": "test@gmail.com",
-            "account": "test",
             "name": "NAMEISTEST",
             "password": "test",
             "repassword": "test",
